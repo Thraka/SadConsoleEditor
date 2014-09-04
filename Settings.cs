@@ -92,6 +92,7 @@ namespace SadConsoleEditor
             SadConsole.Themes.Library.Default.WindowTheme.TitleStyle.Background = Color_Text;
             SadConsole.Themes.Library.Default.WindowTheme.TitleStyle.Foreground = Color_ControlBack;
             SadConsole.Themes.Library.Default.WindowTheme.FillStyle.Background = Color_ControlBack;
+            SadConsole.Themes.Library.Default.WindowTheme.FillStyle.Foreground = Color_Text;
         }
     }
 

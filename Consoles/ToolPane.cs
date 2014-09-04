@@ -178,8 +178,7 @@ namespace SadConsoleEditor.Consoles
 
             if (info.ConsoleLocation.X == _cellData.Width - 5 && info.ConsoleLocation.Y == _charBackTextRow)
             {
-                Window a = new Window(50, 30);
-                a.Add(new Controls.ColorPicker() { Position = new Point(1, 1) });
+                Windows.ColorPickerPopup a = new Windows.ColorPickerPopup();
                 a.Show(true);
             }
         }

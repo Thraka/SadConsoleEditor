@@ -42,15 +42,21 @@
     <Compile Include="Consoles\EditingContainer.cs" />
     <Compile Include="Consoles\ToolPane.cs" />
     <Compile Include="Controls\CharacterPicker.cs" />
+    <Compile Include="Controls\ColorBar.cs" />
     <Compile Include="Controls\ColorPicker.cs" />
     <Compile Include="EditorConsoleManager.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="HSLColor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Tools\ToolBase.cs" />
+    <Compile Include="Windows\ColorPickerPopup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="ColorMine">
+      <HintPath>packages\ColorMine.1.1.3.0\lib\ColorMine.dll</HintPath>
+    </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MSBuildExtensionsPath)\..\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
@@ -70,6 +76,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Icon.ico" />
+    <None Include="packages.config" />
     <None Include="Settings.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
