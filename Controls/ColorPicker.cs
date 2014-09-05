@@ -46,7 +46,16 @@
         public Color SelectedHue
         {
             get { return _selectedHue; }
-            set { _selectedHue = value; IsDirty = true; Compose(); ResetSelectedColor(); }
+            set
+            {
+                if (_selectedHue != value)
+                {
+                    _selectedHue = value;
+                    IsDirty = true;
+                    Compose();
+                    ResetSelectedColor();
+                }
+            }
         }
 
        
@@ -56,8 +65,7 @@
             SelectedHue = hue;
             Compose();
 
-            _selectedColorPosition = new Point(0, 0);
-            ResetSelectedColor();
+            SelectedColor = hue;
             this[_selectedColorPosition.X, _selectedColorPosition.Y].CharacterIndex = 4;
         }
 

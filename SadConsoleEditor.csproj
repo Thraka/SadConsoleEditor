@@ -52,6 +52,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="Tools\ToolBase.cs" />
     <Compile Include="Windows\ColorPickerPopup.cs" />
+    <Compile Include="Windows\OtherColorsPopup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ColorMine">
