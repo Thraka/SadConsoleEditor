@@ -17,6 +17,10 @@ namespace SadConsoleEditor.Consoles
         private const int RowTools = 9;
         private const int RowToolSettings = 15;
 
+        private Windows.ColorPickerPopup _colorPicker;
+        private bool _colorPickerModeForeground;
+
+
         #region ColorCharacterArea
         private int _charTextRow;
         private int _charBackTextRow;
@@ -64,6 +68,19 @@ namespace SadConsoleEditor.Consoles
             
             //_cellData.Print(1, 2, "  Paint Brush", Settings.Yellow);
             ProcessMouseWithoutFocus = true;
+
+            _colorPicker = new Windows.ColorPickerPopup();
+            _colorPicker.Closed += (sender, e) => { 
+                    if (_colorPicker.DialogResult)
+                    {
+                        if (_colorPickerModeForeground)
+                            CharacterForegroundColor = _colorPicker.SelectedColor;
+                        else
+                            CharacterBackgroundColor = _colorPicker.SelectedColor;
+
+                        DrawCharacterState();
+                    }
+                };
         }
 
         private void SetupFilePanel()
@@ -176,10 +193,17 @@ namespace SadConsoleEditor.Consoles
         {
             base.OnMouseLeftClicked(info);
 
-            if (info.ConsoleLocation.X == _cellData.Width - 5 && info.ConsoleLocation.Y == _charBackTextRow)
+            if (info.ConsoleLocation.Y == _charBackTextRow && info.ConsoleLocation.X >= _cellData.Width - 5 && info.ConsoleLocation.X < _cellData.Width - 2)
             {
-                Windows.ColorPickerPopup a = new Windows.ColorPickerPopup();
-                a.Show(true);
+                _colorPickerModeForeground = false;
+                _colorPicker.SelectedColor = CharacterBackgroundColor;
+                _colorPicker.Show(true);
+            }
+            else if (info.ConsoleLocation.Y == _charForeTextRow && info.ConsoleLocation.X >= _cellData.Width - 5 && info.ConsoleLocation.X < _cellData.Width - 2)
+            {
+                _colorPickerModeForeground = true;
+                _colorPicker.SelectedColor = CharacterForegroundColor;
+                _colorPicker.Show(true);
             }
         }
     }

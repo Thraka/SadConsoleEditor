@@ -26,9 +26,13 @@ namespace SadConsoleEditor.Windows
         private Point _selectedAnsiColorIcon;
         private Point _selectedAnsiColorIconPrevious;
 
+        public Color SelectedColor { get; private set; }
+
         public OtherColorsPopup()
             : base(40, 20)
         {
+            Center();
+
             _ansiSelectButton = new RadioButton(_cellData.Width - 4, 1);
             _ansiSelectButton.Position = new Point(2, 2);
             _ansiSelectButton.Text = "Ansi Colors";
@@ -54,6 +58,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[0].Theme = CreateButtonTheme(ColorAnsi.Red, ColorAnsi.RedBright);
             _ansiButtons[0].DetermineAppearance();
             _ansiButtons[0].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[0].Click();
             Add(_ansiButtons[0]);
 
             _ansiButtons[1] = new Button(15, 1);
@@ -204,11 +209,13 @@ namespace SadConsoleEditor.Windows
             _cancelButton = new Button(12, 1);
             _cancelButton.Position = new Point(2, _cellData.Height - 2);
             _cancelButton.Text = "Cancel";
+            _cancelButton.ButtonClicked += (sender, e) => { DialogResult = false; Hide(); };
             Add(_cancelButton);
 
             _okButton = new Button(12, 1);
             _okButton.Position = new Point(_cellData.Width - 2 - _okButton.Width, _cellData.Height - 2);
             _okButton.Text = "OK";
+            _okButton.ButtonClicked += (sender, e) => { SelectedColor = _ansiSelectButton.IsSelected ? _selectedAnsiColor : (Color)((Tuple<Color, Color, string>)_namedColorsList.SelectedItem).Item1; DialogResult = true; Hide(); };
             Add(_okButton);
 
             _ansiSelectButton.IsSelected = true;

@@ -30,9 +30,11 @@ namespace SadConsoleEditor.Windows
         private InputBox _blueInput;
         private InputBox _alphaInput;
 
+        private OtherColorsPopup otherColorPopup;
+
         private ListBox<ListBoxItemColor> _previousColors;
 
-        private Color SelectedColor
+        public Color SelectedColor
         {
             get { return _selectedColor; }
             set
@@ -42,14 +44,32 @@ namespace SadConsoleEditor.Windows
                     _selectedColor = value;
                     _barH.SelectedColor = _selectedColor;
                     _picker.SelectedColor = _selectedColor;
+                    _alphaInput.Text = _selectedColor.A.ToString();
                 }
             }
         }
 
-
+        public Color[] PreviousColors
+        {
+            get { return _previousColors.Items.Cast<Color>().ToArray(); }
+        }
         
         public ColorPickerPopup(): base(75, 40)
         {
+            Center();
+
+            otherColorPopup = new OtherColorsPopup();
+            otherColorPopup.Closed += (sender2, e2) =>
+            {
+                if (otherColorPopup.DialogResult)
+                {
+                    _barR.SelectedColor = otherColorPopup.SelectedColor.RedOnly();
+                    _barG.SelectedColor = otherColorPopup.SelectedColor.GreenOnly();
+                    _barB.SelectedColor = otherColorPopup.SelectedColor.BlueOnly();
+                    _alphaInput.Text = otherColorPopup.SelectedColor.A.ToString();
+                }
+            };
+
             _picker = new Controls.ColorPicker(_cellData.Width - RideSideX - 1, _cellData.Height - 11, Color.YellowGreen) { Position = new Point(1, 1) };
             _picker.SelectedColorChanged += _picker_SelectedColorChanged;
             Add(_picker);
@@ -124,7 +144,13 @@ namespace SadConsoleEditor.Windows
             _okButton = new Button(RideSideX - 4, 1);
             _okButton.Text = "OK";
             _okButton.Position = new Point(_cellData.Width - RideSideX + 2, _cellData.Height - 18);
-            _okButton.ButtonClicked += (sender, r) => { this.DialogResult = true; Hide(); };
+            _okButton.ButtonClicked += (sender, r) =>
+            {
+                this.DialogResult = true;
+                _selectedColor.A = byte.Parse(_alphaInput.Text);
+                AddPreviousColor(SelectedColor);
+                Hide();
+            };
             Add(_okButton);
 
             _cancelButton = new Button(RideSideX - 4, 1);
@@ -136,36 +162,13 @@ namespace SadConsoleEditor.Windows
             _otherColorsButton = new Button(RideSideX - 4, 1);
             _otherColorsButton.Text = "Other Colors";
             _otherColorsButton.Position = new Point(_cellData.Width - RideSideX + 2, _cellData.Height - 20);
-            _otherColorsButton.ButtonClicked += (sender, r) =>
-            {
-                OtherColorsPopup popup = new OtherColorsPopup();
-                popup.Show(true);
-            };
+            _otherColorsButton.ButtonClicked += (sender, e) => { otherColorPopup.Show(true); };
             Add(_otherColorsButton);
             #endregion
 
             _previousColors = new ListBox<ListBoxItemColor>(RideSideX - 4, _cellData.Height - 20 - 9);
             _previousColors.Position = new Point(_cellData.Width - RideSideX + 2, 8);
-            var rnd = new Random();
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
-            _previousColors.Items.Add(new Color().GetRandomColor(rnd));
+            _previousColors.SelectedItemChanged += (sender, e) => { SelectedColor = (Color)_previousColors.SelectedItem; };
             Add(_previousColors);
 
             this.CloseOnESC = true;
@@ -187,6 +190,8 @@ namespace SadConsoleEditor.Windows
             _redInput.Text = _barH.SelectedColor.R.ToString();
             _greenInput.Text = _barH.SelectedColor.G.ToString();
             _blueInput.Text = _barH.SelectedColor.B.ToString();
+
+            _alphaInput.Text = "255";
         }
 
         void bar_ColorChanged(object sender, EventArgs e)
@@ -256,5 +261,10 @@ namespace SadConsoleEditor.Windows
 
         }
         
+        public void AddPreviousColor(Color color)
+        {
+            if (!_previousColors.Items.Contains(color))
+                _previousColors.Items.Add(color);
+        }
     }
 }
