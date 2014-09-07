@@ -45,11 +45,17 @@
     <Compile Include="Controls\ColorBar.cs" />
     <Compile Include="Controls\ColorPicker.cs" />
     <Compile Include="EditorConsoleManager.cs" />
+    <Compile Include="Editors\DrawingEditor.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="HSLColor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Tools\DrawTool.cs" />
+    <Compile Include="Tools\EraseDrawingTool.cs" />
+    <Compile Include="Tools\FillTool.cs" />
+    <Compile Include="Tools\NotesTool.cs" />
+    <Compile Include="Tools\TextTool.cs" />
     <Compile Include="Tools\ToolBase.cs" />
     <Compile Include="Windows\ColorPickerPopup.cs" />
     <Compile Include="Windows\OtherColorsPopup.cs" />
