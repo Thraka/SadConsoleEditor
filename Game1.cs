@@ -50,7 +50,6 @@ namespace SadConsoleEditor
                 Settings.SetupThemes();
 
                 SadConsole.Engine.ConsoleRenderStack = new EditorConsoleManager();
-                
             });
 
             Components.Add(sadConsoleComponent);

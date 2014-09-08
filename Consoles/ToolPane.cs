@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using SadConsole.Consoles;
 using Microsoft.Xna.Framework;
+using SadConsoleEditor.Editors;
+using SadConsoleEditor.Tools;
 
 namespace SadConsoleEditor.Consoles
 {
@@ -17,9 +19,16 @@ namespace SadConsoleEditor.Consoles
         private const int RowTools = 9;
         private const int RowToolSettings = 15;
 
+        private SadConsole.Controls.ListBox _editorsListBox;
+        private SadConsole.Controls.ListBox _toolsListBox;
         private Windows.ColorPickerPopup _colorPicker;
         private bool _colorPickerModeForeground;
 
+        private Dictionary<string, IEditor> _editors;
+        private Dictionary<string, ITool> _tools;
+
+        public ITool SelectedTool { get; private set; }
+        public IEditor SelectedEditor { get; private set; }
 
         #region ColorCharacterArea
         private int _charTextRow;
@@ -61,11 +70,19 @@ namespace SadConsoleEditor.Consoles
             _cellData.DefaultForeground = Settings.Color_TitleText;
             _cellData.Clear();
 
+            _editors = new Dictionary<string, IEditor>();
+            _editors.Add(DrawingEditor.ID, new DrawingEditor());
+
+            _tools = new Dictionary<string, ITool>();
+            _tools.Add(PaintTool.ID, new PaintTool());
+
             SetupFilePanel();
             SetupEditorsPanel();
             SetupToolsPanel();
             SetupToolsSettingsPane();
-            
+
+            _editorsListBox.SelectedItem = _editors.Values.First();   
+
             //_cellData.Print(1, 2, "  Paint Brush", Settings.Yellow);
             ProcessMouseWithoutFocus = true;
 
@@ -108,38 +125,50 @@ namespace SadConsoleEditor.Consoles
             };
             Add(button);
         }
+
         private void SetupEditorsPanel()
         {
             _cellData.Print(1, RowEditors, "Editors");
 
-            var toolsListBox = new SadConsole.Controls.ListBox(20 - 2, 3);
-            toolsListBox.Position = new Microsoft.Xna.Framework.Point(1, RowEditors + 1);
-            this.Add(toolsListBox);
-            toolsListBox.Items.Add("test 1");
-            toolsListBox.Items.Add("test 2");
-            toolsListBox.Items.Add("test 3");
-            toolsListBox.Items.Add("test 4");
-            toolsListBox.Items.Add("test 5");
-            toolsListBox.Items.Add("test 6");
-            toolsListBox.Items.Add("test 7");
-            toolsListBox.HideBorder = true;
+            _editorsListBox = new SadConsole.Controls.ListBox(20 - 2, 3);
+            _editorsListBox.Position = new Microsoft.Xna.Framework.Point(1, RowEditors + 1);
+            _editorsListBox.HideBorder = true;
+            this.Add(_editorsListBox);
+
+            foreach (var editor in _editors.Values)
+            {
+                _editorsListBox.Items.Add(editor);
+            }
+
+            _editorsListBox.SelectedItemChanged += (sender, e) =>
+                {
+                    IEditor item = (IEditor)e.Item;
+
+                    _toolsListBox.Items.Clear();
+
+                    foreach (var toolId in item.Tools)
+                        _toolsListBox.Items.Add(_tools[toolId]);
+
+                    SelectedEditor = item;
+
+                    _toolsListBox.SelectedItem = _tools.Values.First();
+                };
+
         }
 
         private void SetupToolsPanel()
         {
             _cellData.Print(1, RowTools, "Tools");
 
-            var toolsListBox = new SadConsole.Controls.ListBox(20 - 2, 4);
-            toolsListBox.Position = new Microsoft.Xna.Framework.Point(1, RowTools + 1);
-            this.Add(toolsListBox);
-            toolsListBox.Items.Add("test 1");
-            toolsListBox.Items.Add("test 2");
-            toolsListBox.Items.Add("test 3");
-            toolsListBox.Items.Add("test 4");
-            toolsListBox.Items.Add("test 5");
-            toolsListBox.Items.Add("test 6");
-            toolsListBox.Items.Add("test 7");
-            toolsListBox.HideBorder = true;
+            _toolsListBox = new SadConsole.Controls.ListBox(20 - 2, 4);
+            _toolsListBox.Position = new Microsoft.Xna.Framework.Point(1, RowTools + 1);
+            _toolsListBox.HideBorder = true;
+            this.Add(_toolsListBox);
+
+            _toolsListBox.SelectedItemChanged += (sender, e) =>
+                {
+                    SelectedTool = (ITool)e.Item;
+                };
         }
 
         private void SetupToolsSettingsPane()
