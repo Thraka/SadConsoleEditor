@@ -39,7 +39,8 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Consoles\EditingContainer.cs" />
+    <Compile Include="Consoles\BorderConsole.cs" />
+    <Compile Include="Consoles\LayeredConsole.cs" />
     <Compile Include="Consoles\ToolPane.cs" />
     <Compile Include="Controls\CharacterPicker.cs" />
     <Compile Include="Controls\ColorBar.cs" />

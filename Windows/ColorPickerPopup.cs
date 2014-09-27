@@ -166,7 +166,7 @@ namespace SadConsoleEditor.Windows
             Add(_otherColorsButton);
             #endregion
 
-            _previousColors = new ListBox<ListBoxItemColor>(RideSideX - 4, _cellData.Height - 20 - 9);
+            _previousColors = new ListBox<ListBoxItemColor>(RideSideX - 4, _cellData.Height - 20 - 9 + 1);
             _previousColors.Position = new Point(_cellData.Width - RideSideX + 2, 8);
             _previousColors.SelectedItemChanged += (sender, e) => { SelectedColor = (Color)_previousColors.SelectedItem; };
             Add(_previousColors);
@@ -249,15 +249,21 @@ namespace SadConsoleEditor.Windows
             box.Fill = true;
             box.FillColor = SelectedColor;
             box.Width = 14;
-            box.Height = 4;
+            box.Height = 3;
             box.Location = new Point(lineX + 2, 2);
             box.TopLeftCharacter = box.TopRightCharacter = box.TopSideCharacter = 223;
+            box.BottomLeftCharacter = box.BottomRightCharacter = box.BottomSideCharacter = 220;
             box.Foreground = Theme.FillStyle.Background;
 
             box.Draw(_cellData);
 
+            // Current selected gradient colors
+            _cellData.Print(lineX + 2, 5, SelectedColor.R.ToString().PadLeft(3, '0'), ColorAnsi.Red);
+            _cellData.Print(lineX + 2, 6, SelectedColor.G.ToString().PadLeft(3, '0'), ColorAnsi.Green);
+            _cellData.Print(lineX + 13, 5, SelectedColor.B.ToString().PadLeft(3, '0'), ColorAnsi.BlueBright);
+
             // Previous Colors
-            _cellData.Print(lineX + 2, 7, "Prior Colors");
+            _cellData.Print(lineX + 2, 8, "Prior Colors");
 
         }
         

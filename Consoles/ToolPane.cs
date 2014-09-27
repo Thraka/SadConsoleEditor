@@ -30,6 +30,8 @@ namespace SadConsoleEditor.Consoles
         public ITool SelectedTool { get; private set; }
         public IEditor SelectedEditor { get; private set; }
 
+        public EventHandler SelectedEditorChanged;
+
         #region ColorCharacterArea
         private int _charTextRow;
         private int _charBackTextRow;
@@ -66,6 +68,11 @@ namespace SadConsoleEditor.Consoles
 
         public ToolPane(): base(20, Game1.WindowSize.Y)
         {
+            
+        }
+
+        public void FinishCreating()
+        {
             _cellData.DefaultBackground = Settings.Color_MenuBack;
             _cellData.DefaultForeground = Settings.Color_TitleText;
             _cellData.Clear();
@@ -81,23 +88,24 @@ namespace SadConsoleEditor.Consoles
             SetupToolsPanel();
             SetupToolsSettingsPane();
 
-            _editorsListBox.SelectedItem = _editors.Values.First();   
+            _editorsListBox.SelectedItem = _editors.Values.First();
 
             //_cellData.Print(1, 2, "  Paint Brush", Settings.Yellow);
             ProcessMouseWithoutFocus = true;
 
             _colorPicker = new Windows.ColorPickerPopup();
-            _colorPicker.Closed += (sender, e) => { 
-                    if (_colorPicker.DialogResult)
-                    {
-                        if (_colorPickerModeForeground)
-                            CharacterForegroundColor = _colorPicker.SelectedColor;
-                        else
-                            CharacterBackgroundColor = _colorPicker.SelectedColor;
+            _colorPicker.Closed += (sender, e) =>
+            {
+                if (_colorPicker.DialogResult)
+                {
+                    if (_colorPickerModeForeground)
+                        CharacterForegroundColor = _colorPicker.SelectedColor;
+                    else
+                        CharacterBackgroundColor = _colorPicker.SelectedColor;
 
-                        DrawCharacterState();
-                    }
-                };
+                    DrawCharacterState();
+                }
+            };
         }
 
         private void SetupFilePanel()
@@ -150,8 +158,11 @@ namespace SadConsoleEditor.Consoles
                         _toolsListBox.Items.Add(_tools[toolId]);
 
                     SelectedEditor = item;
-
+                                        
                     _toolsListBox.SelectedItem = _tools.Values.First();
+
+                    if (SelectedEditorChanged != null)
+                        SelectedEditorChanged(this, EventArgs.Empty);
                 };
 
         }
@@ -167,7 +178,12 @@ namespace SadConsoleEditor.Consoles
 
             _toolsListBox.SelectedItemChanged += (sender, e) =>
                 {
+                    if (SelectedTool != null)
+                        SelectedTool.OnDeselected();
+
                     SelectedTool = (ITool)e.Item;
+
+                    SelectedTool.OnSelected();
                 };
         }
 

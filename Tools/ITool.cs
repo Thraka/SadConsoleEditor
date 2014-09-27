@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SadConsole;
+using SadConsole.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,5 +13,13 @@ namespace SadConsoleEditor.Tools
         string Id { get; }
 
         string Title { get; }
+
+        void OnSelected();
+
+        void OnDeselected();
+
+        void ProcessKeyboard(KeyboardInfo info, CellSurface surface);
+
+        void ProcessMouse(MouseInfo info, CellSurface surface);
     }
 }

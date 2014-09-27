@@ -11,14 +11,44 @@ namespace SadConsoleEditor
 {
     class EditorConsoleManager: ConsoleList
     {
-        public EditorConsoleManager()
+        private static EditorConsoleManager _instance;
+
+        public static EditorConsoleManager Instance
         {
-            ControlsConsole console = new ControlsConsole(Game1.WindowSize.X, 1);
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new EditorConsoleManager();
+                    _instance.FinishCreating();
+                }
 
-            console.CellData.DefaultBackground = Settings.Color_MenuBack;
-            console.CellData.Clear();
+                return _instance;
+            }
+        }
 
-            console.IsVisible = true;
+        Consoles.BorderRenderer _borderRenderer;
+        SadConsoleEditor.Editors.IEditor _oldEditor;
+
+        
+        public SadConsole.Entities.Entity Brush { get; set; }
+        public Consoles.ToolPane ToolPane { get; private set; }
+
+
+        public SadConsole.Font Font { get; set; }
+
+        private ControlsConsole _backingPanel;
+
+        private EditorConsoleManager()
+        {
+            Font = SadConsole.Engine.DefaultFont;
+
+            _backingPanel = new ControlsConsole(Game1.WindowSize.X, 1);
+
+            _backingPanel.CellData.DefaultBackground = Settings.Color_MenuBack;
+            _backingPanel.CellData.Clear();
+
+            _backingPanel.IsVisible = true;
 
             Color Green = new Color(165, 224, 45);
             Color Red = new Color(246, 38, 108);
@@ -27,25 +57,124 @@ namespace SadConsoleEditor
             Color Yellow = new Color(226, 218, 110);
             Color Orange = new Color(251, 149, 31);
 
-            console.CellData.Print(0, 0, "Test", Green);
-            console.CellData.Print(5, 0, "Test", Red);
-            console.CellData.Print(10, 0, "Test", Blue);
-            console.CellData.Print(15, 0, "Test", Grey);
-            console.CellData.Print(20, 0, "Test", Yellow);
-            console.CellData.Print(25, 0, "Test", Orange);
+            _backingPanel.CellData.Print(0, 0, "Test", Green);
+            _backingPanel.CellData.Print(5, 0, "Test", Red);
+            _backingPanel.CellData.Print(10, 0, "Test", Blue);
+            _backingPanel.CellData.Print(15, 0, "Test", Grey);
+            _backingPanel.CellData.Print(20, 0, "Test", Yellow);
+            _backingPanel.CellData.Print(25, 0, "Test", Orange);
 
-            this.Add(console);
+            this.Add(_backingPanel);
+        }
 
-            var editContainer = new Consoles.EditingContainer();
-            editContainer.CellData = new SadConsole.CellSurface(10, 10);
-            editContainer.CellData.DefaultBackground = Color.Black;
-            editContainer.CellData.Clear();
-            editContainer.CenterEditor();
-            this.Add(editContainer);
+        private void FinishCreating()
+        {
+            _borderRenderer = new Consoles.BorderRenderer();
 
-            var toolsPane = new Consoles.ToolPane();
-            toolsPane.Position = new Point(console.CellData.Width - toolsPane.CellData.Width, 1);
-            this.Add(toolsPane);
+            ToolPane = new Consoles.ToolPane();
+            ToolPane.Position = new Point(_backingPanel.CellData.Width - ToolPane.CellData.Width, 1);
+
+            this.Add(ToolPane);
+
+
+            ToolPane.SelectedEditorChanged += (o, e) =>
+                {
+                    if (_oldEditor != null)
+                    {
+                        _oldEditor.MouseEnter -= Editor_MouseEnter;
+                        _oldEditor.MouseExit -= Editor_MouseExit;
+                        _oldEditor.MouseMove -= Editor_MouseMove;
+                    }
+
+                    _oldEditor = ToolPane.SelectedEditor;
+
+                    _oldEditor.MouseEnter += Editor_MouseEnter;
+                    _oldEditor.MouseExit += Editor_MouseExit;
+                    _oldEditor.MouseMove += Editor_MouseMove;
+
+                    UpdateBox();
+                };
+
+            ToolPane.FinishCreating();
+
+        }
+
+        private void Editor_MouseEnter(object sender, SadConsole.Input.MouseEventArgs e)
+        {
+            Brush.IsVisible = true;
+        }
+
+        private void Editor_MouseExit(object sender, SadConsole.Input.MouseEventArgs e)
+        {
+            Brush.IsVisible = false;
+        }
+
+        private void Editor_MouseMove(object sender, SadConsole.Input.MouseEventArgs e)
+        {
+            Brush.Position = e.ConsoleLocation;
+        }
+
+        public void UpdateBox()
+        {
+            if (_borderRenderer != null)
+            {
+                _borderRenderer.CellData.Resize(ToolPane.SelectedEditor.Width + 2, ToolPane.SelectedEditor.Height+ 2);
+            }
+            CenterEditor();
+        }
+
+        private void CenterEditor()
+        {
+            // Was in the middle of moving EditingContainer to this. Got to finish this. This should happen anytime the editing surface resizes.
+
+            Point position = new Point();
+            //this.ResetViewArea();
+
+            var screenSize = SadConsole.Engine.GetScreenSizeInCells(EditorConsoleManager.Instance.ToolPane.Font);
+
+            if (ToolPane.SelectedEditor.Width < screenSize.X)
+                position.X = ((screenSize.X - 20) / 2) - (ToolPane.SelectedEditor.Width / 2);
+            else
+                position.X = ((screenSize.X - 20) - ToolPane.SelectedEditor.Width) / 2;
+
+            if (ToolPane.SelectedEditor.Height < screenSize.Y)
+                position.Y = (screenSize.Y / 2) - (ToolPane.SelectedEditor.Height / 2);
+            else
+                position.Y = (screenSize.Y - ToolPane.SelectedEditor.Height) / 2;
+
+            ToolPane.SelectedEditor.Position(position.X, position.Y);
+            _borderRenderer.Position = new Microsoft.Xna.Framework.Point(position.X - 1, position.Y - 1);
+            EditorConsoleManager.Instance.Brush.PositionOffset = position;
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            ToolPane.SelectedEditor.Surface.Update();
+            Brush.Update();
+        }
+
+        public override void Render()
+        {
+            // Draw the border for the console around it.
+            base.Render();
+
+            ToolPane.SelectedEditor.Surface.Render();
+
+            if (_borderRenderer != null)
+                _borderRenderer.Render();
+
+            EditorConsoleManager.Instance.Brush.Render();
+        }
+
+        public override bool ProcessMouse(SadConsole.Input.MouseInfo info)
+        {
+            var result = base.ProcessMouse(info);
+
+            ToolPane.SelectedEditor.ProcessMouse(info);
+
+            return result;
         }
     }
 }
