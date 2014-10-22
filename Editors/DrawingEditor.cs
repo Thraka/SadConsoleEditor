@@ -35,12 +35,14 @@ namespace SadConsoleEditor.Editors
 
         public string Title { get { return "Drawing"; } }
 
+        public string FileExtensions { get { return ".con;.console"; } }
+        public CustomPane[] ControlPanes { get; private set; }
 
         public string[] Tools
         {
             get
             {
-                return new string[] { PaintTool.ID };
+                return new string[] { PaintTool.ID, FillTool.ID };
             }
         }
 
@@ -71,14 +73,15 @@ namespace SadConsoleEditor.Editors
 
         public void ProcessKeyboard(KeyboardInfo info)
         {
-            EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers[0].CellData);
+            //EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.ActiveLayer);
         }
 
         public void ProcessMouse(MouseInfo info)
         {
             _consoleLayers.ProcessMouse(info);
 
-            EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessMouse(info, _consoleLayers[0].CellData);
+            if (_consoleLayers.IsMouseOver)
+                EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessMouse(info, _consoleLayers.ActiveLayer);
         }
 
         public void Resize(int width, int height)

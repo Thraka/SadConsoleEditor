@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using SadConsoleEditor.Windows;
 
 namespace SadConsoleEditor
 {
@@ -27,13 +28,18 @@ namespace SadConsoleEditor
             }
         }
 
-        Consoles.BorderRenderer _borderRenderer;
-        SadConsoleEditor.Editors.IEditor _oldEditor;
+        private Consoles.BorderRenderer _borderRenderer;
+        private SadConsoleEditor.Editors.IEditor _oldEditor;
+        private SadConsole.Controls.ScrollBar _toolsPaneScroller;
+
+        public int EditingSurfaceWidth { get; private set; }
+        public int EditingSurfaceHeight { get; private set; }
 
         
-        public SadConsole.Entities.Entity Brush { get; set; }
+        public SadConsole.Entities.Entity Brush { get; private set; }
         public Consoles.ToolPane ToolPane { get; private set; }
 
+       
 
         public SadConsole.Font Font { get; set; }
 
@@ -72,10 +78,24 @@ namespace SadConsoleEditor
             _borderRenderer = new Consoles.BorderRenderer();
 
             ToolPane = new Consoles.ToolPane();
-            ToolPane.Position = new Point(_backingPanel.CellData.Width - ToolPane.CellData.Width, 1);
-
+            ToolPane.Position = new Point(_backingPanel.CellData.Width - ToolPane.CellData.Width - 1, 1);
+            ToolPane.CellData.Resize(ToolPane.CellData.Width, ToolPane.CellData.Height * 2);
+            ToolPane.ViewArea = new Rectangle(0,0,ToolPane.CellData.Width, Game1.WindowSize.Y);
             this.Add(ToolPane);
 
+            _toolsPaneScroller = new SadConsole.Controls.ScrollBar(System.Windows.Controls.Orientation.Vertical, Game1.WindowSize.Y - 1);
+            _toolsPaneScroller.Maximum = ToolPane.CellData.Height - Game1.WindowSize.Y;
+            _toolsPaneScroller.ValueChanged += (o, e) =>
+                {
+                    ToolPane.ViewArea = new Rectangle(0, _toolsPaneScroller.Value, ToolPane.CellData.Width, Game1.WindowSize.Y);
+                };
+            var scrollerContainer = new ControlsConsole(1, _toolsPaneScroller.Height);
+            scrollerContainer.Add(_toolsPaneScroller);
+            scrollerContainer.Position = new Point(_backingPanel.CellData.Width - 1, 1);
+            scrollerContainer.IsVisible = true;
+            scrollerContainer.MouseCanFocus = false;
+            scrollerContainer.ProcessMouseWithoutFocus = true;
+            this.Add(scrollerContainer);
 
             ToolPane.SelectedEditorChanged += (o, e) =>
                 {
@@ -93,10 +113,19 @@ namespace SadConsoleEditor
                     _oldEditor.MouseMove += Editor_MouseMove;
 
                     UpdateBox();
+
                 };
 
             ToolPane.FinishCreating();
 
+            EditingSurfaceWidth = ToolPane.SelectedEditor.Width;
+            EditingSurfaceHeight = ToolPane.SelectedEditor.Height;
+        }
+
+        public void UpdateBrush(SadConsole.Entities.Entity newBrushEntity)
+        {
+            Brush = newBrushEntity;
+            CenterEditor();
         }
 
         private void Editor_MouseEnter(object sender, SadConsole.Input.MouseEventArgs e)
@@ -144,7 +173,7 @@ namespace SadConsoleEditor
 
             ToolPane.SelectedEditor.Position(position.X, position.Y);
             _borderRenderer.Position = new Microsoft.Xna.Framework.Point(position.X - 1, position.Y - 1);
-            EditorConsoleManager.Instance.Brush.PositionOffset = position;
+            Brush.PositionOffset = position;
         }
 
         public override void Update()
@@ -157,15 +186,16 @@ namespace SadConsoleEditor
 
         public override void Render()
         {
-            // Draw the border for the console around it.
-            base.Render();
-
+            
             ToolPane.SelectedEditor.Surface.Render();
 
             if (_borderRenderer != null)
                 _borderRenderer.Render();
 
-            EditorConsoleManager.Instance.Brush.Render();
+            Brush.Render();
+
+            // Draw the border for the console around it.
+            base.Render();
         }
 
         public override bool ProcessMouse(SadConsole.Input.MouseInfo info)
@@ -175,6 +205,70 @@ namespace SadConsoleEditor
             ToolPane.SelectedEditor.ProcessMouse(info);
 
             return result;
+        }
+
+        public void ShowResizeConsolePopup()
+        {
+            ResizeSurfacePopup popup = new ResizeSurfacePopup(EditingSurfaceWidth, EditingSurfaceHeight);
+            popup.Closed += (o, e) =>
+            {
+                if (popup.DialogResult)
+                {
+                    ResizeEditingSurface(popup.SettingWidth, popup.SettingHeight);
+                }
+            };
+
+            popup.Show(true);
+            popup.Center();
+        }
+
+        public void ResizeEditingSurface(int width, int height)
+        {
+            EditingSurfaceWidth = width;
+            EditingSurfaceHeight = height;
+
+            ToolPane.SelectedEditor.Resize(width, height);
+        }
+
+        public void LoadSurface()
+        {
+            SelectFilePopup popup = new SelectFilePopup();
+            popup.Closed += (o, e) =>
+            {
+                if (popup.DialogResult)
+                {
+                    // Save and load really should be delegated to the editors themselves.
+                    // For exmaple, how do we save/load an animation? Only that editor would know.
+                    //var file = System.IO.File.OpenRead(popup.SelectedFile);
+                    //var serializer = new System.Runtime.Serialization.DataContractSerializer(typeof(FontCollection), new Type[] { typeof(Font) });
+
+                    //return serializer.ReadObject(file) as FontCollection;
+                }
+            };
+            popup.CurrentFolder = Environment.CurrentDirectory;
+            popup.PreferredExtensions = ToolPane.SelectedEditor.FileExtensions;
+            popup.Show(true);
+            popup.Center();
+        }
+
+        public void SaveSurface()
+        {
+            SelectFilePopup popup = new SelectFilePopup();
+            popup.Closed += (o, e) =>
+            {
+                if (popup.DialogResult)
+                {
+                    //System.Runtime.Serialization.DataContractSerializer serializer = new System.Runtime.Serialization.DataContractSerializer(typeof(FontCollection), new Type[] { typeof(Font) });
+                    //var stream = System.IO.File.OpenWrite(fontCollectionFile);
+
+                    //serializer.WriteObject(stream, this);
+                    //stream.Dispose();
+                }
+            };
+            popup.CurrentFolder = Environment.CurrentDirectory;
+            popup.PreferredExtensions = ToolPane.SelectedEditor.FileExtensions;
+            popup.Show(true);
+            popup.Center();
         }
     }
 }

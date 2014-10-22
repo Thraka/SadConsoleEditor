@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 using SadConsole.Consoles;
 using SadConsole;
 using Microsoft.Xna.Framework;
+using System.Runtime.Serialization;
 
 namespace SadConsoleEditor.Consoles
 {
+    [DataContract]
     class LayeredConsole: Console
     {
         public int Width { get; protected set; }
@@ -39,6 +41,8 @@ namespace SadConsoleEditor.Consoles
             {
                 _layers[i] = new CellsRenderer(new CellSurface(width, height), this.Batch);
             }
+
+            SetActiveLayer(0);
         }
 
         public void SetActiveLayer(int index)
@@ -77,6 +81,12 @@ namespace SadConsoleEditor.Consoles
         {
             for (int i = 0; i < _layers.Length; i++)
                 _layers[i].Render();
+        }
+
+        [OnDeserialized]
+        private void AfterDeserialized(System.Runtime.Serialization.StreamingContext context)
+        {
+            SetActiveLayer(0);
         }
     }
 }

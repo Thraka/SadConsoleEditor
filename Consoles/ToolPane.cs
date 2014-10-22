@@ -9,6 +9,7 @@ using SadConsole.Consoles;
 using Microsoft.Xna.Framework;
 using SadConsoleEditor.Editors;
 using SadConsoleEditor.Tools;
+using SadConsoleEditor.Windows;
 
 namespace SadConsoleEditor.Consoles
 {
@@ -32,6 +33,8 @@ namespace SadConsoleEditor.Consoles
 
         public EventHandler SelectedEditorChanged;
 
+        public EventHandler BrushChanged;
+
         #region ColorCharacterArea
         private int _charTextRow;
         private int _charBackTextRow;
@@ -50,19 +53,52 @@ namespace SadConsoleEditor.Consoles
         public Color CharacterForegroundColor
         {
             get { return _charForegroundColor; }
-            set { _charForegroundColor = value; }
+            set
+            {
+                if (_charForegroundColor != value)
+                {
+                    _charForegroundColor = value;
+
+                    if (BrushChanged != null)
+                        BrushChanged(this, EventArgs.Empty);
+
+                    SelectedTool.RefreshTool();
+                }
+            }
         }
 
         public Color CharacterBackgroundColor
         {
             get { return _charBackgroundColor; }
-            set { _charBackgroundColor = value; }
+            set
+            {
+                if (_charBackgroundColor != value)
+                {
+                    _charBackgroundColor = value;
+
+                    if (BrushChanged != null)
+                        BrushChanged(this, EventArgs.Empty);
+
+                    SelectedTool.RefreshTool();
+                }
+            }
         }
 
         public int SelectedCharacter
         {
             get { return _selectedChar; }
-            set { _selectedChar = value; }
+            set
+            {
+                if (_selectedChar != value)
+                {
+                    _selectedChar = value;
+
+                    if (BrushChanged != null)
+                        BrushChanged(this, EventArgs.Empty);
+
+                    SelectedTool.RefreshTool();
+                }
+            }
         }
         #endregion
 
@@ -82,7 +118,8 @@ namespace SadConsoleEditor.Consoles
 
             _tools = new Dictionary<string, ITool>();
             _tools.Add(PaintTool.ID, new PaintTool());
-
+            _tools.Add(FillTool.ID, new FillTool());
+            
             SetupFilePanel();
             SetupEditorsPanel();
             SetupToolsPanel();
@@ -112,10 +149,11 @@ namespace SadConsoleEditor.Consoles
         {
             _cellData.Print(1, RowFile, "File");
 
-            var button = new SadConsole.Controls.Button(7, 1)
+            var button = new SadConsole.Controls.Button(8, 1)
             {
-                Text = "New",
-                Position = new Microsoft.Xna.Framework.Point(1, RowFile + 1)
+                Text = " New",
+                Position = new Microsoft.Xna.Framework.Point(1, RowFile + 1),
+                TextAlignment = System.Windows.HorizontalAlignment.Left,
             };
             Add(button);
 
@@ -124,12 +162,31 @@ namespace SadConsoleEditor.Consoles
                 Text = "Load",
                 Position = new Microsoft.Xna.Framework.Point(_cellData.Width - 9, RowFile + 1)
             };
+            button.ButtonClicked += (o, e) =>
+            {
+                EditorConsoleManager.Instance.LoadSurface();
+            };
             Add(button);
 
             button = new SadConsole.Controls.Button(8, 1)
             {
                 Text = "Save",
                 Position = new Microsoft.Xna.Framework.Point(_cellData.Width - 9, RowFile + 2)
+            };
+            button.ButtonClicked += (o, e) =>
+            {
+                EditorConsoleManager.Instance.SaveSurface();
+            };
+            Add(button);
+
+            button = new SadConsole.Controls.Button(8, 1)
+            {
+                Text = "Resize",
+                Position = new Microsoft.Xna.Framework.Point(1, RowFile + 2)
+            };
+            button.ButtonClicked += (o, e) =>
+            {
+                EditorConsoleManager.Instance.ShowResizeConsolePopup();
             };
             Add(button);
         }
@@ -209,7 +266,7 @@ namespace SadConsoleEditor.Consoles
             picker.Position = new Microsoft.Xna.Framework.Point(2, activeRow);
             picker.SelectedCharacterChanged += (sender, e) =>
             {
-                _selectedChar = e.NewCharacter;
+                SelectedCharacter = e.NewCharacter;
 
                 DrawCharacterState();
             };

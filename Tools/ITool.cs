@@ -21,5 +21,9 @@ namespace SadConsoleEditor.Tools
         void ProcessKeyboard(KeyboardInfo info, CellSurface surface);
 
         void ProcessMouse(MouseInfo info, CellSurface surface);
+
+        void RefreshTool();
+
+        CustomPane[] ControlPanes { get; }
     }
 }

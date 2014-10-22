@@ -24,7 +24,11 @@ namespace SadConsoleEditor.Editors
 
         string[] Tools { get; }
 
+        string FileExtensions { get; }
+
         SadConsole.Consoles.Console Surface { get; }
+
+        CustomPane[] ControlPanes { get; }
 
         void ProcessKeyboard(KeyboardInfo info);
 

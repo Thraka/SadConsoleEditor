@@ -1,13 +1,8 @@
-﻿using SadConsole;
-using SadConsole.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SadConsoleEditor.Tools
+﻿namespace SadConsoleEditor.Tools
 {
+    using SadConsole;
+    using SadConsole.Input;
+
     class PaintTool: ITool
     {
         public const string ID = "PENCIL";
@@ -21,6 +16,8 @@ namespace SadConsoleEditor.Tools
             get { return "Pencil"; }
         }
 
+        public CustomPane[] ControlPanes { get; private set; }
+
         public override string ToString()
         {
             return Title;
@@ -28,13 +25,19 @@ namespace SadConsoleEditor.Tools
 
         public void OnSelected()
         {
-            EditorConsoleManager.Instance.Brush = new SadConsole.Entities.Entity();
+            EditorConsoleManager.Instance.UpdateBrush(new SadConsole.Entities.Entity());
             EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor, EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor, EditorConsoleManager.Instance.ToolPane.SelectedCharacter, null);
+            EditorConsoleManager.Instance.Brush.IsVisible = false;
         }
 
         public void OnDeselected()
         {
 
+        }
+
+        public void RefreshTool()
+        {
+            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor, EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor, EditorConsoleManager.Instance.ToolPane.SelectedCharacter, null);
         }
 
         public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
@@ -44,7 +47,16 @@ namespace SadConsoleEditor.Tools
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
         {
-            
+            if (info.LeftButtonDown)
+            {
+                //if (info.Console == surface)
+                {
+                    var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
+                    cell.CharacterIndex = EditorConsoleManager.Instance.ToolPane.SelectedCharacter;
+                    cell.Foreground = EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor;
+                    cell.Background = EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor;
+                }
+            }
         }
     }
 }

@@ -88,8 +88,10 @@ namespace SadConsoleEditor
             SadConsole.Themes.Library.Default.ListBoxTheme.Border.Background = Color_ControlBack;
             SadConsole.Themes.Library.Default.ListBoxTheme.Border.Foreground = Color_Text;
             SadConsole.Themes.Library.Default.ListBoxTheme.Normal = Appearance_ControlNormal;
+            SadConsole.Themes.Library.Default.ListBoxTheme.MouseOver = Appearance_ControlOver;
             SadConsole.Themes.Library.Default.ListBoxTheme.Item.Selected = Appearance_ListBoxItem_SelectedItem;
             SadConsole.Themes.Library.Default.ListBoxTheme.Item.Normal = Appearance_ListBoxItem_Normal;
+            SadConsole.Themes.Library.Default.ListBoxTheme.Item.MouseOver = Appearance_ControlOver;
             SadConsole.Themes.Library.Default.ListBoxTheme.ScrollBarTheme.Bar.Normal = Appearance_ControlNormal;
             SadConsole.Themes.Library.Default.ListBoxTheme.ScrollBarTheme.Ends.Normal = Appearance_ControlNormal;
             SadConsole.Themes.Library.Default.ListBoxTheme.ScrollBarTheme.Slider.Normal = Appearance_ControlNormal;
@@ -100,6 +102,11 @@ namespace SadConsoleEditor
             SadConsole.Themes.Library.Default.WindowTheme.TitleStyle.Foreground = Color_TitleText;
             SadConsole.Themes.Library.Default.WindowTheme.FillStyle.Background = Settings.Color_MenuBack;
             SadConsole.Themes.Library.Default.WindowTheme.FillStyle.Foreground = Color_Text;
+
+            SadConsole.Themes.Library.Default.ScrollBarTheme.Bar.Normal = Appearance_ControlNormal;
+            SadConsole.Themes.Library.Default.ScrollBarTheme.Ends.Normal = Appearance_ControlNormal;
+            SadConsole.Themes.Library.Default.ScrollBarTheme.Slider.Normal = Appearance_ControlNormal;
+            
         }
     }
 
