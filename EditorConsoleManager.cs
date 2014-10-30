@@ -150,6 +150,8 @@ namespace SadConsoleEditor
                 _borderRenderer.CellData.Resize(ToolPane.SelectedEditor.Width + 2, ToolPane.SelectedEditor.Height+ 2);
             }
             CenterEditor();
+            EditingSurfaceWidth = ToolPane.SelectedEditor.Width;
+            EditingSurfaceHeight = ToolPane.SelectedEditor.Height;
         }
 
         private void CenterEditor()
@@ -237,12 +239,7 @@ namespace SadConsoleEditor
             {
                 if (popup.DialogResult)
                 {
-                    // Save and load really should be delegated to the editors themselves.
-                    // For exmaple, how do we save/load an animation? Only that editor would know.
-                    //var file = System.IO.File.OpenRead(popup.SelectedFile);
-                    //var serializer = new System.Runtime.Serialization.DataContractSerializer(typeof(FontCollection), new Type[] { typeof(Font) });
-
-                    //return serializer.ReadObject(file) as FontCollection;
+                    ToolPane.SelectedEditor.Load(popup.SelectedFile);
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
@@ -258,11 +255,7 @@ namespace SadConsoleEditor
             {
                 if (popup.DialogResult)
                 {
-                    //System.Runtime.Serialization.DataContractSerializer serializer = new System.Runtime.Serialization.DataContractSerializer(typeof(FontCollection), new Type[] { typeof(Font) });
-                    //var stream = System.IO.File.OpenWrite(fontCollectionFile);
-
-                    //serializer.WriteObject(stream, this);
-                    //stream.Dispose();
+                    ToolPane.SelectedEditor.Save(popup.SelectedFile);
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;

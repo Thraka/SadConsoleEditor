@@ -19,8 +19,10 @@ namespace SadConsoleEditor.Consoles
 
         public int Layers { get; protected set; }
 
+        [IgnoreDataMember]
         public CellSurface ActiveLayer { get; protected set; }
 
+        [DataMember(Name = "Layers")]
         protected CellsRenderer[] _layers;
 
         public CellsRenderer this[int index]
@@ -87,6 +89,20 @@ namespace SadConsoleEditor.Consoles
         private void AfterDeserialized(System.Runtime.Serialization.StreamingContext context)
         {
             SetActiveLayer(0);
+        }
+        private CellSurface _tempSurface;
+        [OnSerializing]
+        private void BeforeSerializing(StreamingContext context)
+        {
+            _tempSurface = _cellData;
+            _cellData = null;
+        }
+
+        [OnSerialized]
+        private void AfterSerialized(StreamingContext context)
+        {
+            _cellData = _tempSurface;
+            _tempSurface = null;
         }
     }
 }

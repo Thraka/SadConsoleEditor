@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using SadConsoleEditor.Tools;
 using SadConsole.Input;
 using Console = SadConsole.Consoles.Console;
@@ -103,6 +97,25 @@ namespace SadConsoleEditor.Editors
         public void Position(Point newPosition)
         {
             _consoleLayers.Move(newPosition);
+        }
+
+        public void Save(string file)
+        {
+            System.Runtime.Serialization.DataContractSerializer serializer = new System.Runtime.Serialization.DataContractSerializer(typeof(LayeredConsole), new Type[] { typeof(LayeredConsole) });
+            var stream = System.IO.File.OpenWrite(file);
+
+            serializer.WriteObject(stream, _consoleLayers);
+            stream.Dispose();
+        }
+
+        public void Load(string file)
+        {
+            var fileObject = System.IO.File.OpenRead(file);
+            var serializer = new System.Runtime.Serialization.DataContractSerializer(typeof(LayeredConsole), new Type[] { typeof(LayeredConsole) });
+
+            _consoleLayers = serializer.ReadObject(fileObject) as LayeredConsole;
+            EditorConsoleManager.Instance.UpdateBox();
+
         }
     }
 }

@@ -37,5 +37,9 @@ namespace SadConsoleEditor.Editors
         void Resize(int width, int height);
 
         void Position(int x, int y);
+
+        void Load(string file);
+
+        void Save(string file);
     }
 }
