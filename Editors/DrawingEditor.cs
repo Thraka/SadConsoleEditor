@@ -13,9 +13,9 @@ namespace SadConsoleEditor.Editors
         private int _height;
         private LayeredConsole _consoleLayers;
 
-        public EventHandler<MouseEventArgs> MouseEnter { get; set; }
-        public EventHandler<MouseEventArgs> MouseExit { get; set; }
-        public EventHandler<MouseEventArgs> MouseMove { get; set; }
+        public event EventHandler<MouseEventArgs> MouseEnter;
+        public event EventHandler<MouseEventArgs> MouseExit;
+        public event EventHandler<MouseEventArgs> MouseMove;
 
         public int Width { get { return _width; } }
         public int Height { get { return _height; } }
@@ -40,6 +40,10 @@ namespace SadConsoleEditor.Editors
             }
         }
 
+        private EventHandler<MouseEventArgs> _mouseMoveHandler;
+        private EventHandler<MouseEventArgs> _mouseEnterHandler;
+        private EventHandler<MouseEventArgs> _mouseExitHandler;
+
 
         public DrawingEditor()
         {
@@ -54,10 +58,14 @@ namespace SadConsoleEditor.Editors
             // THIS WHOLE MOUSE HANDLING IS VERY MESSY.
             // THERE ARE TOO MANY PATHS OBJ_1->OBJ_2->OBJ_1->OBJ_3 type of calling chain.
             // REWRITE NOW
+            _mouseMoveHandler = (o, e) => { if (this.MouseMove != null) this.MouseMove(_consoleLayers.ActiveLayer, e); };
+            _mouseEnterHandler = (o, e) => { if (this.MouseEnter != null) this.MouseEnter(_consoleLayers.ActiveLayer, e); };
+            _mouseExitHandler = (o, e) => { if (this.MouseExit != null) this.MouseExit(_consoleLayers.ActiveLayer, e); };
 
-            _consoleLayers.MouseMove += (o, e) => { if (this.MouseMove != null) this.MouseMove(_consoleLayers.ActiveLayer, e); };
-            _consoleLayers.MouseEnter += (o, e) => { if (this.MouseEnter != null) this.MouseEnter(_consoleLayers.ActiveLayer, e); };
-            _consoleLayers.MouseExit += (o, e) => { if (this.MouseExit != null) this.MouseExit(_consoleLayers.ActiveLayer, e); };
+
+            _consoleLayers.MouseMove += _mouseMoveHandler;
+            _consoleLayers.MouseEnter += _mouseEnterHandler;
+            _consoleLayers.MouseExit += _mouseExitHandler;
         }
 
         public override string ToString()
@@ -101,9 +109,9 @@ namespace SadConsoleEditor.Editors
 
         public void Save(string file)
         {
-            System.Runtime.Serialization.DataContractSerializer serializer = new System.Runtime.Serialization.DataContractSerializer(typeof(LayeredConsole), new Type[] { typeof(LayeredConsole) });
+            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(LayeredConsole), new Type[] { typeof(LayeredConsole) });
             var stream = System.IO.File.OpenWrite(file);
-
+            
             serializer.WriteObject(stream, _consoleLayers);
             stream.Dispose();
         }
@@ -111,9 +119,23 @@ namespace SadConsoleEditor.Editors
         public void Load(string file)
         {
             var fileObject = System.IO.File.OpenRead(file);
-            var serializer = new System.Runtime.Serialization.DataContractSerializer(typeof(LayeredConsole), new Type[] { typeof(LayeredConsole) });
+            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(LayeredConsole), new Type[] { typeof(LayeredConsole) });
 
+            if (_consoleLayers != null)
+            {
+                _consoleLayers.MouseMove -= _mouseMoveHandler;
+                _consoleLayers.MouseEnter -= _mouseEnterHandler;
+                _consoleLayers.MouseExit -= _mouseExitHandler;
+            }
+
+            
             _consoleLayers = serializer.ReadObject(fileObject) as LayeredConsole;
+
+            _consoleLayers.MouseMove += _mouseMoveHandler;
+            _consoleLayers.MouseEnter += _mouseEnterHandler;
+            _consoleLayers.MouseExit += _mouseExitHandler;
+
+
             EditorConsoleManager.Instance.UpdateBox();
 
         }

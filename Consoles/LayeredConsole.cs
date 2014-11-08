@@ -17,7 +17,7 @@ namespace SadConsoleEditor.Consoles
         public int Width { get; protected set; }
         public int Height { get; protected set; }
 
-        public int Layers { get; protected set; }
+        public int Layers { get { return _layers.Length; } }
 
         [IgnoreDataMember]
         public CellSurface ActiveLayer { get; protected set; }
@@ -34,7 +34,6 @@ namespace SadConsoleEditor.Consoles
         {
             Width = width;
             Height = height;
-            Layers = layers;
 
             _layers = new CellsRenderer[layers];
 
@@ -54,6 +53,7 @@ namespace SadConsoleEditor.Consoles
 
             _cellData = _layers[index].CellData;
             ActiveLayer = _cellData;
+            ResetViewArea();
         }
 
         public void Resize(int width, int height)
@@ -63,6 +63,8 @@ namespace SadConsoleEditor.Consoles
 
             for (int i = 0; i < _layers.Length; i++)
                 _layers[i].CellData.Resize(width, height);
+
+            ResetViewArea();
         }
 
         public void Move(Point position)
@@ -105,4 +107,6 @@ namespace SadConsoleEditor.Consoles
             _tempSurface = null;
         }
     }
+
+
 }
