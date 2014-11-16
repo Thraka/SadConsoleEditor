@@ -14,7 +14,9 @@ namespace SadConsoleEditor.Consoles
     [DataContract]
     class LayeredConsole: Console
     {
+        [DataMember]
         public int Width { get; protected set; }
+        [DataMember]
         public int Height { get; protected set; }
 
         public int Layers { get { return _layers.Length; } }

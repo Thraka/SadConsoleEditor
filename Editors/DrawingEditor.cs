@@ -135,6 +135,8 @@ namespace SadConsoleEditor.Editors
             _consoleLayers.MouseEnter += _mouseEnterHandler;
             _consoleLayers.MouseExit += _mouseExitHandler;
 
+            _width = _consoleLayers.Width;
+            _height = _consoleLayers.Height;
 
             EditorConsoleManager.Instance.UpdateBox();
 
