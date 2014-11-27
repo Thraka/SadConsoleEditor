@@ -13,7 +13,7 @@ using SadConsoleEditor.Windows;
 
 namespace SadConsoleEditor.Consoles
 {
-    class ToolPane: ControlsConsole
+    class ToolPane : ControlsConsole
     {
         private const int RowFile = 1;
         private const int RowEditors = 4;
@@ -22,7 +22,7 @@ namespace SadConsoleEditor.Consoles
 
         private SadConsole.Controls.ListBox _editorsListBox;
         private SadConsole.Controls.ListBox _toolsListBox;
-        private Windows.ColorPickerPopup _colorPicker;
+        private ColorPickerPopup _colorPicker;
         private bool _colorPickerModeForeground;
 
         private Dictionary<string, IEditor> _editors;
@@ -43,7 +43,7 @@ namespace SadConsoleEditor.Consoles
         private Color _charForegroundColor = Color.Red;
         private Color _charBackgroundColor = Color.Black;
         private int _selectedChar = 1;
-        
+
         public bool ShowCharacterList
         {
             get { return _showCharacterList; }
@@ -102,9 +102,9 @@ namespace SadConsoleEditor.Consoles
         }
         #endregion
 
-        public ToolPane(): base(20, Game1.WindowSize.Y)
+        public ToolPane() : base(20, Game1.WindowSize.Y)
         {
-            
+            CanUseKeyboard = false;
         }
 
         public void FinishCreating()
@@ -119,7 +119,9 @@ namespace SadConsoleEditor.Consoles
             _tools = new Dictionary<string, ITool>();
             _tools.Add(PaintTool.ID, new PaintTool());
             _tools.Add(FillTool.ID, new FillTool());
-            
+            _tools.Add(TextTool.ID, new TextTool());
+            _tools.Add(LineTool.ID, new LineTool());
+
             SetupFilePanel();
             SetupEditorsPanel();
             SetupToolsPanel();
@@ -130,7 +132,7 @@ namespace SadConsoleEditor.Consoles
             //_cellData.Print(1, 2, "  Paint Brush", Settings.Yellow);
             ProcessMouseWithoutFocus = true;
 
-            _colorPicker = new Windows.ColorPickerPopup();
+            _colorPicker = new ColorPickerPopup();
             _colorPicker.Closed += (sender, e) =>
             {
                 if (_colorPicker.DialogResult)
@@ -152,15 +154,16 @@ namespace SadConsoleEditor.Consoles
             var button = new SadConsole.Controls.Button(8, 1)
             {
                 Text = " New",
-                Position = new Microsoft.Xna.Framework.Point(1, RowFile + 1),
+                Position = new Point(1, RowFile + 1),
                 TextAlignment = System.Windows.HorizontalAlignment.Left,
+                CanUseKeyboard = false,
             };
             Add(button);
 
             button = new SadConsole.Controls.Button(8, 1)
             {
                 Text = "Load",
-                Position = new Microsoft.Xna.Framework.Point(_cellData.Width - 9, RowFile + 1)
+                Position = new Point(_cellData.Width - 9, RowFile + 1)
             };
             button.ButtonClicked += (o, e) =>
             {
@@ -171,7 +174,7 @@ namespace SadConsoleEditor.Consoles
             button = new SadConsole.Controls.Button(8, 1)
             {
                 Text = "Save",
-                Position = new Microsoft.Xna.Framework.Point(_cellData.Width - 9, RowFile + 2)
+                Position = new Point(_cellData.Width - 9, RowFile + 2)
             };
             button.ButtonClicked += (o, e) =>
             {
@@ -182,7 +185,7 @@ namespace SadConsoleEditor.Consoles
             button = new SadConsole.Controls.Button(8, 1)
             {
                 Text = "Resize",
-                Position = new Microsoft.Xna.Framework.Point(1, RowFile + 2)
+                Position = new Point(1, RowFile + 2)
             };
             button.ButtonClicked += (o, e) =>
             {
@@ -196,9 +199,9 @@ namespace SadConsoleEditor.Consoles
             _cellData.Print(1, RowEditors, "Editors");
 
             _editorsListBox = new SadConsole.Controls.ListBox(20 - 2, 3);
-            _editorsListBox.Position = new Microsoft.Xna.Framework.Point(1, RowEditors + 1);
+            _editorsListBox.Position = new Point(1, RowEditors + 1);
             _editorsListBox.HideBorder = true;
-            this.Add(_editorsListBox);
+            Add(_editorsListBox);
 
             foreach (var editor in _editors.Values)
             {
@@ -215,7 +218,7 @@ namespace SadConsoleEditor.Consoles
                         _toolsListBox.Items.Add(_tools[toolId]);
 
                     SelectedEditor = item;
-                                        
+
                     _toolsListBox.SelectedItem = _tools.Values.First();
 
                     if (SelectedEditorChanged != null)
@@ -229,9 +232,10 @@ namespace SadConsoleEditor.Consoles
             _cellData.Print(1, RowTools, "Tools");
 
             _toolsListBox = new SadConsole.Controls.ListBox(20 - 2, 4);
-            _toolsListBox.Position = new Microsoft.Xna.Framework.Point(1, RowTools + 1);
+            _toolsListBox.Position = new Point(1, RowTools + 1);
             _toolsListBox.HideBorder = true;
-            this.Add(_toolsListBox);
+            _toolsListBox.CanUseKeyboard = false;
+            Add(_toolsListBox);
 
             _toolsListBox.SelectedItemChanged += (sender, e) =>
                 {
@@ -248,7 +252,7 @@ namespace SadConsoleEditor.Consoles
         {
 
             int activeRow = RowToolSettings;
-            _cellData.Print(1, activeRow,   "Console Editor");
+            _cellData.Print(1, activeRow, "Console Editor");
             _cellData.Print(0, ++activeRow, new string((char)196, _cellData.Width));
             _cellData.Print(1, ++activeRow, "Foreground", Settings.Green);
             _charForeTextRow = activeRow;
@@ -261,9 +265,9 @@ namespace SadConsoleEditor.Consoles
             _charTextRow = activeRow;
 
             activeRow += 2;
-            
-            SadConsoleEditor.Controls.CharacterPicker picker = new Controls.CharacterPicker(Settings.Red, Settings.Color_ControlBack, Settings.Green);
-            picker.Position = new Microsoft.Xna.Framework.Point(2, activeRow);
+
+            Controls.CharacterPicker picker = new Controls.CharacterPicker(Settings.Red, Settings.Color_ControlBack, Settings.Green);
+            picker.Position = new Point(2, activeRow);
             picker.SelectedCharacterChanged += (sender, e) =>
             {
                 SelectedCharacter = e.NewCharacter;

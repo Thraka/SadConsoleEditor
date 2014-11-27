@@ -1,12 +1,8 @@
 ﻿using SadConsole.Consoles;
-using Console = SadConsole.Consoles.Console;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using SadConsoleEditor.Windows;
+using SadConsole.Input;
 
 namespace SadConsoleEditor
 {
@@ -29,7 +25,7 @@ namespace SadConsoleEditor
         }
 
         private Consoles.BorderRenderer _borderRenderer;
-        private SadConsoleEditor.Editors.IEditor _oldEditor;
+        private Editors.IEditor _oldEditor;
         private SadConsole.Controls.ScrollBar _toolsPaneScroller;
 
         public int EditingSurfaceWidth { get; private set; }
@@ -63,12 +59,12 @@ namespace SadConsoleEditor
             Color Yellow = new Color(226, 218, 110);
             Color Orange = new Color(251, 149, 31);
 
-            _backingPanel.CellData.Print(0, 0, "Test", Green);
-            _backingPanel.CellData.Print(5, 0, "Test", Red);
-            _backingPanel.CellData.Print(10, 0, "Test", Blue);
-            _backingPanel.CellData.Print(15, 0, "Test", Grey);
-            _backingPanel.CellData.Print(20, 0, "Test", Yellow);
-            _backingPanel.CellData.Print(25, 0, "Test", Orange);
+            //_backingPanel.CellData.Print(0, 0, "Test", Green);
+            //_backingPanel.CellData.Print(5, 0, "Test", Red);
+            //_backingPanel.CellData.Print(10, 0, "Test", Blue);
+            //_backingPanel.CellData.Print(15, 0, "Test", Grey);
+            //_backingPanel.CellData.Print(20, 0, "Test", Yellow);
+            //_backingPanel.CellData.Print(25, 0, "Test", Orange);
 
             this.Add(_backingPanel);
         }
@@ -101,16 +97,16 @@ namespace SadConsoleEditor
                 {
                     if (_oldEditor != null)
                     {
-                        _oldEditor.MouseEnter -= Editor_MouseEnter;
-                        _oldEditor.MouseExit -= Editor_MouseExit;
-                        _oldEditor.MouseMove -= Editor_MouseMove;
+                        //_oldEditor.MouseEnter -= Editor_MouseEnter;
+                        //_oldEditor.MouseExit -= Editor_MouseExit;
+                        //_oldEditor.MouseMove -= Editor_MouseMove;
                     }
 
                     _oldEditor = ToolPane.SelectedEditor;
 
-                    _oldEditor.MouseEnter += Editor_MouseEnter;
-                    _oldEditor.MouseExit += Editor_MouseExit;
-                    _oldEditor.MouseMove += Editor_MouseMove;
+                    //_oldEditor.MouseEnter += Editor_MouseEnter;
+                    //_oldEditor.MouseExit += Editor_MouseExit;
+                    //_oldEditor.MouseMove += Editor_MouseMove;
 
                     UpdateBox();
 
@@ -126,21 +122,6 @@ namespace SadConsoleEditor
         {
             Brush = newBrushEntity;
             CenterEditor();
-        }
-
-        private void Editor_MouseEnter(object sender, SadConsole.Input.MouseEventArgs e)
-        {
-            Brush.IsVisible = true;
-        }
-
-        private void Editor_MouseExit(object sender, SadConsole.Input.MouseEventArgs e)
-        {
-            Brush.IsVisible = false;
-        }
-
-        private void Editor_MouseMove(object sender, SadConsole.Input.MouseEventArgs e)
-        {
-            Brush.Position = e.ConsoleLocation;
         }
 
         public void UpdateBox()
@@ -184,6 +165,8 @@ namespace SadConsoleEditor
 
             ToolPane.SelectedEditor.Surface.Update();
             Brush.Update();
+
+            ProcessKeyboard(SadConsole.Engine.Keyboard);
         }
 
         public override void Render()
@@ -205,6 +188,15 @@ namespace SadConsoleEditor
             var result = base.ProcessMouse(info);
 
             ToolPane.SelectedEditor.ProcessMouse(info);
+
+            return result;
+        }
+
+        public override bool ProcessKeyboard(KeyboardInfo info)
+        {
+            var result = base.ProcessKeyboard(info);
+
+            ToolPane.SelectedEditor.ProcessKeyboard(info);
 
             return result;
         }

@@ -8,6 +8,7 @@ using SadConsole.Consoles;
 using SadConsole;
 using Microsoft.Xna.Framework;
 using System.Runtime.Serialization;
+using SadConsole.Input;
 
 namespace SadConsoleEditor.Consoles
 {
@@ -42,7 +43,7 @@ namespace SadConsoleEditor.Consoles
             // Create all layers
             for (int i = 0; i < layers; i++)
             {
-                _layers[i] = new CellsRenderer(new CellSurface(width, height), this.Batch);
+                _layers[i] = new CellsRenderer(new CellSurface(width, height), Batch);
             }
 
             SetActiveLayer(0);

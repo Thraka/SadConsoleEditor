@@ -36,7 +36,7 @@ namespace SadConsoleEditor.Editors
         {
             get
             {
-                return new string[] { PaintTool.ID, FillTool.ID };
+                return new string[] { PaintTool.ID, FillTool.ID, TextTool.ID, LineTool.ID };
             }
         }
 
@@ -58,9 +58,9 @@ namespace SadConsoleEditor.Editors
             // THIS WHOLE MOUSE HANDLING IS VERY MESSY.
             // THERE ARE TOO MANY PATHS OBJ_1->OBJ_2->OBJ_1->OBJ_3 type of calling chain.
             // REWRITE NOW
-            _mouseMoveHandler = (o, e) => { if (this.MouseMove != null) this.MouseMove(_consoleLayers.ActiveLayer, e); };
-            _mouseEnterHandler = (o, e) => { if (this.MouseEnter != null) this.MouseEnter(_consoleLayers.ActiveLayer, e); };
-            _mouseExitHandler = (o, e) => { if (this.MouseExit != null) this.MouseExit(_consoleLayers.ActiveLayer, e); };
+            _mouseMoveHandler = (o, e) => { if (this.MouseMove != null) this.MouseMove(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseMoveSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
+            _mouseEnterHandler = (o, e) => { if (this.MouseEnter != null) this.MouseEnter(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseEnterSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
+            _mouseExitHandler = (o, e) => { if (this.MouseExit != null) this.MouseExit(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseExitSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
 
 
             _consoleLayers.MouseMove += _mouseMoveHandler;
@@ -75,13 +75,19 @@ namespace SadConsoleEditor.Editors
 
         public void ProcessKeyboard(KeyboardInfo info)
         {
-            //EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.ActiveLayer);
+            EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.ActiveLayer);
         }
 
         public void ProcessMouse(MouseInfo info)
         {
             _consoleLayers.ProcessMouse(info);
-
+            //
+            //
+            //
+            // TODO change the tool interface to do the mouse code commented from editorconsolemanager
+            //
+            //
+            //
             if (_consoleLayers.IsMouseOver)
                 EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessMouse(info, _consoleLayers.ActiveLayer);
         }
@@ -124,7 +130,7 @@ namespace SadConsoleEditor.Editors
             if (_consoleLayers != null)
             {
                 _consoleLayers.MouseMove -= _mouseMoveHandler;
-                _consoleLayers.MouseEnter -= _mouseEnterHandler;
+                _consoleLayers.MouseEnter -= _mouseEnterHandler; 
                 _consoleLayers.MouseExit -= _mouseExitHandler;
             }
 

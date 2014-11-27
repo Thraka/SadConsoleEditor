@@ -59,9 +59,11 @@
     <Compile Include="Tools\EraseDrawingTool.cs" />
     <Compile Include="Tools\FillTool.cs" />
     <Compile Include="Tools\ITool.cs" />
+    <Compile Include="Tools\LineTool.cs" />
     <Compile Include="Tools\NotesTool.cs" />
     <Compile Include="Tools\TextTool.cs" />
     <Compile Include="Tools\ToolBase.cs" />
+    <Compile Include="Undo.cs" />
     <Compile Include="Windows\ColorPickerPopup.cs" />
     <Compile Include="Windows\OtherColorsPopup.cs" />
     <Compile Include="Windows\ResizeSurfacePopup.cs" />

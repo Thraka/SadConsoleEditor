@@ -58,5 +58,20 @@
                 }
             }
         }
+
+        public void MouseEnterSurface(MouseInfo info, CellSurface surface)
+        {
+            EditorConsoleManager.Instance.Brush.IsVisible = true;
+        }
+
+        public void MouseExitSurface(MouseInfo info, CellSurface surface)
+        {
+            EditorConsoleManager.Instance.Brush.IsVisible = false;
+        }
+
+        public void MouseMoveSurface(MouseInfo info, CellSurface surface)
+        {
+            EditorConsoleManager.Instance.Brush.Position = info.ConsoleLocation;
+        }
     }
 }
