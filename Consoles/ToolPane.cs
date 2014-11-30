@@ -10,17 +10,18 @@ using Microsoft.Xna.Framework;
 using SadConsoleEditor.Editors;
 using SadConsoleEditor.Tools;
 using SadConsoleEditor.Windows;
+using SadConsole.Controls;
+using SadConsoleEditor.Controls;
 
 namespace SadConsoleEditor.Consoles
 {
     class ToolPane : ControlsConsole
     {
-        private const int RowFile = 1;
-        private const int RowEditors = 4;
-        private const int RowTools = 6;
-        private const int RowToolSettings = 13;
+        private int RowFile = 1;
+        private int RowTools = 6;
+        private int RowToolSettings = 13;
 
-        private SadConsole.Controls.ListBox _toolsListBox;
+        private ListBox _toolsListBox;
         private ColorPickerPopup _colorPicker;
         private bool _colorPickerModeForeground;
 
@@ -30,6 +31,7 @@ namespace SadConsoleEditor.Consoles
 
         public EventHandler BrushChanged;
 
+
         #region ColorCharacterArea
         private int _charTextRow;
         private int _charBackTextRow;
@@ -38,6 +40,12 @@ namespace SadConsoleEditor.Consoles
         private Color _charForegroundColor = Color.Red;
         private Color _charBackgroundColor = Color.Black;
         private int _selectedChar = 1;
+
+        private Button _newButton;
+        private Button _loadButton;
+        private Button _saveButton;
+        private Button _resizeButton;
+        private CharacterPicker _picker;
 
         public bool ShowCharacterList
         {
@@ -140,62 +148,52 @@ namespace SadConsoleEditor.Consoles
 
         private void SetupFilePanel()
         {
-            _cellData.Print(1, RowFile, "File");
-            _cellData.Print(0, RowFile + 1, new string((char)196, _cellData.Width));
-
-            var button = new SadConsole.Controls.Button(8, 1)
+            _newButton = new Button(8, 1)
             {
                 Text = " New",
-                Position = new Point(1, RowFile + 2),
                 TextAlignment = System.Windows.HorizontalAlignment.Left,
                 CanUseKeyboard = false,
             };
-            button.ButtonClicked += (o, e) =>
+            _newButton.ButtonClicked += (o, e) =>
             {
                 EditorConsoleManager.Instance.ShowNewConsolePopup();
             };
-            Add(button);
+            Add(_newButton);
 
-            button = new SadConsole.Controls.Button(8, 1)
+            _loadButton = new Button(8, 1)
             {
                 Text = "Load",
-                Position = new Point(_cellData.Width - 9, RowFile + 2)
             };
-            button.ButtonClicked += (o, e) =>
+            _loadButton.ButtonClicked += (o, e) =>
             {
                 EditorConsoleManager.Instance.LoadSurface();
             };
-            Add(button);
+            Add(_loadButton);
 
-            button = new SadConsole.Controls.Button(8, 1)
+            _saveButton = new Button(8, 1)
             {
                 Text = "Save",
-                Position = new Point(_cellData.Width - 9, RowFile + 3)
             };
-            button.ButtonClicked += (o, e) =>
+            _saveButton.ButtonClicked += (o, e) =>
             {
                 EditorConsoleManager.Instance.SaveSurface();
             };
-            Add(button);
+            Add(_saveButton);
 
-            button = new SadConsole.Controls.Button(8, 1)
+            _resizeButton = new Button(8, 1)
             {
                 Text = "Resize",
-                Position = new Point(1, RowFile + 3)
             };
-            button.ButtonClicked += (o, e) =>
+            _resizeButton.ButtonClicked += (o, e) =>
             {
                 EditorConsoleManager.Instance.ShowResizeConsolePopup();
             };
-            Add(button);
+            Add(_resizeButton);
         }
 
         private void SetupToolsPanel()
         {
-            _cellData.Print(1, RowTools, "Tools");
-            _cellData.Print(0, RowTools + 1, new string((char)196, _cellData.Width));
-            _toolsListBox = new SadConsole.Controls.ListBox(20 - 2, 4);
-            _toolsListBox.Position = new Point(1, RowTools + 2);
+            _toolsListBox = new ListBox(20 - 2, 4);
             _toolsListBox.HideBorder = true;
             _toolsListBox.CanUseKeyboard = false;
             Add(_toolsListBox);
@@ -203,42 +201,34 @@ namespace SadConsoleEditor.Consoles
             _toolsListBox.SelectedItemChanged += (sender, e) =>
                 {
                     if (SelectedTool != null)
+                    {
                         SelectedTool.OnDeselected();
-
+                        if (SelectedTool.ControlPanes != null)
+                            foreach (var pane in SelectedTool.ControlPanes)
+                            {
+                                foreach (var control in pane.Controls)
+                                {
+                                    this.Remove(control);
+                                }
+                            }
+                    }
                     SelectedTool = (ITool)e.Item;
 
                     SelectedTool.OnSelected();
+                    RefreshControls();
                 };
         }
 
         private void SetupToolsSettingsPane()
         {
-
-            int activeRow = RowToolSettings;
-            _cellData.Print(1, activeRow, "Console Editor");
-            _cellData.Print(0, ++activeRow, new string((char)196, _cellData.Width));
-            _cellData.Print(1, ++activeRow, "Foreground", Settings.Green);
-            _charForeTextRow = activeRow;
-            _cellData.Print(1, ++activeRow, "Background", Settings.Green);
-            _charBackTextRow = activeRow;
-
-            //activeRow += 1;
-
-            _cellData.Print(1, ++activeRow, "Character", Settings.Green);
-            _charTextRow = activeRow;
-
-            activeRow += 2;
-
-            Controls.CharacterPicker picker = new Controls.CharacterPicker(Settings.Red, Settings.Color_ControlBack, Settings.Green);
-            picker.Position = new Point(2, activeRow);
-            picker.SelectedCharacterChanged += (sender, e) =>
+            _picker = new CharacterPicker(Settings.Red, Settings.Color_ControlBack, Settings.Green);
+            _picker.SelectedCharacterChanged += (sender, e) =>
             {
                 SelectedCharacter = e.NewCharacter;
 
                 DrawCharacterState();
             };
-            Add(picker);
-            DrawCharacterState();
+            Add(_picker);
         }
 
         private void DrawCharacterState()
@@ -293,7 +283,57 @@ namespace SadConsoleEditor.Consoles
 
         private void RefreshControls()
         {
+            _cellData.Clear();
 
+            RowFile = 0;
+            _cellData.Print(1, RowFile, "File");
+            _cellData.Print(0, RowFile + 1, new string((char)196, _cellData.Width));
+            _newButton.Position = new Point(1, RowFile + 2);
+            _loadButton.Position = new Point(_cellData.Width - 9, RowFile + 2);
+            _saveButton.Position = new Point(_cellData.Width - 9, RowFile + 3);
+            _resizeButton.Position = new Point(1, RowFile + 3);
+
+            RowTools = RowFile + 5;
+            _cellData.Print(1, RowTools, "Tools");
+            _cellData.Print(0, RowTools + 1, new string((char)196, _cellData.Width));
+            _toolsListBox.Position = new Point(1, RowTools + 2);
+
+            RowToolSettings = _toolsListBox.Position.Y + _toolsListBox.Height + 1;
+            int activeRow = RowToolSettings;
+            _cellData.Print(1, activeRow, "Console Editor");
+            _cellData.Print(0, ++activeRow, new string((char)196, _cellData.Width));
+            _cellData.Print(1, ++activeRow, "Foreground", Settings.Green);
+            _charForeTextRow = activeRow;
+            _cellData.Print(1, ++activeRow, "Background", Settings.Green);
+            _charBackTextRow = activeRow;
+
+            _cellData.Print(1, ++activeRow, "Character", Settings.Green);
+            _charTextRow = activeRow;
+
+            activeRow += 2;
+            _picker.Position = new Point(2, activeRow);
+
+            DrawCharacterState();
+
+            activeRow = _picker.Position.Y + _picker.Height;
+            if (SelectedTool.ControlPanes != null)
+            {
+                foreach (var pane in SelectedTool.ControlPanes)
+                {
+                    _cellData.Print(1, ++activeRow, pane.Title);
+                    _cellData.Print(0, ++activeRow, new string((char)196, _cellData.Width));
+                    activeRow++;
+
+                    foreach (var control in pane.Controls)
+                    {
+                        Add(control);
+                        control.Position = new Point(1, activeRow);
+                        activeRow++;
+                    }
+
+                    activeRow += 2;
+                }
+            }
         }
     }
 }

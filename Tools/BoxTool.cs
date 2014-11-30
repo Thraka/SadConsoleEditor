@@ -55,6 +55,20 @@
 
             _lineCell = new Cell();
 
+
+
+
+            CustomPane pane = new CustomPane();
+            pane.Title = "Line Options";
+
+            Button btn = new Button(6, 1);
+            btn.Text = "Test";
+
+            pane.Controls = new ControlBase[] { btn };
+
+            ControlPanes = new CustomPane[] { pane };
+
+
         }
 
         public void OnSelected()

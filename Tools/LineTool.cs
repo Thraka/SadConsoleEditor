@@ -3,6 +3,7 @@
     using Microsoft.Xna.Framework;
     using SadConsole;
     using SadConsole.Consoles;
+    using SadConsole.Controls;
     using SadConsole.Entities;
     using SadConsole.Input;
     using System;
@@ -54,7 +55,18 @@
             };
 
             _lineCell = new Cell();
-            
+
+
+
+            CustomPane pane = new CustomPane();
+            pane.Title = "Box Options";
+
+            Button btn = new Button(6, 1);
+            btn.Text = "Test";
+
+            pane.Controls = new ControlBase[] { btn };
+
+            ControlPanes = new CustomPane[] { pane };
         }
 
         public void OnSelected()
