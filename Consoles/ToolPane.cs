@@ -113,6 +113,7 @@ namespace SadConsoleEditor.Consoles
             _tools.Add(FillTool.ID, new FillTool());
             _tools.Add(TextTool.ID, new TextTool());
             _tools.Add(LineTool.ID, new LineTool());
+            _tools.Add(BoxTool.ID, new BoxTool());
             _tools.Add(ObjectTool.ID, new ObjectTool());
 
             SetupFilePanel();
@@ -273,6 +274,11 @@ namespace SadConsoleEditor.Consoles
                 _colorPicker.SelectedColor = CharacterForegroundColor;
                 _colorPicker.Show(true);
             }
+            else if (info.ConsoleLocation.Y == _charTextRow && info.ConsoleLocation.X >= _cellData.Width - 5 && info.ConsoleLocation.X < _cellData.Width - 2)
+            {
+                CharacterQuickSelectPopup popup = new CharacterQuickSelectPopup(SelectedCharacter);
+                popup.Show(true);
+            }
         }
 
         public void SetupEditor()
@@ -285,5 +291,9 @@ namespace SadConsoleEditor.Consoles
             _toolsListBox.SelectedItem = _tools.Values.First();
         }
 
+        private void RefreshControls()
+        {
+
+        }
     }
 }
