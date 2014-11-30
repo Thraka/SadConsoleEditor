@@ -3,6 +3,8 @@ using System;
 using Microsoft.Xna.Framework;
 using SadConsoleEditor.Windows;
 using SadConsole.Input;
+using System.Collections.Generic;
+using SadConsoleEditor.Editors;
 
 namespace SadConsoleEditor
 {
@@ -26,10 +28,12 @@ namespace SadConsoleEditor
 
         private Consoles.BorderRenderer _borderRenderer;
         private Editors.IEditor _oldEditor;
+        public Dictionary<string, Editors.IEditor> Editors;
+        public IEditor SelectedEditor { get; private set; }
         private SadConsole.Controls.ScrollBar _toolsPaneScroller;
 
-        public int EditingSurfaceWidth { get; private set; }
-        public int EditingSurfaceHeight { get; private set; }
+        public int EditingSurfaceWidth { get { return SelectedEditor.Width; } }
+        public int EditingSurfaceHeight { get { return SelectedEditor.Height; } }
 
         
         public SadConsole.Entities.Entity Brush { get; private set; }
@@ -67,6 +71,10 @@ namespace SadConsoleEditor
             //_backingPanel.CellData.Print(25, 0, "Test", Orange);
 
             this.Add(_backingPanel);
+
+            Editors = new Dictionary<string, SadConsoleEditor.Editors.IEditor>();
+            Editors.Add(DrawingEditor.ID, new DrawingEditor());
+            Editors.Add(ObjectEditor.ID, new ObjectEditor());
         }
 
         private void FinishCreating()
@@ -93,29 +101,16 @@ namespace SadConsoleEditor
             scrollerContainer.ProcessMouseWithoutFocus = true;
             this.Add(scrollerContainer);
 
-            ToolPane.SelectedEditorChanged += (o, e) =>
-                {
-                    if (_oldEditor != null)
-                    {
-                        //_oldEditor.MouseEnter -= Editor_MouseEnter;
-                        //_oldEditor.MouseExit -= Editor_MouseExit;
-                        //_oldEditor.MouseMove -= Editor_MouseMove;
-                    }
-
-                    _oldEditor = ToolPane.SelectedEditor;
-
-                    //_oldEditor.MouseEnter += Editor_MouseEnter;
-                    //_oldEditor.MouseExit += Editor_MouseExit;
-                    //_oldEditor.MouseMove += Editor_MouseMove;
-
-                    UpdateBox();
-
-                };
-
             ToolPane.FinishCreating();
 
-            EditingSurfaceWidth = ToolPane.SelectedEditor.Width;
-            EditingSurfaceHeight = ToolPane.SelectedEditor.Height;
+            ChangeEditor(new DrawingEditor());
+        }
+
+        public void ChangeEditor(IEditor editor)
+        {
+            SelectedEditor = editor;
+            ToolPane.SetupEditor();
+            UpdateBox();
         }
 
         public void UpdateBrush(SadConsole.Entities.Entity newBrushEntity)
@@ -128,11 +123,9 @@ namespace SadConsoleEditor
         {
             if (_borderRenderer != null)
             {
-                _borderRenderer.CellData.Resize(ToolPane.SelectedEditor.Width + 2, ToolPane.SelectedEditor.Height+ 2);
+                _borderRenderer.CellData.Resize(EditingSurfaceWidth + 2, EditingSurfaceHeight + 2);
             }
             CenterEditor();
-            EditingSurfaceWidth = ToolPane.SelectedEditor.Width;
-            EditingSurfaceHeight = ToolPane.SelectedEditor.Height;
         }
 
         private void CenterEditor()
@@ -144,17 +137,17 @@ namespace SadConsoleEditor
 
             var screenSize = SadConsole.Engine.GetScreenSizeInCells(EditorConsoleManager.Instance.ToolPane.Font);
 
-            if (ToolPane.SelectedEditor.Width < screenSize.X)
-                position.X = ((screenSize.X - 20) / 2) - (ToolPane.SelectedEditor.Width / 2);
+            if (EditingSurfaceWidth < screenSize.X)
+                position.X = ((screenSize.X - 20) / 2) - (EditingSurfaceWidth / 2);
             else
-                position.X = ((screenSize.X - 20) - ToolPane.SelectedEditor.Width) / 2;
+                position.X = ((screenSize.X - 20) - EditingSurfaceWidth) / 2;
 
-            if (ToolPane.SelectedEditor.Height < screenSize.Y)
-                position.Y = (screenSize.Y / 2) - (ToolPane.SelectedEditor.Height / 2);
+            if (EditingSurfaceHeight < screenSize.Y)
+                position.Y = (screenSize.Y / 2) - (EditingSurfaceHeight / 2);
             else
-                position.Y = (screenSize.Y - ToolPane.SelectedEditor.Height) / 2;
+                position.Y = (screenSize.Y - EditingSurfaceHeight) / 2;
 
-            ToolPane.SelectedEditor.Position(position.X, position.Y);
+            SelectedEditor.Position(position.X, position.Y);
             _borderRenderer.Position = new Microsoft.Xna.Framework.Point(position.X - 1, position.Y - 1);
             Brush.PositionOffset = position;
         }
@@ -163,7 +156,7 @@ namespace SadConsoleEditor
         {
             base.Update();
 
-            ToolPane.SelectedEditor.Surface.Update();
+            SelectedEditor.Surface.Update();
             Brush.Update();
 
             ProcessKeyboard(SadConsole.Engine.Keyboard);
@@ -172,7 +165,7 @@ namespace SadConsoleEditor
         public override void Render()
         {
             
-            ToolPane.SelectedEditor.Surface.Render();
+            SelectedEditor.Surface.Render();
 
             if (_borderRenderer != null)
                 _borderRenderer.Render();
@@ -187,23 +180,23 @@ namespace SadConsoleEditor
         {
             var result = base.ProcessMouse(info);
 
-            ToolPane.SelectedEditor.ProcessMouse(info);
+            SelectedEditor.ProcessMouse(info);
 
             return result;
         }
 
         public override bool ProcessKeyboard(KeyboardInfo info)
         {
-            var result = base.ProcessKeyboard(info);
+            //var result = base.ProcessKeyboard(info);
 
-            ToolPane.SelectedEditor.ProcessKeyboard(info);
+            SelectedEditor.ProcessKeyboard(info);
 
-            return result;
+            return true;
         }
 
         public void ShowResizeConsolePopup()
         {
-            ResizeSurfacePopup popup = new ResizeSurfacePopup(EditingSurfaceWidth, EditingSurfaceHeight);
+            var popup = new ResizeSurfacePopup(EditingSurfaceWidth, EditingSurfaceHeight);
             popup.Closed += (o, e) =>
             {
                 if (popup.DialogResult)
@@ -216,12 +209,26 @@ namespace SadConsoleEditor
             popup.Center();
         }
 
+        public void ShowNewConsolePopup()
+        {
+            var popup = new NewConsolePopup();
+            popup.Closed += (o, e) =>
+            {
+                if (popup.DialogResult)
+                {
+                    SelectedEditor = popup.Editor;
+                    SelectedEditor.Reset();
+                    ResizeEditingSurface(popup.SettingWidth, popup.SettingHeight);
+                }
+            };
+
+            popup.Show(true);
+            popup.Center();
+        }
+
         public void ResizeEditingSurface(int width, int height)
         {
-            EditingSurfaceWidth = width;
-            EditingSurfaceHeight = height;
-
-            ToolPane.SelectedEditor.Resize(width, height);
+            SelectedEditor.Resize(width, height);
         }
 
         public void LoadSurface()
@@ -231,11 +238,11 @@ namespace SadConsoleEditor
             {
                 if (popup.DialogResult)
                 {
-                    ToolPane.SelectedEditor.Load(popup.SelectedFile);
+                    SelectedEditor.Load(popup.SelectedFile);
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.PreferredExtensions = ToolPane.SelectedEditor.FileExtensions;
+            popup.PreferredExtensions = SelectedEditor.FileExtensions;
             popup.Show(true);
             popup.Center();
         }
@@ -247,11 +254,11 @@ namespace SadConsoleEditor
             {
                 if (popup.DialogResult)
                 {
-                    ToolPane.SelectedEditor.Save(popup.SelectedFile);
+                    SelectedEditor.Save(popup.SelectedFile);
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.PreferredExtensions = ToolPane.SelectedEditor.FileExtensions;
+            popup.PreferredExtensions = SelectedEditor.FileExtensions;
             popup.Show(true);
             popup.Center();
         }

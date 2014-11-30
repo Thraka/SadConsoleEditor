@@ -1,3 +1,5 @@
 <ScreenBuilder>
 	<WindowSize width="160" height="50" />
+  <NewConsole width="80" height="25" />
+  <DefaultFont>EditorFont.font</DefaultFont>
 </ScreenBuilder>

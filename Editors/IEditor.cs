@@ -41,5 +41,6 @@ namespace SadConsoleEditor.Editors
         void Load(string file);
 
         void Save(string file);
+        void Reset();
     }
 }

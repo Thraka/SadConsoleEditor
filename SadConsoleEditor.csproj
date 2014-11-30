@@ -50,6 +50,7 @@
     <Compile Include="CustomPane.cs" />
     <Compile Include="Editors\DrawingEditor.cs" />
     <Compile Include="Editors\IEditor.cs" />
+    <Compile Include="Editors\ObjectEditor.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="HSLColor.cs" />
     <Compile Include="Program.cs" />
@@ -61,10 +62,12 @@
     <Compile Include="Tools\ITool.cs" />
     <Compile Include="Tools\LineTool.cs" />
     <Compile Include="Tools\NotesTool.cs" />
+    <Compile Include="Tools\ObjectTool.cs" />
     <Compile Include="Tools\TextTool.cs" />
     <Compile Include="Tools\ToolBase.cs" />
     <Compile Include="Undo.cs" />
     <Compile Include="Windows\ColorPickerPopup.cs" />
+    <Compile Include="Windows\NewConsolePopup.cs" />
     <Compile Include="Windows\OtherColorsPopup.cs" />
     <Compile Include="Windows\ResizeSurfacePopup.cs" />
     <Compile Include="Windows\SelectFilePopup.cs" />

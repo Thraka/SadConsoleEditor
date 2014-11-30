@@ -17,21 +17,16 @@ namespace SadConsoleEditor.Consoles
     {
         private const int RowFile = 1;
         private const int RowEditors = 4;
-        private const int RowTools = 9;
-        private const int RowToolSettings = 15;
+        private const int RowTools = 6;
+        private const int RowToolSettings = 13;
 
-        private SadConsole.Controls.ListBox _editorsListBox;
         private SadConsole.Controls.ListBox _toolsListBox;
         private ColorPickerPopup _colorPicker;
         private bool _colorPickerModeForeground;
 
-        private Dictionary<string, IEditor> _editors;
         private Dictionary<string, ITool> _tools;
 
         public ITool SelectedTool { get; private set; }
-        public IEditor SelectedEditor { get; private set; }
-
-        public EventHandler SelectedEditorChanged;
 
         public EventHandler BrushChanged;
 
@@ -113,21 +108,16 @@ namespace SadConsoleEditor.Consoles
             _cellData.DefaultForeground = Settings.Color_TitleText;
             _cellData.Clear();
 
-            _editors = new Dictionary<string, IEditor>();
-            _editors.Add(DrawingEditor.ID, new DrawingEditor());
-
             _tools = new Dictionary<string, ITool>();
             _tools.Add(PaintTool.ID, new PaintTool());
             _tools.Add(FillTool.ID, new FillTool());
             _tools.Add(TextTool.ID, new TextTool());
             _tools.Add(LineTool.ID, new LineTool());
+            _tools.Add(ObjectTool.ID, new ObjectTool());
 
             SetupFilePanel();
-            SetupEditorsPanel();
             SetupToolsPanel();
             SetupToolsSettingsPane();
-
-            _editorsListBox.SelectedItem = _editors.Values.First();
 
             //_cellData.Print(1, 2, "  Paint Brush", Settings.Yellow);
             ProcessMouseWithoutFocus = true;
@@ -150,20 +140,25 @@ namespace SadConsoleEditor.Consoles
         private void SetupFilePanel()
         {
             _cellData.Print(1, RowFile, "File");
+            _cellData.Print(0, RowFile + 1, new string((char)196, _cellData.Width));
 
             var button = new SadConsole.Controls.Button(8, 1)
             {
                 Text = " New",
-                Position = new Point(1, RowFile + 1),
+                Position = new Point(1, RowFile + 2),
                 TextAlignment = System.Windows.HorizontalAlignment.Left,
                 CanUseKeyboard = false,
+            };
+            button.ButtonClicked += (o, e) =>
+            {
+                EditorConsoleManager.Instance.ShowNewConsolePopup();
             };
             Add(button);
 
             button = new SadConsole.Controls.Button(8, 1)
             {
                 Text = "Load",
-                Position = new Point(_cellData.Width - 9, RowFile + 1)
+                Position = new Point(_cellData.Width - 9, RowFile + 2)
             };
             button.ButtonClicked += (o, e) =>
             {
@@ -174,7 +169,7 @@ namespace SadConsoleEditor.Consoles
             button = new SadConsole.Controls.Button(8, 1)
             {
                 Text = "Save",
-                Position = new Point(_cellData.Width - 9, RowFile + 2)
+                Position = new Point(_cellData.Width - 9, RowFile + 3)
             };
             button.ButtonClicked += (o, e) =>
             {
@@ -185,7 +180,7 @@ namespace SadConsoleEditor.Consoles
             button = new SadConsole.Controls.Button(8, 1)
             {
                 Text = "Resize",
-                Position = new Point(1, RowFile + 2)
+                Position = new Point(1, RowFile + 3)
             };
             button.ButtonClicked += (o, e) =>
             {
@@ -194,45 +189,12 @@ namespace SadConsoleEditor.Consoles
             Add(button);
         }
 
-        private void SetupEditorsPanel()
-        {
-            _cellData.Print(1, RowEditors, "Editors");
-
-            _editorsListBox = new SadConsole.Controls.ListBox(20 - 2, 3);
-            _editorsListBox.Position = new Point(1, RowEditors + 1);
-            _editorsListBox.HideBorder = true;
-            Add(_editorsListBox);
-
-            foreach (var editor in _editors.Values)
-            {
-                _editorsListBox.Items.Add(editor);
-            }
-
-            _editorsListBox.SelectedItemChanged += (sender, e) =>
-                {
-                    IEditor item = (IEditor)e.Item;
-
-                    _toolsListBox.Items.Clear();
-
-                    foreach (var toolId in item.Tools)
-                        _toolsListBox.Items.Add(_tools[toolId]);
-
-                    SelectedEditor = item;
-
-                    _toolsListBox.SelectedItem = _tools.Values.First();
-
-                    if (SelectedEditorChanged != null)
-                        SelectedEditorChanged(this, EventArgs.Empty);
-                };
-
-        }
-
         private void SetupToolsPanel()
         {
             _cellData.Print(1, RowTools, "Tools");
-
+            _cellData.Print(0, RowTools + 1, new string((char)196, _cellData.Width));
             _toolsListBox = new SadConsole.Controls.ListBox(20 - 2, 4);
-            _toolsListBox.Position = new Point(1, RowTools + 1);
+            _toolsListBox.Position = new Point(1, RowTools + 2);
             _toolsListBox.HideBorder = true;
             _toolsListBox.CanUseKeyboard = false;
             Add(_toolsListBox);
@@ -312,5 +274,16 @@ namespace SadConsoleEditor.Consoles
                 _colorPicker.Show(true);
             }
         }
+
+        public void SetupEditor()
+        {
+            _toolsListBox.Items.Clear();
+
+            foreach (var toolId in EditorConsoleManager.Instance.SelectedEditor.Tools)
+                _toolsListBox.Items.Add(_tools[toolId]);
+
+            _toolsListBox.SelectedItem = _tools.Values.First();
+        }
+
     }
 }

@@ -27,7 +27,7 @@ namespace SadConsoleEditor.Editors
 
         public string Id { get { return ID; } }
 
-        public string Title { get { return "Drawing"; } }
+        public string Title { get { return "Console Editor"; } }
 
         public string FileExtensions { get { return ".con;.console"; } }
         public CustomPane[] ControlPanes { get; private set; }
@@ -66,6 +66,29 @@ namespace SadConsoleEditor.Editors
             _consoleLayers.MouseMove += _mouseMoveHandler;
             _consoleLayers.MouseEnter += _mouseEnterHandler;
             _consoleLayers.MouseExit += _mouseExitHandler;
+        }
+
+        public void Reset()
+        {
+            _consoleLayers.MouseMove -= _mouseMoveHandler;
+            _consoleLayers.MouseEnter -= _mouseEnterHandler;
+            _consoleLayers.MouseExit -= _mouseExitHandler;
+
+            _consoleLayers = new LayeredConsole(1, 10, 5);
+            _consoleLayers.CanUseMouse = true;
+            _consoleLayers.CanUseKeyboard = true;
+
+            _width = 10;
+            _height = 5;
+
+            _mouseMoveHandler = (o, e) => { if (this.MouseMove != null) this.MouseMove(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseMoveSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
+            _mouseEnterHandler = (o, e) => { if (this.MouseEnter != null) this.MouseEnter(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseEnterSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
+            _mouseExitHandler = (o, e) => { if (this.MouseExit != null) this.MouseExit(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseExitSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
+
+            _consoleLayers.MouseMove += _mouseMoveHandler;
+            _consoleLayers.MouseEnter += _mouseEnterHandler;
+            _consoleLayers.MouseExit += _mouseExitHandler;
+
         }
 
         public override string ToString()
