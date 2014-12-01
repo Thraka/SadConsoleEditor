@@ -30,7 +30,7 @@
             get { return "Line"; }
         }
 
-        public CustomPane[] ControlPanes { get; private set; }
+        public CustomPanel[] ControlPanels { get; private set; }
 
         public override string ToString()
         {
@@ -55,18 +55,6 @@
             };
 
             _lineCell = new Cell();
-
-
-
-            CustomPane pane = new CustomPane();
-            pane.Title = "Box Options";
-
-            Button btn = new Button(6, 1);
-            btn.Text = "Test";
-
-            pane.Controls = new ControlBase[] { btn };
-
-            ControlPanes = new CustomPane[] { pane };
         }
 
         public void OnSelected()

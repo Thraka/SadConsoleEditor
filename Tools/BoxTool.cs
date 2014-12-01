@@ -29,7 +29,7 @@
             get { return "Box"; }
         }
 
-        public CustomPane[] ControlPanes { get; private set; }
+        public CustomPanel[] ControlPanels { get; private set; }
 
         public override string ToString()
         {
@@ -58,15 +58,15 @@
 
 
 
-            CustomPane pane = new CustomPane();
-            pane.Title = "Line Options";
+            //CustomPane pane = new CustomPane();
+            //pane.Title = "Line Options";
 
-            Button btn = new Button(6, 1);
-            btn.Text = "Test";
+            //Button btn = new Button(6, 1);
+            //btn.Text = "Test";
 
-            pane.Controls = new ControlBase[] { btn };
+            //pane.Controls = new ControlBase[] { btn };
 
-            ControlPanes = new CustomPane[] { pane };
+            //ControlPanes = new CustomPane[] { pane };
 
 
         }

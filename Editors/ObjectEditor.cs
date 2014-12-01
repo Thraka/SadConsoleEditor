@@ -29,13 +29,14 @@ namespace SadConsoleEditor.Editors
         public string Title { get { return "Game Console"; } }
 
         public string FileExtensions { get { return ".gconsole"; } }
-        public CustomPane[] ControlPanes { get; private set; }
+        public CustomPanel[] ControlPanels { get; private set; }
+
 
         public string[] Tools
         {
             get
             {
-                return new string[] { PaintTool.ID, FillTool.ID, TextTool.ID, LineTool.ID, BoxTool.ID };
+                return new string[] { PaintTool.ID, FillTool.ID, TextTool.ID, LineTool.ID, BoxTool.ID, ObjectTool.ID };
             }
         }
 

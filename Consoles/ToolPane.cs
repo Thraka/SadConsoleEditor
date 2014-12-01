@@ -203,8 +203,8 @@ namespace SadConsoleEditor.Consoles
                     if (SelectedTool != null)
                     {
                         SelectedTool.OnDeselected();
-                        if (SelectedTool.ControlPanes != null)
-                            foreach (var pane in SelectedTool.ControlPanes)
+                        if (SelectedTool.ControlPanels != null)
+                            foreach (var pane in SelectedTool.ControlPanels)
                             {
                                 foreach (var control in pane.Controls)
                                 {
@@ -316,9 +316,9 @@ namespace SadConsoleEditor.Consoles
             DrawCharacterState();
 
             activeRow = _picker.Position.Y + _picker.Height;
-            if (SelectedTool.ControlPanes != null)
+            if (SelectedTool.ControlPanels != null)
             {
-                foreach (var pane in SelectedTool.ControlPanes)
+                foreach (var pane in SelectedTool.ControlPanels)
                 {
                     _cellData.Print(1, ++activeRow, pane.Title);
                     _cellData.Print(0, ++activeRow, new string((char)196, _cellData.Width));
@@ -328,7 +328,7 @@ namespace SadConsoleEditor.Consoles
                     {
                         Add(control);
                         control.Position = new Point(1, activeRow);
-                        activeRow++;
+                        activeRow += pane.Redraw(control) + 1;
                     }
 
                     activeRow += 2;

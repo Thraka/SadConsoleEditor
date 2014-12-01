@@ -18,7 +18,7 @@
             get { return "Fill"; }
         }
 
-        public CustomPane[] ControlPanes { get; private set; }
+        public CustomPanel[] ControlPanels { get; private set; }
 
         public override string ToString()
         {

@@ -64,6 +64,7 @@
     <Compile Include="Tools\LineTool.cs" />
     <Compile Include="Tools\NotesTool.cs" />
     <Compile Include="Tools\ObjectTool.cs" />
+    <Compile Include="Tools\ObjectTool.Panel.cs" />
     <Compile Include="Tools\TextTool.cs" />
     <Compile Include="Tools\ToolBase.cs" />
     <Compile Include="Undo.cs" />

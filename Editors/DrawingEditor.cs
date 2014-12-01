@@ -30,7 +30,7 @@ namespace SadConsoleEditor.Editors
         public string Title { get { return "Console Editor"; } }
 
         public string FileExtensions { get { return ".con;.console"; } }
-        public CustomPane[] ControlPanes { get; private set; }
+        public CustomPanel[] ControlPanels { get; private set; }
 
         public string[] Tools
         {

@@ -219,6 +219,7 @@ namespace SadConsoleEditor
                     SelectedEditor = popup.Editor;
                     SelectedEditor.Reset();
                     ResizeEditingSurface(popup.SettingWidth, popup.SettingHeight);
+                    ToolPane.SetupEditor();
                 }
             };
 

@@ -22,7 +22,9 @@
             get { return "Object"; }
         }
 
-        public CustomPane[] ControlPanes { get; private set; }
+        public CustomPanel[] ControlPanels { get; private set; }
+
+        private ObjectToolPanel _objectSettingsPanel;
 
         public override string ToString()
         {
@@ -32,6 +34,8 @@
         public ObjectTool()
         {
 
+            _objectSettingsPanel = new ObjectToolPanel();
+            this.ControlPanels = new CustomPanel[] { _objectSettingsPanel };
         }
 
         public void OnSelected()
