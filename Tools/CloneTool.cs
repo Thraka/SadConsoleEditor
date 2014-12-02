@@ -7,7 +7,7 @@
     using SadConsole.Input;
     using System;
 
-    class BoxTool : ITool
+    class CloneTool : ITool
     {
         private Entity _entity;
         private Animation _animSinglePoint;
@@ -18,7 +18,7 @@
         private Cell _lineCell;
         private CellAppearance _lineStyle;
 
-        public const string ID = "BOX";
+        public const string ID = "CLONE";
         public string Id
         {
             get { return ID; }
@@ -26,7 +26,7 @@
 
         public string Title
         {
-            get { return "Box"; }
+            get { return "Clone"; }
         }
 
         public CustomPanel[] ControlPanels { get; private set; }
@@ -36,7 +36,7 @@
             return Title;
         }
 
-        public BoxTool()
+        public CloneTool()
         {
             _animSinglePoint = new Animation("single", 1, 1);
             _animSinglePoint.Font = Engine.DefaultFont;
@@ -138,6 +138,7 @@
                 _entity.AddAnimation(animation);
 
                 var frame = animation.CreateFrame();
+                _entity.Tint = new Color(0f, 0f, 0f, 0.5f);
 
                 Point p1;
                 Point p2;
@@ -202,7 +203,7 @@
 
                     _firstPoint = null;
                     _secondPoint = null;
-                    
+
 
                     _entity.SetActiveAnimation("single");
 

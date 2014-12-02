@@ -36,7 +36,7 @@ namespace SadConsoleEditor.Editors
         {
             get
             {
-                return new string[] { PaintTool.ID, FillTool.ID, TextTool.ID, LineTool.ID, BoxTool.ID };
+                return new string[] { PaintTool.ID, FillTool.ID, TextTool.ID, CloneTool.ID, LineTool.ID, BoxTool.ID };
             }
         }
 
@@ -47,13 +47,13 @@ namespace SadConsoleEditor.Editors
 
         public DrawingEditor()
         {
-            _consoleLayers = new LayeredConsole(1, 10, 5);
+            _consoleLayers = new LayeredConsole(1, 25, 10);
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
             //_consoleLayers[0].CellData.Fill(Color.Blue, Color.Yellow, 2, null);
             
-            _width = 10;
-            _height = 5;
+            _width = 25;
+            _height = 10;
 
             // THIS WHOLE MOUSE HANDLING IS VERY MESSY.
             // THERE ARE TOO MANY PATHS OBJ_1->OBJ_2->OBJ_1->OBJ_3 type of calling chain.

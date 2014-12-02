@@ -7,6 +7,7 @@ using SadConsole.Consoles;
 using SadConsole.Controls;
 using SadConsole.Input;
 using Microsoft.Xna.Framework;
+using SadConsole;
 
 namespace SadConsoleEditor.Tools
 {
@@ -44,6 +45,14 @@ namespace SadConsoleEditor.Tools
                 control.Position = new Point(6, control.Position.Y);
             }
             return 0;
+        }
+
+        public override void Loaded(CellSurface surface)
+        {
+        }
+
+        public override void Unloaded(CellSurface surface)
+        {
         }
     }
 }
