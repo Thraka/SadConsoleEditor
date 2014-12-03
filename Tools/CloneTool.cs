@@ -15,8 +15,6 @@
         private Point? _firstPoint;
         private Point? _secondPoint;
         private SadConsole.Shapes.Box _boxShape;
-        private Cell _lineCell;
-        private CellAppearance _lineStyle;
         private CloneToolPanel _panel;
         private SadConsole.Effects.Fade _pulseAnimation;
 
@@ -57,9 +55,6 @@
                 AutoReverse = true
             };
 
-            _lineCell = new Cell();
-
-
 
             _panel = new CloneToolPanel();
             ControlPanels = new CustomPanel[] { _panel };
@@ -78,11 +73,7 @@
 
         public void OnSelected()
         {
-            _lineStyle = new CellAppearance(
-                                    EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor,
-                                    EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor,
-                                    EditorConsoleManager.Instance.ToolPane.SelectedCharacter);
-            _lineStyle.CopyAppearanceTo(_lineCell);
+
 
             _entity = new Entity();
             _entity.IsVisible = false;
@@ -92,6 +83,11 @@
 
             EditorConsoleManager.Instance.UpdateBrush(_entity);
 
+            EditorConsoleManager.Instance.ToolPane.ShowBackground = false;
+            EditorConsoleManager.Instance.ToolPane.ShowForeground = false;
+            EditorConsoleManager.Instance.ToolPane.ShowCharacterList = false;
+
+            _panel.State = CloneToolPanel.CloneState.SelectingPoint1;
         }
 
         public void OnDeselected()
@@ -100,11 +96,7 @@
 
         public void RefreshTool()
         {
-            _lineStyle = new CellAppearance(
-                                    EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor,
-                                    EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor,
-                                    EditorConsoleManager.Instance.ToolPane.SelectedCharacter);
-            _lineStyle.CopyAppearanceTo(_lineCell);
+
         }
 
         public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)

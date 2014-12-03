@@ -87,6 +87,7 @@
 
             EditorConsoleManager.Instance.UpdateBrush(_entity);
 
+            EditorConsoleManager.Instance.ToolPane.ShowCharacterList = false;
         }
 
         public void OnDeselected()
@@ -159,6 +160,9 @@
                 animation.Center = p1;
 
                 _boxShape = SadConsole.Shapes.Box.GetDefaultBox();
+                _boxShape.Foreground = _lineStyle.Foreground;
+                _boxShape.FillColor = _lineStyle.Background;
+                _boxShape.BorderBackground = _lineStyle.Background;
                 _boxShape.Location = new Point(0, 0);
                 _boxShape.Width = frame.Width;
                 _boxShape.Height = frame.Height;

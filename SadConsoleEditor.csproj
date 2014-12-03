@@ -54,6 +54,7 @@
     <Compile Include="Editors\ObjectEditor.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="HSLColor.cs" />
+    <Compile Include="LayeredEntity.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
@@ -65,7 +66,7 @@
     <Compile Include="Tools\FillTool.cs" />
     <Compile Include="Tools\ITool.cs" />
     <Compile Include="Tools\LineTool.cs" />
-    <Compile Include="Tools\NotesTool.cs" />
+    <Compile Include="Tools\RecolorTool.cs" />
     <Compile Include="Tools\ObjectTool.cs" />
     <Compile Include="Tools\ObjectTool.Panel.cs" />
     <Compile Include="Tools\TextTool.cs" />
