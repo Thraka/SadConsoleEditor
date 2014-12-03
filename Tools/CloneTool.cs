@@ -17,6 +17,7 @@
         private SadConsole.Shapes.Box _boxShape;
         private Cell _lineCell;
         private CellAppearance _lineStyle;
+        private CloneToolPanel _panel;
 
         public const string ID = "CLONE";
         public string Id
@@ -57,18 +58,8 @@
 
 
 
-
-            //CustomPane pane = new CustomPane();
-            //pane.Title = "Line Options";
-
-            //Button btn = new Button(6, 1);
-            //btn.Text = "Test";
-
-            //pane.Controls = new ControlBase[] { btn };
-
-            //ControlPanes = new CustomPane[] { pane };
-
-
+            _panel = new CloneToolPanel();
+            ControlPanels = new CustomPanel[] { _panel };
         }
 
         public void OnSelected()

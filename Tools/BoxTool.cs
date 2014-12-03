@@ -172,9 +172,6 @@
                 animation.Center = p1;
 
                 _boxShape = SadConsole.Shapes.Box.GetDefaultBox();
-                //_boxShape.Location = p1;
-                //_boxShape.Width = p2.X - p1.X + 1;
-                //_boxShape.Height = p2.Y - p1.Y + 1;
                 _boxShape.Location = new Point(0, 0);
                 _boxShape.Width = frame.Width;
                 _boxShape.Height = frame.Height;
@@ -196,8 +193,37 @@
                 else
                 {
                     _secondPoint = new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y);
+                    Point p1;
+                    Point p2;
 
-                    _boxShape.Location = _entity.Position;
+                    if (_firstPoint.Value.X > _secondPoint.Value.X)
+                    {
+                        if (_firstPoint.Value.Y > _secondPoint.Value.Y)
+                        {
+                            p1 = _secondPoint;
+                            p2 = _firstPoint;
+                        }
+                        else
+                        {
+                            p1 = new Point(_boxShape.Width - 1, 0);
+                            p2 = new Point(0, _boxShape.Height - 1);
+                        }
+                    }
+                    else
+                    {
+                        if (_firstPoint.Value.Y > _secondPoint.Value.Y)
+                        {
+                            p1 = new Point(0, _boxShape.Height - 1);
+                            p2 = new Point(_boxShape.Width - 1, 0);
+                        }
+                        else
+                        {
+                            p1 = new Point(0, 0);
+                            p2 = new Point(_boxShape.Width - 1, _boxShape.Height - 1);
+                        }
+                    }
+
+                    _boxShape.Location = p1;
                     _boxShape.Draw(surface);
 
                     _firstPoint = null;
