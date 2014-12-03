@@ -140,33 +140,20 @@
                 var frame = animation.CreateFrame();
 
                 Point p1;
-                Point p2;
 
                 if (_firstPoint.Value.X > info.ConsoleLocation.X)
                 {
                     if (_firstPoint.Value.Y > info.ConsoleLocation.Y)
-                    {
                         p1 = new Point(frame.Width - 1, frame.Height - 1);
-                        p2 = new Point(0, 0);
-                    }
                     else
-                    {
                         p1 = new Point(frame.Width - 1, 0);
-                        p2 = new Point(0, frame.Height - 1);
-                    }
                 }
                 else
                 {
                     if (_firstPoint.Value.Y > info.ConsoleLocation.Y)
-                    {
                         p1 = new Point(0, frame.Height - 1);
-                        p2 = new Point(frame.Width - 1, 0);
-                    }
                     else
-                    {
                         p1 = new Point(0, 0);
-                        p2 = new Point(frame.Width - 1, frame.Height - 1);
-                    }
                 }
 
                 animation.Center = p1;
@@ -193,35 +180,9 @@
                 else
                 {
                     _secondPoint = new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y);
-                    Point p1;
-                    Point p2;
+                    Point p1 = new Point(Math.Min(_firstPoint.Value.X, _secondPoint.Value.X), Math.Min(_firstPoint.Value.Y, _secondPoint.Value.Y));
+                    //Point p2 = new Point(Math.Max(_firstPoint.Value.X, _secondPoint.Value.X), Math.Max(_firstPoint.Value.Y, _secondPoint.Value.Y));
 
-                    if (_firstPoint.Value.X > _secondPoint.Value.X)
-                    {
-                        if (_firstPoint.Value.Y > _secondPoint.Value.Y)
-                        {
-                            p1 = _secondPoint;
-                            p2 = _firstPoint;
-                        }
-                        else
-                        {
-                            p1 = new Point(_boxShape.Width - 1, 0);
-                            p2 = new Point(0, _boxShape.Height - 1);
-                        }
-                    }
-                    else
-                    {
-                        if (_firstPoint.Value.Y > _secondPoint.Value.Y)
-                        {
-                            p1 = new Point(0, _boxShape.Height - 1);
-                            p2 = new Point(_boxShape.Width - 1, 0);
-                        }
-                        else
-                        {
-                            p1 = new Point(0, 0);
-                            p2 = new Point(_boxShape.Width - 1, _boxShape.Height - 1);
-                        }
-                    }
 
                     _boxShape.Location = p1;
                     _boxShape.Draw(surface);

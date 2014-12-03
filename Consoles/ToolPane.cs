@@ -329,7 +329,7 @@ namespace SadConsoleEditor.Consoles
                     {
                         Add(control);
                         control.Position = new Point(1, activeRow);
-                        activeRow += pane.Redraw(control) + 1;
+                        activeRow += pane.Redraw(control) + control.Height;
                     }
 
                     activeRow += 2;

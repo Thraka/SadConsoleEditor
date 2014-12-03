@@ -13,48 +13,64 @@ namespace SadConsoleEditor.Tools
 {
     class CloneToolPanel : CustomPanel
     {
-        NoCheckRadioButton _selectionMode;
-        NoCheckRadioButton _cloneMode;
-        
-        private bool _selecting;
-        private bool _movingClone;
+        private CloneState _state;
+        private Button _reset;
+        private SadConsole.Controls.DrawingSurface _steps;
+
+        private int _currentStepChar = 175;
+        private string _step1 = "Select Start";
+        private string _step2 = "Select End";
+        private string _step3 = "Accept Selection";
+        private string _step4 = "Stamp Clone";
+
+        public CloneState State
+        {
+            get { return _state; }
+            set
+            {
+                _state = value;
+
+                _steps.FillArea(new Rectangle(0, 0, 1, _steps.Height), Color.Green, Color.Transparent, 0, null);
+
+                if (value == CloneState.SelectingPoint1)
+                    _steps.SetCharacter(0, 3, _currentStepChar);
+                else if (value == CloneState.SelectingPoint2)
+                    _steps.SetCharacter(0, 4, _currentStepChar);
+                else if (value == CloneState.Selected)
+                    _steps.SetCharacter(0, 5, _currentStepChar);
+                else if (value == CloneState.MovingClone)
+                    _steps.SetCharacter(0, 6, _currentStepChar);
+            } 
+        }
+
+        public enum CloneState
+        {
+            SelectingPoint1,
+            SelectingPoint2,
+            Selected,
+            MovingClone
+        }
 
         public CloneToolPanel()
         {
-            _selectionMode = new NoCheckRadioButton(18, 1);
-            _cloneMode = new NoCheckRadioButton(18, 1);
-            
-            _selectionMode.GroupName = "clone";
-            _cloneMode.GroupName = "clone";
+            _reset = new Button(18, 1);
+            _steps = new DrawingSurface(18, 7);
+            _steps.Fill(Settings.Color_Text, Color.Transparent, 0, null);
 
-            _selectionMode.Text = "Select Area";
-            _cloneMode.Text = "Clone & Move";
+            _steps.Print(1, 0, "Click on surface ", Settings.Color_TextBright);
+            _steps.Print(1, 1, "to do these steps", Settings.Color_TextBright);
+            _steps.Print(2, 3, _step1);
+            _steps.Print(2, 4, _step2);
+            _steps.Print(2, 5, _step3);
+            _steps.Print(2, 6, _step4);
 
-            _selectionMode.TextAlignment = _cloneMode.TextAlignment = System.Windows.HorizontalAlignment.Center;
+            _reset.Text = "Restart";
+            _reset.ButtonClicked += (o, e) => State = CloneState.SelectingPoint1;
 
-            _selectionMode.IsSelectedChanged += _selectionMode_IsSelectedChanged;
-            _cloneMode.IsSelectedChanged += _selectionMode_IsSelectedChanged;
-
-            _selectionMode.IsSelected = true;
-
-            Controls = new ControlBase[] { _selectionMode, _cloneMode};
+            Controls = new ControlBase[] {_steps, _reset };
             
             Title = "Clone";
-        }
-
-        private void _selectionMode_IsSelectedChanged(object sender, EventArgs e)
-        {
-            _selecting = _selectionMode.IsSelected;
-            _movingClone = _cloneMode.IsSelected;
-
-            if (_selectionMode.IsSelected)
-            {
-
-            }
-            else
-            {
-
-            }
+            State = CloneState.SelectingPoint1;
         }
 
         public override void ProcessMouse(MouseInfo info)
@@ -64,12 +80,16 @@ namespace SadConsoleEditor.Tools
 
         public override int Redraw(ControlBase control)
         {
+            if (control == _steps)
+            {
+                return 1;
+            }
+
             return 0;
         }
 
         public override void Loaded(CellSurface surface)
         {
-            _selectionMode.IsSelected = true;
         }
 
         public override void Unloaded(CellSurface surface)
