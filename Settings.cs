@@ -71,6 +71,16 @@ namespace SadConsoleEditor
             SadConsole.Themes.Library.Default.RadioButtonTheme.Selected = Appearance_ListBoxItem_SelectedItem;
             SadConsole.Themes.Library.Default.RadioButtonTheme.Focused = Appearance_ControlSelected;
 
+            SadConsole.Themes.Library.Default.CheckBoxTheme.Button.Normal = Appearance_ControlNormal;
+            SadConsole.Themes.Library.Default.CheckBoxTheme.Button.MouseOver = Appearance_ControlOver;
+            SadConsole.Themes.Library.Default.CheckBoxTheme.Button.Selected = Appearance_ControlNormal;
+            SadConsole.Themes.Library.Default.CheckBoxTheme.Button.Focused = Appearance_ControlNormal;
+
+            SadConsole.Themes.Library.Default.CheckBoxTheme.Normal = Appearance_ControlNormal;
+            SadConsole.Themes.Library.Default.CheckBoxTheme.MouseOver = Appearance_ControlOver;
+            SadConsole.Themes.Library.Default.CheckBoxTheme.Selected = Appearance_ListBoxItem_SelectedItem;
+            SadConsole.Themes.Library.Default.CheckBoxTheme.Focused = Appearance_ControlSelected;
+
             NoCheckRadioButtonTheme = (SadConsole.Themes.RadioButtonTheme)SadConsole.Themes.Library.Default.RadioButtonTheme.Clone();
             NoCheckRadioButtonTheme.Button.Selected = Appearance_ControlSelected;
             NoCheckRadioButtonTheme.Selected = Appearance_ControlSelected;

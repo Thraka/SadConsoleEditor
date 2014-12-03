@@ -15,6 +15,7 @@ namespace SadConsoleEditor.Tools
     {
         private CloneState _state;
         private Button _reset;
+        private CheckBox _skipTransparent;
         private SadConsole.Controls.DrawingSurface _steps;
 
         private int _currentStepChar = 175;
@@ -67,7 +68,10 @@ namespace SadConsoleEditor.Tools
             _reset.Text = "Restart";
             _reset.ButtonClicked += (o, e) => State = CloneState.SelectingPoint1;
 
-            Controls = new ControlBase[] {_steps, _reset };
+            _skipTransparent = new CheckBox(18, 1);
+            _skipTransparent.Text = "Skip Transparent";
+
+            Controls = new ControlBase[] { _steps, _reset, _skipTransparent };
             
             Title = "Clone";
             State = CloneState.SelectingPoint1;

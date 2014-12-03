@@ -136,6 +136,11 @@ namespace SadConsoleEditor.Editors
             _consoleLayers.Move(newPosition);
         }
 
+        public Point GetPosition()
+        {
+            return _consoleLayers.Position;
+        }
+
         public void Save(string file)
         {
             var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(LayeredConsole), new Type[] { typeof(LayeredConsole) });

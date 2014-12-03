@@ -1,4 +1,5 @@
-﻿using SadConsole;
+﻿using Microsoft.Xna.Framework;
+using SadConsole;
 using SadConsole.Consoles;
 using SadConsole.Input;
 using System;
@@ -37,6 +38,8 @@ namespace SadConsoleEditor.Editors
         void Resize(int width, int height);
 
         void Position(int x, int y);
+
+        Point GetPosition();
 
         void Load(string file);
 
