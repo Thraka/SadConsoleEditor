@@ -33,6 +33,7 @@ namespace SadConsoleEditor.Windows
         private OtherColorsPopup otherColorPopup;
 
         private ListBox<ListBoxItemColor> _previousColors;
+        private static List<Color> _previousColorList = new List<Color>();
 
         public Color SelectedColor
         {
@@ -270,7 +271,22 @@ namespace SadConsoleEditor.Windows
         public void AddPreviousColor(Color color)
         {
             if (!_previousColors.Items.Contains(color))
+            {
+                if (!_previousColorList.Contains(color))
+                    _previousColorList.Add(color);
+
                 _previousColors.Items.Add(color);
+            }
+        }
+
+        public override void Show(bool modal)
+        {
+            _previousColors.Items.Clear();
+
+            foreach (var item in _previousColorList)
+                _previousColors.Items.Add(item);
+
+            base.Show(modal);
         }
     }
 }

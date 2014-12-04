@@ -17,6 +17,7 @@ namespace SadConsoleEditor.Tools
         private Button _reset;
         private CheckBox _skipTransparent;
         private SadConsole.Controls.DrawingSurface _steps;
+        private Controls.ColorPresenter _test;
 
         private int _currentStepChar = 175;
         private string _step1 = "Select Start";
@@ -71,7 +72,10 @@ namespace SadConsoleEditor.Tools
             _skipTransparent = new CheckBox(18, 1);
             _skipTransparent.Text = "Skip Transparent";
 
-            Controls = new ControlBase[] { _steps, _reset, _skipTransparent };
+            _test = new Controls.ColorPresenter("Fill", Settings.Color_Text, 18);
+            _test.SelectedColor = Color.Black;
+
+            Controls = new ControlBase[] { _steps, _reset, _skipTransparent, _test };
             
             Title = "Clone";
             State = CloneState.SelectingPoint1;

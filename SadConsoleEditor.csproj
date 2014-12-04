@@ -45,6 +45,7 @@
     <Compile Include="Controls\CharacterPicker.cs" />
     <Compile Include="Controls\ColorBar.cs" />
     <Compile Include="Controls\ColorPicker.cs" />
+    <Compile Include="Controls\ColorPresenter.cs" />
     <Compile Include="Controls\FileDirectoryListbox.cs" />
     <Compile Include="Controls\NoCheckRadioButton.cs" />
     <Compile Include="EditorConsoleManager.cs" />
