@@ -15,15 +15,20 @@ namespace SadConsoleEditor.Tools
     {
         private CloneState _state;
         private Button _reset;
-        private CheckBox _skipTransparent;
+        private CheckBox _skipEmptyColor;
+        private CheckBox _altEmptyColorCheck;
         private SadConsole.Controls.DrawingSurface _steps;
-        private Controls.ColorPresenter _test;
+        private Controls.ColorPresenter _altEmptyColor;
 
         private int _currentStepChar = 175;
         private string _step1 = "Select Start";
         private string _step2 = "Select End";
         private string _step3 = "Accept Selection";
         private string _step4 = "Stamp Clone";
+
+        public bool SkipEmptyCells { get { return _skipEmptyColor.IsSelected; } }
+        public bool UseAltEmptyColor { get { return _altEmptyColorCheck.IsSelected; } }
+        public Color AltEmptyColor { get { return _altEmptyColor.SelectedColor; } }
 
         public CloneState State
         {
@@ -57,7 +62,7 @@ namespace SadConsoleEditor.Tools
         {
             _reset = new Button(18, 1);
             _steps = new DrawingSurface(18, 7);
-            _steps.Fill(Settings.Color_Text, Color.Transparent, 0, null);
+            _steps.Fill(Settings.Yellow, Color.Transparent, 0, null);
 
             _steps.Print(1, 0, "Click on surface ", Settings.Color_TextBright);
             _steps.Print(1, 1, "to do these steps", Settings.Color_TextBright);
@@ -66,16 +71,19 @@ namespace SadConsoleEditor.Tools
             _steps.Print(2, 5, _step3);
             _steps.Print(2, 6, _step4);
 
-            _reset.Text = "Restart";
+            _reset.Text = "Reset Steps";
             _reset.ButtonClicked += (o, e) => State = CloneState.SelectingPoint1;
 
-            _skipTransparent = new CheckBox(18, 1);
-            _skipTransparent.Text = "Skip Transparent";
+            _skipEmptyColor = new CheckBox(18, 1);
+            _skipEmptyColor.Text = "Skip Empty";
 
-            _test = new Controls.ColorPresenter("Fill", Settings.Color_Text, 18);
-            _test.SelectedColor = Color.Black;
+            _altEmptyColorCheck = new CheckBox(18, 1);
+            _altEmptyColorCheck.Text = "Use Alt. Empty";
 
-            Controls = new ControlBase[] { _steps, _reset, _skipTransparent, _test };
+            _altEmptyColor = new Controls.ColorPresenter("Alt. Empty Clr", Settings.Green, 18);
+            _altEmptyColor.SelectedColor = Color.Black;
+
+            Controls = new ControlBase[] { _reset, _steps, _skipEmptyColor, _altEmptyColorCheck, _altEmptyColor };
             
             Title = "Clone";
             State = CloneState.SelectingPoint1;
@@ -88,7 +96,7 @@ namespace SadConsoleEditor.Tools
 
         public override int Redraw(ControlBase control)
         {
-            if (control == _steps)
+            if (control == _steps || control == _reset || control == _skipEmptyColor)
             {
                 return 1;
             }

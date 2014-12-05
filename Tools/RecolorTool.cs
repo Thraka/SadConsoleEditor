@@ -18,9 +18,18 @@
 
         public CustomPanel[] ControlPanels { get; private set; }
 
+        private RecolorToolPanel _settingsPanel;
+
         public override string ToString()
         {
             return Title;
+        }
+
+        public RecolorTool()
+        {
+            _settingsPanel = new RecolorToolPanel();
+
+            ControlPanels = new CustomPanel[] { _settingsPanel };
         }
 
         public void OnSelected()
@@ -29,7 +38,7 @@
             EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor, EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor, 42, null);
             EditorConsoleManager.Instance.Brush.IsVisible = false;
 
-            
+            EditorConsoleManager.Instance.ToolPane.ShowCharacterList = false;
         }
 
         public void OnDeselected()
@@ -54,9 +63,12 @@
                 //if (info.Console == surface)
                 {
                     var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
-                    cell.CharacterIndex = EditorConsoleManager.Instance.ToolPane.SelectedCharacter;
-                    cell.Foreground = EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor;
-                    cell.Background = EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor;
+
+                    if (!_settingsPanel.IgnoreForeground)
+                        cell.Foreground = EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor;
+
+                    if (!_settingsPanel.IgnoreBackground)
+                        cell.Background = EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor;
                 }
             }
         }

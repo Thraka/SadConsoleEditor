@@ -44,6 +44,8 @@
             EditorConsoleManager.Instance.UpdateBrush(new SadConsole.Entities.Entity());
             EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(Color.White, Color.Black, _cursorCharacter, blinkEffect);
             EditorConsoleManager.Instance.Brush.IsVisible = false;
+            EditorConsoleManager.Instance.ToolPane.ShowCharacterList = false;
+            EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = false;
         }
 
         public void OnDeselected()

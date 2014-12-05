@@ -68,6 +68,9 @@
                     if (c.Effect != null && cellToMatch.Effect != null)
                         effect = c.Effect == cellToMatch.Effect;
 
+                    if (c.CharacterIndex == 0 && cellToMatch.CharacterIndex == 0)
+                        return c.Background == cellToMatch.Background;
+
                     return c.Foreground == cellToMatch.Foreground &&
                            c.Background == cellToMatch.Background &&
                            c.CharacterIndex == cellToMatch.CharacterIndex &&

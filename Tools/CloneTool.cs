@@ -146,6 +146,15 @@
                     Point p1 = new Point(Math.Min(_firstPoint.Value.X, _secondPoint.Value.X), Math.Min(_firstPoint.Value.Y, _secondPoint.Value.Y));
                     surface.Copy(p1.X, p1.Y, cloneAnimation.Width, cloneAnimation.Height, frame, 0, 0);
 
+                    if (_panel.SkipEmptyCells && _panel.UseAltEmptyColor)
+                    {
+                        foreach (var cell in frame)
+                        {
+                            if (cell.CharacterIndex == 0 && cell.Background == _panel.AltEmptyColor)
+                                cell.Background = Color.Transparent;
+                        }
+                    }
+
                     cloneAnimation.Center = new Point(cloneAnimation.Width / 2, cloneAnimation.Height / 2);
                     cloneAnimation.Commit();
 
@@ -156,6 +165,7 @@
                 else if (_panel.State == CloneToolPanel.CloneState.MovingClone)
                 {
                     // STAMP
+                    // TODO: Add an option in Copy to skip empty and transparent cells. Pass in _panel.SkipEmptyCells
                     _entity.CellData.Copy(0, 0, _entity.CellData.Width, _entity.CellData.Height, surface, info.ConsoleLocation.X - _entity.CurrentAnimation.Center.X, info.ConsoleLocation.Y - _entity.CurrentAnimation.Center.Y);
                 }
             }

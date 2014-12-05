@@ -135,6 +135,7 @@ namespace SadConsoleEditor.Consoles
 
             _tools = new Dictionary<string, ITool>();
             _tools.Add(PaintTool.ID, new PaintTool());
+            _tools.Add(RecolorTool.ID, new RecolorTool());
             _tools.Add(FillTool.ID, new FillTool());
             _tools.Add(TextTool.ID, new TextTool());
             _tools.Add(LineTool.ID, new LineTool());
@@ -235,6 +236,7 @@ namespace SadConsoleEditor.Consoles
                     _showBackground = true;
                     _showForeground = true;
                     _showCharacterList = true;
+                    EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = true;
                     SelectedTool.OnSelected();
                     RefreshControls();
                 };
@@ -361,6 +363,7 @@ namespace SadConsoleEditor.Consoles
                 }
 
                 DrawCharacterState();
+                activeRow++;
             }
             else
             {

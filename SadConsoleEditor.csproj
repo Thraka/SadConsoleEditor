@@ -60,6 +60,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Tools\BoxTool.cs" />
+    <Compile Include="Tools\BoxTool.Panel.cs" />
     <Compile Include="Tools\CloneTool.cs" />
     <Compile Include="Tools\CloneTool.Panel.cs" />
     <Compile Include="Tools\DrawTool.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Tools\RecolorTool.cs" />
     <Compile Include="Tools\ObjectTool.cs" />
     <Compile Include="Tools\ObjectTool.Panel.cs" />
+    <Compile Include="Tools\RecolorTool.Panel.cs" />
     <Compile Include="Tools\TextTool.cs" />
     <Compile Include="Tools\ToolBase.cs" />
     <Compile Include="Undo.cs" />

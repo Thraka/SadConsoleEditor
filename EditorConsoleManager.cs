@@ -39,7 +39,7 @@ namespace SadConsoleEditor
         public SadConsole.Entities.Entity Brush { get; private set; }
         public Consoles.ToolPane ToolPane { get; private set; }
 
-       
+        public bool AllowKeyboardToMoveConsole { get; set; }
 
         public SadConsole.Font Font { get; set; }
 
@@ -188,48 +188,51 @@ namespace SadConsoleEditor
         public override bool ProcessKeyboard(KeyboardInfo info)
         {
             //var result = base.ProcessKeyboard(info);
-            var position = new Point(_borderRenderer.Position.X + 1, _borderRenderer.Position.Y + 1);
-            bool keyPressed = false;
-            if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+            if (AllowKeyboardToMoveConsole)
             {
-                if (_borderRenderer.Position.X + _borderRenderer.CellData.Width - 1 != 0)
+                var position = new Point(_borderRenderer.Position.X + 1, _borderRenderer.Position.Y + 1);
+                bool keyPressed = false;
+                if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
                 {
-                    position.X -= 1;
-                    keyPressed = true;
+                    if (_borderRenderer.Position.X + _borderRenderer.CellData.Width - 1 != 0)
+                    {
+                        position.X -= 1;
+                        keyPressed = true;
+                    }
                 }
-            }
-            else if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
-            {
-                if (_borderRenderer.Position.X != ToolPane.Position.X - 1)
+                else if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
                 {
-                    position.X += 1;
-                    keyPressed = true;
-                }
-            }
-
-            if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
-            {
-                if (_borderRenderer.Position.Y + _borderRenderer.CellData.Height - 2 != 0)
-                {
-                    position.Y -= 1;
-                    keyPressed = true;
+                    if (_borderRenderer.Position.X != ToolPane.Position.X - 1)
+                    {
+                        position.X += 1;
+                        keyPressed = true;
+                    }
                 }
 
-            }
-            else if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
-            {
-                if (_borderRenderer.Position.Y != Game1.WindowSize.Y - 1)
+                if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
                 {
-                    position.Y += 1;
-                    keyPressed = true;
-                }
-            }
+                    if (_borderRenderer.Position.Y + _borderRenderer.CellData.Height - 2 != 0)
+                    {
+                        position.Y -= 1;
+                        keyPressed = true;
+                    }
 
-            if (keyPressed)
-            {
-                SelectedEditor.Position(position.X, position.Y);
-                _borderRenderer.Position = new Microsoft.Xna.Framework.Point(position.X - 1, position.Y - 1);
-                Brush.PositionOffset = position;
+                }
+                else if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
+                {
+                    if (_borderRenderer.Position.Y != Game1.WindowSize.Y - 1)
+                    {
+                        position.Y += 1;
+                        keyPressed = true;
+                    }
+                }
+
+                if (keyPressed)
+                {
+                    SelectedEditor.Position(position.X, position.Y);
+                    _borderRenderer.Position = new Microsoft.Xna.Framework.Point(position.X - 1, position.Y - 1);
+                    Brush.PositionOffset = position;
+                }
             }
 
             SelectedEditor.ProcessKeyboard(info);

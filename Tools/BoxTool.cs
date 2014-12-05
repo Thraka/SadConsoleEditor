@@ -18,6 +18,8 @@
         private Cell _lineCell;
         private CellAppearance _lineStyle;
 
+        private BoxToolPanel _settingsPanel;
+
         public const string ID = "BOX";
         public string Id
         {
@@ -55,20 +57,9 @@
 
             _lineCell = new Cell();
 
+            _settingsPanel = new BoxToolPanel();
 
-
-
-            //CustomPane pane = new CustomPane();
-            //pane.Title = "Line Options";
-
-            //Button btn = new Button(6, 1);
-            //btn.Text = "Test";
-
-            //pane.Controls = new ControlBase[] { btn };
-
-            //ControlPanes = new CustomPane[] { pane };
-
-
+            ControlPanels = new CustomPanel[] { _settingsPanel };
         }
 
         public void OnSelected()
@@ -88,6 +79,8 @@
             EditorConsoleManager.Instance.UpdateBrush(_entity);
 
             EditorConsoleManager.Instance.ToolPane.ShowCharacterList = false;
+            EditorConsoleManager.Instance.ToolPane.ShowBackground = false;
+            EditorConsoleManager.Instance.ToolPane.ShowForeground = false;
         }
 
         public void OnDeselected()
@@ -160,9 +153,10 @@
                 animation.Center = p1;
 
                 _boxShape = SadConsole.Shapes.Box.GetDefaultBox();
-                _boxShape.Foreground = _lineStyle.Foreground;
-                _boxShape.FillColor = _lineStyle.Background;
-                _boxShape.BorderBackground = _lineStyle.Background;
+                _boxShape.Foreground = _settingsPanel.LineForeColor;
+                _boxShape.FillColor = _settingsPanel.FillColor;
+                _boxShape.Fill = _settingsPanel.UseFill;
+                _boxShape.BorderBackground = _settingsPanel.LineBackColor;
                 _boxShape.Location = new Point(0, 0);
                 _boxShape.Width = frame.Width;
                 _boxShape.Height = frame.Height;
