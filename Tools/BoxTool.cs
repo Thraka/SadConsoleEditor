@@ -153,6 +153,13 @@
                 animation.Center = p1;
 
                 _boxShape = SadConsole.Shapes.Box.GetDefaultBox();
+
+                if (_settingsPanel.UseCharacterBorder)
+                    _boxShape.LeftSideCharacter = _boxShape.RightSideCharacter =
+                    _boxShape.TopLeftCharacter = _boxShape.TopRightCharacter = _boxShape.TopSideCharacter =
+                    _boxShape.BottomLeftCharacter = _boxShape.BottomRightCharacter = _boxShape.BottomSideCharacter =
+                    EditorConsoleManager.Instance.ToolPane.SelectedCharacter;
+
                 _boxShape.Foreground = _settingsPanel.LineForeColor;
                 _boxShape.FillColor = _settingsPanel.FillColor;
                 _boxShape.Fill = _settingsPanel.UseFill;

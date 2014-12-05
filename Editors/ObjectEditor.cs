@@ -20,7 +20,7 @@ namespace SadConsoleEditor.Editors
         public int Width { get { return _width; } }
         public int Height { get { return _height; } }
 
-        public Console Surface { get { return _consoleLayers; } }
+        public Consoles.LayeredConsole Surface { get { return _consoleLayers; } }
 
         public const string ID = "OBJ";
 

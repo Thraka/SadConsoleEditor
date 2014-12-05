@@ -16,6 +16,9 @@ namespace SadConsoleEditor.Windows
 
         private InputBox _widthBox;
         private InputBox _heightBox;
+
+        private Controls.ColorPresenter _backgroundPicker;
+        private Controls.ColorPresenter _foregroundPicker;
         //private InputBox _name;
         #endregion
 
@@ -23,27 +26,32 @@ namespace SadConsoleEditor.Windows
         public int SettingHeight { get; private set; }
         public int SettingWidth { get; private set; }
         public Editors.IEditor Editor { get; private set; }
+
+        public Color SettingForeground { get { return _foregroundPicker.SelectedColor; } }
+        public Color SettingBackground { get { return _backgroundPicker.SelectedColor; } }
         #endregion
 
-        public NewConsolePopup() : base(30, 12)
+        public NewConsolePopup() : base(30, 14)
         {
             //this.DefaultShowPosition = StartupPosition.CenterScreen;
             Title = "New Console";
 
             _cellData.DefaultBackground = Settings.Color_MenuBack;
             _cellData.DefaultForeground = Settings.Color_TitleText;
-            
+            _cellData.Clear();
+            Redraw();
+
             _okButton = new Button(8, 1)
             {
                 Text = "Accept",
-                Position = new Microsoft.Xna.Framework.Point(base.CellData.Width - 10, 10)
+                Position = new Microsoft.Xna.Framework.Point(base.CellData.Width - 10, 12)
             };
             _okButton.ButtonClicked += new EventHandler(_okButton_Action);
 
             _cancelButton = new Button(8, 1)
             {
                 Text = "Cancel",
-                Position = new Microsoft.Xna.Framework.Point(2, 10)
+                Position = new Microsoft.Xna.Framework.Point(2, 12)
             };
             _cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
 
@@ -81,11 +89,21 @@ namespace SadConsoleEditor.Windows
             //    Position = new Microsoft.Xna.Framework.Point(9, 3)
             //};
 
+            _foregroundPicker = new SadConsoleEditor.Controls.ColorPresenter("Foreground", Theme.FillStyle.Foreground, _cellData.Width - 4);
+            _foregroundPicker.Position = new Point(2, 9);
+            _foregroundPicker.SelectedColor = Color.White;
+
+            _backgroundPicker = new SadConsoleEditor.Controls.ColorPresenter("Background", Theme.FillStyle.Foreground, _cellData.Width - 4);
+            _backgroundPicker.Position = new Point(2, 10);
+            _backgroundPicker.SelectedColor = Color.Black;
+
             Add(_editorsListBox);
             Add(_widthBox);
             Add(_heightBox);
             Add(_cancelButton);
             Add(_okButton);
+            Add(_foregroundPicker);
+            Add(_backgroundPicker);
             //Add(_name);
 
             foreach (var editor in EditorConsoleManager.Instance.Editors)

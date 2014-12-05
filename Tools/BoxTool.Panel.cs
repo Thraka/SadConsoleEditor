@@ -11,6 +11,7 @@ namespace SadConsoleEditor.Tools
     class BoxToolPanel : CustomPanel
     {
         private CheckBox _fillBoxOption;
+        private CheckBox _useCharBorder;
         private Controls.ColorPresenter _fillColor;
         private Controls.ColorPresenter _lineForeColor;
         private Controls.ColorPresenter _lineBackColor;
@@ -19,6 +20,8 @@ namespace SadConsoleEditor.Tools
         public Color LineForeColor { get { return _lineForeColor.SelectedColor; } }
         public Color LineBackColor { get { return _lineBackColor.SelectedColor; } }
         public bool UseFill { get { return _fillBoxOption.IsSelected; } }
+        public bool UseCharacterBorder { get { return _useCharBorder.IsSelected; } }
+
 
         public BoxToolPanel()
         {
@@ -27,8 +30,11 @@ namespace SadConsoleEditor.Tools
             _fillBoxOption = new CheckBox(18, 1);
             _fillBoxOption.Text = "Fill";
 
+            _useCharBorder = new CheckBox(18, 1);
+            _useCharBorder.Text = "Char. Border";
+
             _lineForeColor = new Controls.ColorPresenter("Line Fore", Settings.Green, 18);
-            _lineForeColor.SelectedColor = Color.Black;
+            _lineForeColor.SelectedColor = Color.White;
 
             _lineBackColor = new Controls.ColorPresenter("Line Back", Settings.Green, 18);
             _lineBackColor.SelectedColor = Color.Black;
@@ -36,7 +42,8 @@ namespace SadConsoleEditor.Tools
             _fillColor = new Controls.ColorPresenter("Fill Color", Settings.Green, 18);
             _fillColor.SelectedColor = Color.Black;
 
-            Controls = new ControlBase[] { _lineForeColor, _lineBackColor, _fillColor, _fillBoxOption };
+            //TODO: Create character control that is displayed when use char border is checked.
+            Controls = new ControlBase[] { _lineForeColor, _lineBackColor, _fillColor, _fillBoxOption, _useCharBorder };
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseInfo info)

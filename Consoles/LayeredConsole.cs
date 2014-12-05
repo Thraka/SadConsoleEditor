@@ -13,7 +13,7 @@ using SadConsole.Input;
 namespace SadConsoleEditor.Consoles
 {
     [DataContract]
-    class LayeredConsole: Console
+    public class LayeredConsole: Console
     {
         [DataMember]
         public int Width { get; protected set; }
@@ -47,6 +47,17 @@ namespace SadConsoleEditor.Consoles
             }
 
             SetActiveLayer(0);
+        }
+
+        public void Clear(Color foreground, Color background)
+        {
+            // Create all layers
+            for (int i = 0; i < _layers.Length; i++)
+            {
+                _layers[i].CellData.DefaultBackground = background;
+                _layers[i].CellData.DefaultForeground = foreground;
+                _layers[i].CellData.Clear();
+            }
         }
 
         public void SetActiveLayer(int index)
