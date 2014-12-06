@@ -23,13 +23,23 @@
             }
         }
 
+        public string Title { get { return _title; } set { _title = value; Compose(); } }
+
+        public Color CharacterColor { get { return _characterColor; } set { _characterColor = value; Compose(); } }
+        public int Character { get { return _character; } set { _character = value; Compose(); } }
+
+        public bool DisableColorPicker { get; set; }
+
         private Color _selectedColor;
         private string _title;
         private Windows.ColorPickerPopup _popup;
+        private int _character;
+        private Color _characterColor;
+
         
         public ColorPresenter(string title, Color foreground, int width)
         {
-            Resize(width, 2);
+            Resize(width, 1);
             DefaultForeground = foreground;
             Clear();
             _title = title;
@@ -48,6 +58,11 @@
             Print(0, 0, _title);
 
             Print(_width - 3, 0, "   ", Color.Black, _selectedColor);
+            if (_character != 0)
+            {
+                SetCharacter(_width - 2, 0, _character);
+                SetForeground(_width - 2, 0, _characterColor);
+            }
         }
 
         public override void DetermineAppearance()
@@ -59,11 +74,14 @@
         {
             base.OnLeftMouseClicked(info);
 
-            var location = this.TransformConsolePositionByControlPosition(info);
-            if (location.X >= _width - 3)
+            if (!DisableColorPicker)
             {
-                _popup.SelectedColor = _selectedColor;
-                _popup.Show(true);
+                var location = this.TransformConsolePositionByControlPosition(info);
+                if (location.X >= _width - 3)
+                {
+                    _popup.SelectedColor = _selectedColor;
+                    _popup.Show(true);
+                }
             }
         }
     }

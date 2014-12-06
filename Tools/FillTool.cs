@@ -20,6 +20,11 @@
 
         public CustomPanel[] ControlPanels { get; private set; }
 
+        public FillTool()
+        {
+            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel };
+        }
+
         public override string ToString()
         {
             return Title;
@@ -28,7 +33,8 @@
         public void OnSelected()
         {
             EditorConsoleManager.Instance.UpdateBrush(new SadConsole.Entities.Entity());
-            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor, EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor, EditorConsoleManager.Instance.ToolPane.SelectedCharacter, null);
+            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter, null);
             EditorConsoleManager.Instance.Brush.IsVisible = false;
         }
 
@@ -39,7 +45,8 @@
 
         public void RefreshTool()
         {
-            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor, EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor, EditorConsoleManager.Instance.ToolPane.SelectedCharacter, null);
+            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter, null);
         }
 
         public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
@@ -57,9 +64,9 @@
                 surface[info.ConsoleLocation.X, info.ConsoleLocation.Y].Copy(cellToMatch);
                 cellToMatch.Effect = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y].Effect;
 
-                currentFillCell.CharacterIndex = EditorConsoleManager.Instance.ToolPane.SelectedCharacter;
-                currentFillCell.Foreground = EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor;
-                currentFillCell.Background = EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor;
+                currentFillCell.CharacterIndex = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter;
+                currentFillCell.Foreground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground;
+                currentFillCell.Background = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground;
 
                 Func<Cell, bool> isTargetCell = (c) =>
                 {

@@ -60,21 +60,7 @@
 
         public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
         {
-            if (writing)
-            {
-                if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
-                {
-                    writing = false;
-                    EditorConsoleManager.Instance.Brush.IsVisible = false;
-                }
-                else
-                {
-                    tempConsole.CellData = surface;
-                    tempConsole.VirtualCursor.PrintAppearance = new CellAppearance(EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor, EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor);
-                    tempConsole.ProcessKeyboard(info);
-                    EditorConsoleManager.Instance.Brush.Position = tempConsole.VirtualCursor.Position;
-                }
-            }
+            
         }
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)

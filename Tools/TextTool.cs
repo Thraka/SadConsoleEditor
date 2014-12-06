@@ -34,6 +34,7 @@
             tempConsole = new Console();
             tempConsole.CanUseKeyboard = true;
             tempConsole.VirtualCursor.AutomaticallyShiftRowsUp = false;
+            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel };
         }
 
         public void OnSelected()
@@ -44,8 +45,9 @@
             EditorConsoleManager.Instance.UpdateBrush(new SadConsole.Entities.Entity());
             EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(Color.White, Color.Black, _cursorCharacter, blinkEffect);
             EditorConsoleManager.Instance.Brush.IsVisible = false;
-            EditorConsoleManager.Instance.ToolPane.ShowCharacterList = false;
             EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = false;
+            EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = true;
+
         }
 
         public void OnDeselected()
@@ -70,7 +72,7 @@
                 else
                 {
                     tempConsole.CellData = surface;
-                    tempConsole.VirtualCursor.PrintAppearance = new CellAppearance(EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor, EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor);
+                    tempConsole.VirtualCursor.PrintAppearance = new CellAppearance(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground);
                     tempConsole.ProcessKeyboard(info);
                     EditorConsoleManager.Instance.Brush.Position = tempConsole.VirtualCursor.Position;
                 }

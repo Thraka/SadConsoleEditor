@@ -15,8 +15,6 @@
         private Point? _firstPoint;
         private Point? _secondPoint;
         private SadConsole.Shapes.Box _boxShape;
-        private Cell _lineCell;
-        private CellAppearance _lineStyle;
 
         private BoxToolPanel _settingsPanel;
 
@@ -55,8 +53,6 @@
                 AutoReverse = true
             };
 
-            _lineCell = new Cell();
-
             _settingsPanel = new BoxToolPanel();
 
             ControlPanels = new CustomPanel[] { _settingsPanel };
@@ -64,12 +60,6 @@
 
         public void OnSelected()
         {
-            _lineStyle = new CellAppearance(
-                                    EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor,
-                                    EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor,
-                                    EditorConsoleManager.Instance.ToolPane.SelectedCharacter);
-            _lineStyle.CopyAppearanceTo(_lineCell);
-
             _entity = new Entity();
             _entity.IsVisible = false;
 
@@ -77,10 +67,6 @@
             _entity.SetActiveAnimation("single");
 
             EditorConsoleManager.Instance.UpdateBrush(_entity);
-
-            EditorConsoleManager.Instance.ToolPane.ShowCharacterList = false;
-            EditorConsoleManager.Instance.ToolPane.ShowBackground = false;
-            EditorConsoleManager.Instance.ToolPane.ShowForeground = false;
         }
 
         public void OnDeselected()
@@ -89,11 +75,6 @@
 
         public void RefreshTool()
         {
-            _lineStyle = new CellAppearance(
-                                    EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor,
-                                    EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor,
-                                    EditorConsoleManager.Instance.ToolPane.SelectedCharacter);
-            _lineStyle.CopyAppearanceTo(_lineCell);
         }
 
         public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
@@ -158,7 +139,7 @@
                     _boxShape.LeftSideCharacter = _boxShape.RightSideCharacter =
                     _boxShape.TopLeftCharacter = _boxShape.TopRightCharacter = _boxShape.TopSideCharacter =
                     _boxShape.BottomLeftCharacter = _boxShape.BottomRightCharacter = _boxShape.BottomSideCharacter =
-                    EditorConsoleManager.Instance.ToolPane.SelectedCharacter;
+                    _settingsPanel.BorderCharacter;
 
                 _boxShape.Foreground = _settingsPanel.LineForeColor;
                 _boxShape.FillColor = _settingsPanel.FillColor;

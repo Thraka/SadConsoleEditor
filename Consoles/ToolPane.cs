@@ -22,108 +22,23 @@ namespace SadConsoleEditor.Consoles
         private int RowToolSettings = 13;
 
         private ListBox _toolsListBox;
-        private ColorPickerPopup _colorPicker;
-        private bool _colorPickerModeForeground;
-
         private Dictionary<string, ITool> _tools;
 
         public ITool SelectedTool { get; private set; }
-
-        public EventHandler BrushChanged;
-
-
-        #region ColorCharacterArea
-        private int _charTextRow;
-        private int _charBackTextRow;
-        private int _charForeTextRow;
-        private bool _showCharacterList = true;
-        private bool _showForeground = true;
-        private bool _showBackground = true;
-
-        private Color _charForegroundColor = Color.Red;
-        private Color _charBackgroundColor = Color.Black;
-        private int _selectedChar = 1;
-
+       
         private Button _newButton;
         private Button _loadButton;
         private Button _saveButton;
         private Button _resizeButton;
-        private CharacterPicker _picker;
 
-        public bool ShowCharacterList
-        {
-            get { return _showCharacterList; }
-            set { _showCharacterList = value; RefreshControls(); }
-        }
+        public Tools.CharacterPickPane CommonCharacterPickerPanel;
 
-        public bool ShowForeground
-        {
-            get { return _showForeground; }
-            set { _showForeground = value; RefreshControls(); }
-        }
-
-        public bool ShowBackground
-        {
-            get { return _showBackground; }
-            set { _showBackground = value; RefreshControls(); }
-        }
-
-        public Color CharacterForegroundColor
-        {
-            get { return _charForegroundColor; }
-            set
-            {
-                if (_charForegroundColor != value)
-                {
-                    _charForegroundColor = value;
-
-                    if (BrushChanged != null)
-                        BrushChanged(this, EventArgs.Empty);
-
-                    SelectedTool.RefreshTool();
-                }
-            }
-        }
-
-        public Color CharacterBackgroundColor
-        {
-            get { return _charBackgroundColor; }
-            set
-            {
-                if (_charBackgroundColor != value)
-                {
-                    _charBackgroundColor = value;
-
-                    if (BrushChanged != null)
-                        BrushChanged(this, EventArgs.Empty);
-
-                    SelectedTool.RefreshTool();
-                }
-            }
-        }
-
-        public int SelectedCharacter
-        {
-            get { return _selectedChar; }
-            set
-            {
-                if (_selectedChar != value)
-                {
-                    _selectedChar = value;
-
-                    if (BrushChanged != null)
-                        BrushChanged(this, EventArgs.Empty);
-
-                    SelectedTool.RefreshTool();
-
-                    _picker.SelectedCharacter = value;
-                }
-            }
-        }
-        #endregion
+        public static int PanelWidth;
 
         public ToolPane() : base(20, Game1.WindowSize.Y)
         {
+            PanelWidth = 18;
+            CommonCharacterPickerPanel = new CharacterPickPane("Settings", false, false, false);
             CanUseKeyboard = false;
         }
 
@@ -145,24 +60,9 @@ namespace SadConsoleEditor.Consoles
 
             SetupFilePanel();
             SetupToolsPanel();
-            SetupToolsSettingsPane();
 
             //_cellData.Print(1, 2, "  Paint Brush", Settings.Yellow);
             ProcessMouseWithoutFocus = true;
-
-            _colorPicker = new ColorPickerPopup();
-            _colorPicker.Closed += (sender, e) =>
-            {
-                if (_colorPicker.DialogResult)
-                {
-                    if (_colorPickerModeForeground)
-                        CharacterForegroundColor = _colorPicker.SelectedColor;
-                    else
-                        CharacterBackgroundColor = _colorPicker.SelectedColor;
-
-                    DrawCharacterState();
-                }
-            };
         }
 
         private void SetupFilePanel()
@@ -233,70 +133,15 @@ namespace SadConsoleEditor.Consoles
                     }
                     SelectedTool = (ITool)e.Item;
 
-                    _showBackground = true;
-                    _showForeground = true;
-                    _showCharacterList = true;
                     EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = true;
+                    CommonCharacterPickerPanel.HideCharacter = false;
+                    CommonCharacterPickerPanel.HideForeground = false;
+                    CommonCharacterPickerPanel.HideBackground = false;
                     SelectedTool.OnSelected();
+                    CommonCharacterPickerPanel.Reset();
                     RefreshControls();
                 };
-        }
 
-        private void SetupToolsSettingsPane()
-        {
-            _picker = new CharacterPicker(Settings.Red, Settings.Color_ControlBack, Settings.Green);
-            _picker.SelectedCharacterChanged += (sender, e) =>
-            {
-                SelectedCharacter = e.NewCharacter;
-
-                DrawCharacterState();
-            };
-            Add(_picker);
-        }
-
-        private void DrawCharacterState()
-        {
-            string charString = _selectedChar.ToString() + "    ";
-
-            ColoredString coloredString = new ColoredString("   ", _charBackgroundColor, _charBackgroundColor, null);
-
-            coloredString[1].Character = (char)_selectedChar;
-            coloredString[1].Foreground = _charForegroundColor;
-
-            if (_showCharacterList)
-            {
-                _cellData.Print(11, _charTextRow, charString);
-                _cellData.Print(_cellData.Width - 5, _charTextRow, coloredString);
-            }
-
-            if (_showForeground)
-                _cellData.Print(_cellData.Width - 5, _charForeTextRow, "   ", Color.Black, _charForegroundColor);
-            if (_showBackground)
-                _cellData.Print(_cellData.Width - 5, _charBackTextRow, "   ", Color.Black, _charBackgroundColor);
-
-        }
-
-        protected override void OnMouseLeftClicked(SadConsole.Input.MouseInfo info)
-        {
-            base.OnMouseLeftClicked(info);
-
-            if (_showBackground && info.ConsoleLocation.Y == _charBackTextRow && info.ConsoleLocation.X >= _cellData.Width - 5 && info.ConsoleLocation.X < _cellData.Width - 2)
-            {
-                _colorPickerModeForeground = false;
-                _colorPicker.SelectedColor = CharacterBackgroundColor;
-                _colorPicker.Show(true);
-            }
-            else if (_showForeground && info.ConsoleLocation.Y == _charForeTextRow && info.ConsoleLocation.X >= _cellData.Width - 5 && info.ConsoleLocation.X < _cellData.Width - 2)
-            {
-                _colorPickerModeForeground = true;
-                _colorPicker.SelectedColor = CharacterForegroundColor;
-                _colorPicker.Show(true);
-            }
-            //else if (info.ConsoleLocation.Y == _charTextRow && info.ConsoleLocation.X >= _cellData.Width - 5 && info.ConsoleLocation.X < _cellData.Width - 2)
-            //{
-            //    CharacterQuickSelectPopup popup = new CharacterQuickSelectPopup(SelectedCharacter);
-            //    popup.Show(true);
-            //}
         }
 
         public void SetupEditor()
@@ -311,6 +156,7 @@ namespace SadConsoleEditor.Consoles
 
         private void RefreshControls()
         {
+            int activeRow;
             _cellData.Clear();
 
             RowFile = 0;
@@ -327,58 +173,14 @@ namespace SadConsoleEditor.Consoles
             _toolsListBox.Position = new Point(1, RowTools + 2);
 
             RowToolSettings = _toolsListBox.Position.Y + _toolsListBox.Height + 1;
-            int activeRow = RowToolSettings;
-            if (_showBackground || _showForeground || _showCharacterList)
-            {
-                _cellData.Print(1, activeRow, "Basic Settings");
-                _cellData.Print(0, ++activeRow, new string((char)196, _cellData.Width));
-
-                if (_showForeground)
-                {
-                    _cellData.Print(1, ++activeRow, "Foreground", Settings.Green);
-                    _charForeTextRow = activeRow;
-                }
-                if (_showBackground)
-                {
-                    _cellData.Print(1, ++activeRow, "Background", Settings.Green);
-                    _charBackTextRow = activeRow;
-                }
-
-                if (_showCharacterList)
-                {
-                    _cellData.Print(1, ++activeRow, "Character", Settings.Green);
-                    _charTextRow = activeRow;
-
-                    activeRow += 2;
-                    _picker.Position = new Point(2, activeRow);
-                    _picker.IsVisible = true;
-
-
-                    activeRow = _picker.Position.Y + _picker.Height;
-                }
-                else
-                {
-                    _picker.IsVisible = false;
-                    SelectedCharacter = 0;
-                }
-
-                DrawCharacterState();
-                activeRow++;
-            }
-            else
-            {
-                _picker.IsVisible = false;
-                SelectedCharacter = 0;
-                activeRow = RowToolSettings - 1;
-            }
+            activeRow = RowToolSettings;
 
             if (SelectedTool.ControlPanels != null)
             {
                 foreach (var pane in SelectedTool.ControlPanels)
                 {
-                    _cellData.Print(1, ++activeRow, pane.Title);
-                    _cellData.Print(0, ++activeRow, new string((char)196, _cellData.Width));
-                    activeRow++;
+                    _cellData.Print(1, activeRow++, pane.Title);
+                    _cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
 
                     foreach (var control in pane.Controls)
                     {
@@ -387,9 +189,10 @@ namespace SadConsoleEditor.Consoles
                         activeRow += pane.Redraw(control) + control.Height;
                     }
 
-                    activeRow += 2;
+                    activeRow += 1;
                 }
             }
         }
+
     }
 }

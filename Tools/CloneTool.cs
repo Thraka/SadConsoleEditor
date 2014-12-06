@@ -83,10 +83,6 @@
 
             EditorConsoleManager.Instance.UpdateBrush(_entity);
 
-            EditorConsoleManager.Instance.ToolPane.ShowBackground = false;
-            EditorConsoleManager.Instance.ToolPane.ShowForeground = false;
-            EditorConsoleManager.Instance.ToolPane.ShowCharacterList = false;
-
             _panel.State = CloneToolPanel.CloneState.SelectingPoint1;
         }
 

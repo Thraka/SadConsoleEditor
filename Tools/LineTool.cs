@@ -55,14 +55,16 @@
             };
 
             _lineCell = new Cell();
+
+            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel };
         }
 
         public void OnSelected()
         {
             _lineStyle = new CellAppearance(
-                                    EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor,
-                                    EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor,
-                                    EditorConsoleManager.Instance.ToolPane.SelectedCharacter);
+                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
+                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
             _lineStyle.CopyAppearanceTo(_lineCell);
 
             _entity = new Entity();
@@ -82,9 +84,9 @@
         public void RefreshTool()
         {
             _lineStyle = new CellAppearance(
-                                    EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor, 
-                                    EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor, 
-                                    EditorConsoleManager.Instance.ToolPane.SelectedCharacter);
+                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
+                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
             _lineStyle.CopyAppearanceTo(_lineCell);
         }
 

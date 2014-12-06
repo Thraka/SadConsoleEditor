@@ -29,16 +29,15 @@
         {
             _settingsPanel = new RecolorToolPanel();
 
-            ControlPanels = new CustomPanel[] { _settingsPanel };
+            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel, _settingsPanel };
         }
 
         public void OnSelected()
         {
             EditorConsoleManager.Instance.UpdateBrush(new SadConsole.Entities.Entity());
-            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor, EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor, 42, null);
+            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
             EditorConsoleManager.Instance.Brush.IsVisible = false;
-
-            EditorConsoleManager.Instance.ToolPane.ShowCharacterList = false;
         }
 
         public void OnDeselected()
@@ -48,7 +47,7 @@
 
         public void RefreshTool()
         {
-            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor, EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor, 42, null);
+            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
         }
 
         public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
@@ -65,10 +64,10 @@
                     var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
 
                     if (!_settingsPanel.IgnoreForeground)
-                        cell.Foreground = EditorConsoleManager.Instance.ToolPane.CharacterForegroundColor;
+                        cell.Foreground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground;
 
                     if (!_settingsPanel.IgnoreBackground)
-                        cell.Background = EditorConsoleManager.Instance.ToolPane.CharacterBackgroundColor;
+                        cell.Background = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground;
                 }
             }
         }
