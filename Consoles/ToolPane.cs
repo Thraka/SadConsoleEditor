@@ -112,7 +112,7 @@ namespace SadConsoleEditor.Consoles
 
         private void SetupToolsPanel()
         {
-            _toolsListBox = new ListBox(20 - 2, 4);
+            _toolsListBox = new ListBox(20 - 2, 7);
             _toolsListBox.HideBorder = true;
             _toolsListBox.CanUseKeyboard = false;
             Add(_toolsListBox);
