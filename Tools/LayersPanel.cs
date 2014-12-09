@@ -19,7 +19,7 @@ namespace SadConsoleEditor.Tools
         public LayersPanel()
         {
             Title = "Layers";
-            _layers = new ListBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 5);
+            _layers = new ListBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 4);
             _layers.HideBorder = true;
             _layers.SelectedItemChanged += (o, e) =>
                 {

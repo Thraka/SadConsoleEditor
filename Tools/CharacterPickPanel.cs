@@ -18,9 +18,9 @@ namespace SadConsoleEditor.Tools
         private Controls.ColorPresenter _charPreview;
         private Controls.CharacterPicker _characterPicker;
 
-        public Color SettingForeground { get { return _foreColor.SelectedColor; } }
-        public Color SettingBackground { get { return _backColor.SelectedColor; } }
-        public int SettingCharacter { get { return _characterPicker.SelectedCharacter; } }
+        public Color SettingForeground { get { return _foreColor.SelectedColor; } set { _foreColor.SelectedColor = value; } }
+        public Color SettingBackground { get { return _backColor.SelectedColor; } set { _backColor.SelectedColor = value; } }
+        public int SettingCharacter { get { return _characterPicker.SelectedCharacter; } set { _characterPicker.SelectedCharacter = value; } }
 
         public bool HideCharacter;
         public bool HideForeground;

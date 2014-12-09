@@ -89,6 +89,15 @@
                     cell.Background = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground;
                 }
             }
+
+            if (info.RightButtonDown)
+            {
+                var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
+
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter = cell.CharacterIndex;
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground = cell.Foreground;
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground = cell.Background;
+            }
         }
     }
 }
