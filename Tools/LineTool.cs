@@ -159,6 +159,12 @@
 
                 animation.Center = p1;
 
+                _lineStyle = new CellAppearance(
+                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
+                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
+                _lineStyle.CopyAppearanceTo(_lineCell);
+
                 _lineShape = new SadConsole.Shapes.Line();
                 _lineShape.CellAppearance = _lineCell;
                 _lineShape.UseEndingCell = false;

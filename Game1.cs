@@ -64,7 +64,6 @@ namespace SadConsoleEditor
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             IsMouseVisible = true;
 
             base.Initialize();
@@ -76,7 +75,6 @@ namespace SadConsoleEditor
         /// </summary>
         protected override void LoadContent()
         {
-            // TODO: use this.Content to load your game content here
         }
 
         /// <summary>
@@ -85,7 +83,6 @@ namespace SadConsoleEditor
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
 
         /// <summary>

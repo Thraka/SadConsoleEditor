@@ -35,6 +35,7 @@ namespace SadConsoleEditor.Tools
 
             _useCharBorder = new CheckBox(18, 1);
             _useCharBorder.Text = "Char. Border";
+            _useCharBorder.IsSelectedChanged += (s, o) => { _characterPicker.IsVisible = _useCharBorder.IsSelected; EditorConsoleManager.Instance.ToolPane.RefreshControls(); };
 
             _lineForeColor = new Controls.ColorPresenter("Border Fore", Settings.Green, 18);
             _lineForeColor.SelectedColor = Color.White;
@@ -46,8 +47,8 @@ namespace SadConsoleEditor.Tools
             _fillColor.SelectedColor = Color.Black;
 
             _characterPicker = new Controls.CharacterPicker(Settings.Red, Settings.Color_ControlBack, Settings.Green);
+            _characterPicker.IsVisible = false;
 
-            //TODO: Create character control that is displayed when use char border is checked.
             Controls = new ControlBase[] { _lineForeColor, _lineBackColor, _fillColor, _fillBoxOption, _useCharBorder, _characterPicker };
         }
 

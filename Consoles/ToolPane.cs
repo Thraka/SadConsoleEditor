@@ -154,7 +154,7 @@ namespace SadConsoleEditor.Consoles
             _toolsListBox.SelectedItem = _tools.Values.First();
         }
 
-        private void RefreshControls()
+        public void RefreshControls()
         {
             int activeRow;
             _cellData.Clear();

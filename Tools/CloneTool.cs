@@ -161,8 +161,38 @@
                 else if (_panel.State == CloneToolPanel.CloneState.MovingClone)
                 {
                     // STAMP
-                    // TODO: Add an option in Copy to skip empty and transparent cells. Pass in _panel.SkipEmptyCells
-                    _entity.CellData.Copy(0, 0, _entity.CellData.Width, _entity.CellData.Height, surface, info.ConsoleLocation.X - _entity.CurrentAnimation.Center.X, info.ConsoleLocation.Y - _entity.CurrentAnimation.Center.Y);
+                    int destinationX = info.ConsoleLocation.X - _entity.CurrentAnimation.Center.X;
+                    int destinationY = info.ConsoleLocation.Y - _entity.CurrentAnimation.Center.Y;
+                    int destX = destinationX;
+                    int destY = destinationY;
+
+                    for (int curx = 0; curx < _entity.CellData.Width; curx++)
+                    {
+                        for (int cury = 0; cury < _entity.CellData.Height; cury++)
+                        {
+                            if (_entity.CellData.IsValidCell(curx, cury))
+                            {
+                                var sourceCell = _entity.CellData[curx, cury];
+                                
+                                // Not working, breakpoint here to remind me.
+                                if (_panel.SkipEmptyCells && sourceCell.CharacterIndex == 0 && (sourceCell.Background == Color.Transparent || (_panel.UseAltEmptyColor && sourceCell.Background == _panel.AltEmptyColor)))
+                                {
+                                    destY++;
+                                    continue;
+                                }
+
+                                if (surface.IsValidCell(destX, destY))
+                                {
+                                    var desCell = surface[destX, destY];
+                                    sourceCell.CopyAppearanceTo(desCell);
+                                    surface.SetEffect(desCell, sourceCell.Effect);
+                                }
+                            }
+                            destY++;
+                        }
+                        destY = destinationY;
+                        destX++;
+                    }
                 }
             }
             else

@@ -104,13 +104,7 @@ namespace SadConsoleEditor.Editors
         public void ProcessMouse(MouseInfo info)
         {
             _consoleLayers.ProcessMouse(info);
-            //
-            //
-            //
-            // TODO change the tool interface to do the mouse code commented from editorconsolemanager
-            //
-            //
-            //
+            
             if (_consoleLayers.IsMouseOver)
                 EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessMouse(info, _consoleLayers.ActiveLayer);
         }
