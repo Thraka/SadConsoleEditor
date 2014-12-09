@@ -58,19 +58,7 @@
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
         {
-            if (info.LeftButtonDown)
-            {
-                //if (info.Console == surface)
-                {
-                    var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
-
-                    if (!_settingsPanel.IgnoreForeground)
-                        cell.Foreground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground;
-
-                    if (!_settingsPanel.IgnoreBackground)
-                        cell.Background = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground;
-                }
-            }
+            
         }
 
         public void MouseEnterSurface(MouseInfo info, CellSurface surface)
@@ -86,6 +74,20 @@
         public void MouseMoveSurface(MouseInfo info, CellSurface surface)
         {
             EditorConsoleManager.Instance.Brush.Position = info.ConsoleLocation;
+
+            if (info.LeftButtonDown)
+            {
+                //if (info.Console == surface)
+                {
+                    var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
+
+                    if (!_settingsPanel.IgnoreForeground)
+                        cell.Foreground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground;
+
+                    if (!_settingsPanel.IgnoreBackground)
+                        cell.Background = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground;
+                }
+            }
         }
     }
 }

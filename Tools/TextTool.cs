@@ -81,15 +81,7 @@
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
         {
-            if (info.LeftClicked)
-            {
-                writing = true;
-
-                tempConsole.CellData = surface;
-                tempConsole.VirtualCursor.Position = EditorConsoleManager.Instance.Brush.Position = info.ConsoleLocation;
-
-                EditorConsoleManager.Instance.Brush.IsVisible = true;
-            }
+            
         }
 
         public void MouseEnterSurface(MouseInfo info, CellSurface surface)
@@ -103,6 +95,15 @@
 
         public void MouseMoveSurface(MouseInfo info, CellSurface surface)
         {
+            if (info.LeftClicked)
+            {
+                writing = true;
+
+                tempConsole.CellData = surface;
+                tempConsole.VirtualCursor.Position = EditorConsoleManager.Instance.Brush.Position = info.ConsoleLocation;
+
+                EditorConsoleManager.Instance.Brush.IsVisible = true;
+            }
         }
     }
 }

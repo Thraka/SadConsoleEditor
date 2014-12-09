@@ -56,6 +56,23 @@
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
         {
+            
+        }
+
+        public void MouseEnterSurface(MouseInfo info, CellSurface surface)
+        {
+            EditorConsoleManager.Instance.Brush.IsVisible = true;
+        }
+
+        public void MouseExitSurface(MouseInfo info, CellSurface surface)
+        {
+            EditorConsoleManager.Instance.Brush.IsVisible = false;
+        }
+
+        public void MouseMoveSurface(MouseInfo info, CellSurface surface)
+        {
+            EditorConsoleManager.Instance.Brush.Position = info.ConsoleLocation;
+
             if (info.LeftClicked)
             {
                 Cell cellToMatch = new Cell();
@@ -107,21 +124,6 @@
                 if (!isTargetCell(currentFillCell))
                     SadConsole.Algorithms.FloodFill<Cell>(surface[info.ConsoleLocation.X, info.ConsoleLocation.Y], isTargetCell, fillCell, getConnectedCells);
             }
-        }
-
-        public void MouseEnterSurface(MouseInfo info, CellSurface surface)
-        {
-            EditorConsoleManager.Instance.Brush.IsVisible = true;
-        }
-
-        public void MouseExitSurface(MouseInfo info, CellSurface surface)
-        {
-            EditorConsoleManager.Instance.Brush.IsVisible = false;
-        }
-
-        public void MouseMoveSurface(MouseInfo info, CellSurface surface)
-        {
-            EditorConsoleManager.Instance.Brush.Position = info.ConsoleLocation;
         }
 
     }

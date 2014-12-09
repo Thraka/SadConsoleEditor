@@ -56,7 +56,7 @@
             };
 
 
-            _panel = new CloneToolPanel();
+            _panel = new CloneToolPanel(LoadBrush, SaveBrush);
             ControlPanels = new CustomPanel[] { _panel };
 
             _pulseAnimation = new SadConsole.Effects.Fade()
@@ -71,12 +71,39 @@
             };
         }
 
+        private CellSurface SaveBrush()
+        {
+            CellSurface newSurface = new CellSurface(_entity.CurrentAnimation.CurrentFrame.Width, _entity.CurrentAnimation.CurrentFrame.Height);
+            _entity.CurrentAnimation.CurrentFrame.Copy(newSurface);
+
+            return newSurface;
+        }
+
+        public void LoadBrush(CellSurface surface)
+        {
+            _panel.State = CloneToolPanel.CloneState.MovingClone;
+
+            // Copy data to new animation
+            Animation cloneAnimation = new Animation("clone", surface.Width, surface.Height);
+            var frame = cloneAnimation.CreateFrame();
+            surface.Copy(frame);
+
+            cloneAnimation.Center = new Point(cloneAnimation.Width / 2, cloneAnimation.Height / 2);
+            cloneAnimation.Commit();
+
+            _entity.AddAnimation(cloneAnimation);
+            _entity.SetActiveAnimation("clone");
+            _entity.Tint = new Color(0f, 0f, 0f, 0f);
+
+            _entity.IsVisible = true;
+        }
+
         public void OnSelected()
         {
 
 
             _entity = new Entity();
-            _entity.IsVisible = false;
+            _entity.IsVisible = true;
 
             _entity.AddAnimation(_animSinglePoint);
             _entity.SetActiveAnimation("single");
@@ -102,17 +129,25 @@
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
         {
+            if (_panel.State == CloneToolPanel.CloneState.MovingClone)
+            {
+                _entity.Position = info.ConsoleLocation;
 
+                if (info.LeftClicked)
+                    StampBrush(info.ConsoleLocation.X, info.ConsoleLocation.Y, surface);
+            }
         }
 
         public void MouseEnterSurface(MouseInfo info, CellSurface surface)
         {
-            _entity.IsVisible = true;
+            if (_panel.State != CloneToolPanel.CloneState.MovingClone)
+                _entity.IsVisible = true;
         }
 
         public void MouseExitSurface(MouseInfo info, CellSurface surface)
         {
-            _entity.IsVisible = false;
+            if (_panel.State != CloneToolPanel.CloneState.MovingClone)
+                _entity.IsVisible = false;
         }
 
         public void MouseMoveSurface(MouseInfo info, CellSurface surface)
@@ -160,39 +195,7 @@
                 }
                 else if (_panel.State == CloneToolPanel.CloneState.MovingClone)
                 {
-                    // STAMP
-                    int destinationX = info.ConsoleLocation.X - _entity.CurrentAnimation.Center.X;
-                    int destinationY = info.ConsoleLocation.Y - _entity.CurrentAnimation.Center.Y;
-                    int destX = destinationX;
-                    int destY = destinationY;
-
-                    for (int curx = 0; curx < _entity.CellData.Width; curx++)
-                    {
-                        for (int cury = 0; cury < _entity.CellData.Height; cury++)
-                        {
-                            if (_entity.CellData.IsValidCell(curx, cury))
-                            {
-                                var sourceCell = _entity.CellData[curx, cury];
-                                
-                                // Not working, breakpoint here to remind me.
-                                if (_panel.SkipEmptyCells && sourceCell.CharacterIndex == 0 && (sourceCell.Background == Color.Transparent || (_panel.UseAltEmptyColor && sourceCell.Background == _panel.AltEmptyColor)))
-                                {
-                                    destY++;
-                                    continue;
-                                }
-
-                                if (surface.IsValidCell(destX, destY))
-                                {
-                                    var desCell = surface[destX, destY];
-                                    sourceCell.CopyAppearanceTo(desCell);
-                                    surface.SetEffect(desCell, sourceCell.Effect);
-                                }
-                            }
-                            destY++;
-                        }
-                        destY = destinationY;
-                        destX++;
-                    }
+                    StampBrush(info.ConsoleLocation.X, info.ConsoleLocation.Y, surface);
                 }
             }
             else
@@ -263,6 +266,42 @@
             }
 
             _previousState = _panel.State;
+        }
+
+        private void StampBrush(int consoleLocationX, int consoleLocationY, CellSurface surface)
+        {
+            int destinationX = consoleLocationX - _entity.CurrentAnimation.Center.X;
+            int destinationY = consoleLocationY - _entity.CurrentAnimation.Center.Y;
+            int destX = destinationX;
+            int destY = destinationY;
+
+            for (int curx = 0; curx < _entity.CellData.Width; curx++)
+            {
+                for (int cury = 0; cury < _entity.CellData.Height; cury++)
+                {
+                    if (_entity.CellData.IsValidCell(curx, cury))
+                    {
+                        var sourceCell = _entity.CellData[curx, cury];
+
+                        // Not working, breakpoint here to remind me.
+                        if (_panel.SkipEmptyCells && sourceCell.CharacterIndex == 0 && (sourceCell.Background == Color.Transparent || (_panel.UseAltEmptyColor && sourceCell.Background == _panel.AltEmptyColor)))
+                        {
+                            destY++;
+                            continue;
+                        }
+
+                        if (surface.IsValidCell(destX, destY))
+                        {
+                            var desCell = surface[destX, destY];
+                            sourceCell.CopyAppearanceTo(desCell);
+                            surface.SetEffect(desCell, sourceCell.Effect);
+                        }
+                    }
+                    destY++;
+                }
+                destY = destinationY;
+                destX++;
+            }
         }
     }
 }
