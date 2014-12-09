@@ -52,7 +52,7 @@
     <Compile Include="CustomPane.cs" />
     <Compile Include="Editors\DrawingEditor.cs" />
     <Compile Include="Editors\IEditor.cs" />
-    <Compile Include="Editors\ObjectEditor.cs" />
+    <Compile Include="Editors\GameScreenEditor.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="HSLColor.cs" />
     <Compile Include="LayeredEntity.cs" />
@@ -68,6 +68,7 @@
     <Compile Include="Tools\EraseDrawingTool.cs" />
     <Compile Include="Tools\FillTool.cs" />
     <Compile Include="Tools\ITool.cs" />
+    <Compile Include="Tools\LayersPanel.cs" />
     <Compile Include="Tools\LineTool.cs" />
     <Compile Include="Tools\RecolorTool.cs" />
     <Compile Include="Tools\ObjectTool.cs" />

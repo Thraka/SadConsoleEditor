@@ -23,8 +23,6 @@
         /// <returns>Additional rows this redraw will use. Tools pane assumes the size of control + 1.</returns>
         public abstract int Redraw(ControlBase control);
 
-        public abstract void Loaded(CellSurface surface);
-
-        public abstract void Unloaded(CellSurface surface);
+        public abstract void Loaded();
     }
 }

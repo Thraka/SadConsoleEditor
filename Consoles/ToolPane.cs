@@ -32,6 +32,7 @@ namespace SadConsoleEditor.Consoles
         private Button _resizeButton;
 
         public Tools.CharacterPickPane CommonCharacterPickerPanel;
+        public Tools.LayersPanel LayersPanel;
 
         public static int PanelWidth;
 
@@ -133,6 +134,8 @@ namespace SadConsoleEditor.Consoles
                     }
                     SelectedTool = (ITool)e.Item;
 
+                    LayersPanel = new Tools.LayersPanel();
+
                     EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = true;
                     CommonCharacterPickerPanel.HideCharacter = false;
                     CommonCharacterPickerPanel.HideForeground = false;
@@ -175,10 +178,26 @@ namespace SadConsoleEditor.Consoles
             RowToolSettings = _toolsListBox.Position.Y + _toolsListBox.Height + 1;
             activeRow = RowToolSettings;
 
+            // Layers panel
+            LayersPanel.Loaded();
+            _cellData.Print(1, activeRow++, LayersPanel.Title);
+            _cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
+
+            foreach (var control in LayersPanel.Controls)
+            {
+                Add(control);
+                control.Position = new Point(1, activeRow);
+                activeRow += LayersPanel.Redraw(control) + control.Height;
+            }
+
+            activeRow++;
+
+            // Custom panels from the selected tool
             if (SelectedTool.ControlPanels != null)
             {
                 foreach (var pane in SelectedTool.ControlPanels)
                 {
+                    pane.Loaded();
                     _cellData.Print(1, activeRow++, pane.Title);
                     _cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
 
@@ -192,6 +211,17 @@ namespace SadConsoleEditor.Consoles
                     activeRow += 1;
                 }
             }
+        }
+
+        public override bool ProcessMouse(SadConsole.Input.MouseInfo info)
+        {
+            if (info.ScrollWheelValueChange != 0)
+            {
+                EditorConsoleManager.Instance.ScrollToolbox(info.ScrollWheelValueChange);
+                return true;
+            }
+
+            return base.ProcessMouse(info);
         }
 
     }

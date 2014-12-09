@@ -45,7 +45,7 @@ namespace SadConsoleEditor.Tools
 
             _foreColor.ColorChanged += (o, e) => { _charPreview.CharacterColor = _foreColor.SelectedColor; OnChanged(); };
             _backColor.ColorChanged += (o, e) => { _charPreview.SelectedColor = _backColor.SelectedColor; OnChanged(); };
-            _characterPicker.SelectedCharacterChanged += (sender, e) => { _charPreview.Character = e.NewCharacter; OnChanged(); };
+            _characterPicker.SelectedCharacterChanged += (sender, e) => { _charPreview.Character = e.NewCharacter; _charPreview.Title = "Character (" + e.NewCharacter.ToString() + ")"; OnChanged(); };
             _characterPicker.SelectedCharacter = 1;
 
 
@@ -88,11 +88,7 @@ namespace SadConsoleEditor.Tools
             return 0;
         }
 
-        public override void Loaded(SadConsole.CellSurface surface)
-        {
-        }
-
-        public override void Unloaded(SadConsole.CellSurface surface)
+        public override void Loaded()
         {
         }
     }

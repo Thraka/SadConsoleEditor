@@ -8,6 +8,12 @@ namespace SadConsoleEditor
 {
     public static class Settings
     {
+        #region Config
+        public static int BoundsWidth = 80;
+        public static int BoundsHeight = 25;
+        #endregion
+
+        #region Colors
         public static Color Green = new Color(165, 224, 45);
         public static Color Red = new Color(246, 38, 108);
         public static Color Blue = new Color(100, 217, 234);
@@ -15,7 +21,6 @@ namespace SadConsoleEditor
         public static Color Yellow = new Color(226, 218, 110);
         public static Color Orange = new Color(251, 149, 31);
 
-        #region Colors
         public static Color Color_MenuBack = new Color(39, 40, 34);
         public static Color Color_MenuBackDark = new Color(Color.DarkBlue.R - 40, Color.DarkBlue.G - 40, Color.DarkBlue.B - 40, Color.DarkBlue.A);
         public static Color Color_MenuShade = Color.DarkSlateGray; //new Color(Color.DarkBlue.R - 40, Color.DarkBlue.G - 40, Color.DarkBlue.B - 40, Color.DarkBlue.A);

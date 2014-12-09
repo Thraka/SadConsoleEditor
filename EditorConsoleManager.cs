@@ -43,6 +43,14 @@ namespace SadConsoleEditor
 
         public SadConsole.Font Font { get; set; }
 
+        public Point SurfaceMouseLocation
+        {
+            set
+            {
+                _backingPanel.CellData.Clear(); _backingPanel.CellData.Print(0, 0, string.Format("X:{0}, Y:{1}", value.X, value.Y), Settings.Green);
+            }
+        }
+
         private ControlsConsole _backingPanel;
 
         private EditorConsoleManager()
@@ -55,7 +63,7 @@ namespace SadConsoleEditor
             _backingPanel.CellData.Clear();
 
             _backingPanel.IsVisible = true;
-
+            SurfaceMouseLocation = new Point(0, 0);
             Color Green = new Color(165, 224, 45);
             Color Red = new Color(246, 38, 108);
             Color Blue = new Color(100, 217, 234);
@@ -74,7 +82,7 @@ namespace SadConsoleEditor
 
             Editors = new Dictionary<string, SadConsoleEditor.Editors.IEditor>();
             Editors.Add(DrawingEditor.ID, new DrawingEditor());
-            Editors.Add(ObjectEditor.ID, new ObjectEditor());
+            Editors.Add(GameScreenEditor.ID, new GameScreenEditor());
         }
 
         private void FinishCreating()
@@ -111,6 +119,11 @@ namespace SadConsoleEditor
             SelectedEditor = editor;
             ToolPane.SetupEditor();
             UpdateBox();
+        }
+
+        public void ScrollToolbox(int scrollValueChanged)
+        {
+            _toolsPaneScroller.Value += scrollValueChanged / 20;
         }
 
         public void UpdateBrush(SadConsole.Entities.Entity newBrushEntity)
@@ -192,7 +205,7 @@ namespace SadConsoleEditor
             {
                 var position = new Point(_borderRenderer.Position.X + 1, _borderRenderer.Position.Y + 1);
                 bool keyPressed = false;
-                if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+                if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
                 {
                     if (_borderRenderer.Position.X + _borderRenderer.CellData.Width - 1 != 0)
                     {
@@ -200,7 +213,7 @@ namespace SadConsoleEditor
                         keyPressed = true;
                     }
                 }
-                else if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
+                else if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
                 {
                     if (_borderRenderer.Position.X != ToolPane.Position.X - 1)
                     {
@@ -209,7 +222,7 @@ namespace SadConsoleEditor
                     }
                 }
 
-                if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
+                if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
                 {
                     if (_borderRenderer.Position.Y + _borderRenderer.CellData.Height - 2 != 0)
                     {
@@ -218,7 +231,7 @@ namespace SadConsoleEditor
                     }
 
                 }
-                else if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
+                else if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
                 {
                     if (_borderRenderer.Position.Y != Game1.WindowSize.Y - 1)
                     {

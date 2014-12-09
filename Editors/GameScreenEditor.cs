@@ -7,7 +7,7 @@ using SadConsoleEditor.Consoles;
 
 namespace SadConsoleEditor.Editors
 {
-    class ObjectEditor : IEditor
+    class GameScreenEditor : IEditor
     {
         private int _width;
         private int _height;
@@ -20,23 +20,23 @@ namespace SadConsoleEditor.Editors
         public int Width { get { return _width; } }
         public int Height { get { return _height; } }
 
+
         public Consoles.LayeredConsole Surface { get { return _consoleLayers; } }
 
-        public const string ID = "OBJ";
+        public const string ID = "GAME";
 
         public string Id { get { return ID; } }
 
-        public string Title { get { return "Game Console"; } }
+        public string Title { get { return "Game Screen Editor"; } }
 
-        public string FileExtensions { get { return ".gconsole"; } }
+        public string FileExtensions { get { return ".screen"; } }
         public CustomPanel[] ControlPanels { get; private set; }
-
 
         public string[] Tools
         {
             get
             {
-                return new string[] { PaintTool.ID, FillTool.ID, TextTool.ID, LineTool.ID, BoxTool.ID, ObjectTool.ID };
+                return new string[] { PaintTool.ID, RecolorTool.ID, FillTool.ID, TextTool.ID, CloneTool.ID, LineTool.ID, BoxTool.ID, ObjectTool.ID };
             }
         }
 
@@ -45,19 +45,21 @@ namespace SadConsoleEditor.Editors
         private EventHandler<MouseEventArgs> _mouseExitHandler;
 
 
-        public ObjectEditor()
+        public GameScreenEditor()
         {
-            _consoleLayers = new LayeredConsole(1, 10, 5);
+            _consoleLayers = new LayeredConsole(2, 25, 10);
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
+            _consoleLayers.SetLayerName(0, "Root");
+            _consoleLayers.SetLayerName(1, "Objects");
             //_consoleLayers[0].CellData.Fill(Color.Blue, Color.Yellow, 2, null);
 
-            _width = 10;
-            _height = 5;
+            _width = 25;
+            _height = 10;
 
             // THIS WHOLE MOUSE HANDLING IS VERY MESSY.
             // THERE ARE TOO MANY PATHS OBJ_1->OBJ_2->OBJ_1->OBJ_3 type of calling chain.
-            // REWRITE
+            // REWRITE NOW
             _mouseMoveHandler = (o, e) => { if (this.MouseMove != null) this.MouseMove(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseMoveSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
             _mouseEnterHandler = (o, e) => { if (this.MouseEnter != null) this.MouseEnter(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseEnterSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
             _mouseExitHandler = (o, e) => { if (this.MouseExit != null) this.MouseExit(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseExitSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
@@ -104,7 +106,7 @@ namespace SadConsoleEditor.Editors
         public void ProcessMouse(MouseInfo info)
         {
             _consoleLayers.ProcessMouse(info);
-            
+
             if (_consoleLayers.IsMouseOver)
                 EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessMouse(info, _consoleLayers.ActiveLayer);
         }

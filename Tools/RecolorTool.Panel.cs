@@ -38,11 +38,7 @@ namespace SadConsoleEditor.Tools
             return 0;
         }
 
-        public override void Loaded(SadConsole.CellSurface surface)
-        {
-        }
-
-        public override void Unloaded(SadConsole.CellSurface surface)
+        public override void Loaded()
         {
         }
     }
