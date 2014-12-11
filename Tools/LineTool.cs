@@ -67,7 +67,7 @@
                                     EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
             _lineStyle.CopyAppearanceTo(_lineCell);
 
-            _entity = new Entity();
+            _entity = new LayeredEntity();
             _entity.IsVisible = false;
 
             _entity.AddAnimation(_animSinglePoint);

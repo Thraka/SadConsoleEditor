@@ -48,6 +48,11 @@ namespace SadConsoleEditor
                 using (var stream = System.IO.File.OpenRead("EditorFont.font"))
                     SadConsole.Engine.DefaultFont = SadConsole.Serializer.Deserialize<SadConsole.Font>(stream);
 
+                using (var stream = System.IO.File.OpenRead(doc.Root.Element("ScreenFont").Value))
+                    Settings.ScreenFont = SadConsole.Serializer.Deserialize<SadConsole.Font>(stream);
+
+
+
                 SadConsole.Engine.DefaultFont.ResizeGraphicsDeviceManager(graphics, size.X, size.Y, 0, 0);
                 SadConsole.Engine.UseMouse = true;
                 SadConsole.Engine.UseKeyboard = true;

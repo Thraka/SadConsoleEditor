@@ -71,6 +71,8 @@
             };
 
             SelectedCharacter = 1;
+
+            this.AlternateFont = Settings.ScreenFont;
         }
 
         public override void Compose()

@@ -42,7 +42,7 @@
             SadConsole.Effects.Blink blinkEffect = new SadConsole.Effects.Blink();
             blinkEffect.BlinkSpeed = 0.35f;
 
-            EditorConsoleManager.Instance.UpdateBrush(new SadConsole.Entities.Entity());
+            EditorConsoleManager.Instance.UpdateBrush(new LayeredEntity());
             EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(Color.White, Color.Black, _cursorCharacter, blinkEffect);
             EditorConsoleManager.Instance.Brush.IsVisible = false;
             EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = false;

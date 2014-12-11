@@ -12,7 +12,7 @@ namespace SadConsoleEditor.Consoles
 {
     class BorderRenderer: SadConsole.Consoles.Console
     {
-        public BorderRenderer() { }
+        public BorderRenderer() { this.Font = Settings.ScreenFont; }
 
         protected override void OnResize()
         {

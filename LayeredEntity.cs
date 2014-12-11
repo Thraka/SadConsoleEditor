@@ -11,15 +11,20 @@ namespace SadConsoleEditor
     {
         public Animation TopLayerAnimation;
 
-        public override void Render()
+        public LayeredEntity()
         {
-            base.Render();
-
-            var oldCellData = _cellData;
-            _cellData = TopLayerAnimation.CurrentFrame;
-            base.Render();
-
-            _cellData = oldCellData;
+            this.Font = Settings.ScreenFont;
         }
+
+        //public override void Render()
+        //{
+        //    base.Render();
+
+        //    var oldCellData = _cellData;
+        //    _cellData = TopLayerAnimation.CurrentFrame;
+        //    base.Render();
+
+        //    _cellData = oldCellData;
+        //}
     }
 }

@@ -148,7 +148,7 @@ namespace SadConsoleEditor
             Point position = new Point();
             //this.ResetViewArea();
 
-            var screenSize = SadConsole.Engine.GetScreenSizeInCells(EditorConsoleManager.Instance.ToolPane.Font);
+            var screenSize = SadConsole.Engine.GetScreenSizeInCells(Instance.ToolPane.Font);
 
             if (EditingSurfaceWidth < screenSize.X)
                 position.X = ((screenSize.X - 20) / 2) - (EditingSurfaceWidth / 2);
@@ -161,7 +161,7 @@ namespace SadConsoleEditor
                 position.Y = (screenSize.Y - EditingSurfaceHeight) / 2;
 
             SelectedEditor.Position(position.X, position.Y);
-            _borderRenderer.Position = new Microsoft.Xna.Framework.Point(position.X - 1, position.Y - 1);
+            _borderRenderer.Position = new Point(position.X - 1, position.Y - 1);
             Brush.PositionOffset = position;
         }
 

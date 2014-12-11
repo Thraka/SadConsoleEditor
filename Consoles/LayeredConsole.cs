@@ -43,12 +43,19 @@ namespace SadConsoleEditor.Consoles
 
             _layers = new List<CellsRenderer>();
             _layerNames = new List<string>();
-
+            
             for (int i = 0; i < layers; i++)
                 AddLayer(i.ToString());
 
 
             SetActiveLayer(0);
+        }
+
+        protected override void OnFontChanged()
+        {
+            if (_layers != null)
+                foreach (var layer in _layers)
+                    layer.Font = this.Font;
         }
 
         public void Clear(Color foreground, Color background)
@@ -121,13 +128,17 @@ namespace SadConsoleEditor.Consoles
 
         public void AddLayer(string name)
         {
-            _layers.Add(new CellsRenderer(new CellSurface(Width, Height), Batch));
+            var layer = new CellsRenderer(new CellSurface(Width, Height), Batch);
+            layer.Font = this.Font;
+            _layers.Add(layer);
             _layerNames.Add(name);
         }
 
         public void InsertLayer(int index)
         {
-            _layers.Insert(index, new CellsRenderer(new CellSurface(Width, Height), Batch));
+            var layer = new CellsRenderer(new CellSurface(Width, Height), Batch);
+            layer.Font = this.Font;
+            _layers.Insert(index, layer);
             _layerNames.Insert(index, "");
         }
 

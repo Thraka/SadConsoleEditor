@@ -2,5 +2,6 @@
 	<WindowSize width="160" height="50" />
   <NewConsole width="80" height="25" />
   <DefaultFont>EditorFont.font</DefaultFont>
+  <ScreenFont>EditorFont.font</ScreenFont>
   <ConsoleBoundsMarker width="80" height="25" />
 </ScreenBuilder>

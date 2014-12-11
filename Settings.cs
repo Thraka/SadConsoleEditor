@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using SadConsole;
 
 namespace SadConsoleEditor
 {
@@ -11,6 +12,7 @@ namespace SadConsoleEditor
         #region Config
         public static int BoundsWidth = 80;
         public static int BoundsHeight = 25;
+        public static Font ScreenFont;
         #endregion
 
         #region Colors

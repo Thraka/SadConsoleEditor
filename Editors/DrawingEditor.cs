@@ -48,6 +48,7 @@ namespace SadConsoleEditor.Editors
         public DrawingEditor()
         {
             _consoleLayers = new LayeredConsole(1, 25, 10);
+            _consoleLayers.Font = Settings.ScreenFont;
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
             //_consoleLayers[0].CellData.Fill(Color.Blue, Color.Yellow, 2, null);
@@ -75,6 +76,7 @@ namespace SadConsoleEditor.Editors
             _consoleLayers.MouseExit -= _mouseExitHandler;
 
             _consoleLayers = new LayeredConsole(1, 10, 5);
+            _consoleLayers.Font = Settings.ScreenFont;
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
 

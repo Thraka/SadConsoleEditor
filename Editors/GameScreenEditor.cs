@@ -48,6 +48,7 @@ namespace SadConsoleEditor.Editors
         public GameScreenEditor()
         {
             _consoleLayers = new LayeredConsole(2, 25, 10);
+            _consoleLayers.Font = Settings.ScreenFont;
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
             _consoleLayers.SetLayerName(0, "Root");
@@ -77,6 +78,7 @@ namespace SadConsoleEditor.Editors
             _consoleLayers.MouseExit -= _mouseExitHandler;
 
             _consoleLayers = new LayeredConsole(1, 10, 5);
+            _consoleLayers.Font = Settings.ScreenFont;
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
 
