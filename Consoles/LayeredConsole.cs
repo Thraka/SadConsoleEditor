@@ -178,6 +178,14 @@ namespace SadConsoleEditor.Consoles
             _cellData = _tempSurface;
             _tempSurface = null;
         }
+
+        public void ResizeCells(int width, int height   )
+        {
+            for (int i = 0; i < _layers.Count; i++)
+            {
+                _layers[i].CellSize = new Point(width, height);
+            }
+        }
     }
 
 

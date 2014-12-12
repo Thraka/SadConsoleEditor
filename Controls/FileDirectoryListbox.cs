@@ -40,6 +40,8 @@ namespace SadEditor.Controls
             }
         }
 
+        public bool HideNonFilterFiles { get; set; }
+
         public string HighlightedExtentions { get; set; }
         #endregion
 
@@ -66,17 +68,23 @@ namespace SadEditor.Controls
 
                     foreach (var item in System.IO.Directory.GetDirectories(folder))
                         newItems.Add(new System.IO.DirectoryInfo(item));
+                    var highlightExts = HighlightedExtentions.Split(';');
+                    var filterExts = _extFilter.Split(';');
 
-                    foreach (var item in System.IO.Directory.GetFiles(folder, _extFilter))
+                    foreach (var filter in filterExts)
                     {
-                        var fileInfo = new System.IO.FileInfo(item);
-                        var exts = HighlightedExtentions.Split(';');
+                        foreach (var item in System.IO.Directory.GetFiles(folder, filter))
+                        {
+                            var fileInfo = new System.IO.FileInfo(item);
 
-                        if (exts.Contains(fileInfo.Extension))
-                            newItems.Add(new HighlightedExtFile() {Name = fileInfo.Name});
-                        else
-                            newItems.Add(fileInfo);
+
+                            if (highlightExts.Contains(fileInfo.Extension))
+                                newItems.Add(new HighlightedExtFile() { Name = fileInfo.Name });
+                            else
+                                newItems.Add(fileInfo);
+                        }
                     }
+                    
 
                     base.Items.Clear();
 

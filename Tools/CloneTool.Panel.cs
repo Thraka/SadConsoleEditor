@@ -94,7 +94,7 @@ namespace SadConsoleEditor.Tools
                     }
                 };
                 popup.CurrentFolder = Environment.CurrentDirectory;
-                popup.PreferredExtensions = ".con;.console;.brush";
+                popup.FileFilter = "*.con;*.console;*.brush";
                 popup.Show(true);
                 popup.Center();
             };
@@ -118,7 +118,9 @@ namespace SadConsoleEditor.Tools
                     }
                 };
                 popup.CurrentFolder = Environment.CurrentDirectory;
-                popup.PreferredExtensions = ".con;.console;.brush";
+                popup.FileFilter = "*.con;*.console;*.brush";
+                popup.SelectButtonText = "Save";
+                popup.SkipFileExistCheck = true;
                 popup.Show(true);
                 popup.Center();
             };

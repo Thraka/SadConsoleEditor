@@ -239,6 +239,16 @@ namespace SadConsoleEditor
                         keyPressed = true;
                     }
                 }
+                
+                if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Subtract))
+                {
+                    SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X / 2, SelectedEditor.Surface.CellSize.Y / 2);
+                }
+                else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Add))
+                {
+                    SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X * 2, SelectedEditor.Surface.CellSize.Y * 2);
+                    
+                }
 
                 if (keyPressed)
                 {
@@ -303,7 +313,8 @@ namespace SadConsoleEditor
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.PreferredExtensions = SelectedEditor.FileExtensions;
+            popup.FileFilter = SelectedEditor.FileExtensions;
+            popup.SelectButtonText = "Open";
             popup.Show(true);
             popup.Center();
         }
@@ -319,7 +330,9 @@ namespace SadConsoleEditor
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.PreferredExtensions = SelectedEditor.FileExtensions;
+            popup.FileFilter = SelectedEditor.FileExtensions;
+            popup.SelectButtonText = "Save";
+            popup.SkipFileExistCheck = true;
             popup.Show(true);
             popup.Center();
         }

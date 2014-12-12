@@ -29,7 +29,7 @@ namespace SadConsoleEditor.Editors
 
         public string Title { get { return "Game Screen Editor"; } }
 
-        public string FileExtensions { get { return ".screen"; } }
+        public string FileExtensions { get { return "*.screen"; } }
         public CustomPanel[] ControlPanels { get; private set; }
 
         public string[] Tools

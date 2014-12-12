@@ -38,6 +38,10 @@ namespace SadConsoleEditor.Windows
         }
 
         public string SelectedFile { get; private set; }
+
+        public bool SkipFileExistCheck { get; set; }
+
+        public string SelectButtonText { get { return _selectButton.Text; } set { _selectButton.Text = value; } }
         #endregion
 
         #region Constructors
@@ -50,7 +54,7 @@ namespace SadConsoleEditor.Windows
             {
                 Position = new Point(1, 1)
             };
-            _directoryListBox.HighlightedExtentions = ".pdb;.xml";
+            _directoryListBox.HighlightedExtentions = ".con;.console;.brush";
             _directoryListBox.Resize(this.CellData.Width - 2, this.CellData.Height - 5);
             _directoryListBox.SelectedItemChanged += _directoryListBox_SelectedItemChanged;
             _directoryListBox.SelectedItemExecuted += _directoryListBox_SelectedItemExecuted;
@@ -59,11 +63,13 @@ namespace SadConsoleEditor.Windows
             {
                 Position = new Point(2, this.CellData.Height - 3),
             };
+            _fileName.TextChanged += _fileName_TextChanged;
 
             _selectButton = new Button(6, 1)
             {
                 Text = "Open",
-                Position = new Point(this.CellData.Width - 8, this.CellData.Height - 3)
+                Position = new Point(this.CellData.Width - 8, this.CellData.Height - 3),
+                IsEnabled = false
             };
             _selectButton.ButtonClicked += new EventHandler(_selectButton_Action);
 
@@ -116,8 +122,11 @@ namespace SadConsoleEditor.Windows
                 _fileName.Text = ((SadEditor.Controls.HighlightedExtFile)e.Item).Name;
             else
                 _fileName.Text = "";
+        }
 
-            _selectButton.IsEnabled = _fileName.Text != "";
+        void _fileName_TextChanged(object sender, EventArgs e)
+        {
+            _selectButton.IsEnabled = _fileName.Text != "" && (SkipFileExistCheck || System.IO.File.Exists(System.IO.Path.Combine(_directoryListBox.CurrentFolder, _fileName.Text)));
         }
     }
 }

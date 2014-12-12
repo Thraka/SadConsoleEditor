@@ -2,6 +2,6 @@
 	<WindowSize width="160" height="50" />
   <DefaultFont>EditorFont.font</DefaultFont>
   <ScreenFont>Cheepicus12.font</ScreenFont>
-  <ConsoleBoundsMarker width="40" height="40" />
-  <NewConsole width="40" height="40" />
+  <ConsoleBoundsMarker width="60" height="40" />
+  <NewConsole width="60" height="40" />
 </ScreenBuilder>

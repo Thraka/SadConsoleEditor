@@ -29,7 +29,7 @@ namespace SadConsoleEditor.Editors
 
         public string Title { get { return "Console Editor"; } }
 
-        public string FileExtensions { get { return ".con;.console"; } }
+        public string FileExtensions { get { return "*.lcon;*.lconsole"; } }
         public CustomPanel[] ControlPanels { get; private set; }
 
         public string[] Tools
@@ -147,6 +147,7 @@ namespace SadConsoleEditor.Editors
         public void Save(string file)
         {
             var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(LayeredConsole), new Type[] { typeof(LayeredConsole) });
+            System.IO.File.Delete(file);
             var stream = System.IO.File.OpenWrite(file);
             
             serializer.WriteObject(stream, _consoleLayers);
@@ -167,6 +168,12 @@ namespace SadConsoleEditor.Editors
 
             
             _consoleLayers = serializer.ReadObject(fileObject) as LayeredConsole;
+            _consoleLayers.Font = Settings.ScreenFont;
+
+            foreach (var layer in _consoleLayers.GetEnumeratorForLayers())
+            {
+                layer.Font = Settings.ScreenFont;
+            }
 
             _consoleLayers.MouseMove += _mouseMoveHandler;
             _consoleLayers.MouseEnter += _mouseEnterHandler;
