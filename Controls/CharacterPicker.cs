@@ -15,7 +15,8 @@
         private SadConsole.Effects.Fade _selectedCharEffect;
         private int _selectedChar;
 
-        public event EventHandler<SelectedCharacterEventArgs> SelectedCharacterChanged; 
+        public event EventHandler<SelectedCharacterEventArgs> SelectedCharacterChanged;
+        public bool UseFullClick; 
 
         public int SelectedCharacter
         {
@@ -71,8 +72,6 @@
             };
 
             SelectedCharacter = 1;
-
-            this.AlternateFont = Settings.ScreenFont;
         }
 
         public override void Compose()
@@ -95,7 +94,8 @@
 
             if (new Rectangle(0, 0, 16, 16).Contains(mousePosition) && info.LeftButtonDown)
             {
-                SelectedCharacter = this[mousePosition.ToIndex(16)].CharacterIndex;
+                if (!UseFullClick)
+                    SelectedCharacter = this[mousePosition.ToIndex(16)].CharacterIndex;
             }
 
             base.OnMouseIn(info);

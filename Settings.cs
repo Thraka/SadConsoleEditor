@@ -12,6 +12,8 @@ namespace SadConsoleEditor
         #region Config
         public static int BoundsWidth = 80;
         public static int BoundsHeight = 25;
+        public static int NewScreenWidth;
+        public static int NewScreenHeight;
         public static Font ScreenFont;
         #endregion
 

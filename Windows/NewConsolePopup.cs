@@ -69,7 +69,7 @@ namespace SadConsoleEditor.Windows
 
             _widthBox = new InputBox(3)
             {
-                Text = 80.ToString(),
+                Text = Settings.NewScreenWidth.ToString(),
                 MaxLength = 3,
                 IsNumeric = true,
                 Position = new Microsoft.Xna.Framework.Point(base.CellData.Width - 5, 7)
@@ -77,7 +77,7 @@ namespace SadConsoleEditor.Windows
 
             _heightBox = new InputBox(3)
             {
-                Text = 25.ToString(),
+                Text = Settings.NewScreenHeight.ToString(),
                 MaxLength = 3,
                 IsNumeric = true,
                 Position = new Microsoft.Xna.Framework.Point(base.CellData.Width - 5, 8)

@@ -84,21 +84,7 @@
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
         {
-
-        }
-
-        public void MouseEnterSurface(MouseInfo info, CellSurface surface)
-        {
             _entity.IsVisible = true;
-        }
-
-        public void MouseExitSurface(MouseInfo info, CellSurface surface)
-        {
-            _entity.IsVisible = false;
-        }
-
-        public void MouseMoveSurface(MouseInfo info, CellSurface surface)
-        {
             if (!_firstPoint.HasValue)
             {
                 _entity.Position = info.ConsoleLocation;
@@ -175,7 +161,7 @@
 
                     _firstPoint = null;
                     _secondPoint = null;
-                    
+
 
                     _entity.SetActiveAnimation("single");
 
@@ -192,6 +178,21 @@
                     _entity.SetActiveAnimation("single");
                 }
             }
+        }
+
+        public void MouseEnterSurface(MouseInfo info, CellSurface surface)
+        {
+            _entity.IsVisible = true;
+        }
+
+        public void MouseExitSurface(MouseInfo info, CellSurface surface)
+        {
+            _entity.IsVisible = false;
+        }
+
+        public void MouseMoveSurface(MouseInfo info, CellSurface surface)
+        {
+            
 
         }
     }

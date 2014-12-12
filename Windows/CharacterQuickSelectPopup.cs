@@ -21,6 +21,7 @@ namespace SadConsoleEditor.Windows
             Controls.CharacterPicker picker = new Controls.CharacterPicker(Settings.Red, Settings.Color_ControlBack, Settings.Green);
             picker.Position = new Point(1, 1);
             picker.SelectedCharacter = character;
+            picker.UseFullClick = true;
             picker.SelectedCharacterChanged += (sender, e) =>
             {
                 SelectedCharacter = e.NewCharacter;

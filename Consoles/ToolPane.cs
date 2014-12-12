@@ -40,6 +40,7 @@ namespace SadConsoleEditor.Consoles
         {
             PanelWidth = 18;
             CommonCharacterPickerPanel = new CharacterPickPane("Settings", false, false, false);
+            CommonCharacterPickerPanel.PickerFont = Settings.ScreenFont;
             CanUseKeyboard = false;
         }
 
@@ -58,6 +59,7 @@ namespace SadConsoleEditor.Consoles
             _tools.Add(BoxTool.ID, new BoxTool());
             _tools.Add(ObjectTool.ID, new ObjectTool());
             _tools.Add(CloneTool.ID, new CloneTool());
+            _tools.Add(CircleTool.ID, new CircleTool());
 
             SetupFilePanel();
             SetupToolsPanel();

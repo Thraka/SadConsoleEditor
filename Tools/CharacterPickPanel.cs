@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SadConsole;
 using SadConsole.Controls;
 using SadConsoleEditor.Controls;
 using System;
@@ -17,6 +18,7 @@ namespace SadConsoleEditor.Tools
         private Controls.ColorPresenter _backColor;
         private Controls.ColorPresenter _charPreview;
         private Controls.CharacterPicker _characterPicker;
+        private Windows.CharacterQuickSelectPopup _popupCharacterWindow;
 
         public Color SettingForeground { get { return _foreColor.SelectedColor; } set { _foreColor.SelectedColor = value; } }
         public Color SettingBackground { get { return _backColor.SelectedColor; } set { _backColor.SelectedColor = value; } }
@@ -26,6 +28,8 @@ namespace SadConsoleEditor.Tools
         public bool HideForeground;
         public bool HideBackground;
 
+        public Font PickerFont { get { return _characterPicker.AlternateFont; } set { _characterPicker.AlternateFont = value; } }
+
         public CharacterPickPane(string title, bool hideCharacter, bool hideForeground, bool hideBackground)
         {
             Title = title;
@@ -34,6 +38,7 @@ namespace SadConsoleEditor.Tools
             _backColor = new ColorPresenter("Background", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidth);
             _charPreview = new ColorPresenter("Character", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidth);
             _characterPicker = new CharacterPicker(Settings.Red, Settings.Color_ControlBack, Settings.Green);
+            _popupCharacterWindow = new Windows.CharacterQuickSelectPopup(0);
 
             _foreColor.SelectedColor = Color.White;
             _backColor.SelectedColor = Color.Black;
@@ -43,10 +48,20 @@ namespace SadConsoleEditor.Tools
             _charPreview.Character = 0;
             _charPreview.DisableColorPicker = true;
 
+            _popupCharacterWindow.Font = Settings.ScreenFont;
+            _popupCharacterWindow.Closed += (o, e) => { _characterPicker.SelectedCharacter = _popupCharacterWindow.SelectedCharacter; };
+
             _foreColor.ColorChanged += (o, e) => { _charPreview.CharacterColor = _foreColor.SelectedColor; OnChanged(); };
             _backColor.ColorChanged += (o, e) => { _charPreview.SelectedColor = _backColor.SelectedColor; OnChanged(); };
             _characterPicker.SelectedCharacterChanged += (sender, e) => { _charPreview.Character = e.NewCharacter; _charPreview.Title = "Character (" + e.NewCharacter.ToString() + ")"; OnChanged(); };
             _characterPicker.SelectedCharacter = 1;
+            _charPreview.MouseButtonClicked += (o, e) => { 
+                if (e.RightButtonClicked)
+                {
+                    _popupCharacterWindow.Center();
+                    _popupCharacterWindow.Show(true);
+                }
+            };
 
 
             HideCharacter = hideCharacter;

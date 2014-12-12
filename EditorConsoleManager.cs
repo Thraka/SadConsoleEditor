@@ -146,9 +146,8 @@ namespace SadConsoleEditor
             // Was in the middle of moving EditingContainer to this. Got to finish this. This should happen anytime the editing surface resizes.
 
             Point position = new Point();
-            //this.ResetViewArea();
 
-            var screenSize = SadConsole.Engine.GetScreenSizeInCells(Instance.ToolPane.Font);
+            var screenSize = SadConsole.Engine.GetScreenSizeInCells(Settings.ScreenFont);
 
             if (EditingSurfaceWidth < screenSize.X)
                 position.X = ((screenSize.X - 20) / 2) - (EditingSurfaceWidth / 2);
@@ -192,10 +191,10 @@ namespace SadConsoleEditor
         public override bool ProcessMouse(SadConsole.Input.MouseInfo info)
         {
             var result = base.ProcessMouse(info);
-
+            
             if (!ToolPane.IsMouseOver)
                 SelectedEditor.ProcessMouse(info);
-            
+
             return result;
         }
 

@@ -129,7 +129,11 @@
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
         {
-            if (_panel.State == CloneToolPanel.CloneState.MovingClone)
+            if (_secondPoint != null && _panel.State == CloneToolPanel.CloneState.SelectingPoint2)
+            {
+                _panel.State = CloneToolPanel.CloneState.MovingClone;   
+            }
+            else if (_panel.State == CloneToolPanel.CloneState.MovingClone)
             {
                 _entity.Position = info.ConsoleLocation;
 
@@ -162,13 +166,8 @@
 
                 else if (_panel.State == CloneToolPanel.CloneState.SelectingPoint2)
                 {
-                    _panel.State = CloneToolPanel.CloneState.Selected;
                     _secondPoint = new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y);
-                }
 
-                else if (_panel.State == CloneToolPanel.CloneState.Selected)
-                {
-                    _panel.State = CloneToolPanel.CloneState.MovingClone;
 
                     // Copy data to new animation
                     var _tempAnimation = _entity.GetAnimation("selection");
@@ -193,6 +192,11 @@
                     _entity.SetActiveAnimation("clone");
                     _entity.Tint = new Color(0f, 0f, 0f, 0f);
                 }
+
+                else if (_panel.State == CloneToolPanel.CloneState.Selected)
+                {
+                    
+                }
                 else if (_panel.State == CloneToolPanel.CloneState.MovingClone)
                 {
                     StampBrush(info.ConsoleLocation.X, info.ConsoleLocation.Y, surface);
@@ -200,6 +204,8 @@
             }
             else
             {
+                _entity.IsVisible = true;
+
                 if (_panel.State == CloneToolPanel.CloneState.MovingClone)
                     _entity.Position = info.ConsoleLocation;
 

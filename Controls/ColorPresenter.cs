@@ -72,8 +72,6 @@
 
         protected override void OnLeftMouseClicked(MouseInfo info)
         {
-            base.OnLeftMouseClicked(info);
-
             if (!DisableColorPicker)
             {
                 var location = this.TransformConsolePositionByControlPosition(info);
@@ -81,8 +79,22 @@
                 {
                     _popup.SelectedColor = _selectedColor;
                     _popup.Show(true);
+                    base.OnLeftMouseClicked(info);
                 }
             }
+        }
+
+        protected override void OnRightMouseClicked(MouseInfo info)
+        {
+            if (DisableColorPicker)
+            {
+                var location = this.TransformConsolePositionByControlPosition(info);
+                if (location.X >= _width - 3)
+                {
+                    base.OnRightMouseClicked(info);
+                }
+            }
+
         }
     }
 }

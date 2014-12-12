@@ -45,6 +45,9 @@ namespace SadConsoleEditor
                     Settings.BoundsHeight = int.Parse(doc.Root.Element("ConsoleBoundsMarker").Attribute("height").Value);
                 }
 
+                Settings.NewScreenWidth = int.Parse(doc.Root.Element("NewConsole").Attribute("width").Value);
+                Settings.NewScreenHeight = int.Parse(doc.Root.Element("NewConsole").Attribute("height").Value);
+
                 using (var stream = System.IO.File.OpenRead("EditorFont.font"))
                     SadConsole.Engine.DefaultFont = SadConsole.Serializer.Deserialize<SadConsole.Font>(stream);
 

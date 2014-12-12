@@ -72,6 +72,7 @@
         public void MouseMoveSurface(MouseInfo info, CellSurface surface)
         {
             EditorConsoleManager.Instance.Brush.Position = info.ConsoleLocation;
+            EditorConsoleManager.Instance.Brush.IsVisible = false;
 
             if (info.LeftClicked)
             {

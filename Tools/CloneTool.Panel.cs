@@ -46,10 +46,8 @@ namespace SadConsoleEditor.Tools
                     _steps.SetCharacter(0, 3, _currentStepChar);
                 else if (value == CloneState.SelectingPoint2)
                     _steps.SetCharacter(0, 4, _currentStepChar);
-                else if (value == CloneState.Selected)
-                    _steps.SetCharacter(0, 5, _currentStepChar);
                 else if (value == CloneState.MovingClone)
-                    _steps.SetCharacter(0, 6, _currentStepChar);
+                    _steps.SetCharacter(0, 5, _currentStepChar);
 
                 _saveBrush.IsEnabled = value == CloneState.MovingClone;
             } 
@@ -66,15 +64,14 @@ namespace SadConsoleEditor.Tools
         public CloneToolPanel(Action<CellSurface> loadBrushHandler, Func<CellSurface> saveBrushHandler)
         {
             _reset = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            _steps = new DrawingSurface(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 7);
+            _steps = new DrawingSurface(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 6);
             _steps.Fill(Settings.Yellow, Color.Transparent, 0, null);
 
             _steps.Print(1, 0, "Click on surface ", Settings.Color_TextBright);
             _steps.Print(1, 1, "to do these steps", Settings.Color_TextBright);
             _steps.Print(2, 3, _step1);
             _steps.Print(2, 4, _step2);
-            _steps.Print(2, 5, _step3);
-            _steps.Print(2, 6, _step4);
+            _steps.Print(2, 5, _step4);
 
             _reset.Text = "Reset Steps";
             _reset.ButtonClicked += (o, e) => State = CloneState.SelectingPoint1;
