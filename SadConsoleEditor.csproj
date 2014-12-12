@@ -110,12 +110,14 @@
     <None Include="16sm.font">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Cheepicus12.font" />
     <None Include="EditorFont_IBM8x16.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="16x16_sm.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="Cheepicus_12x12.png" />
     <Content Include="Icon.ico" />
     <None Include="packages.config" />
     <None Include="Settings.xml">
