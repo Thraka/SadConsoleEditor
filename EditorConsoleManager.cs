@@ -35,8 +35,8 @@ namespace SadConsoleEditor
         public int EditingSurfaceWidth { get { return SelectedEditor.Width; } }
         public int EditingSurfaceHeight { get { return SelectedEditor.Height; } }
 
-        
-        public SadConsole.Entities.Entity Brush { get; private set; }
+
+        public IEntityBrush Brush { get; private set; }
         public Consoles.ToolPane ToolPane { get; private set; }
 
         public bool AllowKeyboardToMoveConsole { get; set; }
@@ -126,7 +126,7 @@ namespace SadConsoleEditor
             _toolsPaneScroller.Value += scrollValueChanged / 20;
         }
 
-        public void UpdateBrush(SadConsole.Entities.Entity newBrushEntity)
+        public void UpdateBrush(IEntityBrush newBrushEntity)
         {
             Brush = newBrushEntity;
             Brush.PositionOffset = SelectedEditor.GetPosition();

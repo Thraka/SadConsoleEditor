@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace SadConsoleEditor
 {
-    class LayeredEntity: Entity
+    class EntityBrush : Entity, IEntityBrush
     {
         public Animation TopLayerAnimation;
 
-        public LayeredEntity()
+        public EntityBrush()
         {
             this.Font = Settings.ScreenFont;
         }

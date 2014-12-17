@@ -55,6 +55,7 @@
     <Compile Include="Editors\GameScreenEditor.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="HSLColor.cs" />
+    <Compile Include="IBrush.cs" />
     <Compile Include="LayeredEntity.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

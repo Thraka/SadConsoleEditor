@@ -19,10 +19,12 @@
         }
 
         public CustomPanel[] ControlPanels { get; private set; }
+        private EntityBrush _brush;
 
         public FillTool()
         {
             ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel };
+            _brush = new EntityBrush();
         }
 
         public override string ToString()
@@ -32,10 +34,10 @@
 
         public void OnSelected()
         {
-            EditorConsoleManager.Instance.UpdateBrush(new LayeredEntity());
-            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+            EditorConsoleManager.Instance.UpdateBrush(_brush);
+            _brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
                 EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter, null);
-            EditorConsoleManager.Instance.Brush.IsVisible = false;
+            _brush.IsVisible = false;
         }
 
         public void OnDeselected()
@@ -45,7 +47,7 @@
 
         public void RefreshTool()
         {
-            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+            _brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
                 EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter, null);
         }
 
@@ -61,18 +63,18 @@
 
         public void MouseEnterSurface(MouseInfo info, CellSurface surface)
         {
-            EditorConsoleManager.Instance.Brush.IsVisible = true;
+            _brush.IsVisible = true;
         }
 
         public void MouseExitSurface(MouseInfo info, CellSurface surface)
         {
-            EditorConsoleManager.Instance.Brush.IsVisible = false;
+            _brush.IsVisible = false;
         }
 
         public void MouseMoveSurface(MouseInfo info, CellSurface surface)
         {
-            EditorConsoleManager.Instance.Brush.Position = info.ConsoleLocation;
-            EditorConsoleManager.Instance.Brush.IsVisible = false;
+            _brush.Position = info.ConsoleLocation;
+            _brush.IsVisible = true;
 
             if (info.LeftClicked)
             {

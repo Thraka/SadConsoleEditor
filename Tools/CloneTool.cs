@@ -102,7 +102,7 @@
         {
 
 
-            _entity = new LayeredEntity();
+            _entity = new EntityBrush();
             _entity.IsVisible = true;
 
             _entity.AddAnimation(_animSinglePoint);

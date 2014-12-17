@@ -62,7 +62,7 @@
 
         public void OnSelected()
         {
-            _entity = new LayeredEntity();
+            _entity = new EntityBrush();
             _entity.IsVisible = false;
 
             _entity.AddAnimation(_animSinglePoint);

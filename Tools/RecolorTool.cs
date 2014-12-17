@@ -34,7 +34,7 @@
 
         public void OnSelected()
         {
-            EditorConsoleManager.Instance.UpdateBrush(new LayeredEntity());
+            EditorConsoleManager.Instance.UpdateBrush(new EntityBrush());
             EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
                 EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
             EditorConsoleManager.Instance.Brush.IsVisible = false;
