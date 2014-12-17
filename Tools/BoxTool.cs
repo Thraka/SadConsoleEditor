@@ -9,7 +9,7 @@
 
     class BoxTool : ITool
     {
-        private Entity _entity;
+        private EntityBrush _entity;
         private Animation _animSinglePoint;
         private SadConsole.Effects.Fade _frameEffect;
         private Point? _firstPoint;

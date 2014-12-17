@@ -11,6 +11,8 @@
         private Console tempConsole;
         private int _cursorCharacter = 95;
 
+        private EntityBrush _brush;
+
         public const string ID = "OBJECT";
         public string Id
         {
@@ -42,10 +44,11 @@
         {
             SadConsole.Effects.Blink blinkEffect = new SadConsole.Effects.Blink();
             blinkEffect.BlinkSpeed = 0.35f;
+            _brush = new EntityBrush();
 
-            EditorConsoleManager.Instance.UpdateBrush(new EntityBrush());
-            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(Color.White, Color.Black, _cursorCharacter, blinkEffect);
-            EditorConsoleManager.Instance.Brush.IsVisible = false;
+            EditorConsoleManager.Instance.UpdateBrush(_brush);
+            _brush.CurrentAnimation.Frames[0].Fill(Color.White, Color.Black, _cursorCharacter, blinkEffect);
+            _brush.IsVisible = false;
         }
 
         public void OnDeselected()
@@ -70,9 +73,9 @@
                 writing = true;
 
                 tempConsole.CellData = surface;
-                tempConsole.VirtualCursor.Position = EditorConsoleManager.Instance.Brush.Position = info.ConsoleLocation;
+                tempConsole.VirtualCursor.Position = _brush.Position = info.ConsoleLocation;
 
-                EditorConsoleManager.Instance.Brush.IsVisible = true;
+                _brush.IsVisible = true;
             }
         }
 

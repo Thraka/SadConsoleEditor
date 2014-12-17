@@ -53,10 +53,10 @@
     <Compile Include="Editors\DrawingEditor.cs" />
     <Compile Include="Editors\IEditor.cs" />
     <Compile Include="Editors\GameScreenEditor.cs" />
+    <Compile Include="EntityBrush.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="HSLColor.cs" />
-    <Compile Include="IBrush.cs" />
-    <Compile Include="LayeredEntity.cs" />
+    <Compile Include="IEntityBrush.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
@@ -111,14 +111,18 @@
     <None Include="16sm.font">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Cheepicus12.font" />
+    <None Include="Cheepicus12.font">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="EditorFont_IBM8x16.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="16x16_sm.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="Cheepicus_12x12.png" />
+    <Content Include="Cheepicus_12x12.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Icon.ico" />
     <None Include="packages.config" />
     <None Include="Settings.xml">

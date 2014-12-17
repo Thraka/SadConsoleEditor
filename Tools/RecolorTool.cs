@@ -20,6 +20,8 @@
 
         private RecolorToolPanel _settingsPanel;
 
+        private EntityBrush _brush;
+
         public override string ToString()
         {
             return Title;
@@ -34,10 +36,11 @@
 
         public void OnSelected()
         {
-            EditorConsoleManager.Instance.UpdateBrush(new EntityBrush());
-            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+            _brush = new EntityBrush();
+            EditorConsoleManager.Instance.UpdateBrush(_brush);
+            _brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
                 EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
-            EditorConsoleManager.Instance.Brush.IsVisible = false;
+            _brush.IsVisible = false;
             EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = true;
         }
 
@@ -48,7 +51,7 @@
 
         public void RefreshTool()
         {
-            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
+            _brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
         }
 
         public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
@@ -63,18 +66,18 @@
 
         public void MouseEnterSurface(MouseInfo info, CellSurface surface)
         {
-            EditorConsoleManager.Instance.Brush.IsVisible = true;
+            _brush.IsVisible = true;
         }
 
         public void MouseExitSurface(MouseInfo info, CellSurface surface)
         {
-            EditorConsoleManager.Instance.Brush.IsVisible = false;
+            _brush.IsVisible = false;
         }
 
         public void MouseMoveSurface(MouseInfo info, CellSurface surface)
         {
-            EditorConsoleManager.Instance.Brush.Position = info.ConsoleLocation;
-            EditorConsoleManager.Instance.Brush.IsVisible = true;
+            _brush.Position = info.ConsoleLocation;
+            _brush.IsVisible = true;
 
             if (info.LeftButtonDown)
             {

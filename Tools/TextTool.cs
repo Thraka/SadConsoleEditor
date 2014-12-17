@@ -11,6 +11,8 @@
         private Console tempConsole;
         private int _cursorCharacter = 95;
 
+        private EntityBrush _brush;
+
         public const string ID = "TEXT";
         public string Id
         {
@@ -41,10 +43,10 @@
         {
             SadConsole.Effects.Blink blinkEffect = new SadConsole.Effects.Blink();
             blinkEffect.BlinkSpeed = 0.35f;
-
-            EditorConsoleManager.Instance.UpdateBrush(new EntityBrush());
-            EditorConsoleManager.Instance.Brush.CurrentAnimation.Frames[0].Fill(Color.White, Color.Black, _cursorCharacter, blinkEffect);
-            EditorConsoleManager.Instance.Brush.IsVisible = false;
+            _brush = new EntityBrush();
+            EditorConsoleManager.Instance.UpdateBrush(_brush);
+            _brush.CurrentAnimation.Frames[0].Fill(Color.White, Color.Black, _cursorCharacter, blinkEffect);
+            _brush.IsVisible = false;
             EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = false;
             EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = true;
 
@@ -67,14 +69,14 @@
                 if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Escape))
                 {
                     writing = false;
-                    EditorConsoleManager.Instance.Brush.IsVisible = false;
+                    _brush.IsVisible = false;
                 }
                 else
                 {
                     tempConsole.CellData = surface;
                     tempConsole.VirtualCursor.PrintAppearance = new CellAppearance(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground);
                     tempConsole.ProcessKeyboard(info);
-                    EditorConsoleManager.Instance.Brush.Position = tempConsole.VirtualCursor.Position;
+                    _brush.Position = tempConsole.VirtualCursor.Position;
                 }
             }
         }
@@ -100,9 +102,9 @@
                 writing = true;
 
                 tempConsole.CellData = surface;
-                tempConsole.VirtualCursor.Position = EditorConsoleManager.Instance.Brush.Position = info.ConsoleLocation;
+                tempConsole.VirtualCursor.Position = _brush.Position = info.ConsoleLocation;
 
-                EditorConsoleManager.Instance.Brush.IsVisible = true;
+                _brush.IsVisible = true;
             }
         }
     }
