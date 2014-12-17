@@ -81,7 +81,7 @@
 
         public void LoadBrush(CellSurface surface)
         {
-            _panel.State = CloneToolPanel.CloneState.MovingClone;
+            _panel.State = CloneToolPanel.CloneState.Clone;
 
             // Copy data to new animation
             Animation cloneAnimation = new Animation("clone", surface.Width, surface.Height);
@@ -129,28 +129,26 @@
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
         {
-            if (_secondPoint != null && _panel.State == CloneToolPanel.CloneState.SelectingPoint2)
-            {
-                _panel.State = CloneToolPanel.CloneState.MovingClone;   
-            }
-            else if (_panel.State == CloneToolPanel.CloneState.MovingClone)
-            {
-                _entity.Position = info.ConsoleLocation;
+            //if (_secondPoint != null && _panel.State == CloneToolPanel.CloneState.SelectingPoint2)
+            //{
+            //    //_panel.State = CloneToolPanel.CloneState.MovingClone;   
+            //}
+            //else if (_panel.State == CloneToolPanel.CloneState.)
+            //{
+            //    _entity.Position = info.ConsoleLocation;
 
-                if (info.LeftClicked)
-                    StampBrush(info.ConsoleLocation.X, info.ConsoleLocation.Y, surface);
-            }
+            //    if (info.LeftClicked)
+            //        StampBrush(info.ConsoleLocation.X, info.ConsoleLocation.Y, surface);
+            //}
         }
 
         public void MouseEnterSurface(MouseInfo info, CellSurface surface)
         {
-            if (_panel.State != CloneToolPanel.CloneState.MovingClone)
                 _entity.IsVisible = true;
         }
 
         public void MouseExitSurface(MouseInfo info, CellSurface surface)
         {
-            if (_panel.State != CloneToolPanel.CloneState.MovingClone)
                 _entity.IsVisible = false;
         }
 
@@ -197,16 +195,26 @@
                 {
                     
                 }
-                else if (_panel.State == CloneToolPanel.CloneState.MovingClone)
+                else if (_panel.State == CloneToolPanel.CloneState.Clone)
                 {
                     StampBrush(info.ConsoleLocation.X, info.ConsoleLocation.Y, surface);
                 }
+                else if (_panel.State == CloneToolPanel.CloneState.Clear)
+                {
+                    // Erase selected area
+                }
+                else if (_panel.State == CloneToolPanel.CloneState.Move)
+                {
+                    // Move the selected cells
+                }
+
+
             }
             else
             {
                 _entity.IsVisible = true;
 
-                if (_panel.State == CloneToolPanel.CloneState.MovingClone)
+                if (_panel.State == CloneToolPanel.CloneState.Clone || _panel.State == CloneToolPanel.CloneState.Move)
                     _entity.Position = info.ConsoleLocation;
 
                 if (_panel.State == CloneToolPanel.CloneState.SelectingPoint1)
