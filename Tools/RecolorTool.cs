@@ -81,16 +81,23 @@
 
             if (info.LeftButtonDown)
             {
-                //if (info.Console == surface)
-                {
-                    var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
+                var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
 
-                    if (!_settingsPanel.IgnoreForeground)
-                        cell.Foreground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground;
+                if (!_settingsPanel.IgnoreForeground)
+                    cell.Foreground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground;
 
-                    if (!_settingsPanel.IgnoreBackground)
-                        cell.Background = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground;
-                }
+                if (!_settingsPanel.IgnoreBackground)
+                    cell.Background = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground;
+            }
+            else if (info.RightButtonDown)
+            {
+                var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
+
+                if (!_settingsPanel.IgnoreForeground)
+                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground = cell.Foreground;
+
+                if (!_settingsPanel.IgnoreBackground)
+                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground = cell.Background;
             }
         }
     }

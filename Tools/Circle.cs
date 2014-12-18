@@ -148,6 +148,7 @@
                     _borderAppearance = new CellAppearance(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
                                                            EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
                                                            EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
+                    _borderAppearance.SpriteEffect = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect;
                 }
                 else
                 {

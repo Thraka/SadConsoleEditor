@@ -12,22 +12,26 @@ namespace SadConsoleEditor.Windows
 {
     class CharacterQuickSelectPopup : SadConsole.Consoles.Window
     {
+        private Controls.CharacterPicker _picker;
+
+        public Microsoft.Xna.Framework.Graphics.SpriteEffects MirrorEffect { get { return _picker.MirrorEffect; } set { _picker.MirrorEffect = value; } }
+
         public int SelectedCharacter { get; private set; }
 
         public CharacterQuickSelectPopup(int character)
             : base(18, 18)
         {
             Center();
-            Controls.CharacterPicker picker = new Controls.CharacterPicker(Settings.Red, Settings.Color_ControlBack, Settings.Green);
-            picker.Position = new Point(1, 1);
-            picker.SelectedCharacter = character;
-            picker.UseFullClick = true;
-            picker.SelectedCharacterChanged += (sender, e) =>
+            _picker = new Controls.CharacterPicker(Settings.Red, Settings.Color_ControlBack, Settings.Green);
+            _picker.Position = new Point(1, 1);
+            _picker.SelectedCharacter = character;
+            _picker.UseFullClick = true;
+            _picker.SelectedCharacterChanged += (sender, e) =>
             {
                 SelectedCharacter = e.NewCharacter;
                 this.Hide();
             };
-            Add(picker);
+            Add(_picker);
 
             this.CloseOnESC = true;
             this.Title = "Pick a character";

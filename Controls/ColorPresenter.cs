@@ -29,6 +29,7 @@
         public int Character { get { return _character; } set { _character = value; Compose(); } }
 
         public bool DisableColorPicker { get; set; }
+        public bool EnableCharacterPicker { get; set; }
 
         private Color _selectedColor;
         private string _title;
@@ -82,11 +83,7 @@
                     base.OnLeftMouseClicked(info);
                 }
             }
-        }
-
-        protected override void OnRightMouseClicked(MouseInfo info)
-        {
-            if (DisableColorPicker)
+            else if (EnableCharacterPicker)
             {
                 var location = this.TransformConsolePositionByControlPosition(info);
                 if (location.X >= _width - 3)
@@ -94,7 +91,6 @@
                     base.OnRightMouseClicked(info);
                 }
             }
-
         }
     }
 }

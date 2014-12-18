@@ -10,13 +10,24 @@
         private Color _charForeground;
         private Color _fill;
         private Color _selectedCharColor;
+        Microsoft.Xna.Framework.Graphics.SpriteEffects _mirrorEffect;
 
         private SadConsole.Controls.DrawingSurface _characterSurface;
         private SadConsole.Effects.Fade _selectedCharEffect;
         private int _selectedChar;
 
         public event EventHandler<SelectedCharacterEventArgs> SelectedCharacterChanged;
-        public bool UseFullClick; 
+        public bool UseFullClick;
+
+        public Microsoft.Xna.Framework.Graphics.SpriteEffects MirrorEffect
+        {
+            get { return _mirrorEffect; }
+            set
+            {
+                _mirrorEffect = value;
+                Compose();
+            }
+        }
 
         public int SelectedCharacter
         {
@@ -83,6 +94,7 @@
                 for (int x = 0; x < 16; x++)
                 {
                     this.SetCharacter(x, y, i);
+                    this.SetSpriteEffect(x, y, _mirrorEffect);
                     i++;
                 }
             }

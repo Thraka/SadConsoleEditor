@@ -65,6 +65,7 @@
                                     EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
                                     EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
                                     EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
+            _lineStyle.SpriteEffect = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect;
             _lineStyle.CopyAppearanceTo(_lineCell);
 
             _entity = new EntityBrush();
@@ -87,6 +88,7 @@
                                     EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
                                     EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
                                     EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
+            _lineStyle.SpriteEffect = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect;
             _lineStyle.CopyAppearanceTo(_lineCell);
         }
 
@@ -164,6 +166,7 @@
                                     EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
                                     EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
                                     EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
+                _lineStyle.SpriteEffect = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect;
                 _lineStyle.CopyAppearanceTo(_lineCell);
 
                 _lineShape = new SadConsole.Shapes.Line();
