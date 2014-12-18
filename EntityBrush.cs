@@ -10,18 +10,24 @@ namespace SadConsoleEditor
 {
     class EntityBrush : Entity, IEntityBrush
     {
-        public List<EntityBrush> TopLayers;
+        public List<Entity> TopLayers;
 
         public EntityBrush()
         {
             this.Font = Settings.ScreenFont;
-            TopLayers = new List<EntityBrush>();
+            TopLayers = new List<Entity>();
         }
 
-        public void SyncEntities()
+        public void SyncLayers()
         {
             foreach (var item in TopLayers)
+            {
                 item.Position = this.Position;
+                item.IsVisible = this.IsVisible;
+                item.PositionOffset = this.PositionOffset;
+                item.Font = this.Font;
+                item.CurrentAnimation.Center = this.CurrentAnimation.Center;
+            }
         }
 
         protected override void OnPositionChanged(Point oldLocation)
@@ -35,22 +41,18 @@ namespace SadConsoleEditor
 
         public override void Render()
         {
-            foreach (var item in TopLayers)
-            {
-                item.Render();
-            }
-
             base.Render();
+
+            foreach (var item in TopLayers)
+                item.Render();
         }
 
         public override void Update()
         {
-            foreach (var item in TopLayers)
-            {
-                item.Update();
-            }
-
             base.Update();
+
+            foreach (var item in TopLayers)
+                item.Update();
         }
     }
 }

@@ -36,7 +36,7 @@ namespace SadConsoleEditor.Editors
         {
             get
             {
-                return new string[] { PaintTool.ID, RecolorTool.ID, FillTool.ID, TextTool.ID, CloneTool.ID, LineTool.ID, BoxTool.ID, CircleTool.ID };
+                return new string[] { PaintTool.ID, RecolorTool.ID, FillTool.ID, TextTool.ID, SelectionTool.ID, LineTool.ID, BoxTool.ID, CircleTool.ID };
             }
         }
 

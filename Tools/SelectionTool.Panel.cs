@@ -12,7 +12,7 @@ using SadConsoleEditor.Windows;
 
 namespace SadConsoleEditor.Tools
 {
-    class CloneToolPanel : CustomPanel
+    class SelectionToolPanel : CustomPanel
     {
         private CloneState _state;
         private Button _reset;
@@ -45,8 +45,13 @@ namespace SadConsoleEditor.Tools
                 _clone.IsEnabled = value == CloneState.Selected;
                 _clear.IsEnabled = value == CloneState.Selected;
                 _move.IsEnabled = value == CloneState.Selected;
+
+                if (StateChangedHandler != null)
+                    StateChangedHandler(value);
             } 
         }
+
+        public Action<CloneState> StateChangedHandler;
 
         public enum CloneState
         {
@@ -58,7 +63,9 @@ namespace SadConsoleEditor.Tools
             Move
         }
 
-        public CloneToolPanel(Action<CellSurface> loadBrushHandler, Func<CellSurface> saveBrushHandler)
+        
+
+        public SelectionToolPanel(Action<CellSurface> loadBrushHandler, Func<CellSurface> saveBrushHandler)
         {
             _reset = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
             _reset.Text = "Reset Steps";
@@ -169,7 +176,7 @@ namespace SadConsoleEditor.Tools
 
         public override int Redraw(ControlBase control)
         {
-            if (control == _saveBrush || control == _skipEmptyColor)
+            if (control == _saveBrush || control == _skipEmptyColor || control == _move)
             {
                 return 1;
             }

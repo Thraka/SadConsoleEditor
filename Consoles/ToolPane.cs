@@ -58,7 +58,7 @@ namespace SadConsoleEditor.Consoles
             _tools.Add(LineTool.ID, new LineTool());
             _tools.Add(BoxTool.ID, new BoxTool());
             _tools.Add(ObjectTool.ID, new ObjectTool());
-            _tools.Add(CloneTool.ID, new CloneTool());
+            _tools.Add(SelectionTool.ID, new SelectionTool());
             _tools.Add(CircleTool.ID, new CircleTool());
 
             SetupFilePanel();

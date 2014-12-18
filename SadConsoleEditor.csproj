@@ -65,8 +65,8 @@
     <Compile Include="Tools\Circle.Panel.cs" />
     <Compile Include="Tools\BoxTool.Panel.cs" />
     <Compile Include="Tools\CharacterPickPanel.cs" />
-    <Compile Include="Tools\CloneTool.cs" />
-    <Compile Include="Tools\CloneTool.Panel.cs" />
+    <Compile Include="Tools\SelectionTool.cs" />
+    <Compile Include="Tools\SelectionTool.Panel.cs" />
     <Compile Include="Tools\DrawTool.cs" />
     <Compile Include="Tools\EraseDrawingTool.cs" />
     <Compile Include="Tools\FillTool.cs" />
