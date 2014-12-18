@@ -88,7 +88,7 @@
                 var location = this.TransformConsolePositionByControlPosition(info);
                 if (location.X >= _width - 3)
                 {
-                    base.OnRightMouseClicked(info);
+                    base.OnLeftMouseClicked(info);
                 }
             }
         }

@@ -85,7 +85,7 @@ namespace SadConsoleEditor.Tools
             _characterPicker.SelectedCharacterChanged += (sender, e) => { _charPreview.Character = e.NewCharacter; _charPreview.Title = "Character (" + e.NewCharacter.ToString() + ")"; OnChanged(); };
             _characterPicker.SelectedCharacter = 1;
             _charPreview.MouseButtonClicked += (o, e) => { 
-                if (e.RightButtonClicked)
+                if (e.LeftButtonClicked)
                 {
                     _popupCharacterWindow.Center();
                     _popupCharacterWindow.Show(true);
