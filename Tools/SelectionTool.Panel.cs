@@ -12,6 +12,50 @@ using SadConsoleEditor.Windows;
 
 namespace SadConsoleEditor.Tools
 {
+    class SelectionToolAltPanel : CustomPanel
+    {
+        private CheckBox _skipEmptyColor;
+        private CheckBox _altEmptyColorCheck;
+        private Controls.ColorPresenter _altEmptyColor;
+
+
+        public bool SkipEmptyCells { get { return _skipEmptyColor.IsSelected; } }
+        public bool UseAltEmptyColor { get { return _altEmptyColorCheck.IsSelected; } }
+        public Color AltEmptyColor { get { return _altEmptyColor.SelectedColor; } }
+
+        public SelectionToolAltPanel()
+        {
+            Title = "Sel.Rect Options";
+
+            _skipEmptyColor = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            _skipEmptyColor.Text = "Skip Empty";
+
+            _altEmptyColorCheck = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            _altEmptyColorCheck.Text = "Use Alt. Empty";
+
+            _altEmptyColor = new Controls.ColorPresenter("Alt. Empty Clr", Settings.Green, 18);
+            _altEmptyColor.SelectedColor = Color.Black;
+
+            Controls = new ControlBase[] { _skipEmptyColor, _altEmptyColorCheck, _altEmptyColor };
+        }
+
+        public override void ProcessMouse(MouseInfo info)
+        {
+        }
+
+        public override int Redraw(ControlBase control)
+        {
+            if (control == _skipEmptyColor)
+                return 1;
+
+            return 0;
+        }
+
+        public override void Loaded()
+        {
+        }
+    }
+
     class SelectionToolPanel : CustomPanel
     {
         private CloneState _state;
@@ -21,18 +65,13 @@ namespace SadConsoleEditor.Tools
         private Button _clone;
         private Button _clear;
         private Button _move;
-        private CheckBox _skipEmptyColor;
-        private CheckBox _altEmptyColorCheck;
-        private Controls.ColorPresenter _altEmptyColor;
+        
 
         private Func<CellSurface> _saveBrushHandler;
         private Action<CellSurface> _loadBrushHandler;
 
         private int _currentStepChar = 175;
 
-        public bool SkipEmptyCells { get { return _skipEmptyColor.IsSelected; } }
-        public bool UseAltEmptyColor { get { return _altEmptyColorCheck.IsSelected; } }
-        public Color AltEmptyColor { get { return _altEmptyColor.SelectedColor; } }
 
         public CloneState State
         {
@@ -91,16 +130,9 @@ namespace SadConsoleEditor.Tools
             _move.Text = "Move";
             _move.ButtonClicked += move_ButtonClicked;
 
-            _skipEmptyColor = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            _skipEmptyColor.Text = "Skip Empty";
+            
 
-            _altEmptyColorCheck = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            _altEmptyColorCheck.Text = "Use Alt. Empty";
-
-            _altEmptyColor = new Controls.ColorPresenter("Alt. Empty Clr", Settings.Green, 18);
-            _altEmptyColor.SelectedColor = Color.Black;
-
-            Controls = new ControlBase[] { _reset, _loadBrush, _saveBrush, _clone, _clear, _move, _skipEmptyColor, _altEmptyColorCheck, _altEmptyColor };
+            Controls = new ControlBase[] { _reset, _loadBrush, _saveBrush, _clone, _clear, _move };
 
             _loadBrushHandler = loadBrushHandler;
             _saveBrushHandler = saveBrushHandler;
@@ -176,7 +208,7 @@ namespace SadConsoleEditor.Tools
 
         public override int Redraw(ControlBase control)
         {
-            if (control == _saveBrush || control == _skipEmptyColor || control == _move)
+            if (control == _saveBrush || control == _move)
             {
                 return 1;
             }

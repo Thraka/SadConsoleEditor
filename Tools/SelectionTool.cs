@@ -16,6 +16,7 @@
         private Point? _secondPoint;
         private SadConsole.Shapes.Box _boxShape;
         private SelectionToolPanel _panel;
+        private SelectionToolAltPanel _altPanel;
         private SadConsole.Effects.Fade _pulseAnimation;
         private CellSurface _previousSurface;
 
@@ -59,7 +60,10 @@
 
             _panel = new SelectionToolPanel(LoadBrush, SaveBrush);
             _panel.StateChangedHandler = PanelStateChanged;
-            ControlPanels = new CustomPanel[] { _panel };
+
+            _altPanel = new SelectionToolAltPanel();
+
+            ControlPanels = new CustomPanel[] { _panel, _altPanel };
 
             _pulseAnimation = new SadConsole.Effects.Fade()
             {
@@ -250,11 +254,11 @@
                     Point p1 = new Point(Math.Min(_firstPoint.Value.X, _secondPoint.Value.X), Math.Min(_firstPoint.Value.Y, _secondPoint.Value.Y));
                     surface.Copy(p1.X, p1.Y, cloneAnimation.Width, cloneAnimation.Height, frame, 0, 0);
 
-                    if (_panel.SkipEmptyCells && _panel.UseAltEmptyColor)
+                    if (_altPanel.SkipEmptyCells && _altPanel.UseAltEmptyColor)
                     {
                         foreach (var cell in frame)
                         {
-                            if (cell.CharacterIndex == 0 && cell.Background == _panel.AltEmptyColor)
+                            if (cell.CharacterIndex == 0 && cell.Background == _altPanel.AltEmptyColor)
                                 cell.Background = Color.Transparent;
                         }
                     }
@@ -381,7 +385,7 @@
                         var sourceCell = _entity.CellData[curx, cury];
 
                         // Not working, breakpoint here to remind me.
-                        if (_panel.SkipEmptyCells && sourceCell.CharacterIndex == 0 && (sourceCell.Background == Color.Transparent || (_panel.UseAltEmptyColor && sourceCell.Background == _panel.AltEmptyColor)))
+                        if (_altPanel.SkipEmptyCells && sourceCell.CharacterIndex == 0 && (sourceCell.Background == Color.Transparent || (_altPanel.UseAltEmptyColor && sourceCell.Background == _altPanel.AltEmptyColor)))
                         {
                             destY++;
                             continue;
