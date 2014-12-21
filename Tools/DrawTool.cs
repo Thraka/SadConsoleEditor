@@ -35,27 +35,19 @@
         {
             EditorConsoleManager.Instance.UpdateBrush(_brush);
             _brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
-                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter, null);
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter, null, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect);
             _brush.IsVisible = false;
-
-            EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.Changed += CommonCharacterPickerPanel_Changed;
         }
 
-        void CommonCharacterPickerPanel_Changed(object sender, System.EventArgs e)
-        {
-            _brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
-                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter, null);
-        }
 
         public void OnDeselected()
         {
-            EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.Changed -= CommonCharacterPickerPanel_Changed;
         }
 
         public void RefreshTool()
         {
             _brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
-                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter, null);
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter, null, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect);
         }
 
         public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
