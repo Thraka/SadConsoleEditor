@@ -15,6 +15,28 @@ namespace SadConsoleEditor.Consoles
     [DataContract]
     public class LayeredConsole: Console
     {
+        [DataContract]
+        public class Metadata
+        {
+            [DataMember]
+            public string Name;
+            [DataMember]
+            public bool IsVisible = true;
+            [DataMember]
+            public bool IsRemoveable = true;
+            [DataMember]
+            public bool IsMovable = true;
+            [DataMember]
+            public bool IsRenamable = true;
+
+            public int Index;
+
+            public override string ToString()
+            {
+                return Name;
+            }
+        }
+
         [DataMember]
         public int Width { get; protected set; }
         [DataMember]
@@ -25,8 +47,8 @@ namespace SadConsoleEditor.Consoles
         [IgnoreDataMember]
         public CellSurface ActiveLayer { get; protected set; }
 
-        [DataMember(Name = "LayerNames")]
-        private List<string> _layerNames;
+        [DataMember(Name = "LayerMetadata")]
+        private List<Metadata> _layerMetadata;
 
         [DataMember(Name = "Layers")]
         protected List<CellsRenderer> _layers;
@@ -42,7 +64,7 @@ namespace SadConsoleEditor.Consoles
             Height = height;
 
             _layers = new List<CellsRenderer>();
-            _layerNames = new List<string>();
+            _layerMetadata = new List<Metadata>();
             
             for (int i = 0; i < layers; i++)
                 AddLayer(i.ToString());
@@ -110,20 +132,21 @@ namespace SadConsoleEditor.Consoles
                 _layers[i].Render();
         }
 
-        public void SetLayerName(int layer, string name)
+        public void SetLayerMetadata(int layer, Metadata data)
         {
-            _layerNames[layer] = name;
+            _layerMetadata[layer] = data;
         }
 
-        public string GetLayerName(int layer)
+        public Metadata GetLayerMetadata(int layer)
         {
-            return _layerNames[layer];
+            return _layerMetadata[layer];
         }
 
         public void RemoveLayer(int layer)
         {
             _layers.RemoveAt(layer);
-            _layerNames.RemoveAt(layer);
+            _layerMetadata.RemoveAt(layer);
+            SyncLayerIndex();
         }
 
         public void AddLayer(string name)
@@ -131,7 +154,9 @@ namespace SadConsoleEditor.Consoles
             var layer = new CellsRenderer(new CellSurface(Width, Height), Batch);
             layer.Font = this.Font;
             _layers.Add(layer);
-            _layerNames.Add(name);
+            _layerMetadata.Add(new Metadata() { Name = name, IsVisible = true });
+
+            SyncLayerIndex();
         }
 
         public void InsertLayer(int index)
@@ -139,19 +164,23 @@ namespace SadConsoleEditor.Consoles
             var layer = new CellsRenderer(new CellSurface(Width, Height), Batch);
             layer.Font = this.Font;
             _layers.Insert(index, layer);
-            _layerNames.Insert(index, "");
+            _layerMetadata.Insert(index, new Metadata() { Name = index.ToString(), IsVisible = true });
+
+            SyncLayerIndex();
         }
 
         public void MoveLayer(int index, int newIndex)
         {
             var layer = _layers[index];
-            var layerName = _layerNames[index];
+            var layerName = _layerMetadata[index];
 
             _layers.Insert(newIndex, layer);
-            _layerNames.Insert(newIndex, layerName);
+            _layerMetadata.Insert(newIndex, layerName);
 
             _layers.RemoveAt(index);
-            _layerNames.RemoveAt(index);
+            _layerMetadata.RemoveAt(index);
+
+            SyncLayerIndex();
         }
 
         public IEnumerable<CellsRenderer> GetEnumeratorForLayers()
@@ -185,6 +214,12 @@ namespace SadConsoleEditor.Consoles
             {
                 _layers[i].CellSize = new Point(width, height);
             }
+        }
+
+        private void SyncLayerIndex()
+        {
+            for (int i = 0; i < Layers; i++)
+                _layerMetadata[i].Index = i;
         }
     }
 

@@ -47,43 +47,29 @@ namespace SadConsoleEditor.Editors
 
         public GameScreenEditor()
         {
-            _consoleLayers = new LayeredConsole(2, 25, 10);
-            _consoleLayers.Font = Settings.ScreenFont;
-            _consoleLayers.CanUseMouse = true;
-            _consoleLayers.CanUseKeyboard = true;
-            _consoleLayers.SetLayerName(0, "Root");
-            _consoleLayers.SetLayerName(1, "Objects");
-            //_consoleLayers[0].CellData.Fill(Color.Blue, Color.Yellow, 2, null);
-
-            _width = 25;
-            _height = 10;
-
-            // THIS WHOLE MOUSE HANDLING IS VERY MESSY.
-            // THERE ARE TOO MANY PATHS OBJ_1->OBJ_2->OBJ_1->OBJ_3 type of calling chain.
-            // REWRITE NOW
-            _mouseMoveHandler = (o, e) => { if (this.MouseMove != null) this.MouseMove(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseMoveSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
-            _mouseEnterHandler = (o, e) => { if (this.MouseEnter != null) this.MouseEnter(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseEnterSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
-            _mouseExitHandler = (o, e) => { if (this.MouseExit != null) this.MouseExit(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseExitSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
-
-
-            _consoleLayers.MouseMove += _mouseMoveHandler;
-            _consoleLayers.MouseEnter += _mouseEnterHandler;
-            _consoleLayers.MouseExit += _mouseExitHandler;
+            Reset();
         }
 
         public void Reset()
         {
-            _consoleLayers.MouseMove -= _mouseMoveHandler;
-            _consoleLayers.MouseEnter -= _mouseEnterHandler;
-            _consoleLayers.MouseExit -= _mouseExitHandler;
+            if (_consoleLayers != null)
+            {
+                _consoleLayers.MouseMove -= _mouseMoveHandler;
+                _consoleLayers.MouseEnter -= _mouseEnterHandler;
+                _consoleLayers.MouseExit -= _mouseExitHandler;
+            }
 
-            _consoleLayers = new LayeredConsole(1, 10, 5);
+            _consoleLayers = new LayeredConsole(2, 25, 10);
             _consoleLayers.Font = Settings.ScreenFont;
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
-
-            _width = 10;
-            _height = 5;
+            _consoleLayers.GetLayerMetadata(0).Name = "Root";
+            _consoleLayers.GetLayerMetadata(1).Name = "Editor Objects";
+            _consoleLayers.GetLayerMetadata(1).IsRemoveable = false;
+            _consoleLayers.GetLayerMetadata(1).IsMovable = false;
+            _consoleLayers.GetLayerMetadata(1).IsRenamable = false;
+            _width = 25;
+            _height = 10;
 
             _mouseMoveHandler = (o, e) => { if (this.MouseMove != null) this.MouseMove(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseMoveSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
             _mouseEnterHandler = (o, e) => { if (this.MouseEnter != null) this.MouseEnter(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseEnterSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
