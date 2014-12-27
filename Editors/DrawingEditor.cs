@@ -64,6 +64,8 @@ namespace SadConsoleEditor.Editors
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
             _consoleLayers.GetLayerMetadata(0).Name = "Root";
+            _consoleLayers.GetLayerMetadata(0).IsRemoveable = false;
+            _consoleLayers.GetLayerMetadata(0).IsMoveable = false;
 
             _width = 25;
             _height = 10;

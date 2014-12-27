@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework;
 using SadConsole;
 using SadConsoleEditor.Windows;
 
-namespace SadConsoleEditor.Tools
+namespace SadConsoleEditor.Panels
 {
     class SelectionToolAltPanel : CustomPanel
     {
@@ -168,8 +168,6 @@ namespace SadConsoleEditor.Tools
 
                     serializer.WriteObject(stream, _saveBrushHandler());
                     stream.Dispose();
-
-
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;

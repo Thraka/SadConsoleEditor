@@ -12,6 +12,7 @@ using SadConsoleEditor.Tools;
 using SadConsoleEditor.Windows;
 using SadConsole.Controls;
 using SadConsoleEditor.Controls;
+using SadConsoleEditor.Panels;
 
 namespace SadConsoleEditor.Consoles
 {
@@ -21,31 +22,35 @@ namespace SadConsoleEditor.Consoles
         private int RowTools = 6;
         private int RowToolSettings = 13;
 
-        private ListBox _toolsListBox;
         private Dictionary<string, ITool> _tools;
 
-        public ITool SelectedTool { get; private set; }
+        public ITool SelectedTool { get; set; }
        
-        private Button _newButton;
-        private Button _loadButton;
-        private Button _saveButton;
-        private Button _resizeButton;
+        
 
-        public Tools.CharacterPickPane CommonCharacterPickerPanel;
-        public Tools.LayersPanel LayersPanel;
+        public CharacterPickPanel CommonCharacterPickerPanel;
+        public LayersPanel LayersPanel;
+        public FilesPanel FilesPanel;
+        public ToolsPanel ToolsPanel;
+
+        private List<Tuple<CustomPanel, int>> _hotSpots;
 
         public static int PanelWidth;
 
         public ToolPane() : base(20, Game1.WindowSize.Y)
         {
             PanelWidth = 18;
-            CommonCharacterPickerPanel = new CharacterPickPane("Settings", false, false, false);
+            CommonCharacterPickerPanel = new CharacterPickPanel("Settings", false, false, false);
             CommonCharacterPickerPanel.PickerFont = Settings.ScreenFont;
             CanUseKeyboard = false;
+
+            _hotSpots = new List<Tuple<CustomPanel, int>>();
         }
 
         public void FinishCreating()
         {
+            ProcessMouseWithoutFocus = true;
+
             _cellData.DefaultBackground = Settings.Color_MenuBack;
             _cellData.DefaultForeground = Settings.Color_TitleText;
             _cellData.Clear();
@@ -61,138 +66,91 @@ namespace SadConsoleEditor.Consoles
             _tools.Add(SelectionTool.ID, new SelectionTool());
             _tools.Add(CircleTool.ID, new CircleTool());
 
-            SetupFilePanel();
-            SetupToolsPanel();
+            FilesPanel = new FilesPanel();
+            ToolsPanel = new ToolsPanel();
+            LayersPanel = new LayersPanel();
 
-            //_cellData.Print(1, 2, "  Paint Brush", Settings.Yellow);
-            ProcessMouseWithoutFocus = true;
-        }
-
-        private void SetupFilePanel()
-        {
-            _newButton = new Button(8, 1)
-            {
-                Text = " New",
-                TextAlignment = System.Windows.HorizontalAlignment.Left,
-                CanUseKeyboard = false,
-            };
-            _newButton.ButtonClicked += (o, e) =>
-            {
-                EditorConsoleManager.Instance.ShowNewConsolePopup();
-            };
-            Add(_newButton);
-
-            _loadButton = new Button(8, 1)
-            {
-                Text = "Load",
-            };
-            _loadButton.ButtonClicked += (o, e) =>
-            {
-                EditorConsoleManager.Instance.LoadSurface();
-            };
-            Add(_loadButton);
-
-            _saveButton = new Button(8, 1)
-            {
-                Text = "Save",
-            };
-            _saveButton.ButtonClicked += (o, e) =>
-            {
-                EditorConsoleManager.Instance.SaveSurface();
-            };
-            Add(_saveButton);
-
-            _resizeButton = new Button(8, 1)
-            {
-                Text = "Resize",
-            };
-            _resizeButton.ButtonClicked += (o, e) =>
-            {
-                EditorConsoleManager.Instance.ShowResizeConsolePopup();
-            };
-            Add(_resizeButton);
-        }
-
-        private void SetupToolsPanel()
-        {
-            _toolsListBox = new ListBox(20 - 2, 7);
-            _toolsListBox.HideBorder = true;
-            _toolsListBox.CanUseKeyboard = false;
-            Add(_toolsListBox);
-
-            _toolsListBox.SelectedItemChanged += (sender, e) =>
-                {
-                    if (SelectedTool != null)
-                    {
-                        SelectedTool.OnDeselected();
-                        if (SelectedTool.ControlPanels != null)
-                            foreach (var pane in SelectedTool.ControlPanels)
-                            {
-                                foreach (var control in pane.Controls)
-                                {
-                                    this.Remove(control);
-                                }
-                            }
-                    }
-                    SelectedTool = (ITool)e.Item;
-
-                    LayersPanel = new Tools.LayersPanel();
-
-                    EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = true;
-                    CommonCharacterPickerPanel.HideCharacter = false;
-                    CommonCharacterPickerPanel.HideForeground = false;
-                    CommonCharacterPickerPanel.HideBackground = false;
-                    SelectedTool.OnSelected();
-                    CommonCharacterPickerPanel.Reset();
-                    RefreshControls();
-                };
-
+            FilesPanel.IsCollapsed = true;
+            LayersPanel.IsCollapsed = true;
         }
 
         public void SetupEditor()
         {
-            _toolsListBox.Items.Clear();
+            ToolsPanel.ToolsListBox.Items.Clear();
 
             foreach (var toolId in EditorConsoleManager.Instance.SelectedEditor.Tools)
-                _toolsListBox.Items.Add(_tools[toolId]);
+                ToolsPanel.ToolsListBox.Items.Add(_tools[toolId]);
 
-            _toolsListBox.SelectedItem = _tools.Values.First();
+            ToolsPanel.ToolsListBox.SelectedItem = _tools.Values.First();
         }
 
         public void RefreshControls()
         {
-            int activeRow;
+            int activeRow = 0;
             _cellData.Clear();
+            RemoveAll();
+            _hotSpots.Clear();
 
-            RowFile = 0;
-            _cellData.Print(1, RowFile, "File");
-            _cellData.Print(0, RowFile + 1, new string((char)196, _cellData.Width));
-            _newButton.Position = new Point(1, RowFile + 2);
-            _loadButton.Position = new Point(_cellData.Width - 9, RowFile + 2);
-            _saveButton.Position = new Point(_cellData.Width - 9, RowFile + 3);
-            _resizeButton.Position = new Point(1, RowFile + 3);
+            char open = (char)31;
+            char closed = (char)16;
 
-            RowTools = RowFile + 5;
-            _cellData.Print(1, RowTools, "Tools");
-            _cellData.Print(0, RowTools + 1, new string((char)196, _cellData.Width));
-            _toolsListBox.Position = new Point(1, RowTools + 2);
+            // Files panel
+            FilesPanel.Loaded();
+            _hotSpots.Add(new Tuple<CustomPanel, int>(FilesPanel, activeRow));
+            if (FilesPanel.IsCollapsed == false)
+            {
+                _cellData.Print(1, activeRow++, open + " " + FilesPanel.Title);
+                _cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
 
-            RowToolSettings = _toolsListBox.Position.Y + _toolsListBox.Height + 1;
-            activeRow = RowToolSettings;
+                foreach (var control in FilesPanel.Controls)
+                {
+                    Add(control);
+                    control.Position = new Point(1, activeRow);
+                    activeRow += FilesPanel.Redraw(control) + control.Height;
+                }
+                activeRow++;
+            }
+            else
+                _cellData.Print(1, activeRow++, closed + " " + FilesPanel.Title);
 
             // Layers panel
             LayersPanel.Loaded();
-            _cellData.Print(1, activeRow++, LayersPanel.Title);
-            _cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
-
-            foreach (var control in LayersPanel.Controls)
+            _hotSpots.Add(new Tuple<CustomPanel, int>(LayersPanel, activeRow));
+            if (LayersPanel.IsCollapsed == false)
             {
-                Add(control);
-                control.Position = new Point(1, activeRow);
-                activeRow += LayersPanel.Redraw(control) + control.Height;
-            }
+                _cellData.Print(1, activeRow++, open + " " + LayersPanel.Title);
+                _cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
 
-            activeRow++;
+                foreach (var control in LayersPanel.Controls)
+                {
+                    Add(control);
+                    control.Position = new Point(1, activeRow);
+                    activeRow += LayersPanel.Redraw(control) + control.Height;
+                }
+
+                activeRow++;
+            }
+            else
+                _cellData.Print(1, activeRow++, closed + " " + LayersPanel.Title);
+
+            // Tools panel
+            ToolsPanel.Loaded();
+            _hotSpots.Add(new Tuple<CustomPanel, int>(ToolsPanel, activeRow));
+            if (ToolsPanel.IsCollapsed == false)
+            {
+                _cellData.Print(1, activeRow++, open + " " + ToolsPanel.Title);
+                _cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
+
+                foreach (var control in ToolsPanel.Controls)
+                {
+                    Add(control);
+                    control.Position = new Point(1, activeRow);
+                    activeRow += FilesPanel.Redraw(control) + control.Height;
+                }
+                activeRow++;
+            }
+            else
+                _cellData.Print(1, activeRow++, closed + " " + ToolsPanel.Title);
 
             // Custom panels from the selected tool
             if (SelectedTool.ControlPanels != null)
@@ -200,30 +158,55 @@ namespace SadConsoleEditor.Consoles
                 foreach (var pane in SelectedTool.ControlPanels)
                 {
                     pane.Loaded();
-                    _cellData.Print(1, activeRow++, pane.Title);
-                    _cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
-
-                    foreach (var control in pane.Controls)
+                    _hotSpots.Add(new Tuple<CustomPanel, int>(pane, activeRow));
+                    if (pane.IsCollapsed == false)
                     {
-                        Add(control);
-                        control.Position = new Point(1, activeRow);
-                        activeRow += pane.Redraw(control) + control.Height;
-                    }
+                        _cellData.Print(1, activeRow++, open + " " + pane.Title);
+                        _cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
 
-                    activeRow += 1;
+                        foreach (var control in pane.Controls)
+                        {
+                            Add(control);
+                            control.Position = new Point(1, activeRow);
+                            activeRow += pane.Redraw(control) + control.Height;
+                        }
+
+                        activeRow += 1;
+                    }
+                    else
+                        _cellData.Print(1, activeRow++, closed + " " + pane.Title);
+
                 }
             }
         }
 
         public override bool ProcessMouse(SadConsole.Input.MouseInfo info)
         {
-            if (info.ScrollWheelValueChange != 0)
+            base.ProcessMouse(info);
+
+            if (_isMouseOver)
             {
-                EditorConsoleManager.Instance.ScrollToolbox(info.ScrollWheelValueChange);
-                return true;
+                if (info.ScrollWheelValueChange != 0)
+                {
+                    EditorConsoleManager.Instance.ScrollToolbox(info.ScrollWheelValueChange);
+                    return true;
+                }
+
+                foreach (var item in _hotSpots)
+                {
+                    if (item.Item2 == info.ConsoleLocation.Y)
+                    {
+                        if (info.LeftClicked)
+                        {
+                            item.Item1.IsCollapsed = !item.Item1.IsCollapsed;
+                            RefreshControls();
+                            return true;
+                        }
+                    }
+                }
             }
 
-            return base.ProcessMouse(info);
+            return false;
         }
 
     }

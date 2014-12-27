@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SadConsoleEditor.Tools
+namespace SadConsoleEditor.Panels
 {
-    public class CharacterPickPane: CustomPanel
+    public class CharacterPickPanel: CustomPanel
     {
         public event EventHandler Changed;
 
@@ -51,7 +51,7 @@ namespace SadConsoleEditor.Tools
 
         public Font PickerFont { get { return _characterPicker.AlternateFont; } set { _characterPicker.AlternateFont = value; } }
 
-        public CharacterPickPane(string title, bool hideCharacter, bool hideForeground, bool hideBackground)
+        public CharacterPickPanel(string title, bool hideCharacter, bool hideForeground, bool hideBackground)
         {
             Title = title;
 

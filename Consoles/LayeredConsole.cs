@@ -25,7 +25,7 @@ namespace SadConsoleEditor.Consoles
             [DataMember]
             public bool IsRemoveable = true;
             [DataMember]
-            public bool IsMovable = true;
+            public bool IsMoveable = true;
             [DataMember]
             public bool IsRenamable = true;
 
@@ -73,11 +73,19 @@ namespace SadConsoleEditor.Consoles
             SetActiveLayer(0);
         }
 
-        protected override void OnFontChanged()
+        public void SyncLayers()
         {
             if (_layers != null)
-                foreach (var layer in _layers)
-                    layer.Font = this.Font;
+                foreach (var item in _layers)
+                {
+                    item.Position = this.Position;
+                    item.Font = this.Font;
+                }
+        }
+
+        protected override void OnFontChanged()
+        {
+            SyncLayers();
         }
 
         public void Clear(Color foreground, Color background)
@@ -116,8 +124,7 @@ namespace SadConsoleEditor.Consoles
         {
             this.Position = position;
 
-            for (int i = 0; i < _layers.Count; i++)
-                _layers[i].Position = position;
+            SyncLayers();
         }
 
         public override void Update()
@@ -129,7 +136,8 @@ namespace SadConsoleEditor.Consoles
         public override void Render()
         {
             for (int i = 0; i < _layers.Count; i++)
-                _layers[i].Render();
+                if (_layers[i].IsVisible)
+                    _layers[i].Render();
         }
 
         public void SetLayerMetadata(int layer, Metadata data)
@@ -149,7 +157,7 @@ namespace SadConsoleEditor.Consoles
             SyncLayerIndex();
         }
 
-        public void AddLayer(string name)
+        public CellsRenderer AddLayer(string name)
         {
             var layer = new CellsRenderer(new CellSurface(Width, Height), Batch);
             layer.Font = this.Font;
@@ -157,9 +165,22 @@ namespace SadConsoleEditor.Consoles
             _layerMetadata.Add(new Metadata() { Name = name, IsVisible = true });
 
             SyncLayerIndex();
+            SyncLayers();
+            return layer;
         }
 
-        public void InsertLayer(int index)
+        public void AddLayer(CellSurface surface)
+        {
+            var layer = new CellsRenderer(surface, Batch);
+            layer.Font = this.Font;
+            _layers.Add(layer);
+            _layerMetadata.Add(new Metadata() { Name = "New", IsVisible = true });
+
+            SyncLayerIndex();
+            SyncLayers();
+        }
+
+        public CellsRenderer InsertLayer(int index)
         {
             var layer = new CellsRenderer(new CellSurface(Width, Height), Batch);
             layer.Font = this.Font;
@@ -167,6 +188,8 @@ namespace SadConsoleEditor.Consoles
             _layerMetadata.Insert(index, new Metadata() { Name = index.ToString(), IsVisible = true });
 
             SyncLayerIndex();
+            SyncLayers();
+            return layer;
         }
 
         public void MoveLayer(int index, int newIndex)
@@ -174,11 +197,11 @@ namespace SadConsoleEditor.Consoles
             var layer = _layers[index];
             var layerName = _layerMetadata[index];
 
-            _layers.Insert(newIndex, layer);
-            _layerMetadata.Insert(newIndex, layerName);
-
             _layers.RemoveAt(index);
             _layerMetadata.RemoveAt(index);
+
+            _layers.Insert(newIndex, layer);
+            _layerMetadata.Insert(newIndex, layerName);
 
             SyncLayerIndex();
         }

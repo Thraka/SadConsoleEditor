@@ -9,7 +9,7 @@ using SadConsole.Input;
 using Microsoft.Xna.Framework;
 using SadConsole;
 
-namespace SadConsoleEditor.Tools
+namespace SadConsoleEditor.Panels
 {
     class ObjectToolPanel : CustomPanel
     {

@@ -2,6 +2,7 @@
 {
     using SadConsole;
     using SadConsole.Input;
+    using SadConsoleEditor.Panels;
 
     class RecolorTool : ITool
     {

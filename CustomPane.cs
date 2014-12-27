@@ -24,5 +24,7 @@
         public abstract int Redraw(ControlBase control);
 
         public abstract void Loaded();
+
+        public bool IsCollapsed;
     }
 }

@@ -6,6 +6,7 @@
     using SadConsole.Entities;
     using SadConsole.Input;
     using System;
+    using SadConsoleEditor.Panels;
 
     class SelectionTool : ITool
     {
@@ -20,7 +21,7 @@
         private SadConsole.Effects.Fade _pulseAnimation;
         private CellSurface _previousSurface;
 
-        private SadConsoleEditor.Tools.SelectionToolPanel.CloneState _previousState;
+        private SelectionToolPanel.CloneState _previousState;
 
         public const string ID = "SELECT";
         public string Id
