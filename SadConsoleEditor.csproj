@@ -55,6 +55,8 @@
     <Compile Include="Editors\GameScreenEditor.cs" />
     <Compile Include="EntityBrush.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="GameHelpers\GameObject.cs" />
+    <Compile Include="GameHelpers\GameObjectCollection.cs" />
     <Compile Include="HSLColor.cs" />
     <Compile Include="IEntityBrush.cs" />
     <Compile Include="Panels\ToolsPanel.cs" />

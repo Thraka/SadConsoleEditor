@@ -2,18 +2,10 @@
 {
     using Microsoft.Xna.Framework;
     using SadConsole;
-    using SadConsole.Consoles;
     using SadConsole.Input;
-    using SadConsoleEditor.Panels;
 
     class ObjectTool : ITool
     {
-        private bool writing;
-        private Console tempConsole;
-        private int _cursorCharacter = 95;
-
-        private EntityBrush _brush;
-
         public const string ID = "OBJECT";
         public string Id
         {
@@ -27,70 +19,104 @@
 
         public CustomPanel[] ControlPanels { get; private set; }
 
-        private ObjectToolPanel _objectSettingsPanel;
+        private EntityBrush _brush;
+        private Panels.ObjectToolPanel _panel;
+
+        public ObjectTool()
+        {
+            _panel = new Panels.ObjectToolPanel();
+            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel, _panel };
+
+            _brush = new EntityBrush();
+        }
 
         public override string ToString()
         {
             return Title;
         }
 
-        public ObjectTool()
-        {
-
-            _objectSettingsPanel = new ObjectToolPanel();
-            this.ControlPanels = new CustomPanel[] { _objectSettingsPanel };
-        }
-
         public void OnSelected()
         {
-            SadConsole.Effects.Blink blinkEffect = new SadConsole.Effects.Blink();
-            blinkEffect.BlinkSpeed = 0.35f;
-            _brush = new EntityBrush();
-
             EditorConsoleManager.Instance.UpdateBrush(_brush);
-            _brush.CurrentAnimation.Frames[0].Fill(Color.White, Color.Black, _cursorCharacter, blinkEffect);
+            _brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter, null, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect);
             _brush.IsVisible = false;
         }
 
+
         public void OnDeselected()
         {
-            writing = false;
         }
 
         public void RefreshTool()
         {
-            EditorConsoleManager.Instance.ToolPane.KeyboardHandler = null;
+            _brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter, null, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect);
         }
 
         public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
         {
-            
+
         }
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
         {
-            if (info.LeftClicked)
-            {
-                writing = true;
 
-                tempConsole.CellData = surface;
-                tempConsole.VirtualCursor.Position = _brush.Position = info.ConsoleLocation;
-
-                _brush.IsVisible = true;
-            }
         }
 
         public void MouseEnterSurface(MouseInfo info, CellSurface surface)
         {
-
+            _brush.IsVisible = true;
         }
 
         public void MouseExitSurface(MouseInfo info, CellSurface surface)
         {
+            _brush.IsVisible = false;
         }
 
         public void MouseMoveSurface(MouseInfo info, CellSurface surface)
         {
+            _brush.IsVisible = true;
+            _brush.Position = info.ConsoleLocation;
+
+            if (info.LeftButtonDown)
+            {
+                var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
+
+                CellAppearance appearance = new CellAppearance(
+                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
+                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter,
+                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect);
+
+                if (EditorConsoleManager.Instance.SelectedEditor is Editors.GameScreenEditor)
+                {
+                    var editor = (Editors.GameScreenEditor)EditorConsoleManager.Instance.SelectedEditor;
+                    var point = new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y);
+
+                    if (editor.GameObjects.ContainsKey(point))
+                    {
+                        editor.GameObjects.Remove(point);
+                    }
+
+                    var gameObj = new GameHelpers.GameObject() { Character = appearance, Position = point };
+                    gameObj.Name = _panel.SettingName;
+
+                    editor.GameObjects.Add(point, new GameHelpers.GameObject() { Character = appearance, Position = point });
+                }
+                
+
+            }
+
+            if (info.RightButtonDown)
+            {
+                var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
+
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter = cell.CharacterIndex;
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground = cell.Foreground;
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground = cell.Background;
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect = cell.SpriteEffect;
+            }
         }
     }
 }

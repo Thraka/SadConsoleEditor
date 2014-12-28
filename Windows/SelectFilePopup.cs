@@ -52,7 +52,8 @@ namespace SadConsoleEditor.Windows
             Title = "Select File";
             _directoryListBox = new SadEditor.Controls.FileDirectoryListbox()
             {
-                Position = new Point(1, 1)
+                Position = new Point(1, 1),
+                HideBorder = true
             };
             _directoryListBox.HighlightedExtentions = ".con;.console;.brush";
             _directoryListBox.Resize(this.CellData.Width - 2, this.CellData.Height - 5);
@@ -81,15 +82,17 @@ namespace SadConsoleEditor.Windows
             _cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
 
             Add(_directoryListBox);
-            Add((_fileName));
-            Add((_selectButton));
-            Add((_cancelButton));
+            Add(_fileName);
+            Add(_selectButton);
+            Add(_cancelButton);
         }
         #endregion
 
         public override void Show(bool modal)
         {
             SelectedFile = "";
+            _cellData.Print(2, _cellData.Height - 2, FileFilter.Replace(';', ' ').Replace("*", ""));
+
             base.Show(modal);
         }
 
@@ -127,6 +130,14 @@ namespace SadConsoleEditor.Windows
         void _fileName_TextChanged(object sender, EventArgs e)
         {
             _selectButton.IsEnabled = _fileName.Text != "" && (SkipFileExistCheck || System.IO.File.Exists(System.IO.Path.Combine(_directoryListBox.CurrentFolder, _fileName.Text)));
+        }
+
+        public override void Redraw()
+        {
+            base.Redraw();
+
+            if (_directoryListBox != null)
+                _cellData.Print(2, _cellData.Height - 2, FileFilter.Replace(';', ' ').Replace("*", ""));
         }
     }
 }

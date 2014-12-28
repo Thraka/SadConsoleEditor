@@ -17,6 +17,8 @@ namespace SadConsoleEditor.Panels
         InputBox _typeInput;
         Button _dummyButton;
 
+        public string SettingName { get { return _nameInput.Text; } set { _nameInput.Text = value; } }
+
         public ObjectToolPanel()
         {
             _nameInput = new InputBox(13);
