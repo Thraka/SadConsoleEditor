@@ -49,7 +49,8 @@
     <Compile Include="Controls\FileDirectoryListbox.cs" />
     <Compile Include="Controls\NoCheckRadioButton.cs" />
     <Compile Include="EditorConsoleManager.cs" />
-    <Compile Include="CustomPane.cs" />
+    <Compile Include="GameHelpers\Setting.cs" />
+    <Compile Include="Panels\CustomPanel.cs" />
     <Compile Include="Editors\DrawingEditor.cs" />
     <Compile Include="Editors\IEditor.cs" />
     <Compile Include="Editors\GameScreenEditor.cs" />
@@ -86,6 +87,7 @@
     <Compile Include="Undo.cs" />
     <Compile Include="Windows\CharacterQuickSelectPopup.cs" />
     <Compile Include="Windows\ColorPickerPopup.cs" />
+    <Compile Include="Windows\EditObjectPopup.cs" />
     <Compile Include="Windows\NewConsolePopup.cs" />
     <Compile Include="Windows\OtherColorsPopup.cs" />
     <Compile Include="Windows\ResizeSurfacePopup.cs" />

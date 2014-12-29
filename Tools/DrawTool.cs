@@ -2,6 +2,7 @@
 {
     using SadConsole;
     using SadConsole.Input;
+    using Panels;
 
     class PaintTool: ITool
     {

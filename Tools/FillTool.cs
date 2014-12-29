@@ -4,6 +4,7 @@
     using SadConsole;
     using SadConsole.Input;
     using System;
+    using SadConsoleEditor.Panels;
 
     class FillTool : ITool
     {

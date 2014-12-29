@@ -7,6 +7,7 @@
     using SadConsole.Entities;
     using SadConsole.Input;
     using System;
+    using SadConsoleEditor.Panels;
 
     class LineTool : ITool
     {

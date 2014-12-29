@@ -23,8 +23,14 @@ namespace SadConsoleEditor.Panels
         {
             _nameInput = new InputBox(13);
             _typeInput = new InputBox(13);
-
-            Controls = new ControlBase[] { _nameInput, _typeInput };
+            _dummyButton = new Button(7, 1);
+            _dummyButton.Text = "Test";
+            _dummyButton.ButtonClicked += (o, e) =>
+            {
+                SadConsoleEditor.Windows.EditObjectPopup obk = new Windows.EditObjectPopup(new GameHelpers.GameObject());
+                obk.Show(true);
+            };
+            Controls = new ControlBase[] { _nameInput, _typeInput, _dummyButton };
 
             Title = "Object";
         }

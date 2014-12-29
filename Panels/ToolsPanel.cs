@@ -34,17 +34,19 @@ namespace SadConsoleEditor.Panels
                             }
                         }
                 }
-                EditorConsoleManager.Instance.ToolPane.SelectedTool = (ITool)e.Item;
+                if (e.Item != null)
+                {
+                    EditorConsoleManager.Instance.ToolPane.SelectedTool = (ITool)e.Item;
 
+                    EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = true;
+                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = false;
+                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideForeground = false;
+                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideBackground = false;
 
-                EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = true;
-                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = false;
-                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideForeground = false;
-                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideBackground = false;
-
-                EditorConsoleManager.Instance.ToolPane.SelectedTool.OnSelected();
-                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.Reset();
-                EditorConsoleManager.Instance.ToolPane.RefreshControls();
+                    EditorConsoleManager.Instance.ToolPane.SelectedTool.OnSelected();
+                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.Reset();
+                    EditorConsoleManager.Instance.ToolPane.RefreshControls();
+                }
 
             };
 

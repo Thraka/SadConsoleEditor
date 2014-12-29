@@ -12,12 +12,15 @@ namespace SadConsoleEditor.GameHelpers
     {
         public string Name { get; set; }
         public CellAppearance Character { get; set; }
-        public List<KeyValuePair<string, string>> Settings { get; set; }
+        public List<Setting> Settings { get; set; }
         public Point Position { get; set; }
 
         public GameObject()
         {
-            Settings = new List<KeyValuePair<string, string>>();
+            Settings = new List<Setting>();
+            Character = new CellAppearance();
+            Character.CharacterIndex = 1;
+            Name = "New";
         }
         
     }

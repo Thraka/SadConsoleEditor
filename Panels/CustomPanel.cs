@@ -1,4 +1,4 @@
-﻿namespace SadConsoleEditor
+﻿namespace SadConsoleEditor.Panels
 {
     using SadConsole;
     using SadConsole.Consoles;

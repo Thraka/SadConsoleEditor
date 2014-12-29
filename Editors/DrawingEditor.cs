@@ -4,6 +4,7 @@ using SadConsole.Input;
 using Console = SadConsole.Consoles.Console;
 using Microsoft.Xna.Framework;
 using SadConsoleEditor.Consoles;
+using SadConsoleEditor.Panels;
 
 namespace SadConsoleEditor.Editors
 {
