@@ -177,7 +177,7 @@ namespace SadConsoleEditor
         public override void Render()
         {
             
-            SelectedEditor.Surface.Render();
+            SelectedEditor.Render();
 
             if (_borderRenderer != null)
                 _borderRenderer.Render();

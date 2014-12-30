@@ -208,7 +208,7 @@ namespace SadConsoleEditor.Panels
         {
             var previouslySelected = _layers.SelectedItem;
             RebuildListBox();
-            if (previouslySelected == null)
+            if (previouslySelected == null || !_layers.Items.Contains(previouslySelected))
                 _layers.SelectedItem = _layers.Items[0];
             else
                 _layers.SelectedItem = previouslySelected;

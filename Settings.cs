@@ -17,6 +17,8 @@ namespace SadConsoleEditor
         public static Font ScreenFont;
         #endregion
 
+        public const string FileObjectTypes = "editor.objecttypes.json";
+
         #region Colors
         public static Color Green = new Color(165, 224, 45);
         public static Color Red = new Color(246, 38, 108);

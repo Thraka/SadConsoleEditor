@@ -73,7 +73,7 @@ namespace SadConsoleEditor.Consoles
             SetActiveLayer(0);
         }
 
-        public void SyncLayers()
+        public virtual void SyncLayers()
         {
             if (_layers != null)
                 foreach (var item in _layers)
@@ -109,7 +109,7 @@ namespace SadConsoleEditor.Consoles
             ResetViewArea();
         }
 
-        public void Resize(int width, int height)
+        public virtual void Resize(int width, int height)
         {
             Width = width;
             Height = height;

@@ -13,6 +13,8 @@ namespace SadConsoleEditor.Editors
         private int _width;
         private int _height;
         private LayeredConsole _consoleLayers;
+        private SadConsole.Consoles.CellsRenderer _objectsSurface;
+        private bool _displayObjectLayer;
 
         public event EventHandler<MouseEventArgs> MouseEnter;
         public event EventHandler<MouseEventArgs> MouseExit;
@@ -25,6 +27,8 @@ namespace SadConsoleEditor.Editors
         public Consoles.LayeredConsole Surface { get { return _consoleLayers; } }
 
         public GameHelpers.GameObjectCollection GameObjects { get; set; }
+
+        public bool DisplayObjectLayer { set { _displayObjectLayer = value; } }
 
         public const string ID = "GAME";
 
@@ -62,13 +66,21 @@ namespace SadConsoleEditor.Editors
                 _consoleLayers.MouseExit -= _mouseExitHandler;
             }
 
-            _consoleLayers = new LayeredConsole(2, 25, 10);
+            _objectsSurface = new SadConsole.Consoles.Console(25, 10);
+            _objectsSurface.Font = Settings.ScreenFont;
+            _objectsSurface.CellData.DefaultForeground = Color.White;
+            _objectsSurface.CellData.DefaultBackground = Color.Transparent;
+            _objectsSurface.CellData.Clear();
+            _objectsSurface.BeforeRenderHandler = (cr) => cr.Batch.Draw(SadConsole.Engine.BackgroundCell, cr.RenderBox, null, new Color(0, 0, 0, 0.5f)); 
+
+            _consoleLayers = new LayeredConsole(1, 25, 10);
             _consoleLayers.Font = Settings.ScreenFont;
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
             _consoleLayers.GetLayerMetadata(0).Name = "Root";
             _consoleLayers.GetLayerMetadata(0).IsRemoveable = false;
             _consoleLayers.GetLayerMetadata(0).IsMoveable = false;
+            
             _width = 25;
             _height = 10;
 
@@ -108,6 +120,7 @@ namespace SadConsoleEditor.Editors
             _height = height;
 
             _consoleLayers.Resize(width, height);
+            _objectsSurface.CellData.Resize(width, height);
 
             // inform the outer box we've changed size
             EditorConsoleManager.Instance.UpdateBox();
@@ -116,16 +129,28 @@ namespace SadConsoleEditor.Editors
         public void Position(int x, int y)
         {
             _consoleLayers.Move(new Point(x, y));
+            _objectsSurface.Position = new Point(x, y);
         }
 
         public void Position(Point newPosition)
         {
             _consoleLayers.Move(newPosition);
+            _objectsSurface.Position = newPosition;
         }
 
         public Point GetPosition()
         {
             return _consoleLayers.Position;
+        }
+
+        public void Render()
+        {
+            Surface.Render();
+
+            if (_displayObjectLayer)
+            {
+                _objectsSurface.Render();
+            }
         }
 
         public void Save(string file)
@@ -140,19 +165,15 @@ namespace SadConsoleEditor.Editors
             }
 
             var oldExt = System.IO.Path.GetExtension(file);
-            file = file.Replace("." + oldExt, ".objects");
+            file = file.Replace(oldExt, ".objects");
 
             if (System.IO.File.Exists(file))
+                System.IO.File.Delete(file);
+
+            serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(GameHelpers.GameObjectCollection), new Type[] { typeof(GameHelpers.GameObject) });
+            using (var stream = System.IO.File.OpenWrite(file))
             {
-                if (System.IO.File.Exists(file))
-                    System.IO.File.Delete(file);
-
-                serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(GameHelpers.GameObjectCollection), new Type[] { typeof(GameHelpers.GameObject) });
-                using (var stream = System.IO.File.OpenWrite(file))
-                {
-                    serializer.WriteObject(stream, GameObjects);
-                }
-
+                serializer.WriteObject(stream, GameObjects);
             }
         }
 
@@ -186,7 +207,7 @@ namespace SadConsoleEditor.Editors
                 EditorConsoleManager.Instance.UpdateBox();
 
                 var oldExt = System.IO.Path.GetExtension(file);
-                file = file.Replace("." + oldExt, ".objects");
+                file = file.Replace(oldExt, ".objects");
 
                 if (System.IO.File.Exists(file))
                 {
@@ -195,9 +216,20 @@ namespace SadConsoleEditor.Editors
                         var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(GameHelpers.GameObjectCollection), new Type[] { typeof(GameHelpers.GameObject) });
 
                         GameObjects = serializer.ReadObject(fileObject) as GameHelpers.GameObjectCollection;
+                        SyncObjectsToLayer();
                     }
-
                 }
+            }
+        }
+
+        public void SyncObjectsToLayer()
+        {
+            _objectsSurface.CellData.Clear();
+
+            foreach (var item in GameObjects)
+            {
+                _objectsSurface.CellData.Print(item.Key.X, item.Key.Y, " ", item.Value.Character);
+                _objectsSurface.CellData.SetCharacter(item.Key.X, item.Key.Y, item.Value.Character.CharacterIndex);
             }
         }
     }

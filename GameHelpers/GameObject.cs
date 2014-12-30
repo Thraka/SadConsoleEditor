@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SadConsoleEditor.GameHelpers
 {
-    class GameObject
+    public class GameObject
     {
         public string Name { get; set; }
         public CellAppearance Character { get; set; }
@@ -23,5 +23,20 @@ namespace SadConsoleEditor.GameHelpers
             Name = "New";
         }
         
+        public GameObject Clone()
+        {
+            var newObject = new GameObject();
+            newObject.Name = Name;
+            newObject.Character = Character.Clone();
+            newObject.Settings = new List<Setting>(Settings.Count);
+            newObject.Position = Position;
+
+            foreach (var item in Settings)
+            {
+                newObject.Settings.Add(new Setting() { Name = item.Name, Value = item.Value });
+            }
+
+            return newObject;
+        }
     }
 }

@@ -42,6 +42,8 @@ namespace SadConsoleEditor.Editors
 
         Point GetPosition();
 
+        void Render();
+
         void Load(string file);
 
         void Save(string file);

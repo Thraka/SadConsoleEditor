@@ -49,6 +49,7 @@
     <Compile Include="Controls\FileDirectoryListbox.cs" />
     <Compile Include="Controls\NoCheckRadioButton.cs" />
     <Compile Include="EditorConsoleManager.cs" />
+    <Compile Include="GameHelpers\GameObjectMeta.cs" />
     <Compile Include="GameHelpers\Setting.cs" />
     <Compile Include="Panels\CustomPanel.cs" />
     <Compile Include="Editors\DrawingEditor.cs" />

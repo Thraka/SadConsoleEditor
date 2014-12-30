@@ -106,6 +106,10 @@ namespace SadConsoleEditor.Editors
 
         }
 
+        public void Render()
+        {
+            Surface.Render();
+        }
         public void Resize(int width, int height)
         {
             _width = width;
