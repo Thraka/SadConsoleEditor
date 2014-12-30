@@ -169,7 +169,7 @@ namespace SadConsoleEditor.Windows
 
             _previousColors = new ListBox<ListBoxItemColor>(RideSideX - 4, _cellData.Height - 20 - 9 + 1);
             _previousColors.Position = new Point(_cellData.Width - RideSideX + 2, 8);
-            _previousColors.SelectedItemChanged += (sender, e) => { SelectedColor = (Color)_previousColors.SelectedItem; };
+            _previousColors.SelectedItemChanged += (sender, e) => { if (_previousColors.SelectedItem != null) SelectedColor = (Color)_previousColors.SelectedItem; };
             Add(_previousColors);
 
             this.CloseOnESC = true;
