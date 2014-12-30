@@ -121,7 +121,11 @@ namespace SadConsoleEditor.Panels
 
         void _renameLayer_ButtonClicked(object sender, EventArgs e)
         {
-            
+            var layer = (Consoles.LayeredConsole.Metadata)_layers.SelectedItem;
+            RenamePopup popup = new RenamePopup(layer.Name);
+            popup.Closed += (o, e2) => { if (popup.DialogResult) layer.Name = popup.NewName; _layers.IsDirty = true; };
+            popup.Show(true);
+            popup.Center();
         }
 
         void _moveSelectedDown_ButtonClicked(object sender, EventArgs e)

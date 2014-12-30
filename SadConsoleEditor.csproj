@@ -91,6 +91,7 @@
     <Compile Include="Windows\EditObjectPopup.cs" />
     <Compile Include="Windows\NewConsolePopup.cs" />
     <Compile Include="Windows\OtherColorsPopup.cs" />
+    <Compile Include="Windows\RenamePopup.cs" />
     <Compile Include="Windows\ResizeSurfacePopup.cs" />
     <Compile Include="Windows\SelectFilePopup.cs" />
   </ItemGroup>
