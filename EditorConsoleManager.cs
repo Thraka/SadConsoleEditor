@@ -310,6 +310,7 @@ namespace SadConsoleEditor
                 if (popup.DialogResult)
                 {
                     SelectedEditor.Load(popup.SelectedFile);
+                    ToolPane.LayersPanel.RebuildListBox();
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;

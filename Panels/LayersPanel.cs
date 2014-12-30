@@ -197,6 +197,9 @@ namespace SadConsoleEditor.Panels
 
             for (int i = EditorConsoleManager.Instance.SelectedEditor.Surface.Layers - 1; i >= 0 ; i--)
                 _layers.Items.Add(EditorConsoleManager.Instance.SelectedEditor.Surface.GetLayerMetadata(i));
+
+            if (_layers.SelectedItem == null)
+                _layers.SelectedItem = _layers.Items[0];
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseInfo info)
