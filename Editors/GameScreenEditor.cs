@@ -5,6 +5,7 @@ using Console = SadConsole.Consoles.Console;
 using Microsoft.Xna.Framework;
 using SadConsoleEditor.Consoles;
 using SadConsoleEditor.Panels;
+using SadConsole.GameHelpers;
 
 namespace SadConsoleEditor.Editors
 {
@@ -26,7 +27,7 @@ namespace SadConsoleEditor.Editors
 
         public Consoles.LayeredConsole Surface { get { return _consoleLayers; } }
 
-        public GameHelpers.GameObjectCollection GameObjects { get; set; }
+        public GameObjectCollection GameObjects { get; set; }
 
         public bool DisplayObjectLayer { set { _displayObjectLayer = value; } }
 
@@ -84,7 +85,7 @@ namespace SadConsoleEditor.Editors
             _width = 25;
             _height = 10;
 
-            GameObjects = new GameHelpers.GameObjectCollection();
+            GameObjects = new GameObjectCollection();
 
             _mouseMoveHandler = (o, e) => { if (this.MouseMove != null) this.MouseMove(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseMoveSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
             _mouseEnterHandler = (o, e) => { if (this.MouseEnter != null) this.MouseEnter(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseEnterSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
@@ -155,46 +156,25 @@ namespace SadConsoleEditor.Editors
 
         public void Save(string file)
         {
-            if (System.IO.File.Exists(file))
-                System.IO.File.Delete(file);
-
-            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(LayeredConsole), new Type[] { typeof(LayeredConsole) });
-            using (var stream = System.IO.File.OpenWrite(file))
-            {
-                serializer.WriteObject(stream, _consoleLayers);
-            }
-
-            var oldExt = System.IO.Path.GetExtension(file);
-            file = file.Replace(oldExt, ".objects");
-
-            if (System.IO.File.Exists(file))
-                System.IO.File.Delete(file);
-
-            serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(GameHelpers.GameObjectCollection), new Type[] { typeof(GameHelpers.GameObject) });
-            using (var stream = System.IO.File.OpenWrite(file))
-            {
-                serializer.WriteObject(stream, GameObjects);
-            }
+            LayeredConsole.Save(_consoleLayers, file);
+            GameObjectCollection.Save(GameObjects, file.Replace(System.IO.Path.GetExtension(file), ".objects"));
         }
 
         public void Load(string file)
         {
+            string objectsFile = file.Replace(System.IO.Path.GetExtension(file), ".objects");
+
             if (System.IO.File.Exists(file))
             {
-                using (var fileObject = System.IO.File.OpenRead(file))
+                if (_consoleLayers != null)
                 {
-                    var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(LayeredConsole), new Type[] { typeof(LayeredConsole) });
-
-                    if (_consoleLayers != null)
-                    {
-                        _consoleLayers.MouseMove -= _mouseMoveHandler;
-                        _consoleLayers.MouseEnter -= _mouseEnterHandler;
-                        _consoleLayers.MouseExit -= _mouseExitHandler;
-                    }
-
-
-                    _consoleLayers = serializer.ReadObject(fileObject) as LayeredConsole;
+                    _consoleLayers.MouseMove -= _mouseMoveHandler;
+                    _consoleLayers.MouseEnter -= _mouseEnterHandler;
+                    _consoleLayers.MouseExit -= _mouseExitHandler;
                 }
+
+                _consoleLayers = LayeredConsole.Load(file);
+                _consoleLayers.Font = Settings.ScreenFont;
 
                 _consoleLayers.MouseMove += _mouseMoveHandler;
                 _consoleLayers.MouseEnter += _mouseEnterHandler;
@@ -203,21 +183,17 @@ namespace SadConsoleEditor.Editors
                 _width = _consoleLayers.Width;
                 _height = _consoleLayers.Height;
 
-                
                 EditorConsoleManager.Instance.UpdateBox();
 
-                var oldExt = System.IO.Path.GetExtension(file);
-                file = file.Replace(oldExt, ".objects");
-
-                if (System.IO.File.Exists(file))
+                if (System.IO.File.Exists(objectsFile))
                 {
-                    using (var fileObject = System.IO.File.OpenRead(file))
-                    {
-                        var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(GameHelpers.GameObjectCollection), new Type[] { typeof(GameHelpers.GameObject) });
-
-                        GameObjects = serializer.ReadObject(fileObject) as GameHelpers.GameObjectCollection;
-                        SyncObjectsToLayer();
-                    }
+                    GameObjects = GameObjectCollection.Load(objectsFile);
+                    SyncObjectsToLayer();
+                }
+                else
+                {
+                    GameObjects = new GameObjectCollection();
+                    SyncObjectsToLayer();
                 }
             }
         }

@@ -138,44 +138,32 @@ namespace SadConsoleEditor.Editors
 
         public void Save(string file)
         {
-            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(LayeredConsole), new Type[] { typeof(LayeredConsole) });
-            System.IO.File.Delete(file);
-            var stream = System.IO.File.OpenWrite(file);
-            
-            serializer.WriteObject(stream, _consoleLayers);
-            stream.Dispose();
+            LayeredConsole.Save(_consoleLayers, file);
         }
 
         public void Load(string file)
         {
-            var fileObject = System.IO.File.OpenRead(file);
-            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(LayeredConsole), new Type[] { typeof(LayeredConsole) });
-
-            if (_consoleLayers != null)
+            if (System.IO.File.Exists(file))
             {
-                _consoleLayers.MouseMove -= _mouseMoveHandler;
-                _consoleLayers.MouseEnter -= _mouseEnterHandler; 
-                _consoleLayers.MouseExit -= _mouseExitHandler;
+                if (_consoleLayers != null)
+                {
+                    _consoleLayers.MouseMove -= _mouseMoveHandler;
+                    _consoleLayers.MouseEnter -= _mouseEnterHandler;
+                    _consoleLayers.MouseExit -= _mouseExitHandler;
+                }
+
+                _consoleLayers = LayeredConsole.Load(file);
+                _consoleLayers.Font = Settings.ScreenFont;
+
+                _consoleLayers.MouseMove += _mouseMoveHandler;
+                _consoleLayers.MouseEnter += _mouseEnterHandler;
+                _consoleLayers.MouseExit += _mouseExitHandler;
+
+                _width = _consoleLayers.Width;
+                _height = _consoleLayers.Height;
+
+                EditorConsoleManager.Instance.UpdateBox();
             }
-
-            
-            _consoleLayers = serializer.ReadObject(fileObject) as LayeredConsole;
-            _consoleLayers.Font = Settings.ScreenFont;
-
-            foreach (var layer in _consoleLayers.GetEnumeratorForLayers())
-            {
-                layer.Font = Settings.ScreenFont;
-            }
-
-            _consoleLayers.MouseMove += _mouseMoveHandler;
-            _consoleLayers.MouseEnter += _mouseEnterHandler;
-            _consoleLayers.MouseExit += _mouseExitHandler;
-
-            _width = _consoleLayers.Width;
-            _height = _consoleLayers.Height;
-
-            EditorConsoleManager.Instance.UpdateBox();
-
         }
     }
 }

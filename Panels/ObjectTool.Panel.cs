@@ -8,12 +8,13 @@ using SadConsole.Controls;
 using SadConsole.Input;
 using Microsoft.Xna.Framework;
 using SadConsole;
+using SadConsole.GameHelpers;
 
 namespace SadConsoleEditor.Panels
 {
     class ObjectToolPanel : CustomPanel
     {
-        ListBox<GameHelpers.GameObjectListBoxItem> _objectTypesListbox;
+        ListBox<GameObjectListBoxItem> _objectTypesListbox;
         Button _createNewObjectButton;
         Button _editObjectButton;
         Button _deleteObjectButton;
@@ -23,13 +24,13 @@ namespace SadConsoleEditor.Panels
         CheckBox _showOnlySelected;
         CheckBox _showUnknownObjects;
 
-        public GameHelpers.GameObject SelectedObject;
+        public GameObject SelectedObject;
 
         public ObjectToolPanel()
         {
             Title = "Object Types";
 
-            _objectTypesListbox = new ListBox<GameHelpers.GameObjectListBoxItem>(Consoles.ToolPane.PanelWidth, 10);
+            _objectTypesListbox = new ListBox<GameObjectListBoxItem>(Consoles.ToolPane.PanelWidth, 10);
             _createNewObjectButton = new Button(Consoles.ToolPane.PanelWidth, 1);
             _editObjectButton = new Button(Consoles.ToolPane.PanelWidth, 1);
             _deleteObjectButton = new Button(Consoles.ToolPane.PanelWidth, 1);
@@ -58,13 +59,13 @@ namespace SadConsoleEditor.Panels
             {
                 using (var fileObject = System.IO.File.OpenRead(Settings.FileObjectTypes))
                 {
-                    var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(GameHelpers.GameObject[]));
+                    var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(GameObject[]));
 
-                    var gameObjects = serializer.ReadObject(fileObject) as GameHelpers.GameObject[];
+                    var gameObjects = serializer.ReadObject(fileObject) as GameObject[];
 
                     foreach (var item in gameObjects)
                     {
-                        var newItem = new GameHelpers.GameObjectMeta(item, true);
+                        var newItem = new GameObjectMeta(item, true);
                         _objectTypesListbox.Items.Add(newItem);
                     }
                 }
@@ -79,10 +80,10 @@ namespace SadConsoleEditor.Panels
             if (System.IO.File.Exists(Settings.FileObjectTypes))
                 System.IO.File.Delete(Settings.FileObjectTypes);
 
-            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(GameHelpers.GameObject[]), new System.Type[] { typeof(GameHelpers.GameObject) });
+            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(GameObject[]), new System.Type[] { typeof(GameObject) });
 
             using (var stream = System.IO.File.OpenWrite(Settings.FileObjectTypes))
-                serializer.WriteObject(stream, _objectTypesListbox.Items.Cast<GameHelpers.GameObjectMeta>().Select<GameHelpers.GameObjectMeta, GameHelpers.GameObject>((o) => o.BackingObject).ToArray());
+                serializer.WriteObject(stream, _objectTypesListbox.Items.Cast<GameObjectMeta>().Select<GameObjectMeta, GameObject>((o) => o.BackingObject).ToArray());
         }
 
         void _deleteObjectButton_ButtonClicked(object sender, EventArgs e)
@@ -96,7 +97,7 @@ namespace SadConsoleEditor.Panels
 
         void _editObjectButton_ButtonClicked(object sender, EventArgs e)
         {
-            Windows.EditObjectPopup popup = new Windows.EditObjectPopup(((GameHelpers.GameObjectMeta)_objectTypesListbox.SelectedItem).BackingObject);
+            Windows.EditObjectPopup popup = new Windows.EditObjectPopup(((GameObjectMeta)_objectTypesListbox.SelectedItem).BackingObject);
             popup.Closed += (o, e2) =>
                 {
                     if (popup.DialogResult)
@@ -110,13 +111,13 @@ namespace SadConsoleEditor.Panels
 
         void _createNewObjectButton_ButtonClicked(object sender, EventArgs e)
         {
-            GameHelpers.GameObject newGameObject = new GameHelpers.GameObject();
+            GameObject newGameObject = new GameObject();
             Windows.EditObjectPopup popup = new Windows.EditObjectPopup(newGameObject);
             popup.Closed += (o, e2) =>
                 {
                     if (popup.DialogResult)
                     {
-                        GameHelpers.GameObjectMeta meta = new GameHelpers.GameObjectMeta(newGameObject, false);
+                        GameObjectMeta meta = new GameObjectMeta(newGameObject, false);
                         _objectTypesListbox.Items.Add(meta);
                         _objectTypesListbox.SelectedItem = meta;
                         _exportListButton.IsEnabled = _objectTypesListbox.Items.Count != 0;
@@ -127,12 +128,12 @@ namespace SadConsoleEditor.Panels
             popup.Show(true);
         }
 
-        void _objectTypesListbox_SelectedItemChanged(object sender, ListBox<GameHelpers.GameObjectListBoxItem>.SelectedItemEventArgs e)
+        void _objectTypesListbox_SelectedItemChanged(object sender, ListBox<GameObjectListBoxItem>.SelectedItemEventArgs e)
         {
             if (_objectTypesListbox.SelectedItem == null)
                 SelectedObject = null;
             else
-                SelectedObject = ((GameHelpers.GameObjectMeta)_objectTypesListbox.SelectedItem).BackingObject;
+                SelectedObject = ((GameObjectMeta)_objectTypesListbox.SelectedItem).BackingObject;
             
             _editObjectButton.IsEnabled = SelectedObject != null;
             _deleteObjectButton.IsEnabled = SelectedObject != null;
@@ -155,9 +156,9 @@ namespace SadConsoleEditor.Panels
         {
         }
 
-        public void AddNewGameObject(GameHelpers.GameObject gameObject)
+        public void AddNewGameObject(GameObject gameObject)
         {
-            var newItem = new GameHelpers.GameObjectMeta(gameObject.Clone(), false);
+            var newItem = new GameObjectMeta(gameObject.Clone(), false);
             _objectTypesListbox.Items.Add(newItem);
             _objectTypesListbox.SelectedItem = newItem;
         }

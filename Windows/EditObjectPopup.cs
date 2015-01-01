@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SadConsole.GameHelpers;
 
 namespace SadConsoleEditor.Windows
 {
@@ -30,7 +31,7 @@ namespace SadConsoleEditor.Windows
 
         private SpriteEffects _settingMirrorEffect;
 
-        private GameHelpers.GameObject _gameObject;
+        private GameObject _gameObject;
 
         public CellAppearance SettingAppearance
         {
@@ -45,7 +46,7 @@ namespace SadConsoleEditor.Windows
             }
         }
         
-        public EditObjectPopup(GameHelpers.GameObject gameObject)
+        public EditObjectPopup(GameObject gameObject)
             : base(39, 29)
         {
             Font = Settings.ScreenFont;
@@ -163,7 +164,7 @@ namespace SadConsoleEditor.Windows
 
             foreach (var item in _gameObject.Settings)
             {
-                var newSetting = new GameHelpers.Setting() { Name = item.Name, Value = item.Value };
+                var newSetting = new Setting() { Name = item.Name, Value = item.Value };
                 _objectSettingsListbox.Items.Add(newSetting);
             }
 
@@ -176,7 +177,7 @@ namespace SadConsoleEditor.Windows
             _gameObject.Character = new CellAppearance(_foregroundPresenter.SelectedColor, _backgroundPresenter.SelectedColor, _characterPicker.SelectedCharacter, _settingMirrorEffect);
             _gameObject.Settings.Clear();
 
-            foreach (var item in _objectSettingsListbox.Items.Cast<GameHelpers.Setting>())
+            foreach (var item in _objectSettingsListbox.Items.Cast<Setting>())
                 _gameObject.Settings.Add(item);
 
             DialogResult = true;
@@ -190,7 +191,7 @@ namespace SadConsoleEditor.Windows
                 _updateFieldButton.IsEnabled = true;
                 _removeFieldButton.IsEnabled = true;
 
-                var objectSetting = (GameHelpers.Setting)_objectSettingsListbox.SelectedItem;
+                var objectSetting = (Setting)_objectSettingsListbox.SelectedItem;
 
                 _settingNameInput.Text = objectSetting.Name;
                 _settingValueInput.Text = objectSetting.Value;
@@ -207,7 +208,7 @@ namespace SadConsoleEditor.Windows
 
         void _updateFieldButton_ButtonClicked(object sender, EventArgs e)
         {
-            var objectSetting = (GameHelpers.Setting)_objectSettingsListbox.SelectedItem;
+            var objectSetting = (Setting)_objectSettingsListbox.SelectedItem;
 
             objectSetting.Name = _settingNameInput.Text;
             objectSetting.Value = _settingValueInput.Text;
@@ -221,7 +222,7 @@ namespace SadConsoleEditor.Windows
 
         void _addFieldButton_ButtonClicked(object sender, EventArgs e)
         {
-            GameHelpers.Setting objectSetting = new GameHelpers.Setting();
+            Setting objectSetting = new Setting();
             objectSetting.Name = _settingNameInput.Text;
             objectSetting.Value = _settingValueInput.Text;
             _objectSettingsListbox.Items.Add(objectSetting);

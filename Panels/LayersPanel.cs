@@ -74,11 +74,7 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
-                    var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(CellSurface), new Type[] { typeof(CellSurface) });
-                    var stream = System.IO.File.OpenWrite(popup.SelectedFile);
-
-                    serializer.WriteObject(stream, EditorConsoleManager.Instance.SelectedEditor.Surface[layer.Index].CellData);
-                    stream.Dispose();
+                    CellSurface.Save(EditorConsoleManager.Instance.SelectedEditor.Surface[layer.Index].CellData, popup.SelectedFile);
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
@@ -96,21 +92,21 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
-                    var fileObject = System.IO.File.OpenRead(popup.SelectedFile);
-                    var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(CellSurface), new Type[] { typeof(CellSurface) });
-
-                    var surface = serializer.ReadObject(fileObject) as CellSurface;
-
-                    if (surface.Width != EditorConsoleManager.Instance.SelectedEditor.Surface.Width || surface.Height != EditorConsoleManager.Instance.SelectedEditor.Height)
+                    if (System.IO.File.Exists(popup.SelectedFile))
                     {
-                        var newLayer = EditorConsoleManager.Instance.SelectedEditor.Surface.AddLayer("Loaded");
-                        surface.Copy(newLayer.CellData);
+                        var surface = CellSurface.Load(popup.SelectedFile);
+
+                        if (surface.Width != EditorConsoleManager.Instance.SelectedEditor.Surface.Width || surface.Height != EditorConsoleManager.Instance.SelectedEditor.Height)
+                        {
+                            var newLayer = EditorConsoleManager.Instance.SelectedEditor.Surface.AddLayer("Loaded");
+                            surface.Copy(newLayer.CellData);
+                        }
+                        else
+                            EditorConsoleManager.Instance.SelectedEditor.Surface.AddLayer(surface);
+
+                        RebuildListBox();
+
                     }
-                    else
-                        EditorConsoleManager.Instance.SelectedEditor.Surface.AddLayer(surface);
-
-                    RebuildListBox();
-
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
@@ -198,8 +194,7 @@ namespace SadConsoleEditor.Panels
             for (int i = EditorConsoleManager.Instance.SelectedEditor.Surface.Layers - 1; i >= 0 ; i--)
                 _layers.Items.Add(EditorConsoleManager.Instance.SelectedEditor.Surface.GetLayerMetadata(i));
 
-            if (_layers.SelectedItem == null)
-                _layers.SelectedItem = _layers.Items[0];
+            _layers.SelectedItem = _layers.Items[0];
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseInfo info)

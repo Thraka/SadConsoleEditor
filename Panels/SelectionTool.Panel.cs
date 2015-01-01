@@ -163,11 +163,7 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
-                    var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(CellSurface), new Type[] { typeof(CellSurface) });
-                    var stream = System.IO.File.OpenWrite(popup.SelectedFile);
-
-                    serializer.WriteObject(stream, _saveBrushHandler());
-                    stream.Dispose();
+                    CellSurface.Save(_saveBrushHandler(), popup.SelectedFile);
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
@@ -185,12 +181,8 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
-                    var fileObject = System.IO.File.OpenRead(popup.SelectedFile);
-                    var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(CellSurface), new Type[] { typeof(CellSurface) });
-
-                    var surface = serializer.ReadObject(fileObject) as CellSurface;
-
-                    _loadBrushHandler(surface);
+                    if (System.IO.File.Exists(popup.SelectedFile))
+                        _loadBrushHandler(CellSurface.Load(popup.SelectedFile));
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;

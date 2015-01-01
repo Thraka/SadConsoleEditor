@@ -40,7 +40,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Consoles\BorderConsole.cs" />
-    <Compile Include="Consoles\LayeredConsole.cs" />
     <Compile Include="Consoles\ToolPane.cs" />
     <Compile Include="Controls\CharacterPicker.cs" />
     <Compile Include="Controls\ColorBar.cs" />
@@ -50,15 +49,12 @@
     <Compile Include="Controls\NoCheckRadioButton.cs" />
     <Compile Include="EditorConsoleManager.cs" />
     <Compile Include="GameHelpers\GameObjectMeta.cs" />
-    <Compile Include="GameHelpers\Setting.cs" />
     <Compile Include="Panels\CustomPanel.cs" />
     <Compile Include="Editors\DrawingEditor.cs" />
     <Compile Include="Editors\IEditor.cs" />
     <Compile Include="Editors\GameScreenEditor.cs" />
     <Compile Include="EntityBrush.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="GameHelpers\GameObject.cs" />
-    <Compile Include="GameHelpers\GameObjectCollection.cs" />
     <Compile Include="HSLColor.cs" />
     <Compile Include="IEntityBrush.cs" />
     <Compile Include="Panels\ToolsPanel.cs" />
@@ -108,6 +104,9 @@
     </Reference>
     <Reference Include="SadConsole.Core">
       <HintPath>..\SadConsole\StarterProject\bin\Debug\SadConsole.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="SadConsole.GameHelpers">
+      <HintPath>..\SadConsole\StarterProject\bin\Debug\SadConsole.GameHelpers.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />

@@ -6,6 +6,7 @@
     using Panels;
     using System.Collections.Generic;
     using System.Linq;
+    using SadConsole.GameHelpers;
 
     class ObjectTool : ITool
     {
@@ -25,7 +26,7 @@
         private EntityBrush _brush;
         private Panels.ObjectToolPanel _panel;
 
-        private GameHelpers.GameObject _currentGameObject;
+        private GameObject _currentGameObject;
 
         public ObjectTool()
         {
