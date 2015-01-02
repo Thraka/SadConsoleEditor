@@ -79,10 +79,6 @@ namespace SadConsoleEditor
             //_backingPanel.CellData.Print(25, 0, "Test", Orange);
 
             this.Add(_backingPanel);
-
-            Editors = new Dictionary<string, SadConsoleEditor.Editors.IEditor>();
-            Editors.Add(DrawingEditor.ID, new DrawingEditor());
-            Editors.Add(GameScreenEditor.ID, new GameScreenEditor());
         }
 
         private void FinishCreating()
@@ -108,6 +104,10 @@ namespace SadConsoleEditor
             scrollerContainer.MouseCanFocus = false;
             scrollerContainer.ProcessMouseWithoutFocus = true;
             this.Add(scrollerContainer);
+
+            Editors = new Dictionary<string, SadConsoleEditor.Editors.IEditor>();
+            Editors.Add(DrawingEditor.ID, new DrawingEditor());
+            Editors.Add(GameScreenEditor.ID, new GameScreenEditor());
 
             ToolPane.FinishCreating();
 

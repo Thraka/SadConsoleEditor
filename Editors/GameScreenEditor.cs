@@ -60,6 +60,8 @@ namespace SadConsoleEditor.Editors
 
         public void Reset()
         {
+            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, EditorConsoleManager.Instance.ToolPane.LayersPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
+
             if (_consoleLayers != null)
             {
                 _consoleLayers.MouseMove -= _mouseMoveHandler;

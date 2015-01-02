@@ -94,68 +94,20 @@ namespace SadConsoleEditor.Consoles
             char open = (char)31;
             char closed = (char)16;
 
-            // Files panel
-            FilesPanel.Loaded();
-            _hotSpots.Add(new Tuple<CustomPanel, int>(FilesPanel, activeRow));
-            if (FilesPanel.IsCollapsed == false)
-            {
-                _cellData.Print(1, activeRow++, open + " " + FilesPanel.Title);
-                _cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
+            List<CustomPanel> allPanels = new List<CustomPanel>();
 
-                foreach (var control in FilesPanel.Controls)
-                {
-                    Add(control);
-                    control.Position = new Point(1, activeRow);
-                    activeRow += FilesPanel.Redraw(control) + control.Height;
-                }
-                activeRow++;
-            }
-            else
-                _cellData.Print(1, activeRow++, closed + " " + FilesPanel.Title);
-
-            // Layers panel
-            LayersPanel.Loaded();
-            _hotSpots.Add(new Tuple<CustomPanel, int>(LayersPanel, activeRow));
-            if (LayersPanel.IsCollapsed == false)
-            {
-                _cellData.Print(1, activeRow++, open + " " + LayersPanel.Title);
-                _cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
-
-                foreach (var control in LayersPanel.Controls)
-                {
-                    Add(control);
-                    control.Position = new Point(1, activeRow);
-                    activeRow += LayersPanel.Redraw(control) + control.Height;
-                }
-
-                activeRow++;
-            }
-            else
-                _cellData.Print(1, activeRow++, closed + " " + LayersPanel.Title);
-
-            // Tools panel
-            ToolsPanel.Loaded();
-            _hotSpots.Add(new Tuple<CustomPanel, int>(ToolsPanel, activeRow));
-            if (ToolsPanel.IsCollapsed == false)
-            {
-                _cellData.Print(1, activeRow++, open + " " + ToolsPanel.Title);
-                _cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
-
-                foreach (var control in ToolsPanel.Controls)
-                {
-                    Add(control);
-                    control.Position = new Point(1, activeRow);
-                    activeRow += FilesPanel.Redraw(control) + control.Height;
-                }
-                activeRow++;
-            }
-            else
-                _cellData.Print(1, activeRow++, closed + " " + ToolsPanel.Title);
+            // Custom panels from the selected editor
+            if (EditorConsoleManager.Instance.SelectedEditor.ControlPanels != null && EditorConsoleManager.Instance.SelectedEditor.ControlPanels.Length != 0)
+                allPanels.AddRange(EditorConsoleManager.Instance.SelectedEditor.ControlPanels);
 
             // Custom panels from the selected tool
-            if (SelectedTool.ControlPanels != null)
+            if (SelectedTool.ControlPanels != null && SelectedTool.ControlPanels.Length != 0)
+                allPanels.AddRange(SelectedTool.ControlPanels);
+
+            // Display all panels needed
+            if (allPanels.Count != 0)
             {
-                foreach (var pane in SelectedTool.ControlPanels)
+                foreach (var pane in allPanels)
                 {
                     pane.Loaded();
                     _hotSpots.Add(new Tuple<CustomPanel, int>(pane, activeRow));
