@@ -48,6 +48,7 @@
     <Compile Include="Controls\FileDirectoryListbox.cs" />
     <Compile Include="Controls\NoCheckRadioButton.cs" />
     <Compile Include="EditorConsoleManager.cs" />
+    <Compile Include="Editors\AnimationEditor.cs" />
     <Compile Include="GameHelpers\GameObjectMeta.cs" />
     <Compile Include="Panels\CustomPanel.cs" />
     <Compile Include="Editors\DrawingEditor.cs" />
@@ -57,6 +58,8 @@
     <Compile Include="Game1.cs" />
     <Compile Include="HSLColor.cs" />
     <Compile Include="IEntityBrush.cs" />
+    <Compile Include="Panels\AnimationsPanel.cs" />
+    <Compile Include="Panels\AnimationFramesPanel.cs" />
     <Compile Include="Panels\ToolsPanel.cs" />
     <Compile Include="Panels\FilesPanel.cs" />
     <Compile Include="Program.cs" />

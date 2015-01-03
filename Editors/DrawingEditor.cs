@@ -140,7 +140,7 @@ namespace SadConsoleEditor.Editors
 
         public void Save(string file)
         {
-            LayeredConsole.Save(_consoleLayers, file);
+            _consoleLayers.Save(file);
         }
 
         public void Load(string file)

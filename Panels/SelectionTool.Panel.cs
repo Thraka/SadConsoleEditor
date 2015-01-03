@@ -163,7 +163,7 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
-                    CellSurface.Save(_saveBrushHandler(), popup.SelectedFile);
+                    _saveBrushHandler().Save(popup.SelectedFile);
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
