@@ -107,6 +107,21 @@ namespace SadConsoleEditor.Windows
             if (_fileName.Text != string.Empty)
             {
                 SelectedFile = System.IO.Path.Combine(_directoryListBox.CurrentFolder, _fileName.Text);
+
+                var extensions = FileFilter.Replace("*", "").Split(';');
+                bool foundExtension = false;
+                foreach (var item in extensions)
+                {
+                    if (SelectedFile.ToLower().EndsWith(item))
+                    {
+                        foundExtension = true;
+                        break;
+                    }
+                }
+
+                if (!foundExtension)
+                    SelectedFile += extensions[0];
+
                 DialogResult = true;
                 Hide();
             }
