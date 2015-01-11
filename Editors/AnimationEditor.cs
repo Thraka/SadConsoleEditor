@@ -28,6 +28,8 @@ namespace SadConsoleEditor.Editors
         public int Height { get { return _height; } }
 
         private Entity _entity;
+        private Animation _selectedAnimation;
+        private Frame _selectedFrame;
 
         public Consoles.LayeredConsole Surface { get { return _consoleLayers; } }
 
@@ -35,7 +37,7 @@ namespace SadConsoleEditor.Editors
 
         public string Id { get { return ID; } }
 
-        public string Title { get { return "Animation Editor"; } }
+        public string Title { get { return "Animation"; } }
 
         public string FileExtensions { get { return "*.ent;*.entity"; } }
         public CustomPanel[] ControlPanels { get; private set; }
@@ -55,12 +57,39 @@ namespace SadConsoleEditor.Editors
 
         public AnimationEditor()
         {
-            _animationPanel = new AnimationsPanel();
-            _framesPanel = new AnimationFramesPanel();
+            _animationPanel = new AnimationsPanel(SelectedAnimationChanged);
+            _framesPanel = new AnimationFramesPanel(SelectedFrameChanged);
 
-
+            _entity = new Entity(Settings.ScreenFont);
 
             Reset();
+
+            _animationPanel.SetEntity(_entity);
+        }
+
+        private void SelectedAnimationChanged(Animation animation)
+        {
+            _width = animation.Width;
+            _height = animation.Height;
+
+            _selectedAnimation = animation;
+
+            _consoleLayers.Resize(animation.Width, animation.Height);
+
+            // inform the outer box we've changed size
+            EditorConsoleManager.Instance.UpdateBox();
+
+            _framesPanel.SetAnimation(animation);
+        }
+
+        private void SelectedFrameChanged(Frame frame)
+        {
+            _consoleLayers.RemoveLayer(0);
+            _consoleLayers.AddLayer(frame);
+            _consoleLayers.GetLayerMetadata(0).Name = "Root";
+            _consoleLayers.GetLayerMetadata(0).IsRemoveable = false;
+            _consoleLayers.GetLayerMetadata(0).IsMoveable = false;
+            _consoleLayers.SetActiveLayer(0);
         }
 
         public void Reset()
@@ -74,8 +103,6 @@ namespace SadConsoleEditor.Editors
                 _consoleLayers.MouseExit -= _mouseExitHandler;
             }
 
-            _entity = new Entity(Settings.ScreenFont);
-            
             _consoleLayers = new LayeredConsole(1, 25, 10);
             _consoleLayers.Font = Settings.ScreenFont;
             _consoleLayers.CanUseMouse = true;
@@ -95,6 +122,9 @@ namespace SadConsoleEditor.Editors
             _consoleLayers.MouseEnter += _mouseEnterHandler;
             _consoleLayers.MouseExit += _mouseExitHandler;
 
+            _entity = new Entity(Settings.ScreenFont);
+
+            _animationPanel.SetEntity(_entity);
         }
 
         public override string ToString()
@@ -132,6 +162,8 @@ namespace SadConsoleEditor.Editors
             _height = height;
 
             _consoleLayers.Resize(width, height);
+
+            _selectedAnimation.Resize(width, height);
 
             // inform the outer box we've changed size
             EditorConsoleManager.Instance.UpdateBox();
@@ -180,6 +212,12 @@ namespace SadConsoleEditor.Editors
 
             //    EditorConsoleManager.Instance.UpdateBox();
             //}
+        }
+
+        public class FrameWrapper
+        {
+            public Frame Frame;
+            public int CurrentIndex;
         }
     }
 }

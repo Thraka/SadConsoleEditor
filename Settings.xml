@@ -4,4 +4,8 @@
   <ScreenFont>Cheepicus12.font</ScreenFont>
   <ConsoleBoundsMarker width="60" height="40" />
   <NewConsole width="60" height="40" />
+
+  <AnimationEditor>
+    <DefaultForeground></DefaultForeground>
+  </AnimationEditor>
 </ScreenBuilder>

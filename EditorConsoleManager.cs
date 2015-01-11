@@ -105,13 +105,16 @@ namespace SadConsoleEditor
             scrollerContainer.ProcessMouseWithoutFocus = true;
             this.Add(scrollerContainer);
 
-            Editors = new Dictionary<string, SadConsoleEditor.Editors.IEditor>();
-            Editors.Add(DrawingEditor.ID, new DrawingEditor());
-            Editors.Add(GameScreenEditor.ID, new GameScreenEditor());
-
             ToolPane.FinishCreating();
 
+            Editors = new Dictionary<string, SadConsoleEditor.Editors.IEditor>();
+            
             ChangeEditor(new DrawingEditor());
+
+            Editors.Add(DrawingEditor.ID, new DrawingEditor());
+            Editors.Add(GameScreenEditor.ID, new GameScreenEditor());
+            Editors.Add(AnimationEditor.ID, new AnimationEditor());
+
         }
 
         public void ChangeEditor(IEditor editor)

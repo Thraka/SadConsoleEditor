@@ -28,7 +28,7 @@ namespace SadConsoleEditor.Editors
 
         public string Id { get { return ID; } }
 
-        public string Title { get { return "Console Editor"; } }
+        public string Title { get { return "Console"; } }
 
         public string FileExtensions { get { return "*.lcon;*.lconsole"; } }
         public CustomPanel[] ControlPanels { get; private set; }

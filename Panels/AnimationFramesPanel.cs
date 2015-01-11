@@ -6,64 +6,77 @@ using System.Threading.Tasks;
 using SadConsole.Controls;
 using SadConsoleEditor.Windows;
 using SadConsole;
+using SadConsole.Entities;
+using SadConsoleEditor.Editors;
 
 namespace SadConsoleEditor.Panels
 {
     class AnimationFramesPanel : CustomPanel
     {
-        private ListBox _layers;
+        private ListBox<Controls.ListBoxItemFrame> _frames;
         private Button _removeSelected;
-        private Button _moveSelectedUp;
         private Button _moveSelectedDown;
-        private Button _addNewLayer;
-        private Button _addNewLayerFromFile;
-        private Button _saveLayerToFile;
+        private Button _moveSelectedUp;
+        private Button _addNewFrame;
+        private Button _addNewFrameFromFile;
+        private Button _saveFrameToFile;
 
-        public AnimationFramesPanel()
+        private Action<Frame> _frameChangeCallback;
+        private Animation _currentAnimation;
+
+        public AnimationFramesPanel(Action<Frame> frameChangeCallback)
         {
             Title = "Frames";
-            _layers = new ListBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 4);
-            _layers.HideBorder = true;
-            _layers.SelectedItemChanged += _layers_SelectedItemChanged;
-            _layers.CompareByReference = true;
+            _frames = new ListBox<Controls.ListBoxItemFrame>(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 4);
+            _frames.HideBorder = true;
+            _frames.SelectedItemChanged += frames_SelectedItemChanged;
+            _frames.CompareByReference = true;
 
             _removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
             _removeSelected.Text = "Remove";
-            _removeSelected.ButtonClicked += _removeSelected_ButtonClicked;
-
-            _moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            _moveSelectedUp.Text = "Move Up";
-            _moveSelectedUp.ButtonClicked += _moveSelectedUp_ButtonClicked;
+            _removeSelected.ButtonClicked += removeSelected_ButtonClicked;
 
             _moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
             _moveSelectedDown.Text = "Move Down";
-            _moveSelectedDown.ButtonClicked += _moveSelectedDown_ButtonClicked;
+            _moveSelectedDown.ButtonClicked += moveSelectedDown_ButtonClicked;
 
-            _addNewLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            _addNewLayer.Text = "Add New";
-            _addNewLayer.ButtonClicked += _addNewLayer_ButtonClicked;
+            _moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            _moveSelectedUp.Text = "Move Up";
+            _moveSelectedUp.ButtonClicked += moveSelectedUp_ButtonClicked;
 
-            _addNewLayerFromFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            _addNewLayerFromFile.Text = "Load From File";
-            _addNewLayerFromFile.ButtonClicked += _addNewLayerFromFile_ButtonClicked;
+            _addNewFrame = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            _addNewFrame.Text = "Add New";
+            _addNewFrame.ButtonClicked += addNewFrame_ButtonClicked;
 
-            _saveLayerToFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            _saveLayerToFile.Text = "Save Layer to File";
-            _saveLayerToFile.ButtonClicked += _saveLayerToFile_ButtonClicked;
+            _addNewFrameFromFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            _addNewFrameFromFile.Text = "Load From File";
+            _addNewFrameFromFile.ButtonClicked += addNewFrameFromFile_ButtonClicked;
 
-            Controls = new ControlBase[] { _layers, _removeSelected, _moveSelectedUp, _moveSelectedDown, _addNewLayer, _addNewLayerFromFile, _saveLayerToFile };
+            _saveFrameToFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            _saveFrameToFile.Text = "Save Layer to File";
+            _saveFrameToFile.ButtonClicked += saveFrameToFile_ButtonClicked;
+
+            _frameChangeCallback = frameChangeCallback;
+
+            Controls = new ControlBase[] { _frames, _removeSelected, _moveSelectedDown, _moveSelectedUp, _addNewFrame, _addNewFrameFromFile, _saveFrameToFile };
         }
 
-        void _saveLayerToFile_ButtonClicked(object sender, EventArgs e)
+        public void SetAnimation(Animation animation)
         {
-            var layer = (Consoles.LayeredConsole.Metadata)_layers.SelectedItem;
+            _currentAnimation = animation;
+            RebuildListBox();
+        }
+
+        void saveFrameToFile_ButtonClicked(object sender, EventArgs e)
+        {
+            var frame = (AnimationEditor.FrameWrapper)_frames.SelectedItem;
 
             SelectFilePopup popup = new SelectFilePopup();
             popup.Closed += (o2, e2) =>
             {
                 if (popup.DialogResult)
                 {
-                    EditorConsoleManager.Instance.SelectedEditor.Surface[layer.Index].CellData.Save(popup.SelectedFile);
+                    frame.Frame.Save(popup.SelectedFile);
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
@@ -74,7 +87,7 @@ namespace SadConsoleEditor.Panels
             popup.Center();
         }
 
-        void _addNewLayerFromFile_ButtonClicked(object sender, EventArgs e)
+        void addNewFrameFromFile_ButtonClicked(object sender, EventArgs e)
         {
             SelectFilePopup popup = new SelectFilePopup();
             popup.Closed += (o2, e2) =>
@@ -85,16 +98,19 @@ namespace SadConsoleEditor.Panels
                     {
                         var surface = CellSurface.Load(popup.SelectedFile);
 
-                        if (surface.Width != EditorConsoleManager.Instance.SelectedEditor.Surface.Width || surface.Height != EditorConsoleManager.Instance.SelectedEditor.Height)
+                        if (surface.Width != _currentAnimation.Width || surface.Height != _currentAnimation.Height)
                         {
-                            var newLayer = EditorConsoleManager.Instance.SelectedEditor.Surface.AddLayer("Loaded");
-                            surface.Copy(newLayer.CellData);
+                            var newFrame = _currentAnimation.CreateFrame();
+                            surface.Copy(newFrame);
                         }
                         else
+                        {
                             EditorConsoleManager.Instance.SelectedEditor.Surface.AddLayer(surface);
+                            var newFrame = _currentAnimation.CreateFrame();
+                            surface.Copy(newFrame);
+                        }
 
                         RebuildListBox();
-
                     }
                 }
             };
@@ -104,65 +120,72 @@ namespace SadConsoleEditor.Panels
             popup.Center();
         }
 
-        void _moveSelectedDown_ButtonClicked(object sender, EventArgs e)
+        void moveSelectedUp_ButtonClicked(object sender, EventArgs e)
         {
-            var layer = (Consoles.LayeredConsole.Metadata)_layers.SelectedItem;
-            EditorConsoleManager.Instance.SelectedEditor.Surface.MoveLayer(layer.Index, layer.Index - 1);
+            var frame = (AnimationEditor.FrameWrapper)_frames.SelectedItem;
+
+            var index = _currentAnimation.Frames.IndexOf(frame.Frame);
+            _currentAnimation.Frames.Remove(frame.Frame);
+            _currentAnimation.Frames.Insert(index - 1, frame.Frame);
+
             RebuildListBox();
-            _layers.SelectedItem = layer;
+            _frames.SelectedItem = frame;
         }
 
-        void _moveSelectedUp_ButtonClicked(object sender, EventArgs e)
+        void moveSelectedDown_ButtonClicked(object sender, EventArgs e)
         {
-            var layer = (Consoles.LayeredConsole.Metadata)_layers.SelectedItem;
-            EditorConsoleManager.Instance.SelectedEditor.Surface.MoveLayer(layer.Index, layer.Index + 1);
+            var frame = (AnimationEditor.FrameWrapper)_frames.SelectedItem;
+            var index = _currentAnimation.Frames.IndexOf(frame.Frame);
+            _currentAnimation.Frames.Remove(frame.Frame);
+            _currentAnimation.Frames.Insert(index + 1, frame.Frame);
+
             RebuildListBox();
-            _layers.SelectedItem = layer;
+            _frames.SelectedItem = frame;
         }
 
-        void _removeSelected_ButtonClicked(object sender, EventArgs e)
+        void removeSelected_ButtonClicked(object sender, EventArgs e)
         {
-            var layer = (Consoles.LayeredConsole.Metadata)_layers.SelectedItem;
-            EditorConsoleManager.Instance.SelectedEditor.Surface.RemoveLayer(layer.Index);
+            var frame = (AnimationEditor.FrameWrapper)_frames.SelectedItem;
+            _currentAnimation.Frames.Remove(frame.Frame);
             RebuildListBox();
-            _layers.SelectedItem = _layers.Items[0];
+            _frames.SelectedItem = _frames.Items[0];
         }
 
-        void _addNewLayer_ButtonClicked(object sender, EventArgs e)
+        void addNewFrame_ButtonClicked(object sender, EventArgs e)
         {
-            var previouslySelected = _layers.SelectedItem;
-            EditorConsoleManager.Instance.SelectedEditor.Surface.AddLayer("New");
+            var previouslySelected = _frames.SelectedItem;
+            _currentAnimation.CreateFrame();
             RebuildListBox();
-            _layers.SelectedItem = previouslySelected;
+            _frames.SelectedItem = _frames.Items[_frames.Items.Count - 1];
         }
 
-        void _layers_SelectedItemChanged(object sender, ListBox<ListBoxItem>.SelectedItemEventArgs e)
+        void frames_SelectedItemChanged(object sender, ListBox<Controls.ListBoxItemFrame>.SelectedItemEventArgs e)
         {
-            _removeSelected.IsEnabled = _layers.Items.Count != 1;
+            _removeSelected.IsEnabled = _frames.Items.Count != 1;
 
-            _moveSelectedUp.IsEnabled = true;
             _moveSelectedDown.IsEnabled = true;
+            _moveSelectedUp.IsEnabled = true;
 
-            if (_layers.SelectedItem != null)
+            if (_frames.SelectedItem != null)
             {
-                var layer = (Consoles.LayeredConsole.Metadata)_layers.SelectedItem;
+                var frame = (AnimationEditor.FrameWrapper)_frames.SelectedItem;
+                
+                _moveSelectedDown.IsEnabled = _frames.Items.Count != 1 && _frames.SelectedIndex != _frames.Items.Count - 1;
+                _moveSelectedUp.IsEnabled = _frames.Items.Count != 1 && _frames.SelectedIndex != 0;
+                _removeSelected.IsEnabled = _frames.Items.Count != 1;
 
-                _moveSelectedUp.IsEnabled = layer.IsMoveable && _layers.Items.Count != 1 && layer.Index != _layers.Items.Count - 1;
-                _moveSelectedDown.IsEnabled = layer.IsMoveable && _layers.Items.Count != 1 && layer.Index != 0;
-                _removeSelected.IsEnabled = layer.IsRemoveable && _layers.Items.Count != 1;
-
-                EditorConsoleManager.Instance.SelectedEditor.Surface.SetActiveLayer(layer.Index);
+                _frameChangeCallback(frame.Frame);
             }
         }
 
         public void RebuildListBox()
         {
-            _layers.Items.Clear();
+            _frames.Items.Clear();
 
-            for (int i = EditorConsoleManager.Instance.SelectedEditor.Surface.Layers - 1; i >= 0 ; i--)
-                _layers.Items.Add(EditorConsoleManager.Instance.SelectedEditor.Surface.GetLayerMetadata(i));
+            for (int i = 0; i < _currentAnimation.Frames.Count; i++)
+                _frames.Items.Add(new AnimationEditor.FrameWrapper() { CurrentIndex = i + 1, Frame = _currentAnimation.Frames[i] });
 
-            _layers.SelectedItem = _layers.Items[0];
+            _frames.SelectedItem = _frames.Items[0];
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseInfo info)
@@ -171,17 +194,17 @@ namespace SadConsoleEditor.Panels
 
         public override int Redraw(SadConsole.Controls.ControlBase control)
         {
-            return control == _layers ? 1 : 0;
+            return control == _frames ? 1 : 0;
         }
 
         public override void Loaded()
         {
-            var previouslySelected = _layers.SelectedItem;
+            var previouslySelected = _frames.SelectedItem;
             RebuildListBox();
-            if (previouslySelected == null || !_layers.Items.Contains(previouslySelected))
-                _layers.SelectedItem = _layers.Items[0];
+            if (previouslySelected == null || !_frames.Items.Contains(previouslySelected))
+                _frames.SelectedItem = _frames.Items[0];
             else
-                _layers.SelectedItem = previouslySelected;
+                _frames.SelectedItem = previouslySelected;
         }
     }
 }
