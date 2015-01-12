@@ -57,7 +57,7 @@ namespace SadConsoleEditor
         {
             Font = SadConsole.Engine.DefaultFont;
 
-            _backingPanel = new ControlsConsole(Game1.WindowSize.X, 1);
+            _backingPanel = new ControlsConsole(Settings.Config.WindowWidth, 1);
 
             _backingPanel.CellData.DefaultBackground = Settings.Color_MenuBack;
             _backingPanel.CellData.Clear();
@@ -88,14 +88,14 @@ namespace SadConsoleEditor
             ToolPane = new Consoles.ToolPane();
             ToolPane.Position = new Point(_backingPanel.CellData.Width - ToolPane.CellData.Width - 1, 1);
             ToolPane.CellData.Resize(ToolPane.CellData.Width, ToolPane.CellData.Height * 2);
-            ToolPane.ViewArea = new Rectangle(0,0,ToolPane.CellData.Width, Game1.WindowSize.Y);
+            ToolPane.ViewArea = new Rectangle(0,0,ToolPane.CellData.Width, Settings.Config.WindowHeight);
             this.Add(ToolPane);
 
-            _toolsPaneScroller = new SadConsole.Controls.ScrollBar(System.Windows.Controls.Orientation.Vertical, Game1.WindowSize.Y - 1);
-            _toolsPaneScroller.Maximum = ToolPane.CellData.Height - Game1.WindowSize.Y;
+            _toolsPaneScroller = new SadConsole.Controls.ScrollBar(System.Windows.Controls.Orientation.Vertical, Settings.Config.WindowHeight - 1);
+            _toolsPaneScroller.Maximum = ToolPane.CellData.Height - Settings.Config.WindowHeight;
             _toolsPaneScroller.ValueChanged += (o, e) =>
                 {
-                    ToolPane.ViewArea = new Rectangle(0, _toolsPaneScroller.Value, ToolPane.CellData.Width, Game1.WindowSize.Y);
+                    ToolPane.ViewArea = new Rectangle(0, _toolsPaneScroller.Value, ToolPane.CellData.Width, Settings.Config.WindowHeight);
                 };
             var scrollerContainer = new ControlsConsole(1, _toolsPaneScroller.Height);
             scrollerContainer.Add(_toolsPaneScroller);
@@ -113,7 +113,7 @@ namespace SadConsoleEditor
 
             Editors.Add(DrawingEditor.ID, new DrawingEditor());
             Editors.Add(GameScreenEditor.ID, new GameScreenEditor());
-            Editors.Add(AnimationEditor.ID, new AnimationEditor());
+            Editors.Add(EntityEditor.ID, new EntityEditor());
 
         }
 
@@ -150,7 +150,7 @@ namespace SadConsoleEditor
 
             Point position = new Point();
 
-            var screenSize = SadConsole.Engine.GetScreenSizeInCells(Settings.ScreenFont);
+            var screenSize = SadConsole.Engine.GetScreenSizeInCells(Settings.Config.ScreenFont);
 
             if (EditingSurfaceWidth < screenSize.X)
                 position.X = ((screenSize.X - 20) / 2) - (EditingSurfaceWidth / 2);
@@ -236,7 +236,7 @@ namespace SadConsoleEditor
                 }
                 else if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
                 {
-                    if (_borderRenderer.Position.Y != Game1.WindowSize.Y - 1)
+                    if (_borderRenderer.Position.Y != Settings.Config.WindowHeight - 1)
                     {
                         position.Y += 1;
                         keyPressed = true;

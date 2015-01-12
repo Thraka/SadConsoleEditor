@@ -20,8 +20,6 @@ namespace SadConsoleEditor
     {
         GraphicsDeviceManager graphics;
 
-        public static Point WindowSize { get; set; }
-
         public Game1()
             : base()
         {
@@ -30,33 +28,29 @@ namespace SadConsoleEditor
 
             var sadConsoleComponent = new SadConsole.EngineGameComponent(this, () =>
             {
-                System.Xml.Linq.XDocument doc = System.Xml.Linq.XDocument.Load("Settings.xml");
-                Point size = WindowSize = new Point(80, 50);
+                // Load settings 
+                var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(ProgramSettings));
+                using (var fileObject = System.IO.File.OpenRead("Settings.json"))
+                    Settings.Config = serializer.ReadObject(fileObject) as ProgramSettings;
 
-                if (doc.Root.Element("WindowSize") != null)
-                {
-                    size.X = int.Parse(doc.Root.Element("WindowSize").Attribute("width").Value);
-                    size.Y = int.Parse(doc.Root.Element("WindowSize").Attribute("height").Value);
-                    WindowSize = size;
-                }
-                if (doc.Root.Element("ConsoleBoundsMarker") != null)
-                {
-                    Settings.BoundsWidth = int.Parse(doc.Root.Element("ConsoleBoundsMarker").Attribute("width").Value);
-                    Settings.BoundsHeight = int.Parse(doc.Root.Element("ConsoleBoundsMarker").Attribute("height").Value);
-                }
-
-                Settings.NewScreenWidth = int.Parse(doc.Root.Element("NewConsole").Attribute("width").Value);
-                Settings.NewScreenHeight = int.Parse(doc.Root.Element("NewConsole").Attribute("height").Value);
-
-                using (var stream = System.IO.File.OpenRead("EditorFont.font"))
+                using (var stream = System.IO.File.OpenRead(Settings.Config.ProgramFontFile))
                     SadConsole.Engine.DefaultFont = SadConsole.Serializer.Deserialize<SadConsole.Font>(stream);
 
-                using (var stream = System.IO.File.OpenRead(doc.Root.Element("ScreenFont").Value))
-                    Settings.ScreenFont = SadConsole.Serializer.Deserialize<SadConsole.Font>(stream);
+                using (var stream = System.IO.File.OpenRead(Settings.Config.ScreenFontFile))
+                    Settings.Config.ScreenFont = SadConsole.Serializer.Deserialize<SadConsole.Font>(stream);
+
+                //if (System.IO.File.Exists("Settings.json"))
+                //    System.IO.File.Delete("Settings.json");
+
+                //var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(ProgramSettings));
+
+                //using (var stream = System.IO.File.OpenWrite("Settings.json"))
+                //    serializer.WriteObject(stream, Settings.Config);
+
+                //Settings.Config. = "Cheepicus12.font";
 
 
-
-                SadConsole.Engine.DefaultFont.ResizeGraphicsDeviceManager(graphics, size.X, size.Y, 0, 0);
+                SadConsole.Engine.DefaultFont.ResizeGraphicsDeviceManager(graphics, Settings.Config.WindowWidth, Settings.Config.WindowHeight, 0, 0);
                 SadConsole.Engine.UseMouse = true;
                 SadConsole.Engine.UseKeyboard = true;
 

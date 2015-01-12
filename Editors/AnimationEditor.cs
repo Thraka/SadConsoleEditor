@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SadConsoleEditor.Editors
 {
-    class AnimationEditor: IEditor
+    class EntityEditor: IEditor
     {
         private int _width;
         private int _height;
@@ -27,6 +27,8 @@ namespace SadConsoleEditor.Editors
         public int Width { get { return _width; } }
         public int Height { get { return _height; } }
 
+        public EditorSettings Settings { get { return SadConsoleEditor.Settings.Config.EntityEditor; } }
+
         private Entity _entity;
         private Animation _selectedAnimation;
         private Frame _selectedFrame;
@@ -37,7 +39,7 @@ namespace SadConsoleEditor.Editors
 
         public string Id { get { return ID; } }
 
-        public string Title { get { return "Animation"; } }
+        public string Title { get { return "Entity"; } }
 
         public string FileExtensions { get { return "*.ent;*.entity"; } }
         public CustomPanel[] ControlPanels { get; private set; }
@@ -55,12 +57,12 @@ namespace SadConsoleEditor.Editors
         private EventHandler<MouseEventArgs> _mouseExitHandler;
 
 
-        public AnimationEditor()
+        public EntityEditor()
         {
             _animationPanel = new AnimationsPanel(SelectedAnimationChanged);
             _framesPanel = new AnimationFramesPanel(SelectedFrameChanged);
 
-            _entity = new Entity(Settings.ScreenFont);
+            _entity = new Entity(SadConsoleEditor.Settings.Config.ScreenFont);
 
             Reset();
 
@@ -74,6 +76,9 @@ namespace SadConsoleEditor.Editors
 
             _selectedAnimation = animation;
 
+            if (_consoleLayers.Layers != 0)
+                _consoleLayers.RemoveLayer(0);
+
             _consoleLayers.Resize(animation.Width, animation.Height);
 
             // inform the outer box we've changed size
@@ -84,7 +89,9 @@ namespace SadConsoleEditor.Editors
 
         private void SelectedFrameChanged(Frame frame)
         {
-            _consoleLayers.RemoveLayer(0);
+            if (_consoleLayers.Layers != 0)
+                _consoleLayers.RemoveLayer(0);
+
             _consoleLayers.AddLayer(frame);
             _consoleLayers.GetLayerMetadata(0).Name = "Root";
             _consoleLayers.GetLayerMetadata(0).IsRemoveable = false;
@@ -104,7 +111,7 @@ namespace SadConsoleEditor.Editors
             }
 
             _consoleLayers = new LayeredConsole(1, 25, 10);
-            _consoleLayers.Font = Settings.ScreenFont;
+            _consoleLayers.Font = SadConsoleEditor.Settings.Config.ScreenFont;
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
             _consoleLayers.GetLayerMetadata(0).Name = "Root";
@@ -122,7 +129,7 @@ namespace SadConsoleEditor.Editors
             _consoleLayers.MouseEnter += _mouseEnterHandler;
             _consoleLayers.MouseExit += _mouseExitHandler;
 
-            _entity = new Entity(Settings.ScreenFont);
+            _entity = new Entity(SadConsoleEditor.Settings.Config.ScreenFont);
 
             _animationPanel.SetEntity(_entity);
         }
@@ -134,6 +141,12 @@ namespace SadConsoleEditor.Editors
 
         public void ProcessKeyboard(KeyboardInfo info)
         {
+            if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.OemOpenBrackets))
+                _framesPanel.TryPreviousFrame();
+
+            else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.OemCloseBrackets))
+                _framesPanel.TryNextFrame();
+
             EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.ActiveLayer);
         }
 
@@ -201,7 +214,7 @@ namespace SadConsoleEditor.Editors
             //    }
 
             //    _consoleLayers = LayeredConsole.Load(file);
-            //    _consoleLayers.Font = Settings.ScreenFont;
+            //    _consoleLayers.Font = Settings.Config.ScreenFont;
 
             //    _consoleLayers.MouseMove += _mouseMoveHandler;
             //    _consoleLayers.MouseEnter += _mouseEnterHandler;

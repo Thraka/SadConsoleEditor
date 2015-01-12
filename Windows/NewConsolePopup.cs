@@ -69,7 +69,7 @@ namespace SadConsoleEditor.Windows
 
             _widthBox = new InputBox(3)
             {
-                Text = Settings.NewScreenWidth.ToString(),
+                Text = "0",
                 MaxLength = 3,
                 IsNumeric = true,
                 Position = new Microsoft.Xna.Framework.Point(base.CellData.Width - 5, 7)
@@ -77,7 +77,7 @@ namespace SadConsoleEditor.Windows
 
             _heightBox = new InputBox(3)
             {
-                Text = Settings.NewScreenHeight.ToString(),
+                Text = "0",
                 MaxLength = 3,
                 IsNumeric = true,
                 Position = new Microsoft.Xna.Framework.Point(base.CellData.Width - 5, 8)
@@ -115,6 +115,10 @@ namespace SadConsoleEditor.Windows
         private void editorsListBox_SelectedItemChanged(object sender, ListBox<ListBoxItem>.SelectedItemEventArgs e)
         {
             Editor = (Editors.IEditor)_editorsListBox.SelectedItem;
+            _widthBox.Text = Editor.Settings.DefaultWidth.ToString();
+            _heightBox.Text = Editor.Settings.DefaultHeight.ToString();
+            _foregroundPicker.SelectedColor = Editor.Settings.DefaultForeground;
+            _backgroundPicker.SelectedColor = Editor.Settings.DefaultBackground;
         }
 
         void _cancelButton_Action(object sender, EventArgs e)

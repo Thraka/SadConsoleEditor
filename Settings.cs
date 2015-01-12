@@ -4,18 +4,50 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using SadConsole;
+using System.Runtime.Serialization;
 
 namespace SadConsoleEditor
 {
+    [DataContract]
+    public class ProgramSettings
+    {
+        [DataMember]
+        public int WindowWidth;
+        [DataMember]
+        public int WindowHeight;
+        [DataMember]
+        public EditorSettings ConsoleEditor { get; set; }
+        [DataMember]
+        public EditorSettings GameScreenEditor { get; set; }
+        [DataMember]
+        public EditorSettings EntityEditor { get; set; }
+        [DataMember]
+        public string ProgramFontFile;
+        [DataMember]
+        public string ScreenFontFile;
+
+        public Font ScreenFont;
+    }
+    [DataContract]
+    public class EditorSettings
+    {
+        [DataMember]
+        public int DefaultWidth;
+        [DataMember]
+        public int DefaultHeight;
+        [DataMember]
+        public int BoundsWidth;
+        [DataMember]
+        public int BoundsHeight;
+        [DataMember]
+        public Color DefaultForeground;
+        [DataMember]
+        public Color DefaultBackground;
+    }
+
     public static class Settings
     {
-        #region Config
-        public static int BoundsWidth = 80;
-        public static int BoundsHeight = 25;
-        public static int NewScreenWidth;
-        public static int NewScreenHeight;
-        public static Font ScreenFont;
-        #endregion
+        public static ProgramSettings Config;
 
         public const string FileObjectTypes = "editor.objecttypes.json";
 

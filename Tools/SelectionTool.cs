@@ -135,7 +135,7 @@
             _entity.IsVisible = true;
             _entity.TopLayers.Clear();
 
-            var topLayer = new Entity(Settings.ScreenFont);
+            var topLayer = new Entity(Settings.Config.ScreenFont);
             _entity.TopLayers.Add(topLayer);
             var animation = new Animation("box", surface.Width, surface.Height);
             frame = animation.CreateFrame();
@@ -159,7 +159,7 @@
 
 
             _entity = new EntityBrush();
-            _entity.Font = Settings.ScreenFont;
+            _entity.Font = Settings.Config.ScreenFont;
             _entity.IsVisible = true;
 
             _entity.AddAnimation(_animSinglePoint);
@@ -274,7 +274,7 @@
                     _panel.State = SelectionToolPanel.CloneState.Selected;
 
                     _entity.TopLayers.Clear();
-                    var topLayer = new Entity(Settings.ScreenFont);
+                    var topLayer = new Entity(Settings.Config.ScreenFont);
                     _entity.TopLayers.Add(topLayer);
                     topLayer.AddAnimation(_tempAnimation);
                     topLayer.SetActiveAnimation(_tempAnimation.Name);

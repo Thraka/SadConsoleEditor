@@ -49,7 +49,7 @@ namespace SadConsoleEditor.Windows
         public EditObjectPopup(GameObject gameObject)
             : base(39, 29)
         {
-            Font = Settings.ScreenFont;
+            Font = Settings.Config.ScreenFont;
             _gameObject = gameObject;
             Title = "Object Editor";
 

@@ -12,7 +12,7 @@ namespace SadConsoleEditor.Consoles
 {
     class BorderRenderer: SadConsole.Consoles.Console
     {
-        public BorderRenderer() { this.Font = Settings.ScreenFont; }
+        public BorderRenderer() { this.Font = Settings.Config.ScreenFont; }
 
         protected override void OnResize()
         {
@@ -34,30 +34,30 @@ namespace SadConsoleEditor.Consoles
             List<Cell> newAreaCells = new List<Cell>(_cellData.Width * 2 + _cellData.Height * 2);
             List<Rectangle> newAreaRects = new List<Rectangle>(_cellData.Width * 2 + _cellData.Height * 2);
 
-            if (_cellData.Width - 2 > Settings.BoundsWidth)
+            if (_cellData.Width - 2 > EditorConsoleManager.Instance.SelectedEditor.Settings.BoundsWidth)
             {
-                for (int x = 1; x <= (_cellData.Width - 2) / Settings.BoundsWidth; x++)
+                for (int x = 1; x <= (_cellData.Width - 2) / EditorConsoleManager.Instance.SelectedEditor.Settings.BoundsWidth; x++)
                 {
                     Line line = new Line();
                     line.CellAppearance = new Cell() { Foreground = Color.Yellow * 0.5f, Background = Color.Transparent, CharacterIndex = 124 };
                     line.UseStartingCell = false;
                     line.UseEndingCell = false;
-                    line.StartingLocation = new Point((x * Settings.BoundsWidth), 1);
-                    line.EndingLocation = new Point((x * Settings.BoundsWidth), _cellData.Height - 2);
+                    line.StartingLocation = new Point((x * EditorConsoleManager.Instance.SelectedEditor.Settings.BoundsWidth), 1);
+                    line.EndingLocation = new Point((x * EditorConsoleManager.Instance.SelectedEditor.Settings.BoundsWidth), _cellData.Height - 2);
                     line.Draw(_cellData);
                 }
             }
 
-            if (_cellData.Height - 2 > Settings.BoundsHeight)
+            if (_cellData.Height - 2 > EditorConsoleManager.Instance.SelectedEditor.Settings.BoundsHeight)
             {
-                for (int y = 1; y <= (_cellData.Height - 2) / Settings.BoundsHeight; y++)
+                for (int y = 1; y <= (_cellData.Height - 2) / EditorConsoleManager.Instance.SelectedEditor.Settings.BoundsHeight; y++)
                 {
                     Line line = new Line();
                     line.CellAppearance = new Cell() { Foreground = Color.Yellow * 0.5f, Background = Color.Transparent, CharacterIndex = 45 };
                     line.UseStartingCell = false;
                     line.UseEndingCell = false;
-                    line.StartingLocation = new Point(1, (y * Settings.BoundsHeight));
-                    line.EndingLocation = new Point(_cellData.Width - 2, (y * Settings.BoundsHeight));
+                    line.StartingLocation = new Point(1, (y * EditorConsoleManager.Instance.SelectedEditor.Settings.BoundsHeight));
+                    line.EndingLocation = new Point(_cellData.Width - 2, (y * EditorConsoleManager.Instance.SelectedEditor.Settings.BoundsHeight));
                     line.Draw(_cellData);
                 }
             }

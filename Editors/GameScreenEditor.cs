@@ -24,6 +24,7 @@ namespace SadConsoleEditor.Editors
         public int Width { get { return _width; } }
         public int Height { get { return _height; } }
 
+        public EditorSettings Settings { get { return SadConsoleEditor.Settings.Config.GameScreenEditor; } }
 
         public Consoles.LayeredConsole Surface { get { return _consoleLayers; } }
 
@@ -70,14 +71,14 @@ namespace SadConsoleEditor.Editors
             }
 
             _objectsSurface = new SadConsole.Consoles.Console(25, 10);
-            _objectsSurface.Font = Settings.ScreenFont;
+            _objectsSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
             _objectsSurface.CellData.DefaultForeground = Color.White;
             _objectsSurface.CellData.DefaultBackground = Color.Transparent;
             _objectsSurface.CellData.Clear();
             _objectsSurface.BeforeRenderHandler = (cr) => cr.Batch.Draw(SadConsole.Engine.BackgroundCell, cr.RenderBox, null, new Color(0, 0, 0, 0.5f)); 
 
             _consoleLayers = new LayeredConsole(1, 25, 10);
-            _consoleLayers.Font = Settings.ScreenFont;
+            _consoleLayers.Font = SadConsoleEditor.Settings.Config.ScreenFont;
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
             _consoleLayers.GetLayerMetadata(0).Name = "Root";
@@ -176,7 +177,7 @@ namespace SadConsoleEditor.Editors
                 }
 
                 _consoleLayers = LayeredConsole.Load(file);
-                _consoleLayers.Font = Settings.ScreenFont;
+                _consoleLayers.Font = SadConsoleEditor.Settings.Config.ScreenFont;
 
                 _consoleLayers.MouseMove += _mouseMoveHandler;
                 _consoleLayers.MouseEnter += _mouseEnterHandler;

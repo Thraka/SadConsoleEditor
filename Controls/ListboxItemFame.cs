@@ -14,7 +14,7 @@ namespace SadConsoleEditor.Controls
     {
         public override void Draw(CellSurface surface, Rectangle area)
         {
-            string value = ((Editors.AnimationEditor.FrameWrapper)Item).CurrentIndex.ToString();
+            string value = ((Editors.EntityEditor.FrameWrapper)Item).CurrentIndex.ToString();
             if (value.Length < area.Width)
                 value += new string(' ', area.Width - value.Length);
             else if (value.Length > area.Width)

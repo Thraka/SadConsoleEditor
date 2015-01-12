@@ -37,11 +37,11 @@ namespace SadConsoleEditor.Consoles
 
         public static int PanelWidth;
 
-        public ToolPane() : base(20, Game1.WindowSize.Y)
+        public ToolPane() : base(20, Settings.Config.WindowHeight)
         {
             PanelWidth = 18;
             CommonCharacterPickerPanel = new CharacterPickPanel("Settings", false, false, false);
-            CommonCharacterPickerPanel.PickerFont = Settings.ScreenFont;
+            CommonCharacterPickerPanel.PickerFont = Settings.Config.ScreenFont;
             CanUseKeyboard = false;
 
             _hotSpots = new List<Tuple<CustomPanel, int>>();

@@ -14,7 +14,7 @@ namespace SadConsoleEditor
 
         public EntityBrush()
         {
-            this.Font = Settings.ScreenFont;
+            this.Font = Settings.Config.ScreenFont;
             TopLayers = new List<Entity>();
         }
 

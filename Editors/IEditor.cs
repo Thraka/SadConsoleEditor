@@ -13,6 +13,8 @@ namespace SadConsoleEditor.Editors
 {
     public interface IEditor
     {
+        EditorSettings Settings { get; }
+
         event EventHandler<MouseEventArgs> MouseEnter;
         event EventHandler<MouseEventArgs> MouseExit;
         event EventHandler<MouseEventArgs> MouseMove;

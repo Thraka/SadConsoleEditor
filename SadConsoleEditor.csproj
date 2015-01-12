@@ -86,11 +86,13 @@
     <Compile Include="Tools\TextTool.cs" />
     <Compile Include="Tools\ToolBase.cs" />
     <Compile Include="Undo.cs" />
+    <Compile Include="Windows\AnimationPreviewPopup.cs" />
     <Compile Include="Windows\CharacterQuickSelectPopup.cs" />
     <Compile Include="Windows\ColorPickerPopup.cs" />
     <Compile Include="Windows\EditObjectPopup.cs" />
     <Compile Include="Windows\NewConsolePopup.cs" />
     <Compile Include="Windows\OtherColorsPopup.cs" />
+    <Compile Include="Windows\AnimationSpeedPopup.cs" />
     <Compile Include="Windows\RenamePopup.cs" />
     <Compile Include="Windows\ResizeSurfacePopup.cs" />
     <Compile Include="Windows\SelectFilePopup.cs" />
@@ -136,7 +138,7 @@
     </Content>
     <Content Include="Icon.ico" />
     <None Include="packages.config" />
-    <None Include="Settings.xml">
+    <None Include="Settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

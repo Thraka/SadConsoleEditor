@@ -21,6 +21,7 @@ namespace SadConsoleEditor.Editors
         public int Width { get { return _width; } }
         public int Height { get { return _height; } }
 
+        public EditorSettings Settings { get { return SadConsoleEditor.Settings.Config.ConsoleEditor; } }
 
         public Consoles.LayeredConsole Surface { get { return _consoleLayers; } }
 
@@ -61,9 +62,9 @@ namespace SadConsoleEditor.Editors
                 _consoleLayers.MouseEnter -= _mouseEnterHandler;
                 _consoleLayers.MouseExit -= _mouseExitHandler;
             }
-
+            
             _consoleLayers = new LayeredConsole(1, 25, 10);
-            _consoleLayers.Font = Settings.ScreenFont;
+            _consoleLayers.Font = SadConsoleEditor.Settings.Config.ScreenFont;
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
             _consoleLayers.GetLayerMetadata(0).Name = "Root";
@@ -155,7 +156,7 @@ namespace SadConsoleEditor.Editors
                 }
 
                 _consoleLayers = LayeredConsole.Load(file);
-                _consoleLayers.Font = Settings.ScreenFont;
+                _consoleLayers.Font = SadConsoleEditor.Settings.Config.ScreenFont;
 
                 _consoleLayers.MouseMove += _mouseMoveHandler;
                 _consoleLayers.MouseEnter += _mouseEnterHandler;
