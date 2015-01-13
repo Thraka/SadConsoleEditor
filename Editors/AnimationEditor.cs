@@ -199,32 +199,18 @@ namespace SadConsoleEditor.Editors
 
         public void Save(string file)
         {
-            //LayeredConsole.Save(_consoleLayers, file);
+            _entity.Save(file);
         }
 
         public void Load(string file)
         {
-            //if (System.IO.File.Exists(file))
-            //{
-            //    if (_consoleLayers != null)
-            //    {
-            //        _consoleLayers.MouseMove -= _mouseMoveHandler;
-            //        _consoleLayers.MouseEnter -= _mouseEnterHandler;
-            //        _consoleLayers.MouseExit -= _mouseExitHandler;
-            //    }
+            if (System.IO.File.Exists(file))
+            {
+                _entity = Entity.Load(file);
+                _entity.Font = SadConsoleEditor.Settings.Config.ScreenFont;
 
-            //    _consoleLayers = LayeredConsole.Load(file);
-            //    _consoleLayers.Font = Settings.Config.ScreenFont;
-
-            //    _consoleLayers.MouseMove += _mouseMoveHandler;
-            //    _consoleLayers.MouseEnter += _mouseEnterHandler;
-            //    _consoleLayers.MouseExit += _mouseExitHandler;
-
-            //    _width = _consoleLayers.Width;
-            //    _height = _consoleLayers.Height;
-
-            //    EditorConsoleManager.Instance.UpdateBox();
-            //}
+                _animationPanel.SetEntity(_entity);
+            }
         }
 
         public class FrameWrapper
