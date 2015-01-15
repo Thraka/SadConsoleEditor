@@ -186,7 +186,7 @@
                 }
 
                 // Edit object
-                if (info.RightButtonDown)
+                else if (info.RightClicked)
                 {
                     if (editor.GameObjects.ContainsKey(point))
                     {
