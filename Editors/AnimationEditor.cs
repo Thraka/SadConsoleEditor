@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SadConsole.Consoles;
 using SadConsole.Entities;
 using SadConsole.Input;
 using SadConsoleEditor.Consoles;
@@ -33,7 +34,7 @@ namespace SadConsoleEditor.Editors
         private Animation _selectedAnimation;
         private Frame _selectedFrame;
 
-        public Consoles.LayeredConsole Surface { get { return _consoleLayers; } }
+        public LayeredConsole Surface { get { return _consoleLayers; } }
 
         public const string ID = "ANIM";
 

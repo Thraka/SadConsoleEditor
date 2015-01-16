@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using SadConsoleEditor.Consoles;
 using SadConsoleEditor.Panels;
 using SadConsole.GameHelpers;
+using SadConsole.Consoles;
 
 namespace SadConsoleEditor.Editors
 {
@@ -26,7 +27,7 @@ namespace SadConsoleEditor.Editors
 
         public EditorSettings Settings { get { return SadConsoleEditor.Settings.Config.GameScreenEditor; } }
 
-        public Consoles.LayeredConsole Surface { get { return _consoleLayers; } }
+        public LayeredConsole Surface { get { return _consoleLayers; } }
 
         public GameObjectCollection GameObjects { get; set; }
 
@@ -204,6 +205,8 @@ namespace SadConsoleEditor.Editors
         public void SyncObjectsToLayer()
         {
             _objectsSurface.CellData.Clear();
+
+            _objectsSurface.CellData.Resize(_width, _height);
 
             foreach (var item in GameObjects)
             {

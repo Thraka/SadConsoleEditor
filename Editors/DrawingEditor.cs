@@ -5,6 +5,7 @@ using Console = SadConsole.Consoles.Console;
 using Microsoft.Xna.Framework;
 using SadConsoleEditor.Consoles;
 using SadConsoleEditor.Panels;
+using SadConsole.Consoles;
 
 namespace SadConsoleEditor.Editors
 {
@@ -23,7 +24,7 @@ namespace SadConsoleEditor.Editors
 
         public EditorSettings Settings { get { return SadConsoleEditor.Settings.Config.ConsoleEditor; } }
 
-        public Consoles.LayeredConsole Surface { get { return _consoleLayers; } }
+        public LayeredConsole Surface { get { return _consoleLayers; } }
 
         public const string ID = "DRAW";
 

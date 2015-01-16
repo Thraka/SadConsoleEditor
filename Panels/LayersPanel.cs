@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using SadConsole.Controls;
 using SadConsoleEditor.Windows;
 using SadConsole;
+using SadConsole.Consoles;
 
 namespace SadConsoleEditor.Panels
 {
@@ -67,7 +68,7 @@ namespace SadConsoleEditor.Panels
 
         void _saveLayerToFile_ButtonClicked(object sender, EventArgs e)
         {
-            var layer = (Consoles.LayeredConsole.Metadata)_layers.SelectedItem;
+            var layer = (LayeredConsole.Metadata)_layers.SelectedItem;
 
             SelectFilePopup popup = new SelectFilePopup();
             popup.Closed += (o2, e2) =>
@@ -117,7 +118,7 @@ namespace SadConsoleEditor.Panels
 
         void _renameLayer_ButtonClicked(object sender, EventArgs e)
         {
-            var layer = (Consoles.LayeredConsole.Metadata)_layers.SelectedItem;
+            var layer = (LayeredConsole.Metadata)_layers.SelectedItem;
             RenamePopup popup = new RenamePopup(layer.Name);
             popup.Closed += (o, e2) => { if (popup.DialogResult) layer.Name = popup.NewName; _layers.IsDirty = true; };
             popup.Show(true);
@@ -126,7 +127,7 @@ namespace SadConsoleEditor.Panels
 
         void _moveSelectedDown_ButtonClicked(object sender, EventArgs e)
         {
-            var layer = (Consoles.LayeredConsole.Metadata)_layers.SelectedItem;
+            var layer = (LayeredConsole.Metadata)_layers.SelectedItem;
             EditorConsoleManager.Instance.SelectedEditor.Surface.MoveLayer(layer.Index, layer.Index - 1);
             RebuildListBox();
             _layers.SelectedItem = layer;
@@ -134,7 +135,7 @@ namespace SadConsoleEditor.Panels
 
         void _moveSelectedUp_ButtonClicked(object sender, EventArgs e)
         {
-            var layer = (Consoles.LayeredConsole.Metadata)_layers.SelectedItem;
+            var layer = (LayeredConsole.Metadata)_layers.SelectedItem;
             EditorConsoleManager.Instance.SelectedEditor.Surface.MoveLayer(layer.Index, layer.Index + 1);
             RebuildListBox();
             _layers.SelectedItem = layer;
@@ -142,7 +143,7 @@ namespace SadConsoleEditor.Panels
 
         void _removeSelected_ButtonClicked(object sender, EventArgs e)
         {
-            var layer = (Consoles.LayeredConsole.Metadata)_layers.SelectedItem;
+            var layer = (LayeredConsole.Metadata)_layers.SelectedItem;
             EditorConsoleManager.Instance.SelectedEditor.Surface.RemoveLayer(layer.Index);
             RebuildListBox();
             _layers.SelectedItem = _layers.Items[0];
@@ -166,7 +167,7 @@ namespace SadConsoleEditor.Panels
 
             if (_layers.SelectedItem != null)
             {
-                var layer = (Consoles.LayeredConsole.Metadata)_layers.SelectedItem;
+                var layer = (LayeredConsole.Metadata)_layers.SelectedItem;
 
                 _moveSelectedUp.IsEnabled = layer.IsMoveable && _layers.Items.Count != 1 && layer.Index != _layers.Items.Count - 1;
                 _moveSelectedDown.IsEnabled = layer.IsMoveable && _layers.Items.Count != 1 && layer.Index != 0;
@@ -181,7 +182,7 @@ namespace SadConsoleEditor.Panels
 
         void _toggleHideShow_IsSelectedChanged(object sender, EventArgs e)
         {
-            var layer = (Consoles.LayeredConsole.Metadata)_layers.SelectedItem;
+            var layer = (LayeredConsole.Metadata)_layers.SelectedItem;
 
             EditorConsoleManager.Instance.SelectedEditor.Surface[layer.Index].IsVisible = _toggleHideShow.IsSelected;
             layer.IsVisible = _toggleHideShow.IsSelected;

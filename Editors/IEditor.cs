@@ -30,7 +30,7 @@ namespace SadConsoleEditor.Editors
 
         string FileExtensions { get; }
 
-        SadConsoleEditor.Consoles.LayeredConsole Surface { get; }
+        SadConsole.Consoles.LayeredConsole Surface { get; }
 
         CustomPanel[] ControlPanels { get; }
 
