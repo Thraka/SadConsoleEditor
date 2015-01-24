@@ -30,6 +30,9 @@
             get { return "Box"; }
         }
 
+        public char Hotkey { get { return 'b'; } }
+
+
         public CustomPanel[] ControlPanels { get; private set; }
 
         public override string ToString()
@@ -78,9 +81,9 @@
         {
         }
 
-        public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
+        public bool ProcessKeyboard(KeyboardInfo info, CellSurface surface)
         {
-
+            return false;
         }
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)

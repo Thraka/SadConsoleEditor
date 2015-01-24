@@ -57,6 +57,8 @@ namespace SadConsoleEditor
                 Settings.SetupThemes();
 
                 SadConsole.Engine.ConsoleRenderStack = EditorConsoleManager.Instance;
+                SadConsole.Engine.ActiveConsole = EditorConsoleManager.Instance;
+
                 EditorConsoleManager.Instance.ShowNewConsolePopup();
             });
 

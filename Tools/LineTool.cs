@@ -30,6 +30,7 @@
         {
             get { return "Line"; }
         }
+        public char Hotkey { get { return 'l'; } }
 
         public CustomPanel[] ControlPanels { get; private set; }
 
@@ -93,14 +94,13 @@
             _lineStyle.CopyAppearanceTo(_lineCell);
         }
 
-        public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
+        public bool ProcessKeyboard(KeyboardInfo info, CellSurface surface)
         {
-            
+            return false;
         }
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
         {
-            
         }
 
         public void MouseEnterSurface(MouseInfo info, CellSurface surface)

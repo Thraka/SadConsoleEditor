@@ -15,11 +15,13 @@ namespace SadConsoleEditor.Tools
 
         string Title { get; }
 
+        char Hotkey { get; }
+
         void OnSelected();
 
         void OnDeselected();
 
-        void ProcessKeyboard(KeyboardInfo info, CellSurface surface);
+        bool ProcessKeyboard(KeyboardInfo info, CellSurface surface);
 
         void ProcessMouse(MouseInfo info, CellSurface surface);
 

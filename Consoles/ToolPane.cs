@@ -13,6 +13,7 @@ using SadConsoleEditor.Windows;
 using SadConsole.Controls;
 using SadConsoleEditor.Controls;
 using SadConsoleEditor.Panels;
+using SadConsole.Input;
 
 namespace SadConsoleEditor.Consoles
 {
@@ -130,6 +131,23 @@ namespace SadConsoleEditor.Consoles
 
                 }
             }
+        }
+
+        public override bool ProcessKeyboard(KeyboardInfo info)
+        {
+            foreach (var tool in ToolsPanel.ToolsListBox.Items.Cast<ITool>())
+            {
+                foreach (var key in info.KeysPressed)
+                {
+                    if (key.Character == tool.Hotkey)
+                    {
+                        ToolsPanel.ToolsListBox.SelectedItem = tool;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public override bool ProcessMouse(SadConsole.Input.MouseInfo info)

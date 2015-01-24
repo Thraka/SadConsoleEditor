@@ -16,6 +16,7 @@
         {
             get { return "Recolor"; }
         }
+        public char Hotkey { get { return 'r'; } }
 
         public CustomPanel[] ControlPanels { get; private set; }
 
@@ -55,14 +56,13 @@
             _brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
         }
 
-        public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
+        public bool ProcessKeyboard(KeyboardInfo info, CellSurface surface)
         {
-
+            return false;
         }
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
         {
-            
         }
 
         public void MouseEnterSurface(MouseInfo info, CellSurface surface)

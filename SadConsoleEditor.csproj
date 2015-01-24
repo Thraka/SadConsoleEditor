@@ -74,7 +74,6 @@
     <Compile Include="Tools\SelectionTool.cs" />
     <Compile Include="Panels\SelectionTool.Panel.cs" />
     <Compile Include="Tools\DrawTool.cs" />
-    <Compile Include="Tools\EraseDrawingTool.cs" />
     <Compile Include="Tools\FillTool.cs" />
     <Compile Include="Tools\ITool.cs" />
     <Compile Include="Panels\LayersPanel.cs" />
@@ -84,7 +83,6 @@
     <Compile Include="Panels\ObjectTool.Panel.cs" />
     <Compile Include="Panels\RecolorTool.Panel.cs" />
     <Compile Include="Tools\TextTool.cs" />
-    <Compile Include="Tools\ToolBase.cs" />
     <Compile Include="Undo.cs" />
     <Compile Include="Windows\AnimationPreviewPopup.cs" />
     <Compile Include="Windows\CharacterQuickSelectPopup.cs" />

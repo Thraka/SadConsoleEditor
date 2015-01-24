@@ -20,6 +20,7 @@
         {
             get { return "Object"; }
         }
+        public char Hotkey { get { return 'o'; } }
 
         public CustomPanel[] ControlPanels { get; private set; }
 
@@ -99,14 +100,14 @@
             }
         }
 
-        public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
+        public bool ProcessKeyboard(KeyboardInfo info, CellSurface surface)
         {
-
+            return false;
         }
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
         {
-
+            
         }
 
         public void MouseEnterSurface(MouseInfo info, CellSurface surface)

@@ -174,7 +174,7 @@ namespace SadConsoleEditor
             SelectedEditor.Surface.Update();
             Brush.Update();
 
-            ProcessKeyboard(SadConsole.Engine.Keyboard);
+            //ProcessKeyboard(SadConsole.Engine.Keyboard);
         }
 
         public override void Render()
@@ -207,13 +207,13 @@ namespace SadConsoleEditor
             if (AllowKeyboardToMoveConsole)
             {
                 var position = new Point(_borderRenderer.Position.X + 1, _borderRenderer.Position.Y + 1);
-                bool keyPressed = false;
+                bool movekeyPressed = false;
                 if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
                 {
                     if (_borderRenderer.Position.X + _borderRenderer.CellData.Width - 1 != 0)
                     {
                         position.X -= 1;
-                        keyPressed = true;
+                        movekeyPressed = true;
                     }
                 }
                 else if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
@@ -221,7 +221,7 @@ namespace SadConsoleEditor
                     if (_borderRenderer.Position.X != ToolPane.Position.X - 1)
                     {
                         position.X += 1;
-                        keyPressed = true;
+                        movekeyPressed = true;
                     }
                 }
 
@@ -230,7 +230,7 @@ namespace SadConsoleEditor
                     if (_borderRenderer.Position.Y + _borderRenderer.CellData.Height - 2 != 0)
                     {
                         position.Y -= 1;
-                        keyPressed = true;
+                        movekeyPressed = true;
                     }
 
                 }
@@ -239,7 +239,7 @@ namespace SadConsoleEditor
                     if (_borderRenderer.Position.Y != Settings.Config.WindowHeight - 1)
                     {
                         position.Y += 1;
-                        keyPressed = true;
+                        movekeyPressed = true;
                     }
                 }
                 
@@ -253,12 +253,18 @@ namespace SadConsoleEditor
                     
                 }
 
-                if (keyPressed)
+                if (movekeyPressed)
                 {
                     SelectedEditor.Position(position.X, position.Y);
                     _borderRenderer.Position = new Microsoft.Xna.Framework.Point(position.X - 1, position.Y - 1);
                     Brush.PositionOffset = position;
                 }
+                else
+                {
+                    // Look for tool hotkeys
+                    ToolPane.ProcessKeyboard(info);
+                }
+
             }
 
             SelectedEditor.ProcessKeyboard(info);

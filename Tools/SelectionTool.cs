@@ -33,6 +33,7 @@
         {
             get { return "Selection"; }
         }
+        public char Hotkey { get { return 's'; } }
 
         public CustomPanel[] ControlPanels { get; private set; }
 
@@ -179,9 +180,9 @@
 
         }
 
-        public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
+        public bool ProcessKeyboard(KeyboardInfo info, CellSurface surface)
         {
-
+            return false;
         }
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
@@ -246,14 +247,14 @@
                 else if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
                 {
                     _secondPoint = new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y);
-
+                    _panel.State = SelectionToolPanel.CloneState.Selected;
 
                     // Copy data to new animation
                     var _tempAnimation = _entity.GetAnimation("selection");
                     Animation cloneAnimation = new Animation("clone", _tempAnimation.Width, _tempAnimation.Height);
                     var frame = cloneAnimation.CreateFrame();
-                    Point p1 = new Point(Math.Min(_firstPoint.Value.X, _secondPoint.Value.X), Math.Min(_firstPoint.Value.Y, _secondPoint.Value.Y));
-                    surface.Copy(p1.X, p1.Y, cloneAnimation.Width, cloneAnimation.Height, frame, 0, 0);
+                    Point topLeftPoint = new Point(Math.Min(_firstPoint.Value.X, _secondPoint.Value.X), Math.Min(_firstPoint.Value.Y, _secondPoint.Value.Y));
+                    surface.Copy(topLeftPoint.X, topLeftPoint.Y, cloneAnimation.Width, cloneAnimation.Height, frame, 0, 0);
 
                     if (_altPanel.SkipEmptyCells && _altPanel.UseAltEmptyColor)
                     {
@@ -264,22 +265,21 @@
                         }
                     }
 
-                    //cloneAnimation.Center = new Point(cloneAnimation.Width / 2, cloneAnimation.Height / 2);
+                    cloneAnimation.Center = _tempAnimation.Center;
                     cloneAnimation.Commit();
 
                     _entity.AddAnimation(cloneAnimation);
                     _entity.SetActiveAnimation("clone");
                     _entity.Tint = new Color(0f, 0f, 0f, 0f);
 
-                    _panel.State = SelectionToolPanel.CloneState.Selected;
-
+                    // Display the rect
                     _entity.TopLayers.Clear();
                     var topLayer = new Entity(Settings.Config.ScreenFont);
                     _entity.TopLayers.Add(topLayer);
                     topLayer.AddAnimation(_tempAnimation);
                     topLayer.SetActiveAnimation(_tempAnimation.Name);
-                    topLayer.Tint = new Color(0f, 0f, 0f, 0.2f);
-                    //_tempAnimation.Center = cloneAnimation.Center;
+                    topLayer.Tint = new Color(0f, 0f, 0f, 0.35f);
+                    topLayer.Position = _entity.Position;
                     _entity.SyncLayers();
                 }
 

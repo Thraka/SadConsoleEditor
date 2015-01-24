@@ -24,6 +24,7 @@
         {
             get { return "Text"; }
         }
+        public char Hotkey { get { return 't'; } }
 
         public CustomPanel[] ControlPanels { get; private set; }
 
@@ -48,7 +49,6 @@
             EditorConsoleManager.Instance.UpdateBrush(_brush);
             _brush.CurrentAnimation.Frames[0].Fill(Color.White, Color.Black, _cursorCharacter, blinkEffect);
             _brush.IsVisible = false;
-            EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = false;
             EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = true;
 
         }
@@ -63,7 +63,7 @@
             EditorConsoleManager.Instance.ToolPane.KeyboardHandler = null;
         }
 
-        public void ProcessKeyboard(KeyboardInfo info, CellSurface surface)
+        public bool ProcessKeyboard(KeyboardInfo info, CellSurface surface)
         {
             if (writing)
             {
@@ -71,6 +71,7 @@
                 {
                     writing = false;
                     _brush.IsVisible = false;
+                    EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = true;
                 }
                 else
                 {
@@ -79,7 +80,11 @@
                     tempConsole.ProcessKeyboard(info);
                     _brush.Position = tempConsole.VirtualCursor.Position;
                 }
+
+                return true;
             }
+
+            return false;
         }
 
         public void ProcessMouse(MouseInfo info, CellSurface surface)
@@ -100,6 +105,7 @@
         {
             if (info.LeftClicked)
             {
+                EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = false;
                 writing = true;
 
                 tempConsole.CellData = surface;
