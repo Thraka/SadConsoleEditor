@@ -28,8 +28,10 @@ namespace SadConsoleEditor
 
         private Consoles.BorderRenderer _borderRenderer;
         private Editors.IEditor _oldEditor;
+        private SelectFilePopup _fileDialogPopup;
         public Dictionary<string, Editors.IEditor> Editors;
         public IEditor SelectedEditor { get; private set; }
+        private Action<object, EventArgs> _popupCallback;
         private SadConsole.Controls.ScrollBar _toolsPaneScroller;
 
         public int EditingSurfaceWidth { get { return SelectedEditor.Width; } }
@@ -79,6 +81,14 @@ namespace SadConsoleEditor
             //_backingPanel.CellData.Print(25, 0, "Test", Orange);
 
             this.Add(_backingPanel);
+
+            _fileDialogPopup = new SelectFilePopup();
+            _fileDialogPopup.Closed += (o, e) =>
+            {
+                if (_popupCallback != null)
+                    _popupCallback(o, e);
+            };
+            _fileDialogPopup.CurrentFolder = Environment.CurrentDirectory;
         }
 
         private void FinishCreating()
@@ -311,40 +321,39 @@ namespace SadConsoleEditor
             SelectedEditor.Resize(width, height);
         }
 
+        private void LoadSurfaceAction(object sender, EventArgs e)
+        {
+            if (_fileDialogPopup.DialogResult)
+            {
+                SelectedEditor.Load(_fileDialogPopup.SelectedFile);
+                ToolPane.LayersPanel.RebuildListBox();
+            }
+        }
+
+        private void SaveSurfaceAction(object sender, EventArgs e)
+        {
+            if (_fileDialogPopup.DialogResult)
+            {
+                SelectedEditor.Save(_fileDialogPopup.SelectedFile);
+            }
+        }
+
         public void LoadSurface()
         {
-            SelectFilePopup popup = new SelectFilePopup();
-            popup.Closed += (o, e) =>
-            {
-                if (popup.DialogResult)
-                {
-                    SelectedEditor.Load(popup.SelectedFile);
-                    ToolPane.LayersPanel.RebuildListBox();
-                }
-            };
-            popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.FileFilter = SelectedEditor.FileExtensions;
-            popup.SelectButtonText = "Open";
-            popup.Show(true);
-            popup.Center();
+            _popupCallback = LoadSurfaceAction;
+            _fileDialogPopup.FileFilter = SelectedEditor.FileExtensions;
+            _fileDialogPopup.SelectButtonText = "Open";
+            _fileDialogPopup.Show(true);
+            _fileDialogPopup.Center();
         }
 
         public void SaveSurface()
         {
-            SelectFilePopup popup = new SelectFilePopup();
-            popup.Closed += (o, e) =>
-            {
-                if (popup.DialogResult)
-                {
-                    SelectedEditor.Save(popup.SelectedFile);
-                }
-            };
-            popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.FileFilter = SelectedEditor.FileExtensions;
-            popup.SelectButtonText = "Save";
-            popup.SkipFileExistCheck = true;
-            popup.Show(true);
-            popup.Center();
+            _popupCallback = SaveSurfaceAction;
+            _fileDialogPopup.SelectButtonText = "Save";
+            _fileDialogPopup.SkipFileExistCheck = true;
+            _fileDialogPopup.Show(true);
+            _fileDialogPopup.Center();
         }
     }
 }
