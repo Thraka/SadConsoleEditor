@@ -351,6 +351,7 @@ namespace SadConsoleEditor
         {
             _popupCallback = SaveSurfaceAction;
             _fileDialogPopup.SelectButtonText = "Save";
+            _fileDialogPopup.FileFilter = SelectedEditor.FileExtensions;
             _fileDialogPopup.SkipFileExistCheck = true;
             _fileDialogPopup.Show(true);
             _fileDialogPopup.Center();
