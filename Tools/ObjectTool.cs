@@ -135,9 +135,9 @@
                     // Suck up the object
                     if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
                     {
-                        if (editor.GameObjects.ContainsKey(point))
+                        if (editor.SelectedGameObjects.ContainsKey(point))
                         {
-                            _currentGameObject = editor.GameObjects[point].Clone();
+                            _currentGameObject = editor.SelectedGameObjects[point].Clone();
 
                             _brush.CurrentAnimation.Frames[0].Fill(_currentGameObject.Character.Foreground,
                                    _currentGameObject.Character.Background,
@@ -146,11 +146,11 @@
                         }
                     }
 
-                    if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftAlt))
+                    else if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftAlt))
                     {
-                        if (editor.GameObjects.ContainsKey(point))
+                        if (editor.SelectedGameObjects.ContainsKey(point))
                         {
-                            _currentGameObject = editor.GameObjects[point].Clone();
+                            _currentGameObject = editor.SelectedGameObjects[point].Clone();
                             _panel.AddNewGameObject(_currentGameObject);
                         }
                     }
@@ -158,8 +158,8 @@
                     // Delete the object
                     else if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
                     {
-                        if (editor.GameObjects.ContainsKey(point))
-                            editor.GameObjects.Remove(point);
+                        if (editor.SelectedGameObjects.ContainsKey(point))
+                            editor.SelectedGameObjects.Remove(point);
 
                         editor.SyncObjectsToLayer();
                     }
@@ -168,20 +168,28 @@
                 // Stamp object
                 else if (info.LeftButtonDown)
                 {
-                    if (_currentGameObject != null && 
+                    // Delete the object
+                    if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+                    {
+                        if (editor.SelectedGameObjects.ContainsKey(point))
+                            editor.SelectedGameObjects.Remove(point);
+
+                        editor.SyncObjectsToLayer();
+                    }
+
+                    else if (_currentGameObject != null && 
                         !Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) && 
-                        !Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftAlt) &&
-                        !Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+                        !Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftAlt))
                     {
                         var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
 
-                        if (editor.GameObjects.ContainsKey(point))
-                            editor.GameObjects.Remove(point);
+                        if (editor.SelectedGameObjects.ContainsKey(point))
+                            editor.SelectedGameObjects.Remove(point);
 
                         var gameObj = _currentGameObject.Clone();
                         gameObj.Position = point;
 
-                        editor.GameObjects.Add(point, gameObj);
+                        editor.SelectedGameObjects.Add(point, gameObj);
                         editor.SyncObjectsToLayer();
                     }
                 }
@@ -189,9 +197,9 @@
                 // Edit object
                 else if (info.RightClicked)
                 {
-                    if (editor.GameObjects.ContainsKey(point))
+                    if (editor.SelectedGameObjects.ContainsKey(point))
                     {
-                        Windows.EditObjectPopup popup = new Windows.EditObjectPopup(editor.GameObjects[point]);
+                        Windows.EditObjectPopup popup = new Windows.EditObjectPopup(editor.SelectedGameObjects[point]);
                         popup.Closed += (o, e) => { if (popup.DialogResult) editor.SyncObjectsToLayer(); };
                         popup.Show(true);
                     }

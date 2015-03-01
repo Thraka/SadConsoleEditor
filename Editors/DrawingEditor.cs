@@ -169,5 +169,55 @@ namespace SadConsoleEditor.Editors
                 EditorConsoleManager.Instance.UpdateBox();
             }
         }
+
+        public void RemoveLayer(int index)
+        {
+            Surface.RemoveLayer(index);
+        }
+
+        public void MoveLayerUp(int index)
+        {
+            Surface.MoveLayer(index, index + 1);
+        }
+
+        public void MoveLayerDown(int index)
+        {
+            Surface.MoveLayer(index, index - 1);
+        }
+
+        public void AddNewLayer(string name)
+        {
+            Surface.AddLayer(name);
+        }
+
+        public bool LoadLayer(string file)
+        {
+            if (System.IO.File.Exists(file))
+            {
+                var surface = SadConsole.CellSurface.Load(file);
+
+                if (surface.Width != EditorConsoleManager.Instance.SelectedEditor.Surface.Width || surface.Height != EditorConsoleManager.Instance.SelectedEditor.Height)
+                {
+                    var newLayer = EditorConsoleManager.Instance.SelectedEditor.Surface.AddLayer("Loaded");
+                    surface.Copy(newLayer.CellData);
+                }
+                else
+                    EditorConsoleManager.Instance.SelectedEditor.Surface.AddLayer(surface);
+
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public void SaveLayer(int index, string file)
+        {
+            EditorConsoleManager.Instance.SelectedEditor.Surface[index].CellData.Save(file);
+        }
+
+        public void SetActiveLayer(int index)
+        {
+            Surface.SetActiveLayer(index);
+        }
     }
 }

@@ -50,5 +50,19 @@ namespace SadConsoleEditor.Editors
 
         void Save(string file);
         void Reset();
+
+        void RemoveLayer(int index);
+
+        void MoveLayerUp(int index);
+
+        void MoveLayerDown(int index);
+
+        void AddNewLayer(string name);
+
+        bool LoadLayer(string file);
+
+        void SaveLayer(int index, string file);
+
+        void SetActiveLayer(int index);
     }
 }

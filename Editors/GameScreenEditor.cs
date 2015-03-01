@@ -7,6 +7,7 @@ using SadConsoleEditor.Consoles;
 using SadConsoleEditor.Panels;
 using SadConsole.GameHelpers;
 using SadConsole.Consoles;
+using System.Collections.Generic;
 
 namespace SadConsoleEditor.Editors
 {
@@ -29,7 +30,9 @@ namespace SadConsoleEditor.Editors
 
         public LayeredConsole Surface { get { return _consoleLayers; } }
 
-        public GameObjectCollection GameObjects { get; set; }
+        public GameObjectCollection SelectedGameObjects { get; set; }
+
+        public List<GameObjectCollection> GameObjects;
 
         public bool DisplayObjectLayer { set { _displayObjectLayer = value; } }
 
@@ -89,7 +92,9 @@ namespace SadConsoleEditor.Editors
             _width = 25;
             _height = 10;
 
-            GameObjects = new GameObjectCollection();
+            SelectedGameObjects = new GameObjectCollection();
+            GameObjects = new List<GameObjectCollection>();
+            GameObjects.Add(SelectedGameObjects);
 
             _mouseMoveHandler = (o, e) => { if (this.MouseMove != null) this.MouseMove(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseMoveSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
             _mouseEnterHandler = (o, e) => { if (this.MouseEnter != null) this.MouseEnter(_consoleLayers.ActiveLayer, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseEnterSurface(e.OriginalMouseInfo, _consoleLayers.ActiveLayer); };
@@ -161,7 +166,7 @@ namespace SadConsoleEditor.Editors
         public void Save(string file)
         {
             _consoleLayers.Save(file);
-            GameObjectCollection.Save(GameObjects, file.Replace(System.IO.Path.GetExtension(file), ".objects"));
+            GameObjectCollection.SaveCollection(GameObjects, file.Replace(System.IO.Path.GetExtension(file), ".objects"));
         }
 
         public void Load(string file)
@@ -191,28 +196,108 @@ namespace SadConsoleEditor.Editors
 
                 if (System.IO.File.Exists(objectsFile))
                 {
-                    GameObjects = GameObjectCollection.Load(objectsFile);
+                    GameObjects = new List<GameObjectCollection>(GameObjectCollection.LoadCollection(objectsFile));
+                    SelectedGameObjects = GameObjects[0];
                     SyncObjectsToLayer();
                 }
                 else
                 {
-                    GameObjects = new GameObjectCollection();
+                    GameObjects = new List<GameObjectCollection>();
+
+                    foreach (var layer in _consoleLayers.GetEnumeratorForLayers())
+                    {
+                        GameObjects.Add(new GameObjectCollection());
+                    }
+                    SelectedGameObjects = GameObjects[0];
                     SyncObjectsToLayer();
                 }
             }
         }
 
+
+        /// <summary>
+        /// Draws all of the game objects to the game object render layer
+        /// </summary>
         public void SyncObjectsToLayer()
         {
             _objectsSurface.CellData.Clear();
 
             _objectsSurface.CellData.Resize(_width, _height);
 
-            foreach (var item in GameObjects)
+            foreach (var item in SelectedGameObjects)
             {
                 _objectsSurface.CellData.Print(item.Key.X, item.Key.Y, " ", item.Value.Character);
                 _objectsSurface.CellData.SetCharacter(item.Key.X, item.Key.Y, item.Value.Character.CharacterIndex);
             }
+        }
+
+        public void RemoveLayer(int index)
+        {
+            Surface.RemoveLayer(index);
+            GameObjects.RemoveAt(index);
+        }
+
+        public void MoveLayerUp(int index)
+        {
+            Surface.MoveLayer(index, index + 1);
+
+            var gameObject = GameObjects[index];
+            GameObjects.RemoveAt(index);
+            GameObjects.Insert(index + 1, gameObject);
+        }
+
+        public void MoveLayerDown(int index)
+        {
+            Surface.MoveLayer(index, index - 1);
+
+            var gameObject = GameObjects[index];
+            GameObjects.RemoveAt(index);
+            GameObjects.Insert(index - 1, gameObject);
+        }
+
+        public void AddNewLayer(string name)
+        {
+            Surface.AddLayer(name);
+            GameObjects.Add(new GameObjectCollection());
+        }
+
+        public bool LoadLayer(string file)
+        {
+            if (System.IO.File.Exists(file))
+            {
+                var surface = SadConsole.CellSurface.Load(file);
+
+                if (surface.Width != EditorConsoleManager.Instance.SelectedEditor.Surface.Width || surface.Height != EditorConsoleManager.Instance.SelectedEditor.Height)
+                {
+                    var newLayer = EditorConsoleManager.Instance.SelectedEditor.Surface.AddLayer("Loaded");
+                    surface.Copy(newLayer.CellData);
+                }
+                else
+                    EditorConsoleManager.Instance.SelectedEditor.Surface.AddLayer(surface);
+
+                string objectFileName = file.Replace(System.IO.Path.GetExtension(file), ".object");
+                if (System.IO.File.Exists(objectFileName))
+                    GameObjects.Add(GameObjectCollection.Load(objectFileName));
+                else
+                    GameObjects.Add(new GameObjectCollection());
+
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public void SaveLayer(int index, string file)
+        {
+            EditorConsoleManager.Instance.SelectedEditor.Surface[index].CellData.Save(file);
+            GameObjectCollection.Save(SelectedGameObjects, file.Replace(System.IO.Path.GetExtension(file), ".object"));
+        }
+
+        public void SetActiveLayer(int index)
+        {
+            Surface.SetActiveLayer(index);
+            SelectedGameObjects = GameObjects[index];
+            SyncObjectsToLayer();
         }
     }
 }
