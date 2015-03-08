@@ -165,14 +165,36 @@ namespace SadConsoleEditor.Editors
 
         public void Save(string file)
         {
-            _consoleLayers.Save(file);
-            GameObjectCollection.SaveCollection(GameObjects, file.Replace(System.IO.Path.GetExtension(file), ".objects"));
+            GameConsole tempConsole = new GameConsole(_consoleLayers.Layers, _consoleLayers.Width, _consoleLayers.Height);
+
+            for (int i = 0; i < _consoleLayers.Layers; i++)
+                tempConsole.RemoveLayer(0);
+
+            for (int i = 0; i < _consoleLayers.Layers; i++)
+            {
+                tempConsole.AddLayer(_consoleLayers[i].CellData);
+                var metadataNew = new GameConsoleMetadata();
+                var metadataOld = _consoleLayers.GetLayerMetadata(i);
+
+                metadataNew.IsMoveable = metadataOld.IsMoveable;
+                metadataNew.IsRemoveable = metadataOld.IsRemoveable;
+                metadataNew.IsRenamable = metadataOld.IsRenamable;
+                metadataNew.IsVisible = metadataOld.IsVisible;
+                metadataNew.Name = metadataOld.Name;
+                metadataNew.Index = metadataOld.Index;
+                metadataNew.GameObjects = GameObjects[i];
+                tempConsole.SetLayerMetadata(i, metadataNew);
+            }
+
+            SadConsole.Serializer.Save<GameConsole>(tempConsole, file);
+            //tempConsole.Save(file);
+
+            //_consoleLayers.Save(file);
+            //GameObjectCollection.SaveCollection(GameObjects, file.Replace(System.IO.Path.GetExtension(file), ".objects"));
         }
 
         public void Load(string file)
         {
-            string objectsFile = file.Replace(System.IO.Path.GetExtension(file), ".objects");
-
             if (System.IO.File.Exists(file))
             {
                 if (_consoleLayers != null)
@@ -182,9 +204,36 @@ namespace SadConsoleEditor.Editors
                     _consoleLayers.MouseExit -= _mouseExitHandler;
                 }
 
-                _consoleLayers = LayeredConsole.Load(file);
-                _consoleLayers.Font = SadConsoleEditor.Settings.Config.ScreenFont;
 
+                var tempConsole = SadConsole.Serializer.Load<GameConsole>(file);
+                _consoleLayers = new LayeredConsole(tempConsole.Layers, tempConsole.Width, tempConsole.Height);
+                _consoleLayers.Font = SadConsoleEditor.Settings.Config.ScreenFont;
+                for (int i = 0; i < tempConsole.Layers; i++)
+                    _consoleLayers.RemoveLayer(0);
+
+
+                GameObjects = new List<GameObjectCollection>(tempConsole.Layers);
+
+                for (int i = 0; i < tempConsole.Layers; i++)
+                {
+                    _consoleLayers.AddLayer(tempConsole[i].CellData);
+                    var metadataNew = new LayeredConsoleMetadata();
+                    var metadataOld = tempConsole.GetLayerMetadata(i);
+
+                    metadataNew.IsMoveable = metadataOld.IsMoveable;
+                    metadataNew.IsRemoveable = metadataOld.IsRemoveable;
+                    metadataNew.IsRenamable = metadataOld.IsRenamable;
+                    metadataNew.IsVisible = metadataOld.IsVisible;
+                    metadataNew.Name = metadataOld.Name;
+                    metadataNew.Index = metadataOld.Index;
+                    _consoleLayers.SetLayerMetadata(i, metadataNew);
+                    GameObjects.Add(metadataOld.GameObjects);
+                    _consoleLayers[i].IsVisible = metadataNew.IsVisible;
+                }
+
+                _consoleLayers.SetActiveLayer(0);
+                _consoleLayers.CanUseMouse = true;
+                _consoleLayers.CanUseKeyboard = true;
                 _consoleLayers.MouseMove += _mouseMoveHandler;
                 _consoleLayers.MouseEnter += _mouseEnterHandler;
                 _consoleLayers.MouseExit += _mouseExitHandler;
@@ -194,23 +243,40 @@ namespace SadConsoleEditor.Editors
 
                 EditorConsoleManager.Instance.UpdateBox();
 
-                if (System.IO.File.Exists(objectsFile))
-                {
-                    GameObjects = new List<GameObjectCollection>(GameObjectCollection.LoadCollection(objectsFile));
-                    SelectedGameObjects = GameObjects[0];
-                    SyncObjectsToLayer();
-                }
-                else
-                {
-                    GameObjects = new List<GameObjectCollection>();
+                SelectedGameObjects = GameObjects[0];
+                SyncObjectsToLayer();
 
-                    foreach (var layer in _consoleLayers.GetEnumeratorForLayers())
-                    {
-                        GameObjects.Add(new GameObjectCollection());
-                    }
-                    SelectedGameObjects = GameObjects[0];
-                    SyncObjectsToLayer();
-                }
+
+
+                //_consoleLayers = LayeredConsole.Load<LayeredConsole>(file);
+                //_consoleLayers.Font = SadConsoleEditor.Settings.Config.ScreenFont;
+
+                //_consoleLayers.MouseMove += _mouseMoveHandler;
+                //_consoleLayers.MouseEnter += _mouseEnterHandler;
+                //_consoleLayers.MouseExit += _mouseExitHandler;
+
+                //_width = _consoleLayers.Width;
+                //_height = _consoleLayers.Height;
+
+                //EditorConsoleManager.Instance.UpdateBox();
+
+                //if (System.IO.File.Exists(objectsFile))
+                //{
+                //    GameObjects = new List<GameObjectCollection>(GameObjectCollection.LoadCollection(objectsFile));
+                //    SelectedGameObjects = GameObjects[0];
+                //    SyncObjectsToLayer();
+                //}
+                //else
+                //{
+                //    GameObjects = new List<GameObjectCollection>();
+
+                //    foreach (var layer in _consoleLayers.GetEnumeratorForLayers())
+                //    {
+                //        GameObjects.Add(new GameObjectCollection());
+                //    }
+                //    SelectedGameObjects = GameObjects[0];
+                //    SyncObjectsToLayer();
+                //}
             }
         }
 

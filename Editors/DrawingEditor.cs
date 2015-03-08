@@ -142,7 +142,7 @@ namespace SadConsoleEditor.Editors
 
         public void Save(string file)
         {
-            _consoleLayers.Save(file);
+            SadConsole.Serializer.Save<LayeredConsole>(_consoleLayers, file);
         }
 
         public void Load(string file)
@@ -156,7 +156,7 @@ namespace SadConsoleEditor.Editors
                     _consoleLayers.MouseExit -= _mouseExitHandler;
                 }
 
-                _consoleLayers = LayeredConsole.Load(file);
+                _consoleLayers = SadConsole.Serializer.Load<LayeredConsole>(file);
                 _consoleLayers.Font = SadConsoleEditor.Settings.Config.ScreenFont;
 
                 _consoleLayers.MouseMove += _mouseMoveHandler;
