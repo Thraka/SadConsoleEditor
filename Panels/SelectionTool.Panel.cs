@@ -182,11 +182,26 @@ namespace SadConsoleEditor.Panels
                 if (popup.DialogResult)
                 {
                     if (System.IO.File.Exists(popup.SelectedFile))
-                        _loadBrushHandler(CellSurface.Load(popup.SelectedFile));
+                    {
+                        if (System.IO.Path.GetExtension(popup.SelectedFile) == ".ans")
+                        {
+                            using (var ansi = new SadConsole.Ansi.Document(popup.SelectedFile))
+                            {
+                                var console = new SadConsole.Consoles.Console(80, 1);
+                                console.CellData.ResizeOnShift = true;
+                                SadConsole.Ansi.AnsiWriter writer = new SadConsole.Ansi.AnsiWriter(ansi, console);
+                                writer.ReadEntireDocument();
+                                _loadBrushHandler(console.CellData);
+                            }
+
+                        }
+                        else
+                            _loadBrushHandler(CellSurface.Load(popup.SelectedFile));
+                    }
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.FileFilter = "*.con;*.console;*.brush";
+            popup.FileFilter = "*.con;*.console;*.brush;*.ans";
             popup.Show(true);
             popup.Center();
         }

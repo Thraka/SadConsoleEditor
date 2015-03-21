@@ -103,6 +103,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\SadConsole\Binaries\MonoGame.Framework.dll</HintPath>
     </Reference>
+    <Reference Include="SadConsole.Ansi">
+      <HintPath>..\SadConsole\SadConsole.Ansi\bin\Debug\SadConsole.Ansi.dll</HintPath>
+    </Reference>
     <Reference Include="SadConsole.Controls">
       <HintPath>..\SadConsole\StarterProject\bin\Debug\SadConsole.Controls.dll</HintPath>
     </Reference>
