@@ -78,11 +78,16 @@
 
             EditorConsoleManager.Instance.UpdateBrush(_entity);
 
-        }
+			EditorConsoleManager.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel, System.EventArgs.Empty);
+			EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.Changed += EditorConsoleManager.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler;
+			EditorConsoleManager.Instance.QuickSelectPane.IsVisible = true;
+		}
 
         public void OnDeselected()
         {
-        }
+			EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.Changed -= EditorConsoleManager.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler;
+			EditorConsoleManager.Instance.QuickSelectPane.IsVisible = false;
+		}
 
         public void RefreshTool()
         {

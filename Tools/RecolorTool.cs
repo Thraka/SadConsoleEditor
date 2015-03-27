@@ -44,12 +44,11 @@
                 EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
             _brush.IsVisible = false;
             EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = true;
-        }
+		}
 
         public void OnDeselected()
         {
-
-        }
+		}
 
         public void RefreshTool()
         {

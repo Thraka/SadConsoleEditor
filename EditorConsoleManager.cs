@@ -41,7 +41,9 @@ namespace SadConsoleEditor
         public IEntityBrush Brush { get; private set; }
         public Consoles.ToolPane ToolPane { get; private set; }
 
-        public bool AllowKeyboardToMoveConsole { get; set; }
+		public Consoles.QuickSelectPane QuickSelectPane { get; private set; }
+
+		public bool AllowKeyboardToMoveConsole { get; set; }
 
         public SadConsole.Font Font { get; set; }
 
@@ -115,7 +117,13 @@ namespace SadConsoleEditor
             scrollerContainer.ProcessMouseWithoutFocus = true;
             this.Add(scrollerContainer);
 
-            ToolPane.FinishCreating();
+			QuickSelectPane = new Consoles.QuickSelectPane();
+			QuickSelectPane.Position = new Point(0, Settings.Config.WindowHeight - QuickSelectPane.CellData.Height);
+			QuickSelectPane.Redraw();
+			QuickSelectPane.IsVisible = true;
+			this.Add(QuickSelectPane);
+
+			ToolPane.FinishCreating();
 
             Editors = new Dictionary<string, SadConsoleEditor.Editors.IEditor>();
             
@@ -216,9 +224,11 @@ namespace SadConsoleEditor
             //var result = base.ProcessKeyboard(info);
             if (AllowKeyboardToMoveConsole)
             {
-                var position = new Point(_borderRenderer.Position.X + 1, _borderRenderer.Position.Y + 1);
+				bool shifted = info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
+
+				var position = new Point(_borderRenderer.Position.X + 1, _borderRenderer.Position.Y + 1);
                 bool movekeyPressed = false;
-                if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
+                if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
                 {
                     if (_borderRenderer.Position.X + _borderRenderer.CellData.Width - 1 != 0)
                     {
@@ -226,7 +236,7 @@ namespace SadConsoleEditor
                         movekeyPressed = true;
                     }
                 }
-                else if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+                else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
                 {
                     if (_borderRenderer.Position.X != ToolPane.Position.X - 1)
                     {
@@ -235,7 +245,7 @@ namespace SadConsoleEditor
                     }
                 }
 
-                if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
+                if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
                 {
                     if (_borderRenderer.Position.Y + _borderRenderer.CellData.Height - 2 != 0)
                     {
@@ -244,7 +254,7 @@ namespace SadConsoleEditor
                     }
 
                 }
-                else if (info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
+                else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
                 {
                     if (_borderRenderer.Position.Y != Settings.Config.WindowHeight - 1)
                     {
@@ -253,16 +263,6 @@ namespace SadConsoleEditor
                     }
                 }
                 
-                if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Subtract))
-                {
-                    SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X / 2, SelectedEditor.Surface.CellSize.Y / 2);
-                }
-                else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Add))
-                {
-                    SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X * 2, SelectedEditor.Surface.CellSize.Y * 2);
-                    
-                }
-
                 if (movekeyPressed)
                 {
                     SelectedEditor.Position(position.X, position.Y);
@@ -271,8 +271,22 @@ namespace SadConsoleEditor
                 }
                 else
                 {
-                    // Look for tool hotkeys
-                    ToolPane.ProcessKeyboard(info);
+					//if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Subtract))
+					//{
+					//	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X / 2, SelectedEditor.Surface.CellSize.Y / 2);
+					//}
+					//else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Add))
+					//{
+					//	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X * 2, SelectedEditor.Surface.CellSize.Y * 2);
+					//}
+					//else
+					{
+						// Look for tool hotkeys
+						ToolPane.ProcessKeyboard(info);
+
+						// Look for quick select F* keys
+						QuickSelectPane.ProcessKeyboard(info);
+					}
                 }
 
             }
