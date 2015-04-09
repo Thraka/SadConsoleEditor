@@ -140,6 +140,7 @@
     </Content>
     <Content Include="Icon.ico" />
     <None Include="packages.config" />
+    <None Include="quickselect.json" />
     <None Include="Settings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

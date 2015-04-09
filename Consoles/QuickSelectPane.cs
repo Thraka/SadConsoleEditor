@@ -16,9 +16,9 @@ namespace SadConsoleEditor.Consoles
 		private AsciiKey[] keys;
 		private int currentCharSet;
 
-		public char[] Characters;
+		public int[] Characters;
 
-		public char[][] CharacterSets;
+		public int[][] CharacterSets;
 
 		public Color CharacterForeground
 		{
@@ -32,23 +32,31 @@ namespace SadConsoleEditor.Consoles
 			set { charBackground = value; Redraw(); }
 		}
 
-		public QuickSelectPane() : base(Settings.Config.WindowWidth, 3)
+		public QuickSelectPane() : base(Settings.Config.WindowWidth - 21, 3)
 		{
 			_cellData.DefaultBackground = Settings.Color_MenuBack;
 			_cellData.DefaultForeground = Settings.Color_TitleText;
 
-			Characters = new char[] { (char)176, (char)177, (char)178, (char)219, (char)223, (char)220, (char)221, (char)222, (char)254, (char)250, (char)249, (char)0 };
-
-			CharacterSets = new char[3][];
-			currentCharSet = 0;
-			CharacterSets[0] = Characters;
-			CharacterSets[1] = new char[] { (char)218, (char)191, (char)192, (char)217, (char)196, (char)179, (char)195, (char)180, (char)193, (char)194, (char)197, (char)0 };
-			CharacterSets[2] = new char[] { (char)201, (char)187, (char)200, (char)188, (char)205, (char)186, (char)204, (char)185, (char)202, (char)203, (char)206, (char)0 };
-
+            currentCharSet = 0;
+			
 			keys = new AsciiKey[] { AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F1), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F2), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F3),
 									AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F4), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F5), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F6),
 									AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F7), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F8), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F9),
 									AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F10), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F11), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F12) };
+
+            if (System.IO.File.Exists("quickselect.json"))
+            {
+                CharacterSets = SadConsole.Serializer.Load<int[][]>("quickselect.json");
+                Characters = CharacterSets[0];
+            }
+            else
+            {
+                Characters = new int[] { (char)176, (char)177, (char)178, (char)219, (char)223, (char)220, (char)221, (char)222, (char)254, (char)250, (char)249, (char)0 };
+                CharacterSets = new int[3][];
+                CharacterSets[0] = Characters;
+                CharacterSets[1] = new int[] { (char)218, (char)191, (char)192, (char)217, (char)196, (char)179, (char)195, (char)180, (char)193, (char)194, (char)197, (char)0 };
+                CharacterSets[2] = new int[] { (char)201, (char)187, (char)200, (char)188, (char)205, (char)186, (char)204, (char)185, (char)202, (char)203, (char)206, (char)0 };
+            }
 
 			CanFocus = false;
 			CanUseMouse = false;
@@ -67,7 +75,9 @@ namespace SadConsoleEditor.Consoles
 				string text = "F" + i.ToString() + " ";
 				_cellData.Print(x, y, text);
                 x += text.Length;
-				_cellData.Print(x, y, Characters[i -1].ToString(), charForeground, charBackground);
+                _cellData.SetCharacter(x, y, Characters[i - 1]);
+                _cellData.SetForeground(x, y, charForeground);
+                _cellData.SetBackground(x, y, charBackground);
 				x += 2;
             }
 		}
