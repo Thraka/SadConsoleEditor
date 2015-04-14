@@ -26,13 +26,16 @@
 
         private EntityBrush _brush;
         private Panels.ObjectToolPanel _panel;
+		private DisplayObjectToolPanel _mouseOverObjectPanel;
 
-        private GameObject _currentGameObject;
+		private GameObject _currentGameObject;
 
         public ObjectTool()
         {
             _panel = new Panels.ObjectToolPanel();
-            ControlPanels = new CustomPanel[] { _panel };
+			_mouseOverObjectPanel = new DisplayObjectToolPanel("Mouse Object");
+
+			ControlPanels = new CustomPanel[] { _panel, _mouseOverObjectPanel };
 
             _brush = new EntityBrush();
         }
@@ -129,82 +132,95 @@
             {
                 var editor = (Editors.GameScreenEditor)EditorConsoleManager.Instance.SelectedEditor;
                 var point = new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y);
+				bool isObjectUnderPoint = editor.SelectedGameObjects.ContainsKey(point);
 
-                if (info.LeftClicked)
-                {
-                    // Suck up the object
-                    if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
-                    {
-                        if (editor.SelectedGameObjects.ContainsKey(point))
-                        {
-                            _currentGameObject = editor.SelectedGameObjects[point].Clone();
+				if (info.LeftClicked)
+				{
+					// Suck up the object
+					if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift))
+					{
+						if (isObjectUnderPoint)
+						{
+							_currentGameObject = editor.SelectedGameObjects[point].Clone();
 
-                            _brush.CurrentAnimation.Frames[0].Fill(_currentGameObject.Character.Foreground,
-                                   _currentGameObject.Character.Background,
-                                   _currentGameObject.Character.CharacterIndex, null,
-                                   _currentGameObject.Character.SpriteEffect);
-                        }
-                    }
+							_brush.CurrentAnimation.Frames[0].Fill(_currentGameObject.Character.Foreground,
+								   _currentGameObject.Character.Background,
+								   _currentGameObject.Character.CharacterIndex, null,
+								   _currentGameObject.Character.SpriteEffect);
+						}
+					}
 
-                    else if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftAlt))
-                    {
-                        if (editor.SelectedGameObjects.ContainsKey(point))
-                        {
-                            _currentGameObject = editor.SelectedGameObjects[point].Clone();
-                            _panel.AddNewGameObject(_currentGameObject);
-                        }
-                    }
+					else if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftAlt))
+					{
+						if (isObjectUnderPoint)
+						{
+							_currentGameObject = editor.SelectedGameObjects[point].Clone();
+							_panel.AddNewGameObject(_currentGameObject);
+						}
+					}
 
-                    // Delete the object
-                    else if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
-                    {
-                        if (editor.SelectedGameObjects.ContainsKey(point))
-                            editor.SelectedGameObjects.Remove(point);
+					// Delete the object
+					else if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+					{
+						if (isObjectUnderPoint)
+							editor.SelectedGameObjects.Remove(point);
 
-                        editor.SyncObjectsToLayer();
-                    }
+						editor.SyncObjectsToLayer();
+					}
+				}
+
+				// Stamp object
+				else if (info.LeftButtonDown)
+				{
+					// Delete the object
+					if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
+					{
+						if (editor.SelectedGameObjects.ContainsKey(point))
+							editor.SelectedGameObjects.Remove(point);
+
+						editor.SyncObjectsToLayer();
+					}
+
+					else if (_currentGameObject != null &&
+						!Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) &&
+						!Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftAlt))
+					{
+						var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
+
+						if (editor.SelectedGameObjects.ContainsKey(point))
+							editor.SelectedGameObjects.Remove(point);
+
+						var gameObj = _currentGameObject.Clone();
+						gameObj.Position = point;
+
+						editor.SelectedGameObjects.Add(point, gameObj);
+						editor.SyncObjectsToLayer();
+					}
+				}
+
+				// Edit object
+				else if (info.RightClicked)
+				{
+					if (isObjectUnderPoint)
+					{
+						Windows.EditObjectPopup popup = new Windows.EditObjectPopup(editor.SelectedGameObjects[point]);
+						popup.Closed += (o, e) => { if (popup.DialogResult) editor.SyncObjectsToLayer(); };
+						popup.Show(true);
+					}
+				}
+
+				// Display info about object
+				else if (isObjectUnderPoint)
+				{
+					_mouseOverObjectPanel.DisplayedObject = editor.SelectedGameObjects[point];
+					EditorConsoleManager.Instance.ToolPane.RefreshControls();
                 }
-
-                // Stamp object
-                else if (info.LeftButtonDown)
-                {
-                    // Delete the object
-                    if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl))
-                    {
-                        if (editor.SelectedGameObjects.ContainsKey(point))
-                            editor.SelectedGameObjects.Remove(point);
-
-                        editor.SyncObjectsToLayer();
-                    }
-
-                    else if (_currentGameObject != null && 
-                        !Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) && 
-                        !Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftAlt))
-                    {
-                        var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
-
-                        if (editor.SelectedGameObjects.ContainsKey(point))
-                            editor.SelectedGameObjects.Remove(point);
-
-                        var gameObj = _currentGameObject.Clone();
-                        gameObj.Position = point;
-
-                        editor.SelectedGameObjects.Add(point, gameObj);
-                        editor.SyncObjectsToLayer();
-                    }
-                }
-
-                // Edit object
-                else if (info.RightClicked)
-                {
-                    if (editor.SelectedGameObjects.ContainsKey(point))
-                    {
-                        Windows.EditObjectPopup popup = new Windows.EditObjectPopup(editor.SelectedGameObjects[point]);
-                        popup.Closed += (o, e) => { if (popup.DialogResult) editor.SyncObjectsToLayer(); };
-                        popup.Show(true);
-                    }
-                }
-            }
+				else
+				{
+					_mouseOverObjectPanel.DisplayedObject = null;
+					EditorConsoleManager.Instance.ToolPane.RefreshControls();
+				}
+			}
         }
     }
 }

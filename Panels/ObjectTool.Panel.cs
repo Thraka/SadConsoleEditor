@@ -163,4 +163,86 @@ namespace SadConsoleEditor.Panels
             _objectTypesListbox.SelectedItem = newItem;
         }
     }
+
+	public class DisplayObjectToolPanel : CustomPanel
+	{
+		private Controls.ColorPresenter _foregroundPresenter;
+		private Controls.ColorPresenter _backgroundPresenter;
+		private Controls.ColorPresenter _characterPresenter;
+		private DrawingSurface _propertySurface;
+
+		GameObject _displayedObject;
+
+        public GameObject DisplayedObject
+		{
+			get { return _displayedObject; }
+			set
+			{
+				_displayedObject = value;
+
+				if (value != null)
+				{
+					_foregroundPresenter.SelectedColor = value.Character.Foreground;
+					_backgroundPresenter.SelectedColor = value.Character.Background;
+					_characterPresenter.SelectedColor = value.Character.Background;
+					_characterPresenter.Character = value.Character.CharacterIndex;
+					_characterPresenter.CharacterColor = value.Character.Foreground;
+
+					
+                    _propertySurface.Clear();
+					if (value.Settings.Count == 0)
+						_propertySurface.Resize(18, 1);
+					else
+						_propertySurface.Resize(18, value.Settings.Count * 2);
+
+					int y = 0;
+					foreach (var setting in value.Settings)
+					{
+						_propertySurface.Print(0, y, setting.Name.Length > 18 ? setting.Name.Substring(0, 18) : setting.Name, Settings.Yellow);
+						_propertySurface.Print(1, y + 1, setting.Value.Length > 17 ? setting.Value.Substring(0, 17) : setting.Value, Settings.Grey);
+
+
+						y += 2;
+					}
+
+					IsVisible = true;
+				}
+				else
+					IsVisible = false;
+			}
+		}
+
+		public DisplayObjectToolPanel(string title)
+		{
+			Title = title;
+
+			_foregroundPresenter = new SadConsoleEditor.Controls.ColorPresenter("Foreground", Settings.Green, 18);
+			_backgroundPresenter = new SadConsoleEditor.Controls.ColorPresenter("Background", Settings.Green, 18);
+			_characterPresenter = new SadConsoleEditor.Controls.ColorPresenter("Preview", Settings.Green, 18);
+
+			_propertySurface = new DrawingSurface(18, 1);
+
+			Controls = new ControlBase[] { _foregroundPresenter, _backgroundPresenter, _characterPresenter, _propertySurface };
+		}
+
+		
+		public override void ProcessMouse(MouseInfo info)
+		{
+
+		}
+
+		public override int Redraw(ControlBase control)
+		{
+
+			if (control == _characterPresenter)
+				return 1;
+
+			return 0;
+		}
+		public override void Loaded()
+		{
+		}
+		
+	}
+
 }

@@ -26,5 +26,7 @@
         public abstract void Loaded();
 
         public bool IsCollapsed;
+
+		public bool IsVisible = true;
     }
 }

@@ -110,25 +110,27 @@ namespace SadConsoleEditor.Consoles
             {
                 foreach (var pane in allPanels)
                 {
-                    pane.Loaded();
-                    _hotSpots.Add(new Tuple<CustomPanel, int>(pane, activeRow));
-                    if (pane.IsCollapsed == false)
-                    {
-                        _cellData.Print(1, activeRow++, open + " " + pane.Title);
-                        _cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
+					if (pane.IsVisible)
+					{
+						pane.Loaded();
+						_hotSpots.Add(new Tuple<CustomPanel, int>(pane, activeRow));
+						if (pane.IsCollapsed == false)
+						{
+							_cellData.Print(1, activeRow++, open + " " + pane.Title);
+							_cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
 
-                        foreach (var control in pane.Controls)
-                        {
-                            Add(control);
-                            control.Position = new Point(1, activeRow);
-                            activeRow += pane.Redraw(control) + control.Height;
-                        }
+							foreach (var control in pane.Controls)
+							{
+								Add(control);
+								control.Position = new Point(1, activeRow);
+								activeRow += pane.Redraw(control) + control.Height;
+							}
 
-                        activeRow += 1;
-                    }
-                    else
-                        _cellData.Print(1, activeRow++, closed + " " + pane.Title);
-
+							activeRow += 1;
+						}
+						else
+							_cellData.Print(1, activeRow++, closed + " " + pane.Title);
+					}
                 }
             }
         }

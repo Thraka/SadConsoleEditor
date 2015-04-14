@@ -89,10 +89,10 @@ namespace SadConsoleEditor.Windows
             _characterPresenter.SelectedColor = _backgroundPresenter.SelectedColor;
             _characterPicker.SelectedCharacter = 1;
 
-            Add(_nameInput);
             Add(_characterPicker);
+            Add(_nameInput);
             Add(_foregroundPresenter);
-            Add(_backgroundPresenter);
+			Add(_backgroundPresenter);
             Add(_characterPresenter);
             Add(_mirrorHorizCheck);
             Add(_mirrorVertCheck);
