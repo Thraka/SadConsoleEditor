@@ -44,9 +44,7 @@ namespace SadConsoleEditor
 		public Consoles.QuickSelectPane QuickSelectPane { get; private set; }
 
 		public bool AllowKeyboardToMoveConsole { get; set; }
-
-        public SadConsole.Font Font { get; set; }
-
+		
         public Point SurfaceMouseLocation
         {
             set
