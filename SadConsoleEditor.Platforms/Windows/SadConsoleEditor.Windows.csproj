@@ -44,11 +44,12 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ColorMine">
-      <HintPath>packages\ColorMine.1.1.3.0\lib\ColorMine.dll</HintPath>
+      <HintPath>..\..\packages\ColorMine.1.1.3.0\lib\ColorMine.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="MonoGame.Framework, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>packages\MonoGame.Framework.WindowsDX.3.3.0.0\lib\net40\MonoGame.Framework.dll</HintPath>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>..\..\packages\MonoGame.Framework.WindowsDX.3.3.0.0\lib\net40\MonoGame.Framework.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SadConsole.Platforms.Windows.Ansi">
       <HintPath>..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Platforms.Windows.Ansi.dll</HintPath>
@@ -71,7 +72,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <Import Project="SadConsoleEditor.projitems" Label="Shared" />
+  <Import Project="..\..\SadConsoleEditor.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

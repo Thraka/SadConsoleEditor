@@ -70,12 +70,15 @@
     <Content Include="$(MSBuildThisFileDirectory)Cheepicus_12x12.png" />
     <Content Include="$(MSBuildThisFileDirectory)EditorFont_IBM8x16.png" />
     <Content Include="$(MSBuildThisFileDirectory)Icon.ico" />
-    <Content Include="$(MSBuildThisFileDirectory)quickselect.json" />
-    <Content Include="$(MSBuildThisFileDirectory)Settings.json" />
+    <Content Include="$(MSBuildThisFileDirectory)quickselect.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)16sm.font" />
-    <None Include="$(MSBuildThisFileDirectory)app.config" />
     <None Include="$(MSBuildThisFileDirectory)Cheepicus12.font" />
     <None Include="$(MSBuildThisFileDirectory)EditorFont.font" />
   </ItemGroup>
