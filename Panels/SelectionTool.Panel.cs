@@ -65,7 +65,8 @@ namespace SadConsoleEditor.Panels
         private Button _clone;
         private Button _clear;
         private Button _move;
-        
+
+        private string lastFolder = null;
 
         private Func<CellSurface> _saveBrushHandler;
         private Action<CellSurface> _loadBrushHandler;
@@ -163,10 +164,11 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
+                    lastFolder = System.IO.Path.GetDirectoryName(popup.SelectedFile);
                     _saveBrushHandler().Save(popup.SelectedFile);
                 }
             };
-            popup.CurrentFolder = Environment.CurrentDirectory;
+            popup.CurrentFolder = lastFolder ?? Environment.CurrentDirectory;
             popup.FileFilter = "*.con;*.console;*.brush";
             popup.SelectButtonText = "Save";
             popup.SkipFileExistCheck = true;
@@ -183,6 +185,8 @@ namespace SadConsoleEditor.Panels
                 {
                     if (System.IO.File.Exists(popup.SelectedFile))
                     {
+                        lastFolder = System.IO.Path.GetDirectoryName(popup.SelectedFile);
+
                         if (System.IO.Path.GetExtension(popup.SelectedFile) == ".ans")
                         {
                             using (var ansi = new SadConsole.Ansi.Document(popup.SelectedFile))
@@ -200,7 +204,7 @@ namespace SadConsoleEditor.Panels
                     }
                 }
             };
-            popup.CurrentFolder = Environment.CurrentDirectory;
+            popup.CurrentFolder = lastFolder ?? Environment.CurrentDirectory;
             popup.FileFilter = "*.con;*.console;*.brush;*.ans";
             popup.Show(true);
             popup.Center();
