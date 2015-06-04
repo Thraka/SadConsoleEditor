@@ -55,7 +55,7 @@ namespace SadConsoleEditor.Windows
             get { return _previousColors.Items.Cast<Color>().ToArray(); }
         }
         
-        public ColorPickerPopup(): base(75, 40)
+        public ColorPickerPopup(): base(Settings.Config.ColorPickerSettings.WindowWidth, Settings.Config.ColorPickerSettings.WindowHeight)
         {
             Center();
 

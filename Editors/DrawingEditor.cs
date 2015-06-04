@@ -32,7 +32,10 @@ namespace SadConsoleEditor.Editors
 
         public string Title { get { return "Console"; } }
 
-        public string FileExtensions { get { return "*.lcon;*.lconsole"; } }
+        public string FileExtensionsLoad { get { return "*.lconsole;*.xp"; } }
+
+        public string FileExtensionsSave { get { return "*.lconsole;"; } }
+
         public CustomPanel[] ControlPanels { get; private set; }
 
         public string[] Tools
@@ -156,8 +159,18 @@ namespace SadConsoleEditor.Editors
                     _consoleLayers.MouseExit -= _mouseExitHandler;
                 }
 
-                _consoleLayers = SadConsole.Serializer.Load<LayeredConsole>(file);
+                // Support REXPaint
+                if (file.EndsWith(".xp"))
+                {
+                    SadConsole.Readers.REXPaint.RexReader reader = new SadConsole.Readers.REXPaint.RexReader(file);
+                    _consoleLayers = reader.GetMap().ToLayeredConsole();
+                }
+                else
+                    _consoleLayers = SadConsole.Serializer.Load<LayeredConsole>(file);
+
                 _consoleLayers.Font = SadConsoleEditor.Settings.Config.ScreenFont;
+
+                
 
                 _consoleLayers.MouseMove += _mouseMoveHandler;
                 _consoleLayers.MouseEnter += _mouseEnterHandler;

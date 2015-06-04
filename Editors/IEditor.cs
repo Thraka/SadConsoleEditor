@@ -28,7 +28,8 @@ namespace SadConsoleEditor.Editors
 
         string[] Tools { get; }
 
-        string FileExtensions { get; }
+        string FileExtensionsLoad { get; }
+        string FileExtensionsSave { get; }
 
         SadConsole.Consoles.LayeredConsole Surface { get; }
 

@@ -42,7 +42,8 @@ namespace SadConsoleEditor.Editors
 
         public string Title { get { return "Entity"; } }
 
-        public string FileExtensions { get { return "*.ent;*.entity"; } }
+        public string FileExtensionsLoad { get { return "*.entity"; } }
+        public string FileExtensionsSave { get { return "*.entity"; } }
         public CustomPanel[] ControlPanels { get; private set; }
 
         public string[] Tools

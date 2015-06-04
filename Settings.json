@@ -1,1 +1,64 @@
-{"EntityEditor":{"BoundsHeight":10,"BoundsWidth":10,"DefaultBackground":{"A":0,"B":0,"G":0,"R":0},"DefaultForeground":{"A":255,"B":255,"G":255,"R":255},"DefaultHeight":10,"DefaultWidth":10},"ConsoleEditor":{"BoundsHeight":40,"BoundsWidth":60,"DefaultBackground":{"A":255,"B":0,"G":0,"R":0},"DefaultForeground":{"A":255,"B":255,"G":255,"R":255},"DefaultHeight":40,"DefaultWidth":60},"ProgramFontFile":"EditorFont.font","GameScreenEditor":{"BoundsHeight":40,"BoundsWidth":60,"DefaultBackground":{"A":255,"B":0,"G":0,"R":0},"DefaultForeground":{"A":255,"B":255,"G":255,"R":255},"DefaultHeight":40,"DefaultWidth":60},"ScreenFontFile":"Cheepicus12.font","WindowHeight":50,"WindowWidth":160}
+{
+  "ConsoleEditor": {
+    "BoundsHeight": 50,
+    "BoundsWidth": 60,
+    "DefaultBackground": {
+      "A": 255,
+      "B": 0,
+      "G": 0,
+      "R": 0
+    },
+    "DefaultForeground": {
+      "A": 255,
+      "B": 255,
+      "G": 255,
+      "R": 255
+    },
+    "DefaultHeight": 50,
+    "DefaultWidth": 60
+  },
+  "EntityEditor": {
+    "BoundsHeight": 10,
+    "BoundsWidth": 10,
+    "DefaultBackground": {
+      "A": 0,
+      "B": 0,
+      "G": 0,
+      "R": 0
+    },
+    "DefaultForeground": {
+      "A": 255,
+      "B": 255,
+      "G": 255,
+      "R": 255
+    },
+    "DefaultHeight": 10,
+    "DefaultWidth": 10
+  },
+  "GameScreenEditor": {
+    "BoundsHeight": 50,
+    "BoundsWidth": 60,
+    "DefaultBackground": {
+      "A": 255,
+      "B": 0,
+      "G": 0,
+      "R": 0
+    },
+    "DefaultForeground": {
+      "A": 255,
+      "B": 255,
+      "G": 255,
+      "R": 255
+    },
+    "DefaultHeight": 50,
+    "DefaultWidth": 60
+  },
+  "ProgramFontFile": "Cheepicus12.font",
+  "ScreenFontFile": "Cheepicus12.font",
+  "WindowHeight": 65,
+  "WindowWidth": 95,
+  "ColorPickerSettings": {
+    "WindowWidth": 50,
+    "WindowHeight": 40
+  }
+}

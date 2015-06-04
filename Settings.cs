@@ -9,6 +9,15 @@ using System.Runtime.Serialization;
 namespace SadConsoleEditor
 {
     [DataContract]
+    public class WindowSettings
+    {
+        [DataMember]
+        public int WindowWidth;
+        [DataMember]
+        public int WindowHeight;
+    }
+
+    [DataContract]
     public class ProgramSettings
     {
         [DataMember]
@@ -25,6 +34,8 @@ namespace SadConsoleEditor
         public string ProgramFontFile;
         [DataMember]
         public string ScreenFontFile;
+        [DataMember]
+        public WindowSettings ColorPickerSettings;
 
         public Font ScreenFont;
     }

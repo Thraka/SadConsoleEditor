@@ -42,7 +42,8 @@ namespace SadConsoleEditor.Editors
 
         public string Title { get { return "Game Screen"; } }
 
-        public string FileExtensions { get { return "*.screen"; } }
+        public string FileExtensionsLoad { get { return "*.screen"; } }
+        public string FileExtensionsSave { get { return "*.screen"; } }
         public CustomPanel[] ControlPanels { get; private set; }
 
         public string[] Tools

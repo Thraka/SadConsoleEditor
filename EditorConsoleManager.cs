@@ -353,7 +353,7 @@ namespace SadConsoleEditor
         public void LoadSurface()
         {
             _popupCallback = LoadSurfaceAction;
-            _fileDialogPopup.FileFilter = SelectedEditor.FileExtensions;
+            _fileDialogPopup.FileFilter = SelectedEditor.FileExtensionsLoad;
             _fileDialogPopup.SelectButtonText = "Open";
             _fileDialogPopup.Show(true);
             _fileDialogPopup.Center();
@@ -363,7 +363,7 @@ namespace SadConsoleEditor
         {
             _popupCallback = SaveSurfaceAction;
             _fileDialogPopup.SelectButtonText = "Save";
-            _fileDialogPopup.FileFilter = SelectedEditor.FileExtensions;
+            _fileDialogPopup.FileFilter = SelectedEditor.FileExtensionsSave;
             _fileDialogPopup.SkipFileExistCheck = true;
             _fileDialogPopup.Show(true);
             _fileDialogPopup.Center();
