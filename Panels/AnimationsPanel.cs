@@ -92,6 +92,7 @@ namespace SadConsoleEditor.Panels
                     _animationSpeedLabel.Print(0, 0, new ColoredString("Speed: ", Settings.Green, Settings.Color_MenuBack, null) + new ColoredString(((Animation)_animations.SelectedItem).AnimationDuration.ToString(), Settings.Blue, Settings.Color_MenuBack, null));
                 }
             };
+            popup.Center();
             popup.Show(true);
         }
 
