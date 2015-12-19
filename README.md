@@ -1,4 +1,2 @@
 # SadConsoleEditor
-An editor for creating consoles used by SadConsole
-
-f
+An editor for creating consoles and animations used by SadConsole.

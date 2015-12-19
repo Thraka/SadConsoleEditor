@@ -51,17 +51,21 @@
       <HintPath>..\..\packages\MonoGame.Framework.WindowsDX.3.3.0.0\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SadConsole.Platforms.Windows.Ansi">
-      <HintPath>..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Platforms.Windows.Ansi.dll</HintPath>
+    <Reference Include="SadConsole.Platforms.Windows.Ansi, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Platforms.Windows.Ansi.dll</HintPath>
     </Reference>
-    <Reference Include="SadConsole.Platforms.Windows.Controls">
-      <HintPath>..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Platforms.Windows.Controls.dll</HintPath>
+    <Reference Include="SadConsole.Platforms.Windows.Controls, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Platforms.Windows.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="SadConsole.Platforms.Windows.Core">
-      <HintPath>..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Platforms.Windows.Core.dll</HintPath>
+    <Reference Include="SadConsole.Platforms.Windows.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Platforms.Windows.Core.dll</HintPath>
     </Reference>
-    <Reference Include="SadConsole.Platforms.Windows.GameHelpers">
-      <HintPath>..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Platforms.Windows.GameHelpers.dll</HintPath>
+    <Reference Include="SadConsole.Platforms.Windows.GameHelpers, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Platforms.Windows.GameHelpers.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
