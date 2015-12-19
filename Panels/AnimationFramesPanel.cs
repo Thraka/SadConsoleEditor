@@ -19,6 +19,7 @@ namespace SadConsoleEditor.Panels
         private Button _addNewFrame;
         private Button _addNewFrameFromFile;
         private Button _saveFrameToFile;
+        private Button _clonePreviousFrame;
 
         private DrawingSurface _framesCounterBox;
         private Button _nextFrame;
@@ -56,6 +57,9 @@ namespace SadConsoleEditor.Panels
             _saveFrameToFile.Text = "Save Frame to File";
             _saveFrameToFile.ButtonClicked += saveFrameToFile_ButtonClicked;
 
+            _clonePreviousFrame = new Button(Consoles.ToolPane.PanelWidth, 1);
+            _clonePreviousFrame.Text = "Copy prev. frame";
+            _clonePreviousFrame.ButtonClicked += clonePreviousFrame_ButtonClicked;
 
             // Frames area
             _framesCounterBox = new DrawingSurface(Consoles.ToolPane.PanelWidth, 1);
@@ -70,8 +74,10 @@ namespace SadConsoleEditor.Panels
 
             _frameChangeCallback = frameChangeCallback;
             
-            Controls = new ControlBase[] { _framesCounterBox, _previousFrame, _nextFrame, _removeSelected, _addNewFrame, _moveSelectedUp, _moveSelectedDown, _addNewFrameFromFile, _saveFrameToFile};
+            Controls = new ControlBase[] { _framesCounterBox, _previousFrame, _nextFrame, _removeSelected, _addNewFrame, _clonePreviousFrame, _moveSelectedUp, _moveSelectedDown, _addNewFrameFromFile, _saveFrameToFile};
         }
+
+        
 
         public void TryNextFrame()
         {
@@ -109,6 +115,14 @@ namespace SadConsoleEditor.Panels
 
             EditorConsoleManager.Instance.ToolPane.RefreshControls();
         }
+        private void clonePreviousFrame_ButtonClicked(object sender, EventArgs e)
+        {
+            var prevIndex = _currentAnimation.Frames.IndexOf(_selectedFrame) - 1;
+
+            var prevFrame = _currentAnimation.Frames[prevIndex];
+
+            prevFrame.Copy(_selectedFrame);
+        }
 
         private void previousFrame_ButtonClicked(object sender, EventArgs e)
         {
@@ -131,6 +145,7 @@ namespace SadConsoleEditor.Panels
             _moveSelectedUp.IsEnabled = _currentAnimation.Frames.Count != 1 && currentIndex != _currentAnimation.Frames.Count - 1;
             _moveSelectedDown.IsEnabled = _currentAnimation.Frames.Count != 1 && currentIndex != 0;
             _removeSelected.IsEnabled = _currentAnimation.Frames.Count != 1;
+            _clonePreviousFrame.IsEnabled = currentIndex != 0;
         }
 
         void saveFrameToFile_ButtonClicked(object sender, EventArgs e)
