@@ -45,7 +45,6 @@
             _animSinglePoint.Font = Engine.DefaultFont;
             var _frameSinglePoint = _animSinglePoint.CreateFrame();
             _frameSinglePoint[0].CharacterIndex = 42;
-            _animSinglePoint.Commit();
 
             
             _frameEffect = new SadConsole.Effects.Fade()
@@ -183,7 +182,6 @@
                 _lineShape.EndingLocation = p2;
                 _lineShape.Draw(frame);
 
-                animation.Commit();
                 _entity.SetActiveAnimation("line");
             }
 

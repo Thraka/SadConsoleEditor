@@ -48,7 +48,6 @@
             _animSinglePoint.Font = Engine.DefaultFont;
             var _frameSinglePoint = _animSinglePoint.CreateFrame();
             _frameSinglePoint[0].CharacterIndex = 42;
-            _animSinglePoint.Commit();
 
 
             _frameEffect = new SadConsole.Effects.Fade()
@@ -127,7 +126,6 @@
             surface.Copy(frame);
 
             cloneAnimation.Center = new Point(cloneAnimation.Width / 2, cloneAnimation.Height / 2);
-            cloneAnimation.Commit();
 
             _entity.AddAnimation(cloneAnimation);
             _entity.SetActiveAnimation("clone");
@@ -146,7 +144,6 @@
             _boxShape.Height = frame.Height;
             _boxShape.Draw(frame);
             animation.Center = cloneAnimation.Center;
-            animation.Commit();
 
             topLayer.AddAnimation(animation);
             topLayer.SetActiveAnimation(animation.Name);
@@ -266,7 +263,6 @@
                     }
 
                     cloneAnimation.Center = _tempAnimation.Center;
-                    cloneAnimation.Commit();
 
                     _entity.AddAnimation(cloneAnimation);
                     _entity.SetActiveAnimation("clone");
@@ -359,7 +355,6 @@
                     _boxShape.Draw(frame);
 
                     //frame.SetEffect(frame, _pulseAnimation);
-                    animation.Commit();
 
                     _entity.AddAnimation(animation);
                     _entity.SetActiveAnimation("selection");
