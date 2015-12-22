@@ -33,6 +33,9 @@ namespace SadConsoleEditor.Editors
         private Entity _entity;
         private Animation _selectedAnimation;
         private Frame _selectedFrame;
+        private AnimationsPanel.CustomTool _customTool;
+
+        private LayeredConsole _specialToolLayer;
 
         public LayeredConsole Surface { get { return _consoleLayers; } }
 
@@ -46,11 +49,13 @@ namespace SadConsoleEditor.Editors
         public string FileExtensionsSave { get { return "*.entity"; } }
         public CustomPanel[] ControlPanels { get; private set; }
 
+        public Animation SelectedAnimation { get { return _selectedAnimation; } }
+
         public string[] Tools
         {
             get
             {
-                return new string[] { PaintTool.ID, RecolorTool.ID, FillTool.ID, TextTool.ID, SelectionTool.ID, LineTool.ID, BoxTool.ID, CircleTool.ID };
+                return new string[] { EntityCenterTool.ID, PaintTool.ID, RecolorTool.ID, FillTool.ID, TextTool.ID, SelectionTool.ID, LineTool.ID, BoxTool.ID, CircleTool.ID };
             }
         }
 
@@ -83,10 +88,30 @@ namespace SadConsoleEditor.Editors
 
             _consoleLayers.Resize(animation.Width, animation.Height);
 
+            SyncSpecialLayerToAnimation();
+
             // inform the outer box we've changed size
             EditorConsoleManager.Instance.UpdateBox();
 
             _framesPanel.SetAnimation(animation);
+        }
+
+        private void SyncSpecialLayerToAnimation()
+        {
+            _specialToolLayer = new LayeredConsole(3, _selectedAnimation.Width, _selectedAnimation.Height);
+            _specialToolLayer[1].CellData.Clear();
+            _specialToolLayer[1].CellData[_selectedAnimation.Center.X, _selectedAnimation.Center.Y].CharacterIndex = 42;
+            _specialToolLayer[1].CellData[_selectedAnimation.Center.X, _selectedAnimation.Center.Y].Background = Color.Black;
+            _specialToolLayer[0].Tint = new Color(0f, 0f, 0f, 0.2f);
+            // TODO: Draw box on layer 1 for collision rect;
+        }
+
+        public void SetAnimationCenter(Point center)
+        {
+            _specialToolLayer[1].CellData.Clear();
+            _specialToolLayer[1].CellData[center.X, center.Y].CharacterIndex = 42;
+            _specialToolLayer[1].CellData[center.X, center.Y].Background = Color.Black;
+            _selectedAnimation.Center = center;
         }
 
         private void SelectedFrameChanged(Frame frame)
@@ -170,6 +195,11 @@ namespace SadConsoleEditor.Editors
         public void Render()
         {
             Surface.Render();
+
+            if (EditorConsoleManager.Instance.ToolPane.SelectedTool is Tools.EntityCenterTool || EditorConsoleManager.Instance.ToolPane.SelectedTool is Tools.EntityCollisionBoxTool)
+            {
+                _specialToolLayer.Render();
+            }
         }
         public void Resize(int width, int height)
         {
@@ -180,6 +210,8 @@ namespace SadConsoleEditor.Editors
 
             _selectedAnimation.Resize(width, height);
 
+            SyncSpecialLayerToAnimation();
+
             // inform the outer box we've changed size
             EditorConsoleManager.Instance.UpdateBox();
         }
@@ -187,11 +219,13 @@ namespace SadConsoleEditor.Editors
         public void Position(int x, int y)
         {
             _consoleLayers.Move(new Point(x, y));
+            _specialToolLayer.Move(new Point(x, y));
         }
 
         public void Position(Point newPosition)
         {
             _consoleLayers.Move(newPosition);
+            _specialToolLayer.Move(newPosition);
         }
 
         public Point GetPosition()

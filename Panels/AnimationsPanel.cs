@@ -19,6 +19,8 @@ namespace SadConsoleEditor.Panels
         private Button _addNewAnimationFromFile;
         private Button _saveAnimationToFile;
         private Button _changeSpeedButton;
+        private Button _setCenterButton;
+        private Button _setBoundingBoxButton;
         private CheckBox _repeatCheck;
         private DrawingSurface _animationSpeedLabel;
         private Button _playPreview;
@@ -26,6 +28,14 @@ namespace SadConsoleEditor.Panels
         private SadConsole.Entities.Entity _entity;
 
         private Action<Animation> _animationChangeCallback;
+        private Action<CustomTool> _invokeCustomToolCallback;
+
+        public enum CustomTool
+        {
+            Center,
+            CollisionBox,
+            None
+        }
 
         public AnimationsPanel(Action<Animation> animationChangeCallback)
         {
@@ -58,7 +68,15 @@ namespace SadConsoleEditor.Panels
             _changeSpeedButton = new Button(3, 1);
             _changeSpeedButton.Text = "Set";
             _changeSpeedButton.ButtonClicked += changeSpeedButton_ButtonClicked; ;
-            
+
+            _setCenterButton = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            _setCenterButton.Text = "Set Center";
+            _setCenterButton.ButtonClicked += (s, e) => _invokeCustomToolCallback(CustomTool.Center);
+
+            _setBoundingBoxButton = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            _setBoundingBoxButton.Text = "Set Collision";
+            _setBoundingBoxButton.ButtonClicked += (s, e) => _invokeCustomToolCallback(CustomTool.CollisionBox);
+
             _animationSpeedLabel = new DrawingSurface(13, 1);
 
             _repeatCheck = new CheckBox(Consoles.ToolPane.PanelWidth, 1);
@@ -70,6 +88,7 @@ namespace SadConsoleEditor.Panels
             _playPreview.ButtonClicked += playPreview_ButtonClicked; ;
 
             _animationChangeCallback = animationChangeCallback;
+            //_invokeCustomToolCallback = invokeCustomToolCallback;
 
             Controls = new ControlBase[] { _animations, _removeSelected, _addNewAnimation, _renameAnimation, _addNewAnimationFromFile, _saveAnimationToFile, _playPreview, _animationSpeedLabel, _changeSpeedButton, _repeatCheck };
         }
@@ -225,7 +244,7 @@ namespace SadConsoleEditor.Panels
                 _changeSpeedButton.Position = new Microsoft.Xna.Framework.Point(Consoles.ToolPane.PanelWidth - _changeSpeedButton.Width + 1, _animationSpeedLabel.Position.Y);
                 return 0;
             }
-            else if (control == _animations || control == _saveAnimationToFile || control == _playPreview)
+            else if (control == _animations || control == _saveAnimationToFile || control == _playPreview || control == _setCenterButton || control == _setBoundingBoxButton)
                 return 1;
             else
                 return 0;

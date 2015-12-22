@@ -46,6 +46,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tools\BoxTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\Circle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\DrawTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\EntityCenterTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\EntityCollisionBoxTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\FillTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\ITool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\LineTool.cs" />
