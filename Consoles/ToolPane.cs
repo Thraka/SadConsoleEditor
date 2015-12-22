@@ -58,6 +58,7 @@ namespace SadConsoleEditor.Consoles
 
             _tools = new Dictionary<string, ITool>();
             _tools.Add(PaintTool.ID, new PaintTool());
+            _tools.Add(EntityCenterTool.ID, new EntityCenterTool());
             _tools.Add(RecolorTool.ID, new RecolorTool());
             _tools.Add(FillTool.ID, new FillTool());
             _tools.Add(TextTool.ID, new TextTool());
