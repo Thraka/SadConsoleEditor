@@ -46,7 +46,6 @@
             _animSinglePoint.Font = Engine.DefaultFont;
             var _frameSinglePoint = _animSinglePoint.CreateFrame();
             _frameSinglePoint[0].CharacterIndex = 42;
-            _animSinglePoint.Commit();
 
 
             _frameEffect = new SadConsole.Effects.Fade()
@@ -141,7 +140,6 @@
                 _ellipseShape.EndingPoint = new Point(frame.Width - 1, frame.Height - 1);
                 _ellipseShape.Draw(frame);
 
-                animation.Commit();
                 _entity.SetActiveAnimation("line");
             }
 

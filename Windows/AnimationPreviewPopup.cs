@@ -27,7 +27,6 @@ namespace SadConsoleEditor.Windows
             _entity = new Entity();
             _entity.Font = Settings.Config.ScreenFont;
             _entity.Position = new Point(1, 1);
-            animation.Commit();
             _entity.AddAnimation(animation);
             _entity.SetActiveAnimation(animation);
             _entity.Start();            
