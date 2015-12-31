@@ -69,6 +69,9 @@ namespace SadConsoleEditor.Panels
             _foreColor.SelectedColor = Color.White;
             _backColor.SelectedColor = Color.Black;
 
+            _foreColor.RightClickedColor += (s, e) => { var tempColor = SettingBackground; SettingBackground = SettingForeground; SettingForeground = tempColor; };
+            _backColor.RightClickedColor += (s, e) => { var tempColor = SettingForeground; SettingForeground = SettingBackground; SettingBackground = tempColor; };
+
             _charPreview.CharacterColor = _foreColor.SelectedColor;
             _charPreview.SelectedColor = _backColor.SelectedColor;
             _charPreview.Character = 0;

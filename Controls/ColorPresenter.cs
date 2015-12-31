@@ -7,6 +7,7 @@
     class ColorPresenter : SadConsole.Controls.ControlBase
     {
         public event EventHandler ColorChanged;
+        public event EventHandler RightClickedColor;
 
         public Color SelectedColor
         {
@@ -90,6 +91,16 @@
                 {
                     base.OnLeftMouseClicked(info);
                 }
+            }
+        }
+
+        protected override void OnRightMouseClicked(MouseInfo info)
+        {
+            var location = this.TransformConsolePositionByControlPosition(info);
+            if (location.X >= _width - 3)
+            {
+                RightClickedColor?.Invoke(this, EventArgs.Empty);
+                base.OnRightMouseClicked(info);
             }
         }
     }
