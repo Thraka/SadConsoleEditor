@@ -25,6 +25,8 @@ namespace SadConsoleEditor
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
+            Window.Title = "SadConsole Editor - v" + System.Reflection.Assembly.GetCallingAssembly().GetName().Version.ToString();
+
             var sadConsoleComponent = new SadConsole.EngineGameComponent(this, () =>
             {
                 // Load settings 
