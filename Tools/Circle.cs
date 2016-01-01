@@ -80,7 +80,13 @@
         {
 			EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.Changed -= EditorConsoleManager.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler;
 			EditorConsoleManager.Instance.QuickSelectPane.IsVisible = false;
-		}
+
+            _settingsPanel.CircleHeight = 0;
+            _settingsPanel.CircleWidth = 0;
+            _firstPoint = null;
+            _secondPoint = null;
+            _circleShape = null;
+        }
 
         public void RefreshTool()
         {

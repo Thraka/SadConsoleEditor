@@ -74,6 +74,8 @@
 
         public void OnDeselected()
         {
+            _firstPoint = null;
+            _secondPoint = null;
         }
 
         public void RefreshTool()

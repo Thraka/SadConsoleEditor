@@ -89,7 +89,13 @@
         {
 			EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.Changed -= EditorConsoleManager.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler;
 			EditorConsoleManager.Instance.QuickSelectPane.IsVisible = false;
-		}
+
+            _settingsPanel.LineLength = 0;
+            _firstPoint = null;
+            _secondPoint = null;
+            _lineShape = null;
+
+        }
 
         public void RefreshTool()
         {
@@ -184,8 +190,8 @@
                 _lineShape.StartingLocation = p1;
                 _lineShape.EndingLocation = p2;
                 _lineShape.Draw(frame);
-
-                //_settingsPanel.LineLength = p1
+                
+                _settingsPanel.LineLength = frame.Width > frame.Height ? frame.Width : frame.Height;
 
                 _entity.SetActiveAnimation("line");
             }
@@ -214,6 +220,7 @@
                     _entity.SetActiveAnimation("single");
 
                     //surface.ResyncAllCellEffects();
+                    _settingsPanel.LineLength = 0;
                 }
             }
             else if (info.RightClicked)
@@ -225,6 +232,8 @@
                     _lineShape = null;
 
                     _entity.SetActiveAnimation("single");
+
+                    _settingsPanel.LineLength = 0;
                 }
             }
 

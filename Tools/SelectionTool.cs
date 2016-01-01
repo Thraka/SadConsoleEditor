@@ -170,6 +170,7 @@
 
         public void OnDeselected()
         {
+            _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
         }
 
         public void RefreshTool()
