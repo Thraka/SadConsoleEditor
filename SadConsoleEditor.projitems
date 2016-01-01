@@ -37,6 +37,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Panels\CustomPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\FilesPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\LayersPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\LinePanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ObjectTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\RecolorTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\SelectionTool.Panel.cs" />

@@ -19,6 +19,7 @@
         private SadConsole.Shapes.Line _lineShape;
         private Cell _lineCell;
         private CellAppearance _lineStyle;
+        private LineToolPanel _settingsPanel;
 
         public const string ID = "LINE";
         public string Id
@@ -57,7 +58,9 @@
 
             _lineCell = new Cell();
 
-            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel };
+            _settingsPanel = new LineToolPanel();
+
+            ControlPanels = new CustomPanel[] { _settingsPanel, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel };
         }
 
         public void OnSelected()
@@ -181,6 +184,8 @@
                 _lineShape.StartingLocation = p1;
                 _lineShape.EndingLocation = p2;
                 _lineShape.Draw(frame);
+
+                //_settingsPanel.LineLength = p1
 
                 _entity.SetActiveAnimation("line");
             }
