@@ -122,7 +122,12 @@ namespace SadConsoleEditor.Editors
             _consoleLayers.ProcessMouse(info);
 
             if (_consoleLayers.IsMouseOver)
+            {
                 EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessMouse(info, _consoleLayers.ActiveLayer);
+                EditorConsoleManager.Instance.SurfaceMouseLocation = info.ConsoleLocation;
+            }
+            else
+                EditorConsoleManager.Instance.SurfaceMouseLocation = Point.Zero;
         }
 
         public void Resize(int width, int height)

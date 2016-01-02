@@ -105,9 +105,7 @@ namespace SadConsoleEditor.Editors
             EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessMouse(info, _consoleLayers.ActiveLayer);
 
             if (_consoleLayers.IsMouseOver)
-            {
                 EditorConsoleManager.Instance.SurfaceMouseLocation = info.ConsoleLocation;
-            }
             else
                 EditorConsoleManager.Instance.SurfaceMouseLocation = Point.Zero;
 
