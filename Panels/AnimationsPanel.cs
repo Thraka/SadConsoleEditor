@@ -186,8 +186,8 @@ namespace SadConsoleEditor.Panels
 
         void addNewAnimation_ButtonClicked(object sender, EventArgs e)
         {
-            var previouslySelected = _animations.SelectedItem;
-            var animation = new Animation("New", 10, 10);
+            var previouslySelected = (Animation)_animations.SelectedItem;
+            var animation = new Animation("New", previouslySelected.Width, previouslySelected.Height);
             animation.CreateFrame();
             _entity.AddAnimation(animation);
             RebuildListBox();

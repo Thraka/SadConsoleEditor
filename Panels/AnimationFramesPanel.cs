@@ -245,6 +245,7 @@ namespace SadConsoleEditor.Panels
             ColoredString frameNumber = new ColoredString((_currentAnimation.Frames.IndexOf(_selectedFrame) + 1).ToString(), Settings.Blue, Settings.Color_MenuBack, null);
             ColoredString frameSep = new ColoredString(" \\ ", Settings.Grey, Settings.Color_MenuBack, null);
             ColoredString frameMax = new ColoredString(_currentAnimation.Frames.Count.ToString(), Settings.Blue, Settings.Color_MenuBack, null);
+            _framesCounterBox.Fill(Settings.Blue, Settings.Color_MenuBack, 0, null);
             _framesCounterBox.Print(0, 0, frameNumber + frameSep + frameMax);
         }
 
