@@ -44,16 +44,51 @@ namespace SadConsoleEditor
 		public Consoles.QuickSelectPane QuickSelectPane { get; private set; }
 
 		public bool AllowKeyboardToMoveConsole { get; set; }
-		
+
+        private Point topBarMousePosition;
+        private string topBarLayerName = "None";
+        private string topBarToolName = "None";
+
         public Point SurfaceMouseLocation
         {
             set
             {
-                _backingPanel.CellData.Clear(); _backingPanel.CellData.Print(0, 0, string.Format("X:{0}, Y:{1}", value.X, value.Y), Settings.Green);
+                topBarMousePosition = value;
+                RefreshBackingPanel();
+            }
+        }
+
+        public string LayerName
+        {
+            set
+            {
+                topBarLayerName = value;
+                RefreshBackingPanel();
+            }
+        }
+
+        public string ToolName
+        {
+            set
+            {
+                topBarToolName = value;
+                RefreshBackingPanel();
             }
         }
 
         private ControlsConsole _backingPanel;
+
+        private void RefreshBackingPanel()
+        {
+            _backingPanel.CellData.Clear();
+
+            var text = new SadConsole.ColoredString("   X: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarMousePosition.X.ToString(), Settings.Appearance_TextValue) +
+                       new SadConsole.ColoredString(" Y: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarMousePosition.Y.ToString(), Settings.Appearance_TextValue) +
+                       new SadConsole.ColoredString("   Layer: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarLayerName, Settings.Appearance_TextValue) +
+                       new SadConsole.ColoredString("   Tool: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarToolName, Settings.Appearance_TextValue);
+
+            _backingPanel.CellData.Print(0, 0, text);
+        }
 
         private EditorConsoleManager()
         {

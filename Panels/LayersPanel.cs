@@ -166,7 +166,11 @@ namespace SadConsoleEditor.Panels
                 _toggleHideShow.IsSelected = layer.IsVisible;
 
                 EditorConsoleManager.Instance.SelectedEditor.SetActiveLayer(layer.Index);
+
+                EditorConsoleManager.Instance.LayerName = layer.Name;
             }
+            else
+                EditorConsoleManager.Instance.LayerName = "None";
         }
 
         void _toggleHideShow_IsSelectedChanged(object sender, EventArgs e)

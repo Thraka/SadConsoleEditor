@@ -101,6 +101,9 @@ namespace SadConsoleEditor
 
         public static SadConsole.CellAppearance Appearance_ControlTextBoxNormal = new SadConsole.CellAppearance(Color_Text, Color_ControlBack);
 
+        public static CellAppearance Appearance_Text = new CellAppearance(Green, Color_MenuBack);
+        public static CellAppearance Appearance_TextValue = new CellAppearance(Blue, Color_MenuBack);
+
         public static SadConsole.Themes.RadioButtonTheme NoCheckRadioButtonTheme;
         #endregion
 

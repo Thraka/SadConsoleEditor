@@ -23,9 +23,13 @@ namespace SadConsoleEditor.Consoles
         private int RowTools = 6;
         private int RowToolSettings = 13;
 
+        private ITool selectedTool;
+
         private Dictionary<string, ITool> _tools;
 
-        public ITool SelectedTool { get; set; }
+        
+
+        public ITool SelectedTool { get { return selectedTool; } set { selectedTool = value; EditorConsoleManager.Instance.ToolName = value.Title; } }
        
         
 
