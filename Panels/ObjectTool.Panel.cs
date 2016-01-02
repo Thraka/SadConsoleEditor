@@ -166,8 +166,9 @@ namespace SadConsoleEditor.Panels
 
 	public class DisplayObjectToolPanel : CustomPanel
 	{
+		private DrawingSurface _nameSurface;
 		private Controls.ColorPresenter _foregroundPresenter;
-		private Controls.ColorPresenter _backgroundPresenter;
+        private Controls.ColorPresenter _backgroundPresenter;
 		private Controls.ColorPresenter _characterPresenter;
 		private DrawingSurface _propertySurface;
 
@@ -188,7 +189,11 @@ namespace SadConsoleEditor.Panels
 					_characterPresenter.Character = value.Character.CharacterIndex;
 					_characterPresenter.CharacterColor = value.Character.Foreground;
 
-					
+                    _nameSurface.Clear();
+                    _nameSurface.Print(0, 0, 
+                        new ColoredString("Name ", Settings.Green, Settings.Color_MenuBack, null) + 
+                        new ColoredString((value.Name.Length > 13 ? value.Name.Substring(0, 13) : value.Name).Align(System.Windows.HorizontalAlignment.Right, 13, ' '), Settings.Grey, Settings.Color_MenuBack, null));
+
                     _propertySurface.Clear();
 					if (value.Settings.Count == 0)
 						_propertySurface.Resize(18, 1);
@@ -221,8 +226,9 @@ namespace SadConsoleEditor.Panels
 			_characterPresenter = new SadConsoleEditor.Controls.ColorPresenter("Preview", Settings.Green, 18);
 
 			_propertySurface = new DrawingSurface(18, 1);
+            _nameSurface = new DrawingSurface(18, 1);
 
-			Controls = new ControlBase[] { _foregroundPresenter, _backgroundPresenter, _characterPresenter, _propertySurface };
+            Controls = new ControlBase[] { _nameSurface, _foregroundPresenter, _backgroundPresenter, _characterPresenter, _propertySurface };
 		}
 
 		
