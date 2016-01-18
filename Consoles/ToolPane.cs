@@ -126,9 +126,14 @@ namespace SadConsoleEditor.Consoles
 
 							foreach (var control in pane.Controls)
 							{
-								Add(control);
-								control.Position = new Point(1, activeRow);
-								activeRow += pane.Redraw(control) + control.Height;
+                                if (control != null)
+                                {
+                                    Add(control);
+                                    control.Position = new Point(1, activeRow);
+                                    activeRow += pane.Redraw(control) + control.Height;
+                                }
+                                else
+                                    activeRow++;
 							}
 
 							activeRow += 1;
