@@ -41,6 +41,8 @@ namespace SadConsoleEditor.Editors
 
         public const string ID = "ANIM";
 
+        public string ShortName { get { return "Ent"; } }
+
         public string Id { get { return ID; } }
 
         public string Title { get { return "Entity"; } }

@@ -33,6 +33,8 @@ namespace SadConsoleEditor
         public IEditor SelectedEditor { get; private set; }
         private Action<object, EventArgs> _popupCallback;
         private SadConsole.Controls.ScrollBar _toolsPaneScroller;
+        private Dictionary<SadConsole.Controls.RadioButton, IEditor> _documentButtons = new Dictionary<SadConsole.Controls.RadioButton, IEditor>();
+
 
         public int EditingSurfaceWidth { get { return SelectedEditor.Width; } }
         public int EditingSurfaceHeight { get { return SelectedEditor.Height; } }
@@ -94,10 +96,11 @@ namespace SadConsoleEditor
         {
             Font = SadConsole.Engine.DefaultFont;
 
-            _backingPanel = new ControlsConsole(Settings.Config.WindowWidth, 1);
+            _backingPanel = new ControlsConsole(Settings.Config.WindowWidth, 2);
 
             _backingPanel.CellData.DefaultBackground = Settings.Color_MenuBack;
             _backingPanel.CellData.Clear();
+            _backingPanel.ProcessMouseWithoutFocus = true;
 
             _backingPanel.IsVisible = true;
             SurfaceMouseLocation = new Point(0, 0);
@@ -131,9 +134,9 @@ namespace SadConsoleEditor
             _borderRenderer = new Consoles.BorderRenderer();
 
             ToolPane = new Consoles.ToolPane();
-            ToolPane.Position = new Point(_backingPanel.CellData.Width - ToolPane.CellData.Width - 1, 1);
+            ToolPane.Position = new Point(_backingPanel.CellData.Width - ToolPane.CellData.Width - 1, 2);
             ToolPane.CellData.Resize(ToolPane.CellData.Width, ToolPane.CellData.Height * 2);
-            ToolPane.ViewArea = new Rectangle(0,0,ToolPane.CellData.Width, Settings.Config.WindowHeight);
+            ToolPane.ViewArea = new Rectangle(0,0,ToolPane.CellData.Width, Settings.Config.WindowHeight - 2);
             this.Add(ToolPane);
 
             _toolsPaneScroller = new SadConsole.Controls.ScrollBar(System.Windows.Controls.Orientation.Vertical, Settings.Config.WindowHeight - 1);
@@ -245,9 +248,12 @@ namespace SadConsoleEditor
         public override bool ProcessMouse(SadConsole.Input.MouseInfo info)
         {
             var result = base.ProcessMouse(info);
+
             
-            if (!ToolPane.IsMouseOver)
+
+            if (!ToolPane.IsMouseOver && !_backingPanel.IsMouseOver)
                 SelectedEditor.ProcessMouse(info);
+            
 
             return result;
         }
@@ -344,18 +350,35 @@ namespace SadConsoleEditor
             popup.Center();
         }
 
-        public void ShowNewConsolePopup()
+        public void ShowCloseConsolePopup()
+        {
+            Window.Prompt(new SadConsole.ColoredString("Are you sure? You will lose any unsaved changes."), "Yes", "No", (r) =>
+            {
+                if (r)
+                    CloseDocument(SelectedEditor);
+            });
+        }
+
+        public void ShowNewConsolePopup(bool allowCancel)
         {
             var popup = new NewConsolePopup();
+            popup.AllowCancel = allowCancel;
             popup.Closed += (o, e) =>
             {
                 if (popup.DialogResult)
                 {
-                    SelectedEditor = popup.Editor;
-                    SelectedEditor.Reset();
-                    ResizeEditingSurface(popup.SettingWidth, popup.SettingHeight);
-                    SelectedEditor.Surface.Clear(popup.SettingForeground, popup.SettingBackground);
-                    ToolPane.SetupEditor();
+                    IEditor editor;
+
+                    if (popup.Editor.Id == EntityEditor.ID)
+                        editor = new EntityEditor();
+                    else if (popup.Editor.Id == DrawingEditor.ID)
+                        editor = new DrawingEditor();
+                    else
+                        editor = new GameScreenEditor();
+
+                    editor.Resize(popup.SettingWidth, popup.SettingHeight);
+                    editor.Surface.Clear(popup.SettingForeground, popup.SettingBackground);
+                    AddDocument(editor);
                 }
             };
 
@@ -402,6 +425,68 @@ namespace SadConsoleEditor
             _fileDialogPopup.SkipFileExistCheck = true;
             _fileDialogPopup.Show(true);
             _fileDialogPopup.Center();
+        }
+
+
+        public void AddDocument(IEditor editor)
+        {
+            var button = new SadConsole.Controls.RadioButton(editor.ShortName.Length + 6, 1) { Text = editor.ShortName };
+            button.IsSelectedChanged += DocumentButtonClick;
+            _documentButtons.Add(button, editor);
+            _backingPanel.Add(button);
+            ArrangeDocumentButtons();
+            button.IsSelected = true;
+        }
+
+        public void CloseDocument(IEditor editor)
+        {
+            SadConsole.Controls.RadioButton button = null;
+            
+            foreach (var item in _documentButtons.Keys)
+            {
+                if (_documentButtons[item] == editor)
+                {
+                    button = item;
+                    break;
+                }
+            }
+
+            if (button != null)
+            {
+                _backingPanel.Remove(button);
+                _documentButtons.Remove(button);
+
+                if (_documentButtons.Count == 0)
+                    ShowNewConsolePopup(false);
+                else
+                {
+                    ArrangeDocumentButtons();
+
+                    foreach (var item in _documentButtons.Keys)
+                    {
+                        item.IsSelected = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void DocumentButtonClick(object sender, EventArgs e)
+        {
+            var button = (SadConsole.Controls.RadioButton)sender;
+            if (button.IsSelected)
+                ChangeEditor(_documentButtons[button]);
+        }
+
+        private void ArrangeDocumentButtons()
+        {
+            int positionx = 0;
+            foreach (var item in _documentButtons.Keys)
+            {
+                item.Position = new Point(positionx, 1);
+                positionx += item.Width + 2;
+            }
+
         }
     }
 }

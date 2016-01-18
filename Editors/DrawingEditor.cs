@@ -28,6 +28,8 @@ namespace SadConsoleEditor.Editors
 
         public const string ID = "DRAW";
 
+        public string ShortName { get { return "Con"; } }
+
         public string Id { get { return ID; } }
 
         public string Title { get { return "Console"; } }
