@@ -14,6 +14,7 @@ namespace SadConsoleEditor.Panels
         private Button _loadButton;
         private Button _saveButton;
         private Button _resizeButton;
+        private Button _closeButton;
 
         public FilesPanel()
         {
@@ -29,7 +30,7 @@ namespace SadConsoleEditor.Panels
 
             _loadButton = new Button(8, 1)
             {
-                Text = "Load",
+                Text = "Import",
             };
             _loadButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.LoadSurface();
 
@@ -45,8 +46,14 @@ namespace SadConsoleEditor.Panels
             };
             _resizeButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowResizeConsolePopup();
 
+            _closeButton = new Button(8, 1)
+            {
+                Text = " Close",
+                TextAlignment = System.Windows.HorizontalAlignment.Left
+            };
+            _closeButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowCloseConsolePopup();
 
-            Controls = new ControlBase[] { _newButton, _loadButton, _saveButton, _resizeButton };
+            Controls = new ControlBase[] { _newButton, _loadButton, _saveButton, _resizeButton, _closeButton };
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseInfo info)

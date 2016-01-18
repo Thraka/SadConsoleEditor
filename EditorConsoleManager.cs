@@ -350,6 +350,15 @@ namespace SadConsoleEditor
             popup.Center();
         }
 
+        public void ShowCloseConsolePopup()
+        {
+            Window.Prompt(new SadConsole.ColoredString("Are you sure? You will lose any unsaved changes."), "Yes", "No", (r) =>
+            {
+                if (r)
+                    CloseDocument(SelectedEditor);
+            });
+        }
+
         public void ShowNewConsolePopup(bool allowCancel)
         {
             var popup = new NewConsolePopup();
@@ -432,6 +441,7 @@ namespace SadConsoleEditor
         public void CloseDocument(IEditor editor)
         {
             SadConsole.Controls.RadioButton button = null;
+            
             foreach (var item in _documentButtons.Keys)
             {
                 if (_documentButtons[item] == editor)
@@ -449,7 +459,15 @@ namespace SadConsoleEditor
                 if (_documentButtons.Count == 0)
                     ShowNewConsolePopup(false);
                 else
+                {
                     ArrangeDocumentButtons();
+
+                    foreach (var item in _documentButtons.Keys)
+                    {
+                        item.IsSelected = true;
+                        break;
+                    }
+                }
             }
         }
 
