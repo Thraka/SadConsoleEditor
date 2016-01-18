@@ -157,6 +157,7 @@ namespace SadConsoleEditor.Editors
             _consoleLayers.MouseExit += _mouseExitHandler;
 
             _entity = new Entity(SadConsoleEditor.Settings.Config.ScreenFont);
+            _entity.CurrentAnimation.AnimationDuration = 1;
 
             _animationPanel.SetEntity(_entity);
         }
