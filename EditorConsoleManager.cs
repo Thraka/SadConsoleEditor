@@ -33,6 +33,8 @@ namespace SadConsoleEditor
         public IEditor SelectedEditor { get; private set; }
         private Action<object, EventArgs> _popupCallback;
         private SadConsole.Controls.ScrollBar _toolsPaneScroller;
+        private List<Tuple<IEditor, SadConsole.Controls.Button>> _documentButtons = new List<Tuple<IEditor, SadConsole.Controls.Button>>();
+
 
         public int EditingSurfaceWidth { get { return SelectedEditor.Width; } }
         public int EditingSurfaceHeight { get { return SelectedEditor.Height; } }
@@ -94,7 +96,7 @@ namespace SadConsoleEditor
         {
             Font = SadConsole.Engine.DefaultFont;
 
-            _backingPanel = new ControlsConsole(Settings.Config.WindowWidth, 1);
+            _backingPanel = new ControlsConsole(Settings.Config.WindowWidth, 2);
 
             _backingPanel.CellData.DefaultBackground = Settings.Color_MenuBack;
             _backingPanel.CellData.Clear();
@@ -131,9 +133,9 @@ namespace SadConsoleEditor
             _borderRenderer = new Consoles.BorderRenderer();
 
             ToolPane = new Consoles.ToolPane();
-            ToolPane.Position = new Point(_backingPanel.CellData.Width - ToolPane.CellData.Width - 1, 1);
+            ToolPane.Position = new Point(_backingPanel.CellData.Width - ToolPane.CellData.Width - 1, 2);
             ToolPane.CellData.Resize(ToolPane.CellData.Width, ToolPane.CellData.Height * 2);
-            ToolPane.ViewArea = new Rectangle(0,0,ToolPane.CellData.Width, Settings.Config.WindowHeight);
+            ToolPane.ViewArea = new Rectangle(0,0,ToolPane.CellData.Width, Settings.Config.WindowHeight - 2);
             this.Add(ToolPane);
 
             _toolsPaneScroller = new SadConsole.Controls.ScrollBar(System.Windows.Controls.Orientation.Vertical, Settings.Config.WindowHeight - 1);
@@ -402,6 +404,17 @@ namespace SadConsoleEditor
             _fileDialogPopup.SkipFileExistCheck = true;
             _fileDialogPopup.Show(true);
             _fileDialogPopup.Center();
+        }
+
+
+        public void AddDocument(IEditor editor)
+        {
+            
+        }
+
+        public void CloseDocument(IEditor editor)
+        {
+
         }
     }
 }

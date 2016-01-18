@@ -24,6 +24,8 @@ namespace SadConsoleEditor.Editors
 
         string Title { get; }
 
+        string ShortName { get; }
+
         string Id { get; }
 
         string[] Tools { get; }
