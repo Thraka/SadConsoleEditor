@@ -60,7 +60,7 @@ namespace SadConsoleEditor
                 SadConsole.Engine.ConsoleRenderStack = EditorConsoleManager.Instance;
                 SadConsole.Engine.ActiveConsole = EditorConsoleManager.Instance;
 
-                EditorConsoleManager.Instance.ShowNewConsolePopup();
+                EditorConsoleManager.Instance.ShowNewConsolePopup(false);
             });
 
             Components.Add(sadConsoleComponent);

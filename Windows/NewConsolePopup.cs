@@ -29,6 +29,8 @@ namespace SadConsoleEditor.Windows
 
         public Color SettingForeground { get { return _foregroundPicker.SelectedColor; } }
         public Color SettingBackground { get { return _backgroundPicker.SelectedColor; } }
+
+        public bool AllowCancel { set { _cancelButton.IsEnabled = value; } }
         #endregion
 
         public NewConsolePopup() : base(30, 14)

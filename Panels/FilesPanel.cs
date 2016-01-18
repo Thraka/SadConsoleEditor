@@ -25,7 +25,7 @@ namespace SadConsoleEditor.Panels
                 TextAlignment = System.Windows.HorizontalAlignment.Left,
                 CanUseKeyboard = false,
             };
-            _newButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowNewConsolePopup();
+            _newButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowNewConsolePopup(true);
 
             _loadButton = new Button(8, 1)
             {
