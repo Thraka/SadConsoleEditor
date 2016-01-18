@@ -154,23 +154,27 @@
 
         public void OnSelected()
         {
+            if (_panel.State != SelectionToolPanel.CloneState.Clone && _panel.State != SelectionToolPanel.CloneState.Move)
+            {
+                _entity = new EntityBrush();
 
+                _entity.Font = Settings.Config.ScreenFont;
+                _entity.IsVisible = true;
 
-            _entity = new EntityBrush();
-            _entity.Font = Settings.Config.ScreenFont;
-            _entity.IsVisible = true;
+                _entity.AddAnimation(_animSinglePoint);
+                _entity.SetActiveAnimation("single");
 
-            _entity.AddAnimation(_animSinglePoint);
-            _entity.SetActiveAnimation("single");
+                EditorConsoleManager.Instance.UpdateBrush(_entity);
 
-            EditorConsoleManager.Instance.UpdateBrush(_entity);
-
-            _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
+                _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
+            }
+            else
+                EditorConsoleManager.Instance.UpdateBrush(_entity);
         }
 
         public void OnDeselected()
         {
-            _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
+            //_panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
         }
 
         public void RefreshTool()
