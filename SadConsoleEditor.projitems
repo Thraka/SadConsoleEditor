@@ -41,6 +41,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Panels\LinePanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ObjectTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\RecolorTool.Panel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\EntityImport.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\SelectionTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolsPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
