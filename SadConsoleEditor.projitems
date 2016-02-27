@@ -24,6 +24,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Editors\DrawingEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\GameScreenEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\IEditor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Editors\SceneEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntityBrush.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameHelpers\GameObjectMeta.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tools\LineTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\ObjectTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\RecolorTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\SceneEntityMoveTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\SelectionTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\TextTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Undo.cs" />

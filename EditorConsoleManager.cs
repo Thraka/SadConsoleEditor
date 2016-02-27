@@ -5,6 +5,7 @@ using SadConsoleEditor.Windows;
 using SadConsole.Input;
 using System.Collections.Generic;
 using SadConsoleEditor.Editors;
+using System.Linq;
 
 namespace SadConsoleEditor
 {
@@ -34,6 +35,7 @@ namespace SadConsoleEditor
         private Action<object, EventArgs> _popupCallback;
         private SadConsole.Controls.ScrollBar _toolsPaneScroller;
         private Dictionary<SadConsole.Controls.RadioButton, IEditor> _documentButtons = new Dictionary<SadConsole.Controls.RadioButton, IEditor>();
+        private Dictionary<IEditor, string> _editorsLastSelectedTool = new Dictionary<IEditor, string>();
 
 
         public int EditingSurfaceWidth { get { return SelectedEditor.Width; } }
@@ -173,9 +175,31 @@ namespace SadConsoleEditor
 
         public void ChangeEditor(IEditor editor)
         {
+            if (SelectedEditor != null)
+            {
+                if (_editorsLastSelectedTool.ContainsKey(SelectedEditor))
+                    _editorsLastSelectedTool.Remove(SelectedEditor);
+
+                _editorsLastSelectedTool.Add(SelectedEditor, ToolPane.SelectedTool.Id);
+            }
+
             SelectedEditor = editor;
             ToolPane.SetupEditor();
             UpdateBox();
+
+            if (_editorsLastSelectedTool.ContainsKey(SelectedEditor))
+            {
+                string id = _editorsLastSelectedTool[SelectedEditor];
+
+                foreach (var tool in ToolPane.ToolsPanel.ToolsListBox.Items.Cast<Tools.ITool>())
+                {
+                    if (tool.Id == id)
+                    {
+                        ToolPane.SelectedTool = tool;
+                        break;
+                    }
+                }
+            }
         }
 
         public void ScrollToolbox(int scrollValueChanged)

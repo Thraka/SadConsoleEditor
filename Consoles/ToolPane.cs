@@ -29,7 +29,15 @@ namespace SadConsoleEditor.Consoles
 
         
 
-        public ITool SelectedTool { get { return selectedTool; } set { selectedTool = value; EditorConsoleManager.Instance.ToolName = value.Title; } }
+        public ITool SelectedTool
+        {
+            get { return selectedTool; }
+            set
+            {
+                ToolsPanel.ToolsListBox.SelectedItem = value;
+            }
+        }
+
        
         
 
@@ -71,6 +79,7 @@ namespace SadConsoleEditor.Consoles
             _tools.Add(ObjectTool.ID, new ObjectTool());
             _tools.Add(SelectionTool.ID, new SelectionTool());
             _tools.Add(CircleTool.ID, new CircleTool());
+            _tools.Add(SceneEntityMoveTool.ID, new SceneEntityMoveTool());
 
             FilesPanel = new FilesPanel();
             ToolsPanel = new ToolsPanel();
@@ -78,6 +87,38 @@ namespace SadConsoleEditor.Consoles
 
             FilesPanel.IsCollapsed = true;
             LayersPanel.IsCollapsed = true;
+
+            ToolsPanel.ToolsListBox.SelectedItemChanged += (sender, e) =>
+            {
+                if (selectedTool != null)
+                {
+                    selectedTool.OnDeselected();
+                    if (selectedTool.ControlPanels != null)
+                        foreach (var pane in selectedTool.ControlPanels)
+                        {
+                            foreach (var control in pane.Controls)
+                            {
+                                Remove(control);
+                            }
+                        }
+                }
+
+                if (e.Item != null)
+                {
+                    selectedTool = (ITool)e.Item;
+                    EditorConsoleManager.Instance.ToolName = selectedTool.Title;
+
+                    EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = true;
+                    CommonCharacterPickerPanel.HideCharacter = false;
+                    CommonCharacterPickerPanel.HideForeground = false;
+                    CommonCharacterPickerPanel.HideBackground = false;
+
+                    selectedTool.OnSelected();
+                    CommonCharacterPickerPanel.Reset();
+                    RefreshControls();
+                }
+
+            };
         }
 
         public void SetupEditor()
@@ -87,7 +128,7 @@ namespace SadConsoleEditor.Consoles
             foreach (var toolId in EditorConsoleManager.Instance.SelectedEditor.Tools)
                 ToolsPanel.ToolsListBox.Items.Add(_tools[toolId]);
 
-            ToolsPanel.ToolsListBox.SelectedItem = _tools.Values.First();
+            ToolsPanel.ToolsListBox.SelectedItem = ToolsPanel.ToolsListBox.Items.Cast<ITool>().First();
         }
 
         public void RefreshControls()
