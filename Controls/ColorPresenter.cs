@@ -39,10 +39,9 @@
         private Color _characterColor;
 
         
-        public ColorPresenter(string title, Color foreground, int width)
+        public ColorPresenter(string title, Color foreground, int width): base(width, 1)
         {
-            Resize(width, 1);
-            DefaultForeground = foreground;
+            textSurface.DefaultForeground = foreground;
             Clear();
             _title = title;
             _popup = new Windows.ColorPickerPopup();
@@ -59,11 +58,11 @@
 
             Print(0, 0, _title);
 
-            Print(_width - 3, 0, "   ", Color.Black, _selectedColor);
+            Print(Width - 3, 0, "   ", Color.Black, _selectedColor);
             if (_character != 0)
             {
-                SetCharacter(_width - 2, 0, _character);
-                SetForeground(_width - 2, 0, _characterColor);
+                SetCharacter(Width - 2, 0, _character);
+                SetForeground(Width - 2, 0, _characterColor);
             }
         }
 
@@ -77,7 +76,7 @@
             if (!DisableColorPicker)
             {
                 var location = this.TransformConsolePositionByControlPosition(info);
-                if (location.X >= _width - 3)
+                if (location.X >= Width - 3)
                 {
                     _popup.SelectedColor = _selectedColor;
                     _popup.Show(true);
@@ -87,7 +86,7 @@
             else if (EnableCharacterPicker)
             {
                 var location = this.TransformConsolePositionByControlPosition(info);
-                if (location.X >= _width - 3)
+                if (location.X >= Width - 3)
                 {
                     base.OnLeftMouseClicked(info);
                 }
@@ -97,7 +96,7 @@
         protected override void OnRightMouseClicked(MouseInfo info)
         {
             var location = this.TransformConsolePositionByControlPosition(info);
-            if (location.X >= _width - 3)
+            if (location.X >= Width - 3)
             {
                 RightClickedColor?.Invoke(this, EventArgs.Empty);
                 base.OnRightMouseClicked(info);

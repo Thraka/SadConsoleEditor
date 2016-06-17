@@ -42,7 +42,7 @@ namespace SadConsoleEditor.Consoles
         
 
         public CharacterPickPanel CommonCharacterPickerPanel;
-        public LayersPanel LayersPanel;
+        //public LayersPanel LayersPanel;
         public FilesPanel FilesPanel;
         public ToolsPanel ToolsPanel;
 
@@ -50,7 +50,7 @@ namespace SadConsoleEditor.Consoles
 
         public static int PanelWidth;
 
-        public ToolPane() : base(20, Settings.Config.WindowHeight)
+        public ToolPane() : base(20, Settings.Config.WindowHeight * 2)
         {
             PanelWidth = 18;
             CommonCharacterPickerPanel = new CharacterPickPanel("Settings", false, false, false);
@@ -63,30 +63,30 @@ namespace SadConsoleEditor.Consoles
         public void FinishCreating()
         {
             ProcessMouseWithoutFocus = true;
-
-            _cellData.DefaultBackground = Settings.Color_MenuBack;
-            _cellData.DefaultForeground = Settings.Color_TitleText;
-            _cellData.Clear();
+            
+            textSurface.DefaultBackground = Settings.Color_MenuBack;
+            textSurface.DefaultForeground = Settings.Color_TitleText;
+            Clear();
 
             _tools = new Dictionary<string, ITool>();
             _tools.Add(PaintTool.ID, new PaintTool());
-            _tools.Add(EntityCenterTool.ID, new EntityCenterTool());
+            //_tools.Add(EntityCenterTool.ID, new EntityCenterTool());
             _tools.Add(RecolorTool.ID, new RecolorTool());
-            _tools.Add(FillTool.ID, new FillTool());
-            _tools.Add(TextTool.ID, new TextTool());
-            _tools.Add(LineTool.ID, new LineTool());
-            _tools.Add(BoxTool.ID, new BoxTool());
-            _tools.Add(ObjectTool.ID, new ObjectTool());
-            _tools.Add(SelectionTool.ID, new SelectionTool());
-            _tools.Add(CircleTool.ID, new CircleTool());
-            _tools.Add(SceneEntityMoveTool.ID, new SceneEntityMoveTool());
+            //_tools.Add(FillTool.ID, new FillTool());
+            //_tools.Add(TextTool.ID, new TextTool());
+            //_tools.Add(LineTool.ID, new LineTool());
+            //_tools.Add(BoxTool.ID, new BoxTool());
+            //_tools.Add(ObjectTool.ID, new ObjectTool());
+            //_tools.Add(SelectionTool.ID, new SelectionTool());
+            //_tools.Add(CircleTool.ID, new CircleTool());
+            //_tools.Add(SceneEntityMoveTool.ID, new SceneEntityMoveTool());
 
             FilesPanel = new FilesPanel();
             ToolsPanel = new ToolsPanel();
-            LayersPanel = new LayersPanel();
+            //LayersPanel = new LayersPanel();
 
             FilesPanel.IsCollapsed = true;
-            LayersPanel.IsCollapsed = true;
+            //LayersPanel.IsCollapsed = true;
 
             ToolsPanel.ToolsListBox.SelectedItemChanged += (sender, e) =>
             {
@@ -134,7 +134,7 @@ namespace SadConsoleEditor.Consoles
         public void RefreshControls()
         {
             int activeRow = 0;
-            _cellData.Clear();
+            Clear();
             RemoveAll();
             _hotSpots.Clear();
 
@@ -162,8 +162,8 @@ namespace SadConsoleEditor.Consoles
 						_hotSpots.Add(new Tuple<CustomPanel, int>(pane, activeRow));
 						if (pane.IsCollapsed == false)
 						{
-							_cellData.Print(1, activeRow++, open + " " + pane.Title);
-							_cellData.Print(0, activeRow++, new string((char)196, _cellData.Width));
+							Print(1, activeRow++, open + " " + pane.Title);
+							Print(0, activeRow++, new string((char)196, textSurface.Width));
 
 							foreach (var control in pane.Controls)
 							{
@@ -180,7 +180,7 @@ namespace SadConsoleEditor.Consoles
 							activeRow += 1;
 						}
 						else
-							_cellData.Print(1, activeRow++, closed + " " + pane.Title);
+							Print(1, activeRow++, closed + " " + pane.Title);
 					}
                 }
             }

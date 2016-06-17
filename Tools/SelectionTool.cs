@@ -19,7 +19,7 @@
         private SelectionToolPanel _panel;
         private SelectionToolAltPanel _altPanel;
         private SadConsole.Effects.Fade _pulseAnimation;
-        private CellSurface _previousSurface;
+        private TextSurface _previousSurface;
 
         private SelectionToolPanel.CloneState _previousState;
 
@@ -108,15 +108,15 @@
             }
         }
 
-        private CellSurface SaveBrush()
+        private TextSurface SaveBrush()
         {
-            CellSurface newSurface = new CellSurface(_entity.CurrentAnimation.CurrentFrame.Width, _entity.CurrentAnimation.CurrentFrame.Height);
+            TextSurface newSurface = new TextSurface(_entity.CurrentAnimation.CurrentFrame.Width, _entity.CurrentAnimation.CurrentFrame.Height);
             _entity.CurrentAnimation.CurrentFrame.Copy(newSurface);
 
             return newSurface;
         }
 
-        public void LoadBrush(CellSurface surface)
+        public void LoadBrush(TextSurface surface)
         {
             _panel.State = SelectionToolPanel.CloneState.Clone;
 
@@ -182,12 +182,12 @@
 
         }
 
-        public bool ProcessKeyboard(KeyboardInfo info, CellSurface surface)
+        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
         {
             return false;
         }
 
-        public void ProcessMouse(MouseInfo info, CellSurface surface)
+        public void ProcessMouse(MouseInfo info, ITextSurface surface)
         {
             _previousSurface = surface;
             
@@ -215,7 +215,7 @@
             }
         }
 
-        public void MouseEnterSurface(MouseInfo info, CellSurface surface)
+        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
         {
             if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1 || _panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
             {
@@ -224,7 +224,7 @@
             }
         }
 
-        public void MouseExitSurface(MouseInfo info, CellSurface surface)
+        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
         {
             if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1 || _panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
             {
@@ -233,7 +233,7 @@
             }
         }
 
-        public void MouseMoveSurface(MouseInfo info, CellSurface surface)
+        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
         {
             _entity.IsVisible = true;
             _entity.SyncLayers();
@@ -370,18 +370,18 @@
             _previousState = _panel.State;
         }
 
-        private void StampBrush(int consoleLocationX, int consoleLocationY, CellSurface surface)
+        private void StampBrush(int consoleLocationX, int consoleLocationY, ITextSurface surface)
         {
             int destinationX = consoleLocationX - _entity.CurrentAnimation.Center.X;
             int destinationY = consoleLocationY - _entity.CurrentAnimation.Center.Y;
             int destX = destinationX;
             int destY = destinationY;
 
-            for (int curx = 0; curx < _entity.CellData.Width; curx++)
+            for (int curx = 0; curx < _entity.TextSurface.Width; curx++)
             {
-                for (int cury = 0; cury < _entity.CellData.Height; cury++)
+                for (int cury = 0; cury < _entity.TextSurface.Height; cury++)
                 {
-                    if (_entity.CellData.IsValidCell(curx, cury))
+                    if (_entity.TextSurface.IsValidCell(curx, cury))
                     {
                         var sourceCell = _entity.CellData[curx, cury];
 
@@ -406,18 +406,18 @@
             }
         }
 
-        private void ClearBrush(int consoleLocationX, int consoleLocationY, CellSurface surface)
+        private void ClearBrush(int consoleLocationX, int consoleLocationY, ITextSurface surface)
         {
             int destinationX = consoleLocationX - _entity.CurrentAnimation.Center.X;
             int destinationY = consoleLocationY - _entity.CurrentAnimation.Center.Y;
             int destX = destinationX;
             int destY = destinationY;
 
-            for (int curx = 0; curx < _entity.CellData.Width; curx++)
+            for (int curx = 0; curx < _entity.TextSurface.Width; curx++)
             {
-                for (int cury = 0; cury < _entity.CellData.Height; cury++)
+                for (int cury = 0; cury < _entity.TextSurface.Height; cury++)
                 {
-                    if (_entity.CellData.IsValidCell(curx, cury))
+                    if (_entity.TextSurface.IsValidCell(curx, cury))
                     {
                         if (surface.IsValidCell(destX, destY))
                         {

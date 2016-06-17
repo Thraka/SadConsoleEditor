@@ -21,11 +21,11 @@ namespace SadConsoleEditor.Windows
 
             _okButton = new Button(8, 1);
             _cancelButton = new Button(8, 1);
-            _textBox = new InputBox(_cellData.Width - 4);
+            _textBox = new InputBox(textSurface.Width - 4);
             _textBox.Text = text;
 
-            _okButton.Position = new Microsoft.Xna.Framework.Point(_cellData.Width - _okButton.Width - 2, _cellData.Height - 2);
-            _cancelButton.Position = new Microsoft.Xna.Framework.Point(2, _cellData.Height - 2);
+            _okButton.Position = new Microsoft.Xna.Framework.Point(textSurface.Width - _okButton.Width - 2, textSurface.Height - 2);
+            _cancelButton.Position = new Microsoft.Xna.Framework.Point(2, textSurface.Height - 2);
             _textBox.Position = new Microsoft.Xna.Framework.Point(2, 2);
 
             _okButton.ButtonClicked += (o, e) => { DialogResult = true; Hide(); };

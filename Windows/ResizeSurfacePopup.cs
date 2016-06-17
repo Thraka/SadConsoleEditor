@@ -29,13 +29,13 @@ namespace SadConsoleEditor.Windows
             //this.DefaultShowPosition = StartupPosition.CenterScreen;
             Title = "Resize";
 
-            _cellData.DefaultBackground = Settings.Color_MenuBack;
-            _cellData.DefaultForeground = Settings.Color_TitleText;
+            textSurface.DefaultBackground = Settings.Color_MenuBack;
+            textSurface.DefaultForeground = Settings.Color_TitleText;
 
             _okButton = new Button(8, 1)
             {
                 Text = "Accept",
-                Position = new Microsoft.Xna.Framework.Point(base.CellData.Width - 10, 5)
+                Position = new Microsoft.Xna.Framework.Point(base.TextSurface.Width - 10, 5)
             };
             _okButton.ButtonClicked += new EventHandler(_okButton_Action);
 
@@ -47,15 +47,15 @@ namespace SadConsoleEditor.Windows
             _cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
 
             //Print(2, 3, "Name");
-            CellData.Print(2, 2, "Width");
-            CellData.Print(2, 3, "Height");
+            Print(2, 2, "Width");
+            Print(2, 3, "Height");
 
             _widthBox = new InputBox(3)
             {
                 Text = width.ToString(),
                 MaxLength = 3,
                 IsNumeric = true,
-                Position = new Microsoft.Xna.Framework.Point(base.CellData.Width - 5, 2)
+                Position = new Microsoft.Xna.Framework.Point(base.TextSurface.Width - 5, 2)
             };
 
             _heightBox = new InputBox(3)
@@ -63,7 +63,7 @@ namespace SadConsoleEditor.Windows
                 Text = height.ToString(),
                 MaxLength = 3,
                 IsNumeric = true,
-                Position = new Microsoft.Xna.Framework.Point(base.CellData.Width - 5, 3)
+                Position = new Microsoft.Xna.Framework.Point(base.TextSurface.Width - 5, 3)
             };
 
             //_name = new InputBox(20)

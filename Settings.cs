@@ -59,6 +59,7 @@ namespace SadConsoleEditor
     public static class Settings
     {
         public static ProgramSettings Config;
+        public static SadConsole.Consoles.SurfaceEditor QuickEditor;
 
         public const string FileObjectTypes = "editor.objecttypes.json";
 

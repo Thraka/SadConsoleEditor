@@ -50,26 +50,25 @@ namespace SadConsoleEditor.Windows
             : base(50, 30)
         {
             Title = "Select File";
-            _directoryListBox = new SadEditor.Controls.FileDirectoryListbox()
+            _directoryListBox = new SadEditor.Controls.FileDirectoryListbox(this.TextSurface.Width - 2, this.TextSurface.Height - 5)
             {
                 Position = new Point(1, 1),
                 HideBorder = true
             };
             _directoryListBox.HighlightedExtentions = ".con;.console;.brush";
-            _directoryListBox.Resize(this.CellData.Width - 2, this.CellData.Height - 5);
             _directoryListBox.SelectedItemChanged += _directoryListBox_SelectedItemChanged;
             _directoryListBox.SelectedItemExecuted += _directoryListBox_SelectedItemExecuted;
 
-            _fileName = new InputBox(this.CellData.Width - 11)
+            _fileName = new InputBox(this.TextSurface.Width - 11)
             {
-                Position = new Point(2, this.CellData.Height - 3),
+                Position = new Point(2, this.TextSurface.Height - 3),
             };
             _fileName.TextChanged += _fileName_TextChanged;
 
             _selectButton = new Button(6, 1)
             {
                 Text = "Open",
-                Position = new Point(this.CellData.Width - 8, this.CellData.Height - 3),
+                Position = new Point(this.TextSurface.Width - 8, this.TextSurface.Height - 3),
                 IsEnabled = false
             };
             _selectButton.ButtonClicked += new EventHandler(_selectButton_Action);
@@ -77,7 +76,7 @@ namespace SadConsoleEditor.Windows
             _cancelButton = new Button(6, 1)
             {
                 Text = "Cancel",
-                Position = new Point(this.CellData.Width - 8, this.CellData.Height - 2)
+                Position = new Point(this.TextSurface.Width - 8, this.TextSurface.Height - 2)
             };
             _cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
 
@@ -91,7 +90,7 @@ namespace SadConsoleEditor.Windows
         public override void Show(bool modal)
         {
             SelectedFile = "";
-            _cellData.Print(2, _cellData.Height - 2, FileFilter.Replace(';', ' ').Replace("*", ""));
+            Print(2, textSurface.Height - 2, FileFilter.Replace(';', ' ').Replace("*", ""));
 
             base.Show(modal);
         }
@@ -152,7 +151,7 @@ namespace SadConsoleEditor.Windows
             base.Redraw();
 
             if (_directoryListBox != null)
-                _cellData.Print(2, _cellData.Height - 2, FileFilter.Replace(';', ' ').Replace("*", ""));
+                Print(2, textSurface.Height - 2, FileFilter.Replace(';', ' ').Replace("*", ""));
         }
     }
 }

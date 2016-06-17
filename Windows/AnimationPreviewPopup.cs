@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using SadConsole.Input;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SadConsoleEditor.Windows
 {
@@ -21,7 +22,7 @@ namespace SadConsoleEditor.Windows
 
         public PreviewAnimationPopup(Animation animation) : base(animation.Width + 2, animation.Height + 4)
         {
-            Font = Settings.Config.ScreenFont;
+            textSurface.Font = Settings.Config.ScreenFont;
             _animation = animation;
 
             CloseOnESC = true;
@@ -35,29 +36,29 @@ namespace SadConsoleEditor.Windows
 
             _restartAnimation = new Button(animation.Width, 1);
             _restartAnimation.Text = "Restart";
-            _restartAnimation.Position = new Point(1, CellData.Height - 2);
+            _restartAnimation.Position = new Point(1, textSurface.Height - 2);
             _restartAnimation.ButtonClicked += (s, e) => _animation.Restart();
             Add(_restartAnimation);
         }
 
-        protected override void OnAfterRender()
+        protected override void OnAfterRender(SpriteBatch batch)
         {
-            base.OnAfterRender();
+            base.OnAfterRender(batch);
 
-            _entity.RenderToSurface(_cellData);
+            _entity.RenderToSurface(textSurface);
 
             // Draw bar
-            for (int i = 1; i < CellData.Width - 1; i++)
+            for (int i = 1; i < textSurface.Width - 1; i++)
             {
-                SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(CellData[i, CellData.Height - 3]);
-                CellData[i, CellData.Height - 3].CharacterIndex = 205;
+                SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface[i, textSurface.Height - 3]);
+                textSurface[i, textSurface.Height - 3].CharacterIndex = 205;
             }
 
-            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(CellData[0, CellData.Height - 3]);
-            CellData[0, CellData.Height - 3].CharacterIndex = 204;
+            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface[0, textSurface.Height - 3]);
+            textSurface[0, textSurface.Height - 3].CharacterIndex = 204;
 
-            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(CellData[CellData.Width - 1, CellData.Height - 3]);
-            CellData[CellData.Width - 1, CellData.Height - 3].CharacterIndex = 185;
+            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface[textSurface.Width - 1, textSurface.Height - 3]);
+            textSurface[textSurface.Width - 1, textSurface.Height - 3].CharacterIndex = 185;
         }
 
         public override bool ProcessKeyboard(KeyboardInfo info)

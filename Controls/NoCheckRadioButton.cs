@@ -32,7 +32,7 @@ namespace SadConsole.Controls
 
             if (this.IsDirty)
             {
-                if (_width != 1)
+                if (Width != 1)
                 {
                     this.Fill(_currentAppearanceText.Foreground, _currentAppearanceText.Background, 0, null);
                     this.Print(0, 0, Text.Align(TextAlignment, this.Width));

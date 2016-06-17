@@ -38,15 +38,15 @@ namespace SadConsoleEditor.Windows
             //this.DefaultShowPosition = StartupPosition.CenterScreen;
             Title = "New Console";
 
-            _cellData.DefaultBackground = Settings.Color_MenuBack;
-            _cellData.DefaultForeground = Settings.Color_TitleText;
-            _cellData.Clear();
+            textSurface.DefaultBackground = Settings.Color_MenuBack;
+            textSurface.DefaultForeground = Settings.Color_TitleText;
+            Clear();
             Redraw();
 
             _okButton = new Button(8, 1)
             {
                 Text = "Accept",
-                Position = new Microsoft.Xna.Framework.Point(base.CellData.Width - 10, 12)
+                Position = new Microsoft.Xna.Framework.Point(base.TextSurface.Width - 10, 12)
             };
             _okButton.ButtonClicked += new EventHandler(_okButton_Action);
 
@@ -58,9 +58,9 @@ namespace SadConsoleEditor.Windows
             _cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
 
             //Print(2, 3, "Name");
-            CellData.Print(2, 2, "Editor");
-            CellData.Print(2, 7, "Width");
-            CellData.Print(2, 8, "Height");
+            Print(2, 2, "Editor");
+            Print(2, 7, "Width");
+            Print(2, 8, "Height");
 
             _editorsListBox = new ListBox(19, 4)
             {
@@ -74,7 +74,7 @@ namespace SadConsoleEditor.Windows
                 Text = "0",
                 MaxLength = 3,
                 IsNumeric = true,
-                Position = new Microsoft.Xna.Framework.Point(base.CellData.Width - 5, 7)
+                Position = new Microsoft.Xna.Framework.Point(base.TextSurface.Width - 5, 7)
             };
 
             _heightBox = new InputBox(3)
@@ -82,7 +82,7 @@ namespace SadConsoleEditor.Windows
                 Text = "0",
                 MaxLength = 3,
                 IsNumeric = true,
-                Position = new Microsoft.Xna.Framework.Point(base.CellData.Width - 5, 8)
+                Position = new Microsoft.Xna.Framework.Point(base.TextSurface.Width - 5, 8)
             };
 
             //_name = new InputBox(20)
@@ -91,11 +91,11 @@ namespace SadConsoleEditor.Windows
             //    Position = new Microsoft.Xna.Framework.Point(9, 3)
             //};
 
-            _foregroundPicker = new SadConsoleEditor.Controls.ColorPresenter("Foreground", Theme.FillStyle.Foreground, _cellData.Width - 4);
+            _foregroundPicker = new SadConsoleEditor.Controls.ColorPresenter("Foreground", Theme.FillStyle.Foreground, textSurface.Width - 4);
             _foregroundPicker.Position = new Point(2, 9);
             _foregroundPicker.SelectedColor = Color.White;
 
-            _backgroundPicker = new SadConsoleEditor.Controls.ColorPresenter("Background", Theme.FillStyle.Foreground, _cellData.Width - 4);
+            _backgroundPicker = new SadConsoleEditor.Controls.ColorPresenter("Background", Theme.FillStyle.Foreground, textSurface.Width - 4);
             _backgroundPicker.Position = new Point(2, 10);
             _backgroundPicker.SelectedColor = Color.Black;
 

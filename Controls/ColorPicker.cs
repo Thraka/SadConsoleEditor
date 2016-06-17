@@ -59,9 +59,8 @@
         }
 
        
-        public ColorPicker(int width, int height, Color hue): base()
+        public ColorPicker(int width, int height, Color hue): base(width, height)
         {
-            this.Resize(width, height);
             SelectedHue = hue;
             Compose();
 
@@ -77,10 +76,10 @@
         private void SetClosestIndex(Color color)
         {
             ColorMine.ColorSpaces.Rgb rgbColorStop = new ColorMine.ColorSpaces.Rgb() { R = color.R, G = color.G, B = color.B };
-            Tuple<Color, double, int>[] colorWeights = new Tuple<Color, double, int>[Cells.Length];
+            Tuple<Color, double, int>[] colorWeights = new Tuple<Color, double, int>[textSurface.Cells.Length];
 
             // Create a color weight for every cell compared to the color stop
-            for (int x = 0; x < Cells.Length; x++)
+            for (int x = 0; x < textSurface.Cells.Length; x++)
             {
                 ColorMine.ColorSpaces.Rgb rgbColor = new ColorMine.ColorSpaces.Rgb() { R = this[x].Background.R, G = this[x].Background.G, B = this[x].Background.B };
                 ColorMine.ColorSpaces.Cmy cmyColor = rgbColor.To<ColorMine.ColorSpaces.Cmy>();
@@ -92,7 +91,7 @@
             var foundColor = colorWeights.OrderBy(t => t.Item2).First();
 
             this[_selectedColorPosition.X, _selectedColorPosition.Y].CharacterIndex = 0;
-            _selectedColorPosition = this[foundColor.Item3].Position;
+            _selectedColorPosition = SadConsole.Consoles.TextSurface.GetPointFromIndex(foundColor.Item3, Width);
             this[_selectedColorPosition.X, _selectedColorPosition.Y].CharacterIndex = 4;
 
             this.IsDirty = true;
@@ -102,22 +101,22 @@
         {
             if (IsDirty)
             {
-                Color[] colors = Color.White.LerpSteps(Color.Black, _height);
-                Color[] colorsEnd = _selectedHue.LerpSteps(Color.Black, _height);
+                Color[] colors = Color.White.LerpSteps(Color.Black, Height);
+                Color[] colorsEnd = _selectedHue.LerpSteps(Color.Black, Height);
 
-                for (int y = 0; y < _height; y++)
+                for (int y = 0; y < Height; y++)
                 {
                     this[0, y].Background = colors[y];
-                    this[_width - 1, y].Background = colorsEnd[y];
+                    this[Width - 1, y].Background = colorsEnd[y];
 
                     this[0, y].Foreground = new Color(255 - colors[y].R, 255 - colors[y].G, 255 - colors[y].B);
-                    this[_width - 1, y].Foreground = new Color(255 - colorsEnd[y].R, 255 - colorsEnd[y].G, 255 - colorsEnd[y].B);
+                    this[Width - 1, y].Foreground = new Color(255 - colorsEnd[y].R, 255 - colorsEnd[y].G, 255 - colorsEnd[y].B);
 
 
 
-                    Color[] rowColors = colors[y].LerpSteps(colorsEnd[y], _width);
+                    Color[] rowColors = colors[y].LerpSteps(colorsEnd[y], Width);
 
-                    for (int x = 1; x < _width - 1; x++)
+                    for (int x = 1; x < Width - 1; x++)
                     {
                         this[x, y].Background = rowColors[x];
                         this[x, y].Foreground = new Color(255 - rowColors[x].R, 255 - rowColors[x].G, 255 - rowColors[x].B);
@@ -159,10 +158,10 @@
                     var location = this.TransformConsolePositionByControlPosition(info);
 
                     //if (info.ConsoleLocation.X >= Position.X && info.ConsoleLocation.X < Position.X + Width)
-                    if (location.X >= -6 && location.X <= _width + 5 && location.Y > -4 && location.Y < _height + 3)
+                    if (location.X >= -6 && location.X <= Width + 5 && location.Y > -4 && location.Y < Height + 3)
                     {
                         this[_selectedColorPosition.X, _selectedColorPosition.Y].CharacterIndex = 0;
-                        _selectedColorPosition = new Point(MathHelper.Clamp(location.X, 0, _width - 1), MathHelper.Clamp(location.Y, 0, _height - 1));
+                        _selectedColorPosition = new Point(Microsoft.Xna.Framework.MathHelper.Clamp(location.X, 0, Width - 1), Microsoft.Xna.Framework.MathHelper.Clamp(location.Y, 0, Height - 1));
                         SelectedColorSafe = this[_selectedColorPosition.X, _selectedColorPosition.Y].Background;
                         this[_selectedColorPosition.X, _selectedColorPosition.Y].CharacterIndex = 4;
                     }

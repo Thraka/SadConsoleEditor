@@ -84,24 +84,22 @@ namespace SadConsoleEditor
 
         private void RefreshBackingPanel()
         {
-            _backingPanel.CellData.Clear();
+            _backingPanel.Clear();
 
             var text = new SadConsole.ColoredString("   X: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarMousePosition.X.ToString(), Settings.Appearance_TextValue) +
                        new SadConsole.ColoredString(" Y: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarMousePosition.Y.ToString(), Settings.Appearance_TextValue) +
                        new SadConsole.ColoredString("   Layer: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarLayerName, Settings.Appearance_TextValue) +
                        new SadConsole.ColoredString("   Tool: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarToolName, Settings.Appearance_TextValue);
 
-            _backingPanel.CellData.Print(0, 0, text);
+            _backingPanel.Print(0, 0, text);
         }
 
         private EditorConsoleManager()
         {
-            Font = SadConsole.Engine.DefaultFont;
-
             _backingPanel = new ControlsConsole(Settings.Config.WindowWidth, 2);
 
-            _backingPanel.CellData.DefaultBackground = Settings.Color_MenuBack;
-            _backingPanel.CellData.Clear();
+            _backingPanel.TextSurface.DefaultBackground = Settings.Color_MenuBack;
+            _backingPanel.Clear();
             _backingPanel.ProcessMouseWithoutFocus = true;
 
             _backingPanel.IsVisible = true;
@@ -113,12 +111,12 @@ namespace SadConsoleEditor
             Color Yellow = new Color(226, 218, 110);
             Color Orange = new Color(251, 149, 31);
 
-            //_backingPanel.CellData.Print(0, 0, "Test", Green);
-            //_backingPanel.CellData.Print(5, 0, "Test", Red);
-            //_backingPanel.CellData.Print(10, 0, "Test", Blue);
-            //_backingPanel.CellData.Print(15, 0, "Test", Grey);
-            //_backingPanel.CellData.Print(20, 0, "Test", Yellow);
-            //_backingPanel.CellData.Print(25, 0, "Test", Orange);
+            //_backingPanel.TextSurface.Print(0, 0, "Test", Green);
+            //_backingPanel.TextSurface.Print(5, 0, "Test", Red);
+            //_backingPanel.TextSurface.Print(10, 0, "Test", Blue);
+            //_backingPanel.TextSurface.Print(15, 0, "Test", Grey);
+            //_backingPanel.TextSurface.Print(20, 0, "Test", Yellow);
+            //_backingPanel.TextSurface.Print(25, 0, "Test", Orange);
 
             this.Add(_backingPanel);
 
@@ -133,30 +131,28 @@ namespace SadConsoleEditor
 
         private void FinishCreating()
         {
-            _borderRenderer = new Consoles.BorderRenderer();
-
             ToolPane = new Consoles.ToolPane();
-            ToolPane.Position = new Point(_backingPanel.CellData.Width - ToolPane.CellData.Width - 1, 2);
-            ToolPane.CellData.Resize(ToolPane.CellData.Width, ToolPane.CellData.Height * 2);
-            ToolPane.ViewArea = new Rectangle(0,0,ToolPane.CellData.Width, Settings.Config.WindowHeight - 2);
+            ToolPane.Position = new Point(_backingPanel.TextSurface.Width - ToolPane.TextSurface.Width - 1, 2);
+            //ToolPane.TextSurface.Resize(ToolPane.TextSurface.Width, ToolPane.TextSurface.Height * 2);
+            ToolPane.TextSurface.RenderArea = new Rectangle(0, 0, ToolPane.TextSurface.Width, Settings.Config.WindowHeight - 2);
             this.Add(ToolPane);
 
-            _toolsPaneScroller = new SadConsole.Controls.ScrollBar(System.Windows.Controls.Orientation.Vertical, Settings.Config.WindowHeight - 1);
-            _toolsPaneScroller.Maximum = ToolPane.CellData.Height - Settings.Config.WindowHeight;
+            _toolsPaneScroller = SadConsole.Controls.ScrollBar.Create(System.Windows.Controls.Orientation.Vertical, Settings.Config.WindowHeight - 1);
+            _toolsPaneScroller.Maximum = ToolPane.TextSurface.Height - Settings.Config.WindowHeight;
             _toolsPaneScroller.ValueChanged += (o, e) =>
                 {
-                    ToolPane.ViewArea = new Rectangle(0, _toolsPaneScroller.Value, ToolPane.CellData.Width, Settings.Config.WindowHeight);
+                    ToolPane.TextSurface.RenderArea = new Rectangle(0, _toolsPaneScroller.Value, ToolPane.TextSurface.Width, Settings.Config.WindowHeight);
                 };
             var scrollerContainer = new ControlsConsole(1, _toolsPaneScroller.Height);
             scrollerContainer.Add(_toolsPaneScroller);
-            scrollerContainer.Position = new Point(_backingPanel.CellData.Width - 1, 1);
+            scrollerContainer.Position = new Point(_backingPanel.TextSurface.Width - 1, 1);
             scrollerContainer.IsVisible = true;
             scrollerContainer.MouseCanFocus = false;
             scrollerContainer.ProcessMouseWithoutFocus = true;
             this.Add(scrollerContainer);
 
 			QuickSelectPane = new Consoles.QuickSelectPane();
-			QuickSelectPane.Position = new Point(0, Settings.Config.WindowHeight - QuickSelectPane.CellData.Height);
+			QuickSelectPane.Position = new Point(0, Settings.Config.WindowHeight - QuickSelectPane.TextSurface.Height);
 			QuickSelectPane.Redraw();
 			QuickSelectPane.IsVisible = true;
 			this.Add(QuickSelectPane);
@@ -166,11 +162,12 @@ namespace SadConsoleEditor
             Editors = new Dictionary<string, SadConsoleEditor.Editors.IEditor>();
             
             ChangeEditor(new DrawingEditor());
+            //_borderRenderer = new Consoles.BorderRenderer(1, 1);
 
             Editors.Add(DrawingEditor.ID, new DrawingEditor());
-            Editors.Add(GameScreenEditor.ID, new GameScreenEditor());
-            Editors.Add(EntityEditor.ID, new EntityEditor());
-            Editors.Add(SceneEditor.ID, new SceneEditor());
+            //Editors.Add(GameScreenEditor.ID, new GameScreenEditor());
+            //Editors.Add(EntityEditor.ID, new EntityEditor());
+            //Editors.Add(SceneEditor.ID, new SceneEditor());
 
         }
 
@@ -216,10 +213,9 @@ namespace SadConsoleEditor
 
         public void UpdateBox()
         {
-            if (_borderRenderer != null)
-            {
-                _borderRenderer.CellData.Resize(EditingSurfaceWidth + 2, EditingSurfaceHeight + 2);
-            }
+            //if (_borderRenderer != null)
+                _borderRenderer = new Consoles.BorderRenderer(EditingSurfaceWidth + 2, EditingSurfaceHeight + 2);
+
             CenterEditor();
         }
 
@@ -294,7 +290,7 @@ namespace SadConsoleEditor
                 bool movekeyPressed = false;
                 if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
                 {
-                    if (_borderRenderer.Position.X + _borderRenderer.CellData.Width - 1 != 0)
+                    if (_borderRenderer.Position.X + _borderRenderer.TextSurface.Width - 1 != 0)
                     {
                         position.X -= 1;
                         movekeyPressed = true;
@@ -311,7 +307,7 @@ namespace SadConsoleEditor
 
                 if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
                 {
-                    if (_borderRenderer.Position.Y + _borderRenderer.CellData.Height - 2 != 0)
+                    if (_borderRenderer.Position.Y + _borderRenderer.TextSurface.Height - 2 != 0)
                     {
                         position.Y -= 1;
                         movekeyPressed = true;
@@ -394,17 +390,20 @@ namespace SadConsoleEditor
                 {
                     IEditor editor;
 
-                    if (popup.Editor.Id == EntityEditor.ID)
-                        editor = new EntityEditor();
-                    else if (popup.Editor.Id == DrawingEditor.ID)
-                        editor = new DrawingEditor();
-                    else if (popup.Editor.Id == SceneEditor.ID)
-                        editor = new SceneEditor();
-                    else
-                        editor = new GameScreenEditor();
+                    //if (popup.Editor.Id == EntityEditor.ID)
+                    //    editor = new EntityEditor();
+                    //else if (popup.Editor.Id == DrawingEditor.ID)
+                    //    editor = new DrawingEditor();
+                    //else if (popup.Editor.Id == SceneEditor.ID)
+                    //    editor = new SceneEditor();
+                    //else
+                    //    editor = new GameScreenEditor();
+
+                    editor = new DrawingEditor();
+
 
                     editor.Resize(popup.SettingWidth, popup.SettingHeight);
-                    editor.Surface.Clear(popup.SettingForeground, popup.SettingBackground);
+                    editor.Surface.Fill(popup.SettingForeground, popup.SettingBackground, 0, null);
                     AddDocument(editor);
                 }
             };
@@ -423,7 +422,7 @@ namespace SadConsoleEditor
             if (_fileDialogPopup.DialogResult)
             {
                 SelectedEditor.Load(_fileDialogPopup.SelectedFile);
-                ToolPane.LayersPanel.RebuildListBox();
+                //ToolPane.LayersPanel.RebuildListBox();
             }
         }
 

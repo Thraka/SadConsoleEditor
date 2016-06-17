@@ -224,7 +224,7 @@ namespace SadConsoleEditor.Editors
         {
             if (System.IO.File.Exists(file))
             {
-                var surface = SadConsole.CellSurface.Load(file);
+                var surface = SadConsole.TextSurface.Load(file);
 
                 if (surface.Width != EditorConsoleManager.Instance.SelectedEditor.Surface.Width || surface.Height != EditorConsoleManager.Instance.SelectedEditor.Height)
                 {
@@ -242,7 +242,7 @@ namespace SadConsoleEditor.Editors
 
         public void SaveLayer(int index, string file)
         {
-            EditorConsoleManager.Instance.SelectedEditor.Surface[index].CellData.Save(file);
+            EditorConsoleManager.Instance.SelectedEditor.Surface[index].Data.Save(file);
         }
 
         public void SetActiveLayer(int index)
@@ -260,9 +260,9 @@ namespace SadConsoleEditor.Editors
             _entities.Remove(entity);
         }
 
-        public SadConsole.Entities.Entity[] GetEntities()
+        public IEnumerable<SadConsole.Entities.Entity> GetEntities()
         {
-            return _entities.ToArray();
+            return _entities;
         }
     }
 }

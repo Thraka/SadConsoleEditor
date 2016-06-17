@@ -8,6 +8,7 @@ using SadConsoleEditor.Windows;
 using SadConsole;
 using SadConsole.Entities;
 using SadConsoleEditor.Editors;
+using SadConsole.Consoles;
 
 namespace SadConsoleEditor.Panels
 {
@@ -25,11 +26,11 @@ namespace SadConsoleEditor.Panels
         private Button _nextFrame;
         private Button _previousFrame;
 
-        private Action<Frame> _frameChangeCallback;
+        private Action<TextSurface> _frameChangeCallback;
         private Animation _currentAnimation;
-        private Frame _selectedFrame;
+        private TextSurface _selectedFrame;
 
-        public AnimationFramesPanel(Action<Frame> frameChangeCallback)
+        public AnimationFramesPanel(Action<TextSurface> frameChangeCallback)
         {
             Title = "Frames";
 
@@ -231,7 +232,8 @@ namespace SadConsoleEditor.Panels
         void addNewFrame_ButtonClicked(object sender, EventArgs e)
         {
             var frame = _currentAnimation.CreateFrame();
-            frame.Fill(Settings.Config.EntityEditor.DefaultForeground, Settings.Config.EntityEditor.DefaultBackground, 0, null);
+            Settings.QuickEditor.TextSurface = frame;
+            Settings.QuickEditor.Fill(Settings.Config.EntityEditor.DefaultForeground, Settings.Config.EntityEditor.DefaultBackground, 0, null);
             EnableDisableControls(_currentAnimation.Frames.IndexOf(_selectedFrame));
             DrawFrameCount();
         }

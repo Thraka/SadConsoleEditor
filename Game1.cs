@@ -27,39 +27,26 @@ namespace SadConsoleEditor
 
             Window.Title = "SadConsole Editor - v" + System.Reflection.Assembly.GetCallingAssembly().GetName().Version.ToString();
 
-            var sadConsoleComponent = new SadConsole.EngineGameComponent(this, () =>
+            var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(ProgramSettings));
+            using (var fileObject = System.IO.File.OpenRead("Settings.json"))
+                Settings.Config = serializer.ReadObject(fileObject) as ProgramSettings;
+            
+            var sadConsoleComponent = new SadConsole.EngineGameComponent(this, graphics, Settings.Config.ProgramFontFile, Settings.Config.WindowWidth, Settings.Config.WindowHeight, () =>
             {
                 // Load settings 
-                var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(ProgramSettings));
-                using (var fileObject = System.IO.File.OpenRead("Settings.json"))
-                    Settings.Config = serializer.ReadObject(fileObject) as ProgramSettings;
-
-                using (var stream = System.IO.File.OpenRead(Settings.Config.ProgramFontFile))
-                    SadConsole.Engine.DefaultFont = SadConsole.Serializer.Deserialize<SadConsole.Font>(stream);
-
-                using (var stream = System.IO.File.OpenRead(Settings.Config.ScreenFontFile))
-                    Settings.Config.ScreenFont = SadConsole.Serializer.Deserialize<SadConsole.Font>(stream);
-
-                //if (System.IO.File.Exists("Settings.json"))
-                //    System.IO.File.Delete("Settings.json");
-
-                //var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(ProgramSettings));
-
-                //using (var stream = System.IO.File.OpenWrite("Settings.json"))
-                //    serializer.WriteObject(stream, Settings.Config);
-
-                //Settings.Config. = "Cheepicus12.font";
-
-
-                SadConsole.Engine.DefaultFont.ResizeGraphicsDeviceManager(graphics, Settings.Config.WindowWidth, Settings.Config.WindowHeight, 0, 0);
+                var font = SadConsole.Engine.LoadFont(Settings.Config.ScreenFontFile);
+                Settings.Config.ScreenFont = font.GetFont(SadConsole.Font.FontSizes.One);
+                
                 SadConsole.Engine.UseMouse = true;
                 SadConsole.Engine.UseKeyboard = true;
 
                 Settings.SetupThemes();
 
+                Settings.QuickEditor = new SadConsole.Consoles.SurfaceEditor(new SadConsole.Consoles.TextSurface(10, 10, SadConsole.Engine.DefaultFont));
+
                 SadConsole.Engine.ConsoleRenderStack = EditorConsoleManager.Instance;
                 SadConsole.Engine.ActiveConsole = EditorConsoleManager.Instance;
-
+                
                 EditorConsoleManager.Instance.ShowNewConsolePopup(false);
             });
 

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using SadConsole.Consoles;
 
 namespace SadConsoleEditor
 {
@@ -12,7 +13,7 @@ namespace SadConsoleEditor
     {
         public List<Entity> TopLayers;
 
-        public EntityBrush()
+        public EntityBrush(int width, int height): base(width, height)
         {
             this.Font = Settings.Config.ScreenFont;
             TopLayers = new List<Entity>();
@@ -39,9 +40,9 @@ namespace SadConsoleEditor
                     item.Position = this.Position;
         }
 
-        public override void Render()
+        public override void Render(ITextSurface surface, Matrix renderingMatrix)
         {
-            base.Render();
+            base.Render(surface, renderingMatrix);
 
             foreach (var item in TopLayers)
                 item.Render();

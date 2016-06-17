@@ -17,7 +17,7 @@ namespace SadConsoleEditor.Editors
     {
         private int _width;
         private int _height;
-        private LayeredConsole _consoleLayers;
+        private LayeredTextSurface _consoleLayers;
         private AnimationsPanel _animationPanel;
         private AnimationFramesPanel _framesPanel;
 
@@ -32,12 +32,12 @@ namespace SadConsoleEditor.Editors
 
         private Entity _entity;
         private Animation _selectedAnimation;
-        private Frame _selectedFrame;
+        private TextSurface _selectedFrame;
         private AnimationsPanel.CustomTool _customTool;
 
-        private LayeredConsole _specialToolLayer;
+        private LayeredTextSurface _specialToolLayer;
 
-        public LayeredConsole Surface { get { return _consoleLayers; } }
+        public LayeredTextSurface Surface { get { return _consoleLayers; } }
 
         public const string ID = "ANIM";
 
@@ -71,7 +71,7 @@ namespace SadConsoleEditor.Editors
             _animationPanel = new AnimationsPanel(SelectedAnimationChanged);
             _framesPanel = new AnimationFramesPanel(SelectedFrameChanged);
 
-            _entity = new Entity(SadConsoleEditor.Settings.Config.ScreenFont);
+            _entity = new Entity(8, 5, SadConsoleEditor.Settings.Config.ScreenFont);
 
             Reset();
 
@@ -85,7 +85,7 @@ namespace SadConsoleEditor.Editors
 
             _selectedAnimation = animation;
 
-            if (_consoleLayers.Layers != 0)
+            if (_consoleLayers.LayerCount != 0)
                 _consoleLayers.RemoveLayer(0);
 
             _consoleLayers.Resize(animation.Width, animation.Height);
@@ -101,7 +101,7 @@ namespace SadConsoleEditor.Editors
         private void SyncSpecialLayerToAnimation()
         {
             _specialToolLayer = new LayeredConsole(3, _selectedAnimation.Width, _selectedAnimation.Height);
-            _specialToolLayer[1].CellData.Clear();
+            _specialToolLayer[1].Data.Clear();
             _specialToolLayer[1].CellData[_selectedAnimation.Center.X, _selectedAnimation.Center.Y].CharacterIndex = 42;
             _specialToolLayer[1].CellData[_selectedAnimation.Center.X, _selectedAnimation.Center.Y].Background = Color.Black;
             _specialToolLayer[0].Tint = new Color(0f, 0f, 0f, 0.2f);
@@ -110,7 +110,7 @@ namespace SadConsoleEditor.Editors
 
         public void SetAnimationCenter(Point center)
         {
-            _specialToolLayer[1].CellData.Clear();
+            _specialToolLayer[1].Data.Clear();
             _specialToolLayer[1].CellData[center.X, center.Y].CharacterIndex = 42;
             _specialToolLayer[1].CellData[center.X, center.Y].Background = Color.Black;
             _selectedAnimation.Center = center;
@@ -274,7 +274,7 @@ namespace SadConsoleEditor.Editors
         {
             if (System.IO.File.Exists(file))
             {
-                var surface = SadConsole.CellSurface.Load(file);
+                var surface = SadConsole.TextSurface.Load(file);
 
                 if (surface.Width != EditorConsoleManager.Instance.SelectedEditor.Surface.Width || surface.Height != EditorConsoleManager.Instance.SelectedEditor.Height)
                 {
@@ -292,7 +292,7 @@ namespace SadConsoleEditor.Editors
 
         public void SaveLayer(int index, string file)
         {
-            EditorConsoleManager.Instance.SelectedEditor.Surface[index].CellData.Save(file);
+            EditorConsoleManager.Instance.SelectedEditor.Surface[index].Data.Save(file);
         }
 
         public void SetActiveLayer(int index)

@@ -5,6 +5,7 @@ using System.Text;
 using SadConsole.Controls;
 using SadConsole;
 using Microsoft.Xna.Framework;
+using SadConsole.Consoles;
 
 namespace SadEditor.Controls
 {
@@ -46,8 +47,7 @@ namespace SadEditor.Controls
         #endregion
 
         #region Constructors
-        public FileDirectoryListbox()
-            : base(10, 10)
+        public FileDirectoryListbox(int width, int height) : base(width, height)
         {
             HighlightedExtentions = "";
         }
@@ -217,9 +217,10 @@ namespace SadEditor.Controls
 
         }
 
-        public override void Draw(CellSurface surface, Rectangle area)
+        public override void Draw(ITextSurface surface, Rectangle area)
         {
-            surface.Print(area.X, area.Y, _displayString.Align(System.Windows.HorizontalAlignment.Left, area.Width), base._currentAppearance);
+            SadConsoleEditor.Settings.QuickEditor.TextSurface = surface;
+            SadConsoleEditor.Settings.QuickEditor.Print(area.X, area.Y, _displayString.Align(System.Windows.HorizontalAlignment.Left, area.Width), base._currentAppearance);
             IsDirty = false;
         }
 

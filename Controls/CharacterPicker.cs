@@ -2,6 +2,7 @@
 {
     using Microsoft.Xna.Framework;
     using SadConsole;
+    using SadConsole.Consoles;
     using System;
     using Console = SadConsole.Consoles.Console;
 
@@ -11,6 +12,7 @@
         private Color _fill;
         private Color _selectedCharColor;
         Microsoft.Xna.Framework.Graphics.SpriteEffects _mirrorEffect;
+        private SadConsole.Effects.EffectsManager effectsManager;
 
         private SadConsole.Controls.DrawingSurface _characterSurface;
         private SadConsole.Effects.Fade _selectedCharEffect;
@@ -37,13 +39,14 @@
                 int old = _selectedChar;
                 _selectedChar = value;
 
-                var oldLocation = CellSurface.GetPointFromIndex(old, 16);
-                var newLocation = CellSurface.GetPointFromIndex(value, 16);
+                var oldLocation = SadConsole.Consoles.TextSurface.GetPointFromIndex(old, 16);
+                var newLocation = SadConsole.Consoles.TextSurface.GetPointFromIndex(value, 16);
 
                 this.SetForeground(oldLocation.X, oldLocation.Y, _charForeground);
                 this.SetForeground(newLocation.X, newLocation.Y, _selectedCharColor);
-                this.SetEffect(this[oldLocation.X, oldLocation.Y], null);
-                this.SetEffect(this[newLocation.X, newLocation.Y], _selectedCharEffect);
+
+                effectsManager.SetEffect(this[oldLocation.X, oldLocation.Y], null);
+                effectsManager.SetEffect(this[newLocation.X, newLocation.Y], _selectedCharEffect);
                 
                 if (SelectedCharacterChanged != null)
                     SelectedCharacterChanged(this, new SelectedCharacterEventArgs(old, value));
@@ -55,12 +58,13 @@
         {
             _characterSurface.AlternateFont = characterFont;
         }
-        public CharacterPicker(Color foreground, Color fill, Color selectedCharacterColor)
+        public CharacterPicker(Color foreground, Color fill, Color selectedCharacterColor):base(16, 16)
         {
-            this.DefaultForeground = _charForeground = foreground;
-            this.DefaultBackground = _fill = fill;
-            this.Clear();
-            this.Resize(16, 16);
+            effectsManager = new SadConsole.Effects.EffectsManager(textSurface);
+            textSurface.DefaultForeground = _charForeground = foreground;
+            textSurface.DefaultBackground = _fill = fill;
+            Clear();
+            
 
             this.CanUseMouse = true;
 
