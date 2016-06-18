@@ -35,7 +35,7 @@
 
         public TextTool()
         {
-            tempConsole = new Console();
+            tempConsole = new Console(1, 1);
             tempConsole.CanUseKeyboard = true;
             tempConsole.VirtualCursor.AutomaticallyShiftRowsUp = false;
             ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel };
@@ -45,12 +45,12 @@
         {
             SadConsole.Effects.Blink blinkEffect = new SadConsole.Effects.Blink();
             blinkEffect.BlinkSpeed = 0.35f;
-            _brush = new EntityBrush();
-            EditorConsoleManager.Instance.UpdateBrush(_brush);
-            _brush.CurrentAnimation.Frames[0].Fill(Color.White, Color.Black, _cursorCharacter, blinkEffect);
+            _brush = new EntityBrush(1, 1);
+            Settings.QuickEditor.TextSurface = _brush.CurrentAnimation.Frames[0];
+            Settings.QuickEditor.Fill(Color.White, Color.Black, _cursorCharacter, blinkEffect);
             _brush.IsVisible = false;
             EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = true;
-
+            EditorConsoleManager.Instance.UpdateBrush(_brush);
         }
 
         public void OnDeselected()
@@ -75,7 +75,7 @@
                 }
                 else
                 {
-                    tempConsole.CellData = surface;
+                    tempConsole.TextSurface = surface;
                     tempConsole.VirtualCursor.PrintAppearance = new CellAppearance(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground);
                     tempConsole.ProcessKeyboard(info);
                     _brush.Position = tempConsole.VirtualCursor.Position;
@@ -108,7 +108,7 @@
                 EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = false;
                 writing = true;
 
-                tempConsole.CellData = surface;
+                tempConsole.TextSurface = surface;
                 tempConsole.VirtualCursor.Position = _brush.Position = info.ConsoleLocation;
 
                 _brush.IsVisible = true;

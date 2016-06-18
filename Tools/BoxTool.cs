@@ -63,7 +63,7 @@
 
         public void OnSelected()
         {
-            _entity = new EntityBrush();
+            _entity = new EntityBrush(1, 1);
             _entity.IsVisible = false;
 
             _entity.AddAnimation(_animSinglePoint);
@@ -139,7 +139,7 @@
                 _boxShape.Location = new Point(0, 0);
                 _boxShape.Width = frame.Width;
                 _boxShape.Height = frame.Height;
-                _boxShape.Draw(frame);
+                _boxShape.Draw(new SurfaceEditor(frame));
 
                 _entity.SetActiveAnimation("line");
             }
@@ -161,7 +161,7 @@
 
 
                     _boxShape.Location = p1;
-                    _boxShape.Draw(surface);
+                    _boxShape.Draw(new SurfaceEditor(surface));
 
                     _firstPoint = null;
                     _secondPoint = null;

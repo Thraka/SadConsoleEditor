@@ -5,7 +5,7 @@
     using SadConsole.Input;
     using System;
     using SadConsoleEditor.Panels;
-
+    using SadConsole.Consoles;
     class FillTool : ITool
     {
         public const string ID = "FILL";
@@ -26,7 +26,7 @@
         public FillTool()
         {
             ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel };
-            _brush = new EntityBrush();
+            _brush = new EntityBrush(1, 1);
         }
 
         public override string ToString()
@@ -37,7 +37,8 @@
         public void OnSelected()
         {
             EditorConsoleManager.Instance.UpdateBrush(_brush);
-            _brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+            Settings.QuickEditor.TextSurface = _brush.CurrentAnimation.Frames[0];
+            Settings.QuickEditor.Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
                 EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter, null, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect);
 
 			EditorConsoleManager.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel, EventArgs.Empty);
@@ -56,7 +57,8 @@
 
 		public void RefreshTool()
         {
-            _brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+            Settings.QuickEditor.TextSurface = _brush.CurrentAnimation.Frames[0];
+            Settings.QuickEditor.Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
                 EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter, null, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect);
         }
 
@@ -89,8 +91,8 @@
                 Cell cellToMatch = new Cell();
                 Cell currentFillCell = new Cell();
 
-                surface[info.ConsoleLocation.X, info.ConsoleLocation.Y].Copy(cellToMatch);
-                cellToMatch.Effect = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y].Effect;
+                surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y).Copy(cellToMatch);
+                cellToMatch.Effect = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y).Effect;
 
                 currentFillCell.CharacterIndex = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter;
                 currentFillCell.Foreground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground;
@@ -120,27 +122,29 @@
                     //console.TextSurface.SetEffect(c, _currentFillCell.Effect);
                 };
 
+                System.Collections.Generic.List<Cell> cells = new System.Collections.Generic.List<Cell>(surface.Cells);
+
                 Func<Cell, SadConsole.Algorithms.NodeConnections<Cell>> getConnectedCells = (c) =>
                 {
                     Algorithms.NodeConnections<Cell> connections = new Algorithms.NodeConnections<Cell>();
 
-                    Point position = c.Position;
+                    Point position = TextSurface.GetPointFromIndex(cells.IndexOf(c), surface.Width);
 
-                    connections.West = surface.IsValidCell(position.X - 1, position.Y) ? surface[position.X - 1, position.Y] : null;
-                    connections.East = surface.IsValidCell(position.X + 1, position.Y) ? surface[position.X + 1, position.Y] : null;
-                    connections.North = surface.IsValidCell(position.X, position.Y - 1) ? surface[position.X, position.Y - 1] : null;
-                    connections.South = surface.IsValidCell(position.X, position.Y + 1) ? surface[position.X, position.Y + 1] : null;
+                    connections.West = surface.IsValidCell(position.X - 1, position.Y) ? surface.GetCell(position.X - 1, position.Y) : null;
+                    connections.East = surface.IsValidCell(position.X + 1, position.Y) ? surface.GetCell(position.X + 1, position.Y) : null;
+                    connections.North = surface.IsValidCell(position.X, position.Y - 1) ? surface.GetCell(position.X, position.Y - 1) : null;
+                    connections.South = surface.IsValidCell(position.X, position.Y + 1) ? surface.GetCell(position.X, position.Y + 1) : null;
 
                     return connections;
                 };
 
                 if (!isTargetCell(currentFillCell))
-                    SadConsole.Algorithms.FloodFill<Cell>(surface[info.ConsoleLocation.X, info.ConsoleLocation.Y], isTargetCell, fillCell, getConnectedCells);
+                    SadConsole.Algorithms.FloodFill<Cell>(surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y), isTargetCell, fillCell, getConnectedCells);
             }
 
             if (info.RightButtonDown)
             {
-                var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
+                var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
 
                 EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter = cell.CharacterIndex;
                 EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground = cell.Foreground;

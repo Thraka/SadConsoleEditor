@@ -44,7 +44,7 @@ namespace SadConsoleEditor.Editors
         {
             get
             {
-                return new string[] { PaintTool.ID, RecolorTool.ID }; //, FillTool.ID, TextTool.ID, SelectionTool.ID, LineTool.ID, BoxTool.ID, CircleTool.ID };
+                return new string[] { PaintTool.ID, RecolorTool.ID, FillTool.ID, TextTool.ID, LineTool.ID, BoxTool.ID }; //, FillTool.ID, TextTool.ID, SelectionTool.ID, LineTool.ID, BoxTool.ID, CircleTool.ID };
             }
         }
 
@@ -62,8 +62,8 @@ namespace SadConsoleEditor.Editors
 
         public void Reset()
         {
-            //ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, EditorConsoleManager.Instance.ToolPane.LayersPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
-            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
+            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, EditorConsoleManager.Instance.ToolPane.LayersPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
+            //ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
 
             if (_consoleLayers != null)
             {
@@ -72,20 +72,18 @@ namespace SadConsoleEditor.Editors
                 _consoleLayers.MouseExit -= _mouseExitHandler;
             }
 
-            _consoleLayers.TextSurface = new LayeredTextSurface(10, 10, 2);
+            _consoleLayers.TextSurface = new LayeredTextSurface(10, 10, 1);
             _consoleLayers.TextSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
+            LayerMetadata.Create("Root", false, false, false, ((LayeredTextSurface)_consoleLayers.TextSurface).GetLayer(0));
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
-            //_consoleLayers.GetLayerMetadata(0).Name = "Root";
-            //_consoleLayers.GetLayerMetadata(0).IsRemoveable = false;
-            //_consoleLayers.GetLayerMetadata(0).IsMoveable = false;
 
             _width = 25;
             _height = 10;
 
-            _mouseMoveHandler = (o, e) => { if (this.MouseMove != null) this.MouseMove(_consoleLayers.TextSurface, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseMoveSurface(e.OriginalMouseInfo, _consoleLayers.TextSurface); };
-            _mouseEnterHandler = (o, e) => { if (this.MouseEnter != null) this.MouseEnter(_consoleLayers.TextSurface, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseEnterSurface(e.OriginalMouseInfo, _consoleLayers.TextSurface); };
-            _mouseExitHandler = (o, e) => { if (this.MouseExit != null) this.MouseExit(_consoleLayers.TextSurface, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseExitSurface(e.OriginalMouseInfo, _consoleLayers.TextSurface); };
+            _mouseMoveHandler = (o, e) => { MouseMove?.Invoke(_consoleLayers.TextSurface, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseMoveSurface(e.OriginalMouseInfo, _consoleLayers.TextSurface); };
+            _mouseEnterHandler = (o, e) => { MouseEnter?.Invoke(_consoleLayers.TextSurface, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseEnterSurface(e.OriginalMouseInfo, _consoleLayers.TextSurface); };
+            _mouseExitHandler = (o, e) => { MouseExit?.Invoke(_consoleLayers.TextSurface, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseExitSurface(e.OriginalMouseInfo, _consoleLayers.TextSurface); };
 
             _consoleLayers.MouseMove += _mouseMoveHandler;
             _consoleLayers.MouseEnter += _mouseEnterHandler;
@@ -125,7 +123,21 @@ namespace SadConsoleEditor.Editors
             _width = width;
             _height = height;
 
-            _consoleLayers.TextSurface = new LayeredTextSurface(width, height, 1);
+            var oldSurface = (LayeredTextSurface)_consoleLayers.TextSurface;
+            var newSurface = new LayeredTextSurface(width, height, oldSurface.LayerCount);
+            
+            for (int i = 0; i < oldSurface.LayerCount; i++)
+            {
+                var oldLayer = oldSurface.GetLayer(i);
+                var newLayer = newSurface.GetLayer(i);
+                oldSurface.SetActiveLayer(i);
+                newSurface.SetActiveLayer(i);
+                TextSurface.Copy(oldSurface, newSurface);
+                newLayer.Metadata = oldLayer.Metadata;
+                newLayer.IsVisible = oldLayer.IsVisible;
+            }
+
+            _consoleLayers.TextSurface = newSurface;
             _consoleLayers.TextSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
 
             // inform the outer box we've changed size
@@ -209,7 +221,7 @@ namespace SadConsoleEditor.Editors
 
         public void AddNewLayer(string name)
         {
-            LayerMetadata.Create(name, ((LayeredTextSurface)_consoleLayers.TextSurface).Add());
+            LayerMetadata.Create(name, true, true, true, ((LayeredTextSurface)_consoleLayers.TextSurface).Add());
         }
 
         public bool LoadLayer(string file)
@@ -222,7 +234,7 @@ namespace SadConsoleEditor.Editors
                 if (surface.Width != EditorConsoleManager.Instance.SelectedEditor.Surface.Width || surface.Height != EditorConsoleManager.Instance.SelectedEditor.Height)
                 {
                     var newLayer = ((LayeredTextSurface)EditorConsoleManager.Instance.SelectedEditor.Surface.TextSurface).Add();
-                    LayerMetadata.Create("Loaded", newLayer);
+                    LayerMetadata.Create("Loaded", true, true, true, newLayer);
                     var tempSurface = new TextSurface(EditorConsoleManager.Instance.SelectedEditor.Surface.Width,
                                                       EditorConsoleManager.Instance.SelectedEditor.Surface.Height,
                                                       EditorConsoleManager.Instance.SelectedEditor.Surface.TextSurface.Font, newLayer.Cells);
@@ -232,7 +244,7 @@ namespace SadConsoleEditor.Editors
                 else
                 {
                     var layer = ((LayeredTextSurface)EditorConsoleManager.Instance.SelectedEditor.Surface.TextSurface).Add();
-                    LayerMetadata.Create("Loaded", layer);
+                    LayerMetadata.Create("Loaded", true, true, true, layer);
                     layer.Cells = surface.Cells;
 
                 }

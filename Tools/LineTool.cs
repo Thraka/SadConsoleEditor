@@ -72,7 +72,7 @@
             _lineStyle.SpriteEffect = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect;
             _lineStyle.CopyAppearanceTo(_lineCell);
 
-            _entity = new EntityBrush();
+            _entity = new EntityBrush(1, 1);
             _entity.IsVisible = false;
 
             _entity.AddAnimation(_animSinglePoint);
@@ -189,7 +189,7 @@
                 _lineShape.UseStartingCell = false;
                 _lineShape.StartingLocation = p1;
                 _lineShape.EndingLocation = p2;
-                _lineShape.Draw(frame);
+                _lineShape.Draw(new SurfaceEditor(frame));
                 
                 _settingsPanel.LineLength = frame.Width > frame.Height ? frame.Width : frame.Height;
 
@@ -211,7 +211,7 @@
 
                     _lineShape.StartingLocation = _firstPoint.Value;
                     _lineShape.EndingLocation = _secondPoint.Value;
-                    _lineShape.Draw(surface);
+                    _lineShape.Draw(new SurfaceEditor(surface));
 
                     _firstPoint = null;
                     _secondPoint = null;

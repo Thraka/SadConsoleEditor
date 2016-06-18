@@ -42,7 +42,7 @@ namespace SadConsoleEditor.Consoles
         
 
         public CharacterPickPanel CommonCharacterPickerPanel;
-        //public LayersPanel LayersPanel;
+        public LayersPanel LayersPanel;
         public FilesPanel FilesPanel;
         public ToolsPanel ToolsPanel;
 
@@ -72,10 +72,10 @@ namespace SadConsoleEditor.Consoles
             _tools.Add(PaintTool.ID, new PaintTool());
             //_tools.Add(EntityCenterTool.ID, new EntityCenterTool());
             _tools.Add(RecolorTool.ID, new RecolorTool());
-            //_tools.Add(FillTool.ID, new FillTool());
-            //_tools.Add(TextTool.ID, new TextTool());
-            //_tools.Add(LineTool.ID, new LineTool());
-            //_tools.Add(BoxTool.ID, new BoxTool());
+            _tools.Add(FillTool.ID, new FillTool());
+            _tools.Add(TextTool.ID, new TextTool());
+            _tools.Add(LineTool.ID, new LineTool());
+            _tools.Add(BoxTool.ID, new BoxTool());
             //_tools.Add(ObjectTool.ID, new ObjectTool());
             //_tools.Add(SelectionTool.ID, new SelectionTool());
             //_tools.Add(CircleTool.ID, new CircleTool());
@@ -83,10 +83,10 @@ namespace SadConsoleEditor.Consoles
 
             FilesPanel = new FilesPanel();
             ToolsPanel = new ToolsPanel();
-            //LayersPanel = new LayersPanel();
+            LayersPanel = new LayersPanel();
 
             FilesPanel.IsCollapsed = true;
-            //LayersPanel.IsCollapsed = true;
+            LayersPanel.IsCollapsed = true;
 
             ToolsPanel.ToolsListBox.SelectedItemChanged += (sender, e) =>
             {
