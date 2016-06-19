@@ -51,17 +51,14 @@
       <HintPath>..\..\packages\MonoGame.Framework.WindowsDX.3.5.1.1679\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SadConsole.Ansi.Windows">
-      <HintPath>..\..\..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Ansi.Windows.dll</HintPath>
-    </Reference>
     <Reference Include="SadConsole.Controls.Windows">
-      <HintPath>..\..\..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Controls.Windows.dll</HintPath>
+      <HintPath>..\..\..\..\Users\thrak\Documents\GitHubVisualStudio\SadConsole1\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Controls.Windows.dll</HintPath>
     </Reference>
     <Reference Include="SadConsole.Core.Windows">
-      <HintPath>..\..\..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Core.Windows.dll</HintPath>
+      <HintPath>..\..\..\..\Users\thrak\Documents\GitHubVisualStudio\SadConsole1\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Core.Windows.dll</HintPath>
     </Reference>
     <Reference Include="SadConsole.GameHelpers.Windows">
-      <HintPath>..\..\..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.GameHelpers.Windows.dll</HintPath>
+      <HintPath>..\..\..\..\Users\thrak\Documents\GitHubVisualStudio\SadConsole1\StarterProject\Platforms\Windows\bin\Debug\SadConsole.GameHelpers.Windows.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />

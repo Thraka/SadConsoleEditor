@@ -54,8 +54,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Windows\SelectFilePopup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)16x16_sm.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Cheepicus_12x12.png" />
+    <Content Include="$(MSBuildThisFileDirectory)16x16_sm.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Cheepicus_12x12.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="$(MSBuildThisFileDirectory)EditorFont_IBM8x16.png" />
     <Content Include="$(MSBuildThisFileDirectory)Icon.ico" />
     <Content Include="$(MSBuildThisFileDirectory)quickselect.json">
@@ -66,8 +70,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)16sm.font" />
-    <None Include="$(MSBuildThisFileDirectory)Cheepicus12.font" />
+    <None Include="$(MSBuildThisFileDirectory)16sm.font">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Cheepicus12.font">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="$(MSBuildThisFileDirectory)EditorFont.font" />
   </ItemGroup>
   <ItemGroup>
