@@ -178,8 +178,7 @@ namespace SadConsoleEditor.Panels
         void _toggleHideShow_IsSelectedChanged(object sender, EventArgs e)
         {
             var layer = (LayeredTextSurface.Layer)_layers.SelectedItem;
-
-            EditorConsoleManager.Instance.SelectedEditor.Surface[layer.Index].IsVisible = _toggleHideShow.IsSelected;
+            layer.IsVisible = _toggleHideShow.IsSelected;
             layer.IsVisible = _toggleHideShow.IsSelected;
         }
 
@@ -187,7 +186,7 @@ namespace SadConsoleEditor.Panels
         {
             _layers.Items.Clear();
 
-            var layers = (LayeredTextSurface)EditorConsoleManager.Instance.SelectedEditor.Surface.TextSurface;
+            var layers = (LayeredTextSurface)EditorConsoleManager.Instance.SelectedEditor.Surface;
 
 
             for (int i = layers.LayerCount - 1; i >= 0 ; i--)

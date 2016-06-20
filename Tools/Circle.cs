@@ -63,7 +63,7 @@
 
         public void OnSelected()
         {
-            _entity = new EntityBrush();
+            _entity = new EntityBrush(1, 1);
             _entity.IsVisible = false;
 
             _entity.AddAnimation(_animSinglePoint);
@@ -141,10 +141,12 @@
 
                 animation.Center = p1;
 
+                Settings.QuickEditor.TextSurface = frame;
+
                 _ellipseShape = new SadConsole.Shapes.Ellipse();
                 _ellipseShape.BorderAppearance = _borderAppearance;
                 _ellipseShape.EndingPoint = new Point(frame.Width - 1, frame.Height - 1);
-                _ellipseShape.Draw(frame);
+                _ellipseShape.Draw(Settings.QuickEditor);
 
                 _entity.SetActiveAnimation("line");
             }
@@ -168,9 +170,11 @@
                     Point p1 = new Point(Math.Min(_firstPoint.Value.X, _secondPoint.Value.X), Math.Min(_firstPoint.Value.Y, _secondPoint.Value.Y));
                     Point p2 = new Point(Math.Max(_firstPoint.Value.X, _secondPoint.Value.X), Math.Max(_firstPoint.Value.Y, _secondPoint.Value.Y));
 
+                    Settings.QuickEditor.TextSurface = surface;
+
                     _ellipseShape.StartingPoint = p1;
                     _ellipseShape.EndingPoint = p2;
-                    _ellipseShape.Draw(surface);
+                    _ellipseShape.Draw(Settings.QuickEditor);
 
                     _entity.SetActiveAnimation("single");
                     _entity.Position = _secondPoint.Value;

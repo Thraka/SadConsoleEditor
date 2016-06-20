@@ -19,7 +19,7 @@
         private SelectionToolPanel _panel;
         private SelectionToolAltPanel _altPanel;
         private SadConsole.Effects.Fade _pulseAnimation;
-        private TextSurface _previousSurface;
+        private ITextSurface _previousSurface;
 
         private SelectionToolPanel.CloneState _previousState;
 
@@ -110,8 +110,10 @@
 
         private TextSurface SaveBrush()
         {
-            TextSurface newSurface = new TextSurface(_entity.CurrentAnimation.CurrentFrame.Width, _entity.CurrentAnimation.CurrentFrame.Height);
-            _entity.CurrentAnimation.CurrentFrame.Copy(newSurface);
+            TextSurface newSurface = new TextSurface(_entity.CurrentAnimation.CurrentFrame.Width, 
+                                                     _entity.CurrentAnimation.CurrentFrame.Height, Settings.Config.ScreenFont);
+
+            TextSurface.Copy(_entity.CurrentAnimation.CurrentFrame, newSurface);
 
             return newSurface;
         }
@@ -123,7 +125,7 @@
             // Copy data to new animation
             Animation cloneAnimation = new Animation("clone", surface.Width, surface.Height);
             var frame = cloneAnimation.CreateFrame();
-            surface.Copy(frame);
+            TextSurface.Copy(surface, frame);
 
             cloneAnimation.Center = new Point(cloneAnimation.Width / 2, cloneAnimation.Height / 2);
 
@@ -134,7 +136,7 @@
             _entity.IsVisible = true;
             _entity.TopLayers.Clear();
 
-            var topLayer = new Entity(Settings.Config.ScreenFont);
+            var topLayer = new Entity(surface.Width, surface.Height, Settings.Config.ScreenFont);
             _entity.TopLayers.Add(topLayer);
             var animation = new Animation("box", surface.Width, surface.Height);
             frame = animation.CreateFrame();
@@ -142,7 +144,7 @@
             _boxShape.Location = new Point(0, 0);
             _boxShape.Width = frame.Width;
             _boxShape.Height = frame.Height;
-            _boxShape.Draw(frame);
+            _boxShape.Draw(new SurfaceEditor(frame));
             animation.Center = cloneAnimation.Center;
 
             topLayer.AddAnimation(animation);
@@ -156,7 +158,7 @@
         {
             if (_panel.State != SelectionToolPanel.CloneState.Clone && _panel.State != SelectionToolPanel.CloneState.Move)
             {
-                _entity = new EntityBrush();
+                _entity = new EntityBrush(1, 1);
 
                 _entity.Font = Settings.Config.ScreenFont;
                 _entity.IsVisible = true;
@@ -256,7 +258,7 @@
                     Animation cloneAnimation = new Animation("clone", _tempAnimation.Width, _tempAnimation.Height);
                     var frame = cloneAnimation.CreateFrame();
                     Point topLeftPoint = new Point(Math.Min(_firstPoint.Value.X, _secondPoint.Value.X), Math.Min(_firstPoint.Value.Y, _secondPoint.Value.Y));
-                    surface.Copy(topLeftPoint.X, topLeftPoint.Y, cloneAnimation.Width, cloneAnimation.Height, frame, 0, 0);
+                    TextSurface.Copy(surface, topLeftPoint.X, topLeftPoint.Y, cloneAnimation.Width, cloneAnimation.Height, frame, 0, 0);
 
                     if (_altPanel.SkipEmptyCells && _altPanel.UseAltEmptyColor)
                     {
@@ -275,7 +277,7 @@
 
                     // Display the rect
                     _entity.TopLayers.Clear();
-                    var topLayer = new Entity(Settings.Config.ScreenFont);
+                    var topLayer = new Entity(1, 1, Settings.Config.ScreenFont);
                     _entity.TopLayers.Add(topLayer);
                     topLayer.AddAnimation(_tempAnimation);
                     topLayer.SetActiveAnimation(_tempAnimation.Name);
@@ -353,11 +355,13 @@
 
                     animation.Center = p1;
 
+                    Settings.QuickEditor.TextSurface = frame;
+
                     _boxShape = SadConsole.Shapes.Box.GetDefaultBox();
                     _boxShape.Location = new Point(0, 0);
                     _boxShape.Width = frame.Width;
                     _boxShape.Height = frame.Height;
-                    _boxShape.Draw(frame);
+                    _boxShape.Draw(Settings.QuickEditor);
 
                     //frame.SetEffect(frame, _pulseAnimation);
 
@@ -377,13 +381,13 @@
             int destX = destinationX;
             int destY = destinationY;
 
-            for (int curx = 0; curx < _entity.TextSurface.Width; curx++)
+            for (int curx = 0; curx < _entity.CurrentAnimation.Width; curx++)
             {
-                for (int cury = 0; cury < _entity.TextSurface.Height; cury++)
+                for (int cury = 0; cury < _entity.CurrentAnimation.Height; cury++)
                 {
-                    if (_entity.TextSurface.IsValidCell(curx, cury))
+                    if (_entity.CurrentAnimation.CurrentFrame.IsValidCell(curx, cury))
                     {
-                        var sourceCell = _entity.CellData[curx, cury];
+                        var sourceCell = _entity.CurrentAnimation.CurrentFrame.GetCell(curx, cury);
 
                         // Not working, breakpoint here to remind me.
                         if (_altPanel.SkipEmptyCells && sourceCell.CharacterIndex == 0 && (sourceCell.Background == Color.Transparent || (_altPanel.UseAltEmptyColor && sourceCell.Background == _altPanel.AltEmptyColor)))
@@ -394,9 +398,10 @@
 
                         if (surface.IsValidCell(destX, destY))
                         {
-                            var desCell = surface[destX, destY];
+                            var desCell = surface.GetCell(destX, destY);
                             sourceCell.CopyAppearanceTo(desCell);
-                            surface.SetEffect(desCell, sourceCell.Effect);
+                            //TODO: effects
+                            //surface.SetEffect(desCell, sourceCell.Effect);
                         }
                     }
                     destY++;
@@ -413,15 +418,17 @@
             int destX = destinationX;
             int destY = destinationY;
 
-            for (int curx = 0; curx < _entity.TextSurface.Width; curx++)
+            Settings.QuickEditor.TextSurface = surface;
+
+            for (int curx = 0; curx < _entity.CurrentAnimation.CurrentFrame.Width; curx++)
             {
-                for (int cury = 0; cury < _entity.TextSurface.Height; cury++)
+                for (int cury = 0; cury < _entity.CurrentAnimation.CurrentFrame.Height; cury++)
                 {
-                    if (_entity.TextSurface.IsValidCell(curx, cury))
+                    if (_entity.CurrentAnimation.CurrentFrame.IsValidCell(curx, cury))
                     {
                         if (surface.IsValidCell(destX, destY))
                         {
-                            surface.Clear(destX, destY);
+                            Settings.QuickEditor.Clear(destX, destY);
                         }
                     }
                     destY++;

@@ -246,7 +246,7 @@ namespace SadConsoleEditor
         {
             base.Update();
 
-            SelectedEditor.Surface.Update();
+            SelectedEditor.Update();
             Brush.Update();
 
             //ProcessKeyboard(SadConsole.Engine.Keyboard);
@@ -403,7 +403,8 @@ namespace SadConsoleEditor
 
 
                     editor.Resize(popup.SettingWidth, popup.SettingHeight);
-                    editor.Surface.Fill(popup.SettingForeground, popup.SettingBackground, 0, null);
+                    Settings.QuickEditor.TextSurface = editor.Surface;
+                    Settings.QuickEditor.Fill(popup.SettingForeground, popup.SettingBackground, 0, null);
                     AddDocument(editor);
                 }
             };

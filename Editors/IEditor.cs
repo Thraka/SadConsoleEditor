@@ -33,7 +33,7 @@ namespace SadConsoleEditor.Editors
         string FileExtensionsLoad { get; }
         string FileExtensionsSave { get; }
 
-        SadConsole.Consoles.Console Surface { get; }
+        SadConsole.Consoles.ITextSurface Surface { get; }
 
         CustomPanel[] ControlPanels { get; }
 
@@ -48,6 +48,8 @@ namespace SadConsoleEditor.Editors
         Point GetPosition();
 
         void Render();
+
+        void Update();
 
         void Load(string file);
 
