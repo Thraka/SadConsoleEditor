@@ -122,7 +122,7 @@ namespace SadConsoleEditor.Panels
 
             var prevFrame = _currentAnimation.Frames[prevIndex];
 
-            prevFrame.Copy(_selectedFrame);
+            TextSurface.Copy(prevFrame, _selectedFrame);
         }
 
         private void previousFrame_ButtonClicked(object sender, EventArgs e)
@@ -176,18 +176,10 @@ namespace SadConsoleEditor.Panels
                 {
                     if (System.IO.File.Exists(popup.SelectedFile))
                     {
-                        var surface = Frame.Load(popup.SelectedFile);
+                        var surface = TextSurface.Load(popup.SelectedFile);
+                        var newFrame = _currentAnimation.CreateFrame();
 
-                        if (surface.Width != _currentAnimation.Width || surface.Height != _currentAnimation.Height)
-                        {
-                            var newFrame = _currentAnimation.CreateFrame();
-                            surface.Copy(newFrame);
-                        }
-                        else
-                        {
-                            var newFrame = _currentAnimation.CreateFrame();
-                            surface.Copy(newFrame);
-                        }
+                        TextSurface.Copy(surface, newFrame);
 
                         EnableDisableControls(0);
                         DrawFrameCount();

@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\FileDirectoryListbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\NoCheckRadioButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EditorConsoleManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Editors\AnimationEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\DrawingEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\IEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntityBrush.cs" />
@@ -27,6 +28,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)GameHelpers\GameObjectMeta.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HSLColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IEntityBrush.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\AnimationFramesPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\AnimationsPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\BoxTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\CharacterPickPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\Circle.Panel.cs" />
@@ -42,6 +45,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tools\BoxTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\Circle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\DrawTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\EntityCenterTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\EntityCollisionBoxTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\FillTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\ITool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\LineTool.cs" />
@@ -49,6 +54,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tools\SelectionTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\TextTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Undo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\AnimationPreviewPopup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\AnimationSpeedPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\CharacterQuickSelectPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\ColorPickerPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\NewConsolePopup.cs" />

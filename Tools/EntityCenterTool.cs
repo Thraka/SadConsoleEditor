@@ -38,7 +38,7 @@ namespace SadConsoleEditor.Tools
 
         public void OnSelected()
         {
-            _brush = new EntityBrush();
+            _brush = new EntityBrush(1, 1);
             EditorConsoleManager.Instance.UpdateBrush(_brush);
             _brush.CurrentAnimation.Frames[0][0,0].CharacterIndex = 42;
             _brush.IsVisible = false;
@@ -93,13 +93,13 @@ namespace SadConsoleEditor.Tools
 
             if (info.LeftClicked)
             {
-                var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
+                var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
 
                 var editor = EditorConsoleManager.Instance.SelectedEditor as Editors.EntityEditor;
 
                 if (editor != null)
                 {
-                    editor.SetAnimationCenter(cell.Position);
+                    editor.SetAnimationCenter(new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y));
                 }
             }
         }

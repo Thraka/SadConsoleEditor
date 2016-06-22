@@ -70,7 +70,6 @@ namespace SadConsoleEditor.Consoles
 
             _tools = new Dictionary<string, ITool>();
             _tools.Add(PaintTool.ID, new PaintTool());
-            //_tools.Add(EntityCenterTool.ID, new EntityCenterTool());
             _tools.Add(RecolorTool.ID, new RecolorTool());
             _tools.Add(FillTool.ID, new FillTool());
             _tools.Add(TextTool.ID, new TextTool());
@@ -79,6 +78,7 @@ namespace SadConsoleEditor.Consoles
             //_tools.Add(ObjectTool.ID, new ObjectTool());
             _tools.Add(SelectionTool.ID, new SelectionTool());
             _tools.Add(CircleTool.ID, new CircleTool());
+            _tools.Add(EntityCenterTool.ID, new EntityCenterTool());
             //_tools.Add(SceneEntityMoveTool.ID, new SceneEntityMoveTool());
 
             FilesPanel = new FilesPanel();

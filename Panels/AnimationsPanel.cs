@@ -125,7 +125,7 @@ namespace SadConsoleEditor.Panels
                     foreach (var frame in animation.Frames)
                     {
                         var newFrame = newAnimation.CreateFrame();
-                        frame.Copy(newFrame);
+                        SadConsole.Consoles.TextSurface.Copy(frame, newFrame);
                     }
 
                     newAnimation.CurrentFrameIndex = 0;

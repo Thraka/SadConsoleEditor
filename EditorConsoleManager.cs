@@ -166,7 +166,7 @@ namespace SadConsoleEditor
 
             Editors.Add(DrawingEditor.ID, new DrawingEditor());
             //Editors.Add(GameScreenEditor.ID, new GameScreenEditor());
-            //Editors.Add(EntityEditor.ID, new EntityEditor());
+            Editors.Add(EntityEditor.ID, new EntityEditor());
             //Editors.Add(SceneEditor.ID, new SceneEditor());
 
         }
@@ -390,16 +390,16 @@ namespace SadConsoleEditor
                 {
                     IEditor editor;
 
-                    //if (popup.Editor.Id == EntityEditor.ID)
-                    //    editor = new EntityEditor();
+                    if (popup.Editor.Id == EntityEditor.ID)
+                        editor = new EntityEditor();
                     //else if (popup.Editor.Id == DrawingEditor.ID)
-                    //    editor = new DrawingEditor();
+                    else
+                        editor = new DrawingEditor();
                     //else if (popup.Editor.Id == SceneEditor.ID)
                     //    editor = new SceneEditor();
                     //else
                     //    editor = new GameScreenEditor();
 
-                    editor = new DrawingEditor();
 
 
                     editor.Resize(popup.SettingWidth, popup.SettingHeight);

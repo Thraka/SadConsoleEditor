@@ -26,7 +26,7 @@ namespace SadConsoleEditor.Windows
             _animation = animation;
 
             CloseOnESC = true;
-            _entity = new Entity();
+            _entity = new Entity(1, 1);
             _entity.Font = Settings.Config.ScreenFont;
             _entity.Position = new Point(1, 1);
             _entity.AddAnimation(animation);
@@ -50,15 +50,15 @@ namespace SadConsoleEditor.Windows
             // Draw bar
             for (int i = 1; i < textSurface.Width - 1; i++)
             {
-                SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface[i, textSurface.Height - 3]);
-                textSurface[i, textSurface.Height - 3].CharacterIndex = 205;
+                SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(i, textSurface.Height - 3));
+                textSurface.GetCell(i, textSurface.Height - 3).CharacterIndex = 205;
             }
 
-            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface[0, textSurface.Height - 3]);
-            textSurface[0, textSurface.Height - 3].CharacterIndex = 204;
+            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(0, textSurface.Height - 3));
+            textSurface.GetCell(0, textSurface.Height - 3).CharacterIndex = 204;
 
-            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface[textSurface.Width - 1, textSurface.Height - 3]);
-            textSurface[textSurface.Width - 1, textSurface.Height - 3].CharacterIndex = 185;
+            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(textSurface.Width - 1, textSurface.Height - 3));
+            textSurface.GetCell(textSurface.Width - 1, textSurface.Height - 3).CharacterIndex = 185;
         }
 
         public override bool ProcessKeyboard(KeyboardInfo info)

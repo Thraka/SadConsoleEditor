@@ -263,6 +263,7 @@ namespace SadConsoleEditor.Editors
 
         public void SaveLayer(int index, string file)
         {
+            // TODO: Fix the save layer. This saves the whole surface, not a specific layer.
             ((LayeredTextSurface)_consoleLayers.TextSurface).Save(file, typeof(LayerMetadata));
         }
 
