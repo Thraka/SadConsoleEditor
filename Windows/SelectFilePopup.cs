@@ -107,7 +107,7 @@ namespace SadConsoleEditor.Windows
             {
                 SelectedFile = System.IO.Path.Combine(_directoryListBox.CurrentFolder, _fileName.Text);
 
-                var extensions = FileFilter.Replace("*", "").Split(';');
+                var extensions = FileFilter.Replace("*", "").Trim(';').Split(';');
                 bool foundExtension = false;
                 foreach (var item in extensions)
                 {

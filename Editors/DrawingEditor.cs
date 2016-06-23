@@ -167,7 +167,7 @@ namespace SadConsoleEditor.Editors
 
         public void Save(string file)
         {
-            ((LayeredTextSurface)_consoleLayers.TextSurface).Save(file);
+            ((LayeredTextSurface)_consoleLayers.TextSurface).Save(file, typeof(LayerMetadata));
         }
 
         public void Load(string file)
@@ -192,7 +192,8 @@ namespace SadConsoleEditor.Editors
                 {
                     // TODO: Is there an API to load the JSON and examine it? Do that and see what the root type is
                     // then deserialize it into the appropriate type.
-                    _consoleLayers.TextSurface = SadConsole.Serializer.Load<LayeredTextSurface>(file);
+                    
+                    _consoleLayers.TextSurface = LayeredTextSurface.Load(file, typeof(LayerMetadata));
                 }
 
                 _consoleLayers.TextSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
@@ -234,6 +235,9 @@ namespace SadConsoleEditor.Editors
         {
             if (System.IO.File.Exists(file))
             {
+                //TODO: Load layer types.. XP, TextSurface, Layer
+
+
                 //typeof(LayerMetadata)
                 var surface = SadConsole.Consoles.TextSurface.Load(file);
 
@@ -263,8 +267,7 @@ namespace SadConsoleEditor.Editors
 
         public void SaveLayer(int index, string file)
         {
-            // TODO: Fix the save layer. This saves the whole surface, not a specific layer.
-            ((LayeredTextSurface)_consoleLayers.TextSurface).Save(file, typeof(LayerMetadata));
+            SadConsole.Serializer.Save(((LayeredTextSurface)_consoleLayers.TextSurface).GetLayer(index), file, new Type[] { typeof(LayerMetadata) });
         }
 
         public void SetActiveLayer(int index)
