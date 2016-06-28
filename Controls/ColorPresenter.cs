@@ -61,7 +61,7 @@
             Print(Width - 3, 0, "   ", Color.Black, _selectedColor);
             if (_character != 0)
             {
-                SetCharacter(Width - 2, 0, _character);
+                SetGlyph(Width - 2, 0, _character);
                 SetForeground(Width - 2, 0, _characterColor);
             }
         }

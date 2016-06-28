@@ -65,7 +65,7 @@
             Compose();
 
             SelectedColor = hue;
-            this[_selectedColorPosition.X, _selectedColorPosition.Y].CharacterIndex = 4;
+            this[_selectedColorPosition.X, _selectedColorPosition.Y].GlyphIndex = 4;
         }
 
         private void ResetSelectedColor()
@@ -90,9 +90,9 @@
 
             var foundColor = colorWeights.OrderBy(t => t.Item2).First();
 
-            this[_selectedColorPosition.X, _selectedColorPosition.Y].CharacterIndex = 0;
+            this[_selectedColorPosition.X, _selectedColorPosition.Y].GlyphIndex = 0;
             _selectedColorPosition = SadConsole.Consoles.TextSurface.GetPointFromIndex(foundColor.Item3, Width);
-            this[_selectedColorPosition.X, _selectedColorPosition.Y].CharacterIndex = 4;
+            this[_selectedColorPosition.X, _selectedColorPosition.Y].GlyphIndex = 4;
 
             this.IsDirty = true;
         }
@@ -136,10 +136,10 @@
                 if (info.LeftButtonDown)
                 {
                     var location = this.TransformConsolePositionByControlPosition(info);
-                    this[_selectedColorPosition.X, _selectedColorPosition.Y].CharacterIndex = 0;
+                    this[_selectedColorPosition.X, _selectedColorPosition.Y].GlyphIndex = 0;
                     _selectedColorPosition = location;
                     SelectedColorSafe = this[_selectedColorPosition.X, _selectedColorPosition.Y].Background;
-                    this[_selectedColorPosition.X, _selectedColorPosition.Y].CharacterIndex = 4;
+                    this[_selectedColorPosition.X, _selectedColorPosition.Y].GlyphIndex = 4;
                     IsDirty = true;
 
                     Parent.CaptureControl(this);
@@ -160,10 +160,10 @@
                     //if (info.ConsoleLocation.X >= Position.X && info.ConsoleLocation.X < Position.X + Width)
                     if (location.X >= -6 && location.X <= Width + 5 && location.Y > -4 && location.Y < Height + 3)
                     {
-                        this[_selectedColorPosition.X, _selectedColorPosition.Y].CharacterIndex = 0;
+                        this[_selectedColorPosition.X, _selectedColorPosition.Y].GlyphIndex = 0;
                         _selectedColorPosition = new Point(Microsoft.Xna.Framework.MathHelper.Clamp(location.X, 0, Width - 1), Microsoft.Xna.Framework.MathHelper.Clamp(location.Y, 0, Height - 1));
                         SelectedColorSafe = this[_selectedColorPosition.X, _selectedColorPosition.Y].Background;
-                        this[_selectedColorPosition.X, _selectedColorPosition.Y].CharacterIndex = 4;
+                        this[_selectedColorPosition.X, _selectedColorPosition.Y].GlyphIndex = 4;
                     }
 
                     IsDirty = true;

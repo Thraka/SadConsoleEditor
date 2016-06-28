@@ -97,7 +97,7 @@
             {
                 for (int x = 0; x < 16; x++)
                 {
-                    this.SetCharacter(x, y, i);
+                    this.SetGlyph(x, y, i);
                     this.SetSpriteEffect(x, y, _mirrorEffect);
                     i++;
                 }
@@ -111,7 +111,7 @@
             if (new Rectangle(0, 0, 16, 16).Contains(mousePosition) && info.LeftButtonDown)
             {
                 if (!UseFullClick)
-                    SelectedCharacter = this[mousePosition.ToIndex(16)].CharacterIndex;
+                    SelectedCharacter = this[mousePosition.ToIndex(16)].GlyphIndex;
             }
 
             base.OnMouseIn(info);
@@ -123,7 +123,7 @@
 
             if (new Rectangle(0, 0, 16, 16).Contains(mousePosition))
             {
-                SelectedCharacter = this[mousePosition.ToIndex(16)].CharacterIndex;
+                SelectedCharacter = this[mousePosition.ToIndex(16)].GlyphIndex;
             }
             
             base.OnLeftMouseClicked(info);

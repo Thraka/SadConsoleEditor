@@ -94,7 +94,7 @@
                 surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y).Copy(cellToMatch);
                 cellToMatch.Effect = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y).Effect;
 
-                currentFillCell.CharacterIndex = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter;
+                currentFillCell.GlyphIndex = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter;
                 currentFillCell.Foreground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground;
                 currentFillCell.Background = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground;
                 currentFillCell.SpriteEffect = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect;
@@ -106,12 +106,12 @@
                     if (c.Effect != null && cellToMatch.Effect != null)
                         effect = c.Effect == cellToMatch.Effect;
 
-                    if (c.CharacterIndex == 0 && cellToMatch.CharacterIndex == 0)
+                    if (c.GlyphIndex == 0 && cellToMatch.GlyphIndex == 0)
                         return c.Background == cellToMatch.Background;
 
                     return c.Foreground == cellToMatch.Foreground &&
                            c.Background == cellToMatch.Background &&
-                           c.CharacterIndex == cellToMatch.CharacterIndex &&
+                           c.GlyphIndex == cellToMatch.GlyphIndex &&
                            c.SpriteEffect == cellToMatch.SpriteEffect &&
                            effect;
                 };
@@ -146,7 +146,7 @@
             {
                 var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
 
-                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter = cell.CharacterIndex;
+                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter = cell.GlyphIndex;
                 EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground = cell.Foreground;
                 EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground = cell.Background;
                 EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect = cell.SpriteEffect;

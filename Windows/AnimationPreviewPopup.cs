@@ -51,14 +51,14 @@ namespace SadConsoleEditor.Windows
             for (int i = 1; i < textSurface.Width - 1; i++)
             {
                 SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(i, textSurface.Height - 3));
-                textSurface.GetCell(i, textSurface.Height - 3).CharacterIndex = 205;
+                textSurface.GetCell(i, textSurface.Height - 3).GlyphIndex = 205;
             }
 
             SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(0, textSurface.Height - 3));
-            textSurface.GetCell(0, textSurface.Height - 3).CharacterIndex = 204;
+            textSurface.GetCell(0, textSurface.Height - 3).GlyphIndex = 204;
 
             SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(textSurface.Width - 1, textSurface.Height - 3));
-            textSurface.GetCell(textSurface.Width - 1, textSurface.Height - 3).CharacterIndex = 185;
+            textSurface.GetCell(textSurface.Width - 1, textSurface.Height - 3).GlyphIndex = 185;
         }
 
         public override bool ProcessKeyboard(KeyboardInfo info)

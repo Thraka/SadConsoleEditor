@@ -47,7 +47,7 @@
             _animSinglePoint = new Animation("single", 1, 1);
             _animSinglePoint.Font = Engine.DefaultFont;
             var _frameSinglePoint = _animSinglePoint.CreateFrame();
-            _frameSinglePoint[0].CharacterIndex = 42;
+            _frameSinglePoint[0].GlyphIndex = 42;
 
 
             _frameEffect = new SadConsole.Effects.Fade()
@@ -264,7 +264,7 @@
                     {
                         foreach (var cell in frame)
                         {
-                            if (cell.CharacterIndex == 0 && cell.Background == _altPanel.AltEmptyColor)
+                            if (cell.GlyphIndex == 0 && cell.Background == _altPanel.AltEmptyColor)
                                 cell.Background = Color.Transparent;
                         }
                     }
@@ -390,7 +390,7 @@
                         var sourceCell = _entity.CurrentAnimation.CurrentFrame.GetCell(curx, cury);
 
                         // Not working, breakpoint here to remind me.
-                        if (_altPanel.SkipEmptyCells && sourceCell.CharacterIndex == 0 && (sourceCell.Background == Color.Transparent || (_altPanel.UseAltEmptyColor && sourceCell.Background == _altPanel.AltEmptyColor)))
+                        if (_altPanel.SkipEmptyCells && sourceCell.GlyphIndex == 0 && (sourceCell.Background == Color.Transparent || (_altPanel.UseAltEmptyColor && sourceCell.Background == _altPanel.AltEmptyColor)))
                         {
                             destY++;
                             continue;

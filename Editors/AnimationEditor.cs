@@ -105,7 +105,7 @@ namespace SadConsoleEditor.Editors
             _specialToolLayer = new LayeredTextSurface(_selectedAnimation.Width, _selectedAnimation.Height, 3);
             var con = new SadConsole.Consoles.Console(_specialToolLayer);
             _specialToolLayer.SetActiveLayer(1);
-            _specialToolLayer.GetCell(_selectedAnimation.Center.X, _selectedAnimation.Center.Y).CharacterIndex = 42;
+            _specialToolLayer.GetCell(_selectedAnimation.Center.X, _selectedAnimation.Center.Y).GlyphIndex = 42;
             _specialToolLayer.GetCell(_selectedAnimation.Center.X, _selectedAnimation.Center.Y).Background = Color.Black;
             _specialToolLayer.SetActiveLayer(0);
             _specialToolLayer.Tint = new Color(0f, 0f, 0f, 0.2f);
@@ -117,7 +117,7 @@ namespace SadConsoleEditor.Editors
             _specialToolLayer.SetActiveLayer(1);
             SadConsoleEditor.Settings.QuickEditor.TextSurface = _specialToolLayer;
             SadConsoleEditor.Settings.QuickEditor.Clear();
-            SadConsoleEditor.Settings.QuickEditor[center.X, center.Y].CharacterIndex = 42;
+            SadConsoleEditor.Settings.QuickEditor[center.X, center.Y].GlyphIndex = 42;
             SadConsoleEditor.Settings.QuickEditor[center.X, center.Y].Background = Color.Black;
             _selectedAnimation.Center = center;
         }

@@ -40,7 +40,7 @@ namespace SadConsoleEditor.Consoles
             //    for (int x = 1; x <= (textSurface.Width - 2) / EditorConsoleManager.Instance.SelectedEditor.Settings.BoundsWidth; x++)
             //    {
             //        Line line = new Line();
-            //        line.CellAppearance = new Cell() { Foreground = Color.Yellow * 0.5f, Background = Color.Transparent, CharacterIndex = 124 };
+            //        line.CellAppearance = new Cell() { Foreground = Color.Yellow * 0.5f, Background = Color.Transparent, GlyphIndex = 124 };
             //        line.UseStartingCell = false;
             //        line.UseEndingCell = false;
             //        line.StartingLocation = new Point((x * EditorConsoleManager.Instance.SelectedEditor.Settings.BoundsWidth), 1);
@@ -54,7 +54,7 @@ namespace SadConsoleEditor.Consoles
             //    for (int y = 1; y <= (textSurface.Height - 2) / EditorConsoleManager.Instance.SelectedEditor.Settings.BoundsHeight; y++)
             //    {
             //        Line line = new Line();
-            //        line.CellAppearance = new Cell() { Foreground = Color.Yellow * 0.5f, Background = Color.Transparent, CharacterIndex = 45 };
+            //        line.CellAppearance = new Cell() { Foreground = Color.Yellow * 0.5f, Background = Color.Transparent, GlyphIndex = 45 };
             //        line.UseStartingCell = false;
             //        line.UseEndingCell = false;
             //        line.StartingLocation = new Point(1, (y * EditorConsoleManager.Instance.SelectedEditor.Settings.BoundsHeight));

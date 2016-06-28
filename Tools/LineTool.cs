@@ -45,7 +45,7 @@
             _animSinglePoint = new Animation("single", 1, 1);
             _animSinglePoint.Font = Engine.DefaultFont;
             var _frameSinglePoint = _animSinglePoint.CreateFrame();
-            _frameSinglePoint[0].CharacterIndex = 42;
+            _frameSinglePoint[0].GlyphIndex = 42;
 
             
             _frameEffect = new SadConsole.Effects.Fade()

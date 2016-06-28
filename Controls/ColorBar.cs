@@ -93,11 +93,11 @@
 
             for (int x = 0; x < Width; x++)
             {
-                this[x, 0].CharacterIndex = 219;
+                this[x, 0].GlyphIndex = 219;
                 this[x, 0].Foreground = _colorSteps[x];
             }
 
-            this[_selectedPosition, 1].CharacterIndex = 30;
+            this[_selectedPosition, 1].GlyphIndex = 30;
             this[_selectedPosition, 1].Foreground = Color.LightGray;//this[_selectedPosition, 0].Foreground;
         }
 
@@ -228,11 +228,11 @@
 
                 for (int x = 0; x < Width; x++)
                 {
-                    this[x, 0].CharacterIndex = 219;
+                    this[x, 0].GlyphIndex = 219;
                     this[x, 0].Foreground = gradient.Lerp((float)x / (float)(Width - 1));
                 }
 
-                this[_selectedPosition, 1].CharacterIndex = 30;
+                this[_selectedPosition, 1].GlyphIndex = 30;
                 this[_selectedPosition, 1].Foreground = Color.LightGray;//this[_selectedPosition, 0].Foreground;
 
                 // Build an array of all the colors

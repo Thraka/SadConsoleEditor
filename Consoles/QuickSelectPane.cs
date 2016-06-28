@@ -75,7 +75,7 @@ namespace SadConsoleEditor.Consoles
 				string text = "F" + i.ToString() + " ";
 				Print(x, y, text);
                 x += text.Length;
-                SetCharacter(x, y, Characters[i - 1]);
+                SetGlyph(x, y, Characters[i - 1]);
                 SetForeground(x, y, charForeground);
                 SetBackground(x, y, charBackground);
 				x += 2;

@@ -272,11 +272,11 @@ namespace SadConsoleEditor.Windows
             base.Redraw();
 
             if (_selectedAnsiColorIconPrevious != Point.Zero)
-                textSurface.GetCell(_selectedAnsiColorIconPrevious.X, _selectedAnsiColorIconPrevious.Y).CharacterIndex = 0;
+                textSurface.GetCell(_selectedAnsiColorIconPrevious.X, _selectedAnsiColorIconPrevious.Y).GlyphIndex = 0;
 
             if (_selectedAnsiColorIcon != Point.Zero)
             {
-                textSurface.GetCell(_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y).CharacterIndex = 16;
+                textSurface.GetCell(_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y).GlyphIndex = 16;
                 textSurface.GetCell(_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y).Foreground = Settings.Color_TitleText;
             }
 
@@ -284,10 +284,10 @@ namespace SadConsoleEditor.Windows
             int lineY = textSurface.Height - 3;
             for (int x = 1; x < textSurface.Width - 1; x++)
             {
-                textSurface.GetCell(x, lineY).CharacterIndex = 196;
+                textSurface.GetCell(x, lineY).GlyphIndex = 196;
             }
-            textSurface.GetCell(0, lineY).CharacterIndex = 199;
-            textSurface.GetCell(textSurface.Width - 1, lineY).CharacterIndex = 182;
+            textSurface.GetCell(0, lineY).GlyphIndex = 199;
+            textSurface.GetCell(textSurface.Width - 1, lineY).GlyphIndex = 182;
         }
     }
 }
