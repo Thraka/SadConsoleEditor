@@ -3,15 +3,15 @@
     using Microsoft.Xna.Framework;
     using SadConsole;
     using SadConsole.Consoles;
-    using SadConsole.Entities;
     using SadConsole.Input;
     using System;
     using SadConsoleEditor.Panels;
+    using SadConsole.Game;
 
     class SelectionTool : ITool
     {
         private EntityBrush _entity;
-        private Animation _animSinglePoint;
+        private AnimatedTextSurface _animSinglePoint;
         private SadConsole.Effects.Fade _frameEffect;
         private Point? _firstPoint;
         private Point? _secondPoint;
@@ -44,7 +44,7 @@
 
         public SelectionTool()
         {
-            _animSinglePoint = new Animation("single", 1, 1);
+            _animSinglePoint = new AnimatedTextSurface("single", 1, 1, Settings.Config.ScreenFont);
             _animSinglePoint.Font = Engine.DefaultFont;
             var _frameSinglePoint = _animSinglePoint.CreateFrame();
             _frameSinglePoint[0].GlyphIndex = 42;
@@ -87,7 +87,7 @@
             }
             else if (state == SelectionToolPanel.CloneState.Move)
             {
-                var animation = _entity.CurrentAnimation;
+                var animation = _entity.Animation;
                 ClearBrush(_entity.Position.X, _entity.Position.Y, _previousSurface);
                 animation.Center = new Point(animation.Width / 2, animation.Height / 2);
                 _entity.Position += animation.Center;
@@ -95,13 +95,13 @@
             }
             else if (state == SelectionToolPanel.CloneState.Clear)
             {
-                var animation = _entity.CurrentAnimation;
+                var animation = _entity.Animation;
                 ClearBrush(_entity.Position.X, _entity.Position.Y, _previousSurface);
                 _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
             }
             else if (state == SelectionToolPanel.CloneState.Clone)
             {
-                var animation = _entity.CurrentAnimation;
+                var animation = _entity.Animation;
                 animation.Center = new Point(animation.Width / 2, animation.Height / 2);
                 _entity.Position += animation.Center;
                 _entity.SyncLayers();
@@ -110,10 +110,10 @@
 
         private TextSurface SaveBrush()
         {
-            TextSurface newSurface = new TextSurface(_entity.CurrentAnimation.CurrentFrame.Width, 
-                                                     _entity.CurrentAnimation.CurrentFrame.Height, Settings.Config.ScreenFont);
+            TextSurface newSurface = new TextSurface(_entity.Animation.CurrentFrame.Width, 
+                                                     _entity.Animation.CurrentFrame.Height, Settings.Config.ScreenFont);
 
-            TextSurface.Copy(_entity.CurrentAnimation.CurrentFrame, newSurface);
+            _entity.Animation.CurrentFrame.Copy(newSurface);
 
             return newSurface;
         }
@@ -123,22 +123,22 @@
             _panel.State = SelectionToolPanel.CloneState.Clone;
 
             // Copy data to new animation
-            Animation cloneAnimation = new Animation("clone", surface.Width, surface.Height);
+            var cloneAnimation = new AnimatedTextSurface("clone", surface.Width, surface.Height, Settings.Config.ScreenFont);
             var frame = cloneAnimation.CreateFrame();
-            TextSurface.Copy(surface, frame);
+            surface.Copy(frame);
 
             cloneAnimation.Center = new Point(cloneAnimation.Width / 2, cloneAnimation.Height / 2);
 
-            _entity.AddAnimation(cloneAnimation);
-            _entity.SetActiveAnimation("clone");
-            _entity.Tint = new Color(0f, 0f, 0f, 0f);
+            _entity.Animations[cloneAnimation.Name] = cloneAnimation;
+            _entity.Animation = cloneAnimation;
+            _entity.Animation.Tint = new Color(0f, 0f, 0f, 0f);
 
             _entity.IsVisible = true;
             _entity.TopLayers.Clear();
 
-            var topLayer = new Entity(surface.Width, surface.Height, Settings.Config.ScreenFont);
+            var topLayer = new GameObject(Settings.Config.ScreenFont);
             _entity.TopLayers.Add(topLayer);
-            var animation = new Animation("box", surface.Width, surface.Height);
+            var animation = new AnimatedTextSurface("box", surface.Width, surface.Height, Settings.Config.ScreenFont);
             frame = animation.CreateFrame();
             _boxShape = SadConsole.Shapes.Box.GetDefaultBox();
             _boxShape.Location = new Point(0, 0);
@@ -147,9 +147,9 @@
             _boxShape.Draw(new SurfaceEditor(frame));
             animation.Center = cloneAnimation.Center;
 
-            topLayer.AddAnimation(animation);
-            topLayer.SetActiveAnimation(animation.Name);
-            topLayer.Tint = new Color(0f, 0f, 0f, 0.2f);
+            topLayer.Animations[animation.Name] = animation;
+            topLayer.Animation = animation;
+            topLayer.Animation.Tint = new Color(0f, 0f, 0f, 0.2f);
             //_tempAnimation.Center = cloneAnimation.Center;
             _entity.SyncLayers();
         }
@@ -163,8 +163,8 @@
                 _entity.Font = Settings.Config.ScreenFont;
                 _entity.IsVisible = true;
 
-                _entity.AddAnimation(_animSinglePoint);
-                _entity.SetActiveAnimation("single");
+                _entity.Animations[_animSinglePoint.Name] = _animSinglePoint;
+                _entity.Animation = _animSinglePoint;
 
                 EditorConsoleManager.Instance.UpdateBrush(_entity);
 
@@ -245,7 +245,7 @@
                 if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1)
                 {
                     _panel.State = SelectionToolPanel.CloneState.SelectingPoint2;
-                    _entity.Tint = new Color(0f, 0f, 0f, 0.5f);
+                    _entity.Animation.Tint = new Color(0f, 0f, 0f, 0.5f);
                 }
 
                 else if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
@@ -254,15 +254,15 @@
                     _panel.State = SelectionToolPanel.CloneState.Selected;
 
                     // Copy data to new animation
-                    var _tempAnimation = _entity.GetAnimation("selection");
-                    Animation cloneAnimation = new Animation("clone", _tempAnimation.Width, _tempAnimation.Height);
+                    var _tempAnimation = _entity.Animations["selection"];
+                    AnimatedTextSurface cloneAnimation = new AnimatedTextSurface("clone", _tempAnimation.Width, _tempAnimation.Height, Settings.Config.ScreenFont);
                     var frame = cloneAnimation.CreateFrame();
                     Point topLeftPoint = new Point(Math.Min(_firstPoint.Value.X, _secondPoint.Value.X), Math.Min(_firstPoint.Value.Y, _secondPoint.Value.Y));
-                    TextSurface.Copy(surface, topLeftPoint.X, topLeftPoint.Y, cloneAnimation.Width, cloneAnimation.Height, frame, 0, 0);
+                    surface.Copy(topLeftPoint.X, topLeftPoint.Y, cloneAnimation.Width, cloneAnimation.Height, frame, 0, 0);
 
                     if (_altPanel.SkipEmptyCells && _altPanel.UseAltEmptyColor)
                     {
-                        foreach (var cell in frame)
+                        foreach (var cell in frame.Cells)
                         {
                             if (cell.GlyphIndex == 0 && cell.Background == _altPanel.AltEmptyColor)
                                 cell.Background = Color.Transparent;
@@ -271,17 +271,17 @@
 
                     cloneAnimation.Center = _tempAnimation.Center;
 
-                    _entity.AddAnimation(cloneAnimation);
-                    _entity.SetActiveAnimation("clone");
-                    _entity.Tint = new Color(0f, 0f, 0f, 0f);
+                    _entity.Animations[cloneAnimation.Name] = cloneAnimation;
+                    _entity.Animation = cloneAnimation;
+                    _entity.Animation.Tint = new Color(0f, 0f, 0f, 0f);
 
                     // Display the rect
                     _entity.TopLayers.Clear();
-                    var topLayer = new Entity(1, 1, Settings.Config.ScreenFont);
+                    var topLayer = new GameObject(Settings.Config.ScreenFont);
                     _entity.TopLayers.Add(topLayer);
-                    topLayer.AddAnimation(_tempAnimation);
-                    topLayer.SetActiveAnimation(_tempAnimation.Name);
-                    topLayer.Tint = new Color(0f, 0f, 0f, 0.35f);
+                    topLayer.Animations[_tempAnimation.Name] = _tempAnimation;
+                    topLayer.Animation = _tempAnimation;
+                    topLayer.Animation.Tint = new Color(0f, 0f, 0f, 0.35f);
                     topLayer.Position = _entity.Position;
                     _entity.SyncLayers();
                 }
@@ -316,16 +316,17 @@
                     // State was reset and we didn't know about it
                     if (_previousState != _panel.State)
                     {
-                        _entity.SetActiveAnimation("single");
-                        _entity.Tint = new Color(0f, 0f, 0f, 0f);
+                        _entity.Animation = _entity.Animations["single"];
+                        _entity.Animation.Tint = new Color(0f, 0f, 0f, 0f);
                     }
                 }
 
                 if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
                 {
 
-                    Animation animation = new Animation("selection", Math.Max(_firstPoint.Value.X, info.ConsoleLocation.X) - Math.Min(_firstPoint.Value.X, info.ConsoleLocation.X) + 1,
-                                                                 Math.Max(_firstPoint.Value.Y, info.ConsoleLocation.Y) - Math.Min(_firstPoint.Value.Y, info.ConsoleLocation.Y) + 1);
+                    var animation = new AnimatedTextSurface("selection", Math.Max(_firstPoint.Value.X, info.ConsoleLocation.X) - Math.Min(_firstPoint.Value.X, info.ConsoleLocation.X) + 1,
+                                                                         Math.Max(_firstPoint.Value.Y, info.ConsoleLocation.Y) - Math.Min(_firstPoint.Value.Y, info.ConsoleLocation.Y) + 1,
+                                                                         Settings.Config.ScreenFont);
 
                     var frame = animation.CreateFrame();
 
@@ -346,10 +347,13 @@
                             p1 = new Point(0, 0);
                     }
 
-                    var _tempAnimation = _entity.GetAnimation("selection");
-                    if (_tempAnimation != null && _tempAnimation.Center == p1 && _tempAnimation.Width == animation.Width && _tempAnimation.Height == animation.Height)
+                    if (_entity.Animations.ContainsKey("selection"))
                     {
-                        return;
+                        var _tempAnimation = _entity.Animations["selection"];
+                        if (_tempAnimation.Center == p1 && _tempAnimation.Width == animation.Width && _tempAnimation.Height == animation.Height)
+                        {
+                            return;
+                        }
                     }
 
 
@@ -365,8 +369,8 @@
 
                     //frame.SetEffect(frame, _pulseAnimation);
 
-                    _entity.AddAnimation(animation);
-                    _entity.SetActiveAnimation("selection");
+                    _entity.Animations[animation.Name] = animation;
+                    _entity.Animation = animation;
                 }
 
             }
@@ -376,18 +380,18 @@
 
         private void StampBrush(int consoleLocationX, int consoleLocationY, ITextSurface surface)
         {
-            int destinationX = consoleLocationX - _entity.CurrentAnimation.Center.X;
-            int destinationY = consoleLocationY - _entity.CurrentAnimation.Center.Y;
+            int destinationX = consoleLocationX - _entity.Animation.Center.X;
+            int destinationY = consoleLocationY - _entity.Animation.Center.Y;
             int destX = destinationX;
             int destY = destinationY;
 
-            for (int curx = 0; curx < _entity.CurrentAnimation.Width; curx++)
+            for (int curx = 0; curx < _entity.Animation.Width; curx++)
             {
-                for (int cury = 0; cury < _entity.CurrentAnimation.Height; cury++)
+                for (int cury = 0; cury < _entity.Animation.Height; cury++)
                 {
-                    if (_entity.CurrentAnimation.CurrentFrame.IsValidCell(curx, cury))
+                    if (_entity.Animation.CurrentFrame.IsValidCell(curx, cury))
                     {
-                        var sourceCell = _entity.CurrentAnimation.CurrentFrame.GetCell(curx, cury);
+                        var sourceCell = _entity.Animation.CurrentFrame.GetCell(curx, cury);
 
                         // Not working, breakpoint here to remind me.
                         if (_altPanel.SkipEmptyCells && sourceCell.GlyphIndex == 0 && (sourceCell.Background == Color.Transparent || (_altPanel.UseAltEmptyColor && sourceCell.Background == _altPanel.AltEmptyColor)))
@@ -413,18 +417,18 @@
 
         private void ClearBrush(int consoleLocationX, int consoleLocationY, ITextSurface surface)
         {
-            int destinationX = consoleLocationX - _entity.CurrentAnimation.Center.X;
-            int destinationY = consoleLocationY - _entity.CurrentAnimation.Center.Y;
+            int destinationX = consoleLocationX - _entity.Animation.Center.X;
+            int destinationY = consoleLocationY - _entity.Animation.Center.Y;
             int destX = destinationX;
             int destY = destinationY;
 
             Settings.QuickEditor.TextSurface = surface;
 
-            for (int curx = 0; curx < _entity.CurrentAnimation.CurrentFrame.Width; curx++)
+            for (int curx = 0; curx < _entity.Animation.CurrentFrame.Width; curx++)
             {
-                for (int cury = 0; cury < _entity.CurrentAnimation.CurrentFrame.Height; cury++)
+                for (int cury = 0; cury < _entity.Animation.CurrentFrame.Height; cury++)
                 {
-                    if (_entity.CurrentAnimation.CurrentFrame.IsValidCell(curx, cury))
+                    if (_entity.Animation.CurrentFrame.IsValidCell(curx, cury))
                     {
                         if (surface.IsValidCell(destX, destY))
                         {

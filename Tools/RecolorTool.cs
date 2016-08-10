@@ -41,7 +41,7 @@
         {
             _brush = new EntityBrush(1, 1);
             EditorConsoleManager.Instance.UpdateBrush(_brush);
-            Settings.QuickEditor.TextSurface = _brush.CurrentAnimation.Frames[0];
+            Settings.QuickEditor.TextSurface = _brush.Animation.Frames[0];
             Settings.QuickEditor.Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
                 EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
             _brush.IsVisible = false;
@@ -54,8 +54,9 @@
 
         public void RefreshTool()
         {
-            Settings.QuickEditor.TextSurface = _brush.CurrentAnimation.Frames[0];
-            Settings.QuickEditor.Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
+            Settings.QuickEditor.TextSurface = _brush.Animation.Frames[0];
+            Settings.QuickEditor.Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, 
+                                      EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42);
         }
 
         public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)

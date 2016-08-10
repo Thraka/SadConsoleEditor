@@ -40,7 +40,7 @@ namespace SadConsoleEditor.Tools
         {
             _brush = new EntityBrush(1, 1);
             EditorConsoleManager.Instance.UpdateBrush(_brush);
-            _brush.CurrentAnimation.Frames[0][0,0].GlyphIndex = 42;
+            _brush.Animation.Frames[0][0,0].GlyphIndex = 42;
             _brush.IsVisible = false;
             EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = true;
 

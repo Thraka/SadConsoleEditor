@@ -46,8 +46,9 @@
             SadConsole.Effects.Blink blinkEffect = new SadConsole.Effects.Blink();
             blinkEffect.BlinkSpeed = 0.35f;
             _brush = new EntityBrush(1, 1);
-            Settings.QuickEditor.TextSurface = _brush.CurrentAnimation.Frames[0];
-            Settings.QuickEditor.Fill(Color.White, Color.Black, _cursorCharacter, blinkEffect);
+            Settings.QuickEditor.TextSurface = _brush.Animation.Frames[0];
+            Settings.QuickEditor.Fill(Color.White, Color.Black, _cursorCharacter);
+            Settings.QuickEditor.SetEffect(0, blinkEffect);
             _brush.IsVisible = false;
             EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = true;
             EditorConsoleManager.Instance.UpdateBrush(_brush);
@@ -75,7 +76,7 @@
                 }
                 else
                 {
-                    tempConsole.TextSurface = surface;
+                    tempConsole.TextSurface = (ITextSurfaceRendered)surface;
                     tempConsole.VirtualCursor.PrintAppearance = new CellAppearance(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground);
                     tempConsole.ProcessKeyboard(info);
                     _brush.Position = tempConsole.VirtualCursor.Position;
@@ -108,7 +109,7 @@
                 EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = false;
                 writing = true;
 
-                tempConsole.TextSurface = surface;
+                tempConsole.TextSurface = (ITextSurfaceRendered)surface;
                 tempConsole.VirtualCursor.Position = _brush.Position = info.ConsoleLocation;
 
                 _brush.IsVisible = true;

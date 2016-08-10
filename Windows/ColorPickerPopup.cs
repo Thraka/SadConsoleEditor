@@ -213,29 +213,29 @@ namespace SadConsoleEditor.Windows
             // Bar above color bars
             for (int x = 1; x < lineX; x++)
             {
-                textSurface.GetCell(x, lineY).GlyphIndex = 196;
+                textSurface[x, lineY].GlyphIndex = 196;
             }
-            textSurface.GetCell(0, lineY).GlyphIndex = 199;
-            textSurface.GetCell(lineX, lineY).GlyphIndex = 217;
+            textSurface[0, lineY].GlyphIndex = 199;
+            textSurface[lineX, lineY].GlyphIndex = 217;
 
             // Long bar right of color picker
             for (int y = 1; y < lineY; y++)
             {
-                textSurface.GetCell(lineX, y).GlyphIndex = 179;
+                textSurface[lineX, y].GlyphIndex = 179;
             }
-            textSurface.GetCell(lineX, lineY).GlyphIndex = 217;
-            textSurface.GetCell(lineX, 0).GlyphIndex = 209;
+            textSurface[lineX, lineY].GlyphIndex = 217;
+            textSurface[lineX, 0].GlyphIndex = 209;
 
 
             // Bar above red input
             for (int x = lineX + 1; x < textSurface.Width - 1; x++)
             {
-                textSurface.GetCell(x, lineY - 5).GlyphIndex = 205;// 196;
+                textSurface[x, lineY - 5].GlyphIndex = 205;// 196;
             }
             //textSurface[lineX, lineY - 5].GlyphIndex = 195;
             //textSurface[textSurface.Width - 1, lineY - 5].GlyphIndex = 182;
-            textSurface.GetCell(lineX, lineY - 5).GlyphIndex = 198;
-            textSurface.GetCell(textSurface.Width - 1, lineY - 5).GlyphIndex = 185;
+            textSurface[lineX, lineY - 5].GlyphIndex = 198;
+            textSurface[textSurface.Width - 1, lineY - 5].GlyphIndex = 185;
 
             Print(lineX + 2, lineY - 4, "Red", ColorAnsi.Red);
             Print(lineX + 2, lineY - 3, "Green", ColorAnsi.Green);

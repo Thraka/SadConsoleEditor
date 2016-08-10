@@ -272,22 +272,22 @@ namespace SadConsoleEditor.Windows
             base.Redraw();
 
             if (_selectedAnsiColorIconPrevious != Point.Zero)
-                textSurface.GetCell(_selectedAnsiColorIconPrevious.X, _selectedAnsiColorIconPrevious.Y).GlyphIndex = 0;
+                textSurface[_selectedAnsiColorIconPrevious.X, _selectedAnsiColorIconPrevious.Y].GlyphIndex = 0;
 
             if (_selectedAnsiColorIcon != Point.Zero)
             {
-                textSurface.GetCell(_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y).GlyphIndex = 16;
-                textSurface.GetCell(_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y).Foreground = Settings.Color_TitleText;
+                textSurface[_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y].GlyphIndex = 16;
+                textSurface[_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y].Foreground = Settings.Color_TitleText;
             }
 
             // Bar above buttons
             int lineY = textSurface.Height - 3;
             for (int x = 1; x < textSurface.Width - 1; x++)
             {
-                textSurface.GetCell(x, lineY).GlyphIndex = 196;
+                textSurface[x, lineY].GlyphIndex = 196;
             }
-            textSurface.GetCell(0, lineY).GlyphIndex = 199;
-            textSurface.GetCell(textSurface.Width - 1, lineY).GlyphIndex = 182;
+            textSurface[0, lineY].GlyphIndex = 199;
+            textSurface[textSurface.Width - 1, lineY].GlyphIndex = 182;
         }
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using SadConsoleEditor.Consoles;
 using SadConsoleEditor.Panels;
 using SadConsole.Consoles;
+using SadConsole;
 
 namespace SadConsoleEditor.Editors
 {
@@ -138,7 +139,7 @@ namespace SadConsoleEditor.Editors
                 var newLayer = newSurface.GetLayer(i);
                 oldSurface.SetActiveLayer(i);
                 newSurface.SetActiveLayer(i);
-                TextSurface.Copy(oldSurface, newSurface);
+                oldSurface.Copy(newSurface);
                 newLayer.Metadata = oldLayer.Metadata;
                 newLayer.IsVisible = oldLayer.IsVisible;
             }
@@ -245,10 +246,9 @@ namespace SadConsoleEditor.Editors
                 {
                     var newLayer = ((LayeredTextSurface)_consoleLayers.TextSurface).Add();
                     LayerMetadata.Create("Loaded", true, true, true, newLayer);
-                    var tempSurface = new TextSurface(_consoleLayers.Width,
-                                                      _consoleLayers.Height,
-                                                      _consoleLayers.TextSurface.Font, newLayer.Cells);
-                    TextSurface.Copy(surface, tempSurface);
+                    var tempSurface = new TextSurface(_consoleLayers.Width, _consoleLayers.Height,
+                                                      newLayer.Cells, _consoleLayers.TextSurface.Font);
+                    surface.Copy(tempSurface);
                     newLayer.Cells = tempSurface.Cells;
                 }
                 else

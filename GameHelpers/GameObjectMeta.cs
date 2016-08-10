@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Settings = SadConsoleEditor.Settings;
 
-namespace SadConsole.GameHelpers
+namespace SadConsole.Game
 {
     public class GameObjectMeta
     {

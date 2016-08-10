@@ -208,7 +208,7 @@ namespace SadConsoleEditor
         public void UpdateBrush(IEntityBrush newBrushEntity)
         {
             Brush = newBrushEntity;
-            Brush.PositionOffset = SelectedEditor.GetPosition();
+            Brush.RenderOffset = SelectedEditor.GetPosition();
         }
 
         public void UpdateBox()
@@ -239,7 +239,7 @@ namespace SadConsoleEditor
 
             SelectedEditor.Position(position.X, position.Y);
             _borderRenderer.Position = new Point(position.X - 1, position.Y - 1);
-            Brush.PositionOffset = position;
+            Brush.RenderOffset = position;
         }
 
         public override void Update()
@@ -327,7 +327,7 @@ namespace SadConsoleEditor
                 {
                     SelectedEditor.Position(position.X, position.Y);
                     _borderRenderer.Position = new Microsoft.Xna.Framework.Point(position.X - 1, position.Y - 1);
-                    Brush.PositionOffset = position;
+                    Brush.RenderOffset = position;
                 }
                 else
                 {

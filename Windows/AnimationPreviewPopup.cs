@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using SadConsole.Consoles;
 using SadConsole.Controls;
-using SadConsole.Entities;
 using SadConsoleEditor.Controls;
 using System;
 using System.Collections.Generic;
@@ -11,28 +10,27 @@ using System.Text;
 using System.Threading.Tasks;
 using SadConsole.Input;
 using Microsoft.Xna.Framework.Graphics;
+using SadConsole.Game;
 
 namespace SadConsoleEditor.Windows
 {
     public class PreviewAnimationPopup : Window
     {
-        private Entity _entity;
-        private Animation _animation;
+        private GameObject _entity;
+        private AnimatedTextSurface _animation;
         private Button _restartAnimation;
 
-        public PreviewAnimationPopup(Animation animation) : base(animation.Width + 2, animation.Height + 4)
+        public PreviewAnimationPopup(AnimatedTextSurface animation) : base(animation.Width + 2, animation.Height + 4)
         {
             textSurface.Font = Settings.Config.ScreenFont;
             _animation = animation;
 
             CloseOnESC = true;
-            _entity = new Entity(1, 1);
-            _entity.Font = Settings.Config.ScreenFont;
+            _entity = new GameObject(Settings.Config.ScreenFont);
             _entity.Position = new Point(1, 1);
-            _entity.AddAnimation(animation);
-            _entity.SetActiveAnimation(animation);
+            _entity.Animation = animation;
             animation.Restart();
-            _entity.Start();
+            _entity.Animation.Start();
 
             _restartAnimation = new Button(animation.Width, 1);
             _restartAnimation.Text = "Restart";
@@ -45,7 +43,7 @@ namespace SadConsoleEditor.Windows
         {
             base.OnAfterRender(batch);
 
-            _entity.RenderToSurface(textSurface);
+            _entity.Animation.CurrentFrame.Copy(textSurface, _entity.Position.X, _entity.Position.Y);
 
             // Draw bar
             for (int i = 1; i < textSurface.Width - 1; i++)

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using SadConsole.Controls;
 using SadConsoleEditor.Windows;
 using SadConsole;
-using SadConsole.Entities;
 using SadConsoleEditor.Editors;
 using SadConsole.Consoles;
 
@@ -26,11 +25,11 @@ namespace SadConsoleEditor.Panels
         private Button _nextFrame;
         private Button _previousFrame;
 
-        private Action<TextSurface> _frameChangeCallback;
-        private Animation _currentAnimation;
-        private TextSurface _selectedFrame;
+        private Action<TextSurfaceBasic> _frameChangeCallback;
+        private AnimatedTextSurface _currentAnimation;
+        private TextSurfaceBasic _selectedFrame;
 
-        public AnimationFramesPanel(Action<TextSurface> frameChangeCallback)
+        public AnimationFramesPanel(Action<TextSurfaceBasic> frameChangeCallback)
         {
             Title = "Frames";
 
@@ -92,7 +91,7 @@ namespace SadConsoleEditor.Panels
                 previousFrame_ButtonClicked(null, EventArgs.Empty);
         }
 
-        public void SetAnimation(Animation animation)
+        public void SetAnimation(AnimatedTextSurface animation)
         {
             _currentAnimation = animation;
 
@@ -122,7 +121,7 @@ namespace SadConsoleEditor.Panels
 
             var prevFrame = _currentAnimation.Frames[prevIndex];
 
-            TextSurface.Copy(prevFrame, _selectedFrame);
+            prevFrame.Copy(_selectedFrame);
         }
 
         private void previousFrame_ButtonClicked(object sender, EventArgs e)
@@ -179,7 +178,7 @@ namespace SadConsoleEditor.Panels
                         var surface = TextSurface.Load(popup.SelectedFile);
                         var newFrame = _currentAnimation.CreateFrame();
 
-                        TextSurface.Copy(surface, newFrame);
+                        surface.Copy(newFrame);
 
                         EnableDisableControls(0);
                         DrawFrameCount();
@@ -236,9 +235,9 @@ namespace SadConsoleEditor.Panels
 
         private void DrawFrameCount()
         {
-            ColoredString frameNumber = new ColoredString((_currentAnimation.Frames.IndexOf(_selectedFrame) + 1).ToString(), Settings.Blue, Settings.Color_MenuBack, null);
-            ColoredString frameSep = new ColoredString(" \\ ", Settings.Grey, Settings.Color_MenuBack, null);
-            ColoredString frameMax = new ColoredString(_currentAnimation.Frames.Count.ToString(), Settings.Blue, Settings.Color_MenuBack, null);
+            ColoredString frameNumber = new ColoredString((_currentAnimation.Frames.IndexOf(_selectedFrame) + 1).ToString(), Settings.Blue, Settings.Color_MenuBack);
+            ColoredString frameSep = new ColoredString(" \\ ", Settings.Grey, Settings.Color_MenuBack);
+            ColoredString frameMax = new ColoredString(_currentAnimation.Frames.Count.ToString(), Settings.Blue, Settings.Color_MenuBack);
             _framesCounterBox.Fill(Settings.Blue, Settings.Color_MenuBack, 0, null);
             _framesCounterBox.Print(0, 0, frameNumber + frameSep + frameMax);
         }

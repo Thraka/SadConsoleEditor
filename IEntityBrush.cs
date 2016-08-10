@@ -11,7 +11,7 @@ namespace SadConsoleEditor
 {
     public interface IEntityBrush
     {
-        Point PositionOffset { get; set; }
+        Point RenderOffset { get; set; }
 
         void Render();
 

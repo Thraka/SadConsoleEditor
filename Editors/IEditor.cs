@@ -33,7 +33,7 @@ namespace SadConsoleEditor.Editors
         string FileExtensionsLoad { get; }
         string FileExtensionsSave { get; }
 
-        SadConsole.Consoles.ITextSurface Surface { get; }
+        ITextSurface Surface { get; }
 
         CustomPanel[] ControlPanels { get; }
 

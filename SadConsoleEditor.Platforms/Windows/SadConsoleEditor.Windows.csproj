@@ -51,17 +51,17 @@
       <HintPath>..\..\packages\MonoGame.Framework.WindowsDX.3.5.1.1679\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SadConsole.Controls.Windows, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Controls.Windows.dll</HintPath>
+    <Reference Include="SadConsole.Controls.Windows, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SadConsole.Controls.3.0.1\lib\net46\SadConsole.Controls.Windows.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="SadConsole.Core.Windows, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.Core.Windows.dll</HintPath>
+    <Reference Include="SadConsole.Core.Windows, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SadConsole.Core.4.0.0\lib\net46\SadConsole.Core.Windows.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="SadConsole.GameHelpers.Windows, Version=2.6.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\SadConsole\StarterProject\Platforms\Windows\bin\Debug\SadConsole.GameHelpers.Windows.dll</HintPath>
+    <Reference Include="SadConsole.GameHelpers.Windows, Version=3.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SadConsole.GameHelpers.3.1.1\lib\net46\SadConsole.GameHelpers.Windows.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -71,7 +71,27 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="C64.font">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Cheepicus12.font">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="IBM.font">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Cheepicus_12x12.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IBM8x16.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Yayo_c64.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="..\..\SadConsoleEditor.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
