@@ -76,8 +76,6 @@ namespace SadConsoleEditor.Editors
             _entity = new GameObject(SadConsoleEditor.Settings.Config.ScreenFont);
 
             Reset();
-
-            _animationPanel.SetEntity(_entity);
         }
 
         private void SelectedAnimationChanged(AnimatedTextSurface animation)
@@ -87,12 +85,10 @@ namespace SadConsoleEditor.Editors
 
             _selectedAnimation = animation;
 
-            //if (((LayeredTextSurface)_consoleLayers.TextSurface).LayerCount > 1)
-            //    ((LayeredTextSurface)_consoleLayers.TextSurface).Remove(0);
-
             _consoleLayers.TextSurface = new LayeredTextSurface(animation.Width, animation.Height, 2);
-
+            _consoleLayers.Renderer = new LayeredTextRenderer();
             SyncSpecialLayerToAnimation();
+            ((LayeredTextSurface)_consoleLayers.TextSurface).SetActiveLayer(0);
 
             // inform the outer box we've changed size
             EditorConsoleManager.Instance.UpdateBox();
@@ -124,13 +120,17 @@ namespace SadConsoleEditor.Editors
 
         private void SelectedFrameChanged(TextSurfaceBasic frame)
         {
-            if (((LayeredTextSurface)_consoleLayers.TextSurface).LayerCount != 0)
-                ((LayeredTextSurface)_consoleLayers.TextSurface).Remove(0);
-            var layer = ((LayeredTextSurface)_consoleLayers.TextSurface).Add();
-            ((LayeredTextSurface)_consoleLayers.TextSurface).SetActiveLayer(layer.Index);
-            TextSurface tempSurface = new TextSurface(_consoleLayers.Width, _consoleLayers.Height, ((LayeredTextSurface)_consoleLayers.TextSurface).Font);
-            frame.Copy(tempSurface);
-            var meta = LayerMetadata.Create("Root", false, false, true, layer);
+            //if (((LayeredTextSurface)_consoleLayers.TextSurface).LayerCount != 0)
+            //    ((LayeredTextSurface)_consoleLayers.TextSurface).Remove(0);
+            //var layer = ((LayeredTextSurface)_consoleLayers.TextSurface).Add();
+            //((LayeredTextSurface)_consoleLayers.TextSurface).SetActiveLayer(layer.Index);
+            //TextSurface tempSurface = new TextSurface(_consoleLayers.Width, _consoleLayers.Height, ((LayeredTextSurface)_consoleLayers.TextSurface).Font);
+            //frame.Copy(tempSurface);
+            //var meta = LayerMetadata.Create("Root", false, false, true, layer);
+            //((LayeredTextSurface)_consoleLayers.TextSurface).SetActiveLayer(0);
+
+            var meta = ((LayeredTextSurface)_consoleLayers.TextSurface).GetLayer(0);
+            meta.Cells = meta.RenderCells = frame.Cells;
             ((LayeredTextSurface)_consoleLayers.TextSurface).SetActiveLayer(0);
         }
 
@@ -222,37 +222,50 @@ namespace SadConsoleEditor.Editors
             _width = width;
             _height = height;
 
-            var oldSurface = (LayeredTextSurface)_consoleLayers.TextSurface;
-            var oldAnimation = _selectedAnimation;
-            var newSurface = new LayeredTextSurface(width, height, oldSurface.LayerCount);
-            var newAnimation = new AnimatedTextSurface(oldAnimation.Name, width, height, SadConsoleEditor.Settings.Config.ScreenFont);
+            //var oldSurface = (LayeredTextSurface)_consoleLayers.TextSurface;
+            //var newSurface = new LayeredTextSurface(width, height, oldSurface.LayerCount);
 
-            for (int i = 0; i < oldSurface.LayerCount; i++)
+            //for (int i = 0; i < oldSurface.LayerCount; i++)
+            //{
+            //    var oldLayer = oldSurface.GetLayer(i);
+            //    var newLayer = newSurface.GetLayer(i);
+            //    oldSurface.SetActiveLayer(i);
+            //    newSurface.SetActiveLayer(i);
+            //    oldSurface.Copy(newSurface);
+            //    newLayer.Metadata = oldLayer.Metadata;
+            //    newLayer.IsVisible = oldLayer.IsVisible;
+            //}
+
+            List<AnimatedTextSurface> newAnimations = new List<AnimatedTextSurface>(_entity.Animations.Count);
+
+            foreach (var oldAnimation in _entity.Animations.Values)
             {
-                var oldLayer = oldSurface.GetLayer(i);
-                var newLayer = newSurface.GetLayer(i);
-                oldSurface.SetActiveLayer(i);
-                newSurface.SetActiveLayer(i);
-                oldSurface.Copy(newSurface);
-                newLayer.Metadata = oldLayer.Metadata;
-                newLayer.IsVisible = oldLayer.IsVisible;
+                var newAnimation = new AnimatedTextSurface(oldAnimation.Name, width, height, SadConsoleEditor.Settings.Config.ScreenFont);
+
+                for (int i = 0; i < oldAnimation.Frames.Count; i++)
+                {
+                    oldAnimation.Frames[i].Copy(newAnimation.CreateFrame());
+                }
+
+                newAnimation.CurrentFrameIndex = 0;
+                newAnimations.Add(newAnimation);
             }
 
-            for (int i = 0; i < oldAnimation.Frames.Count; i++)
+            foreach (var animation in newAnimations)
             {
-                oldAnimation.Frames[i].Copy(newAnimation.CreateFrame());
+                _entity.Animations[animation.Name] = animation;
+
+                if (_entity.Animation.Name == animation.Name)
+                    _entity.Animation = animation;
+
+                if (_selectedAnimation.Name == animation.Name)
+                    _selectedAnimation = animation;
             }
-
-            newAnimation.CurrentFrameIndex = 0;
-
-            _selectedAnimation = newAnimation;
-            _consoleLayers.TextSurface = newSurface;
-            _consoleLayers.TextSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
 
             // inform the outer box we've changed size
-            EditorConsoleManager.Instance.UpdateBox();
+            //EditorConsoleManager.Instance.UpdateBox();
 
-            SyncSpecialLayerToAnimation();
+            _animationPanel.SetEntity(_entity);
         }
 
         public void Position(int x, int y)
