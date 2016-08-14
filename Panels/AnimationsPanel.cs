@@ -207,7 +207,16 @@ namespace SadConsoleEditor.Panels
         {
             var animation = (AnimatedTextSurface)_animations.SelectedItem;
             RenamePopup popup = new RenamePopup(animation.Name);
-            popup.Closed += (o, e2) => { if (popup.DialogResult) animation.Name = popup.NewName; _animations.IsDirty = true; };
+            popup.Closed += (o, e2) => 
+            {
+                if (popup.DialogResult)
+                {
+                    _entity.Animations.Remove(animation.Name);
+                    animation.Name = popup.NewName;
+                    _entity.Animations[animation.Name] = animation;
+                    _animations.IsDirty = true;
+                }
+            };
             popup.Show(true);
             popup.Center();
         }
@@ -230,12 +239,37 @@ namespace SadConsoleEditor.Panels
 
         void addNewAnimation_ButtonClicked(object sender, EventArgs e)
         {
-            var previouslySelected = (AnimatedTextSurface)_animations.SelectedItem;
-            var animation = new AnimatedTextSurface("New", previouslySelected.Width, previouslySelected.Height, Settings.Config.ScreenFont);
-            animation.CreateFrame();
-            _entity.Animations[animation.Name] = animation;
-            RebuildListBox();
-            _animations.SelectedItem = previouslySelected;
+            RenamePopup popup = new RenamePopup("", "Animation Name");
+            popup.Closed += (o, e2) =>
+            {
+
+                if (popup.DialogResult)
+                {
+                    string newName = popup.NewName.Trim();
+                    var keys = _entity.Animations.Keys.Select(k => k.ToLower()).ToList();
+
+                    if (keys.Contains(newName.ToLower()))
+                    {
+                        Window.Message("Name must be unique", "Close");
+                    }
+                    else if (string.IsNullOrEmpty(newName))
+                    {
+                        Window.Message("Name cannot be blank", "Close");
+                    }
+                    else
+                    {
+                        var previouslySelected = (AnimatedTextSurface)_animations.SelectedItem;
+                        var animation = new AnimatedTextSurface(newName, previouslySelected.Width, previouslySelected.Height, Settings.Config.ScreenFont);
+                        animation.CreateFrame();
+                        animation.AnimationDuration = 1;
+                        _entity.Animations[animation.Name] = animation;
+                        RebuildListBox();
+                        _animations.SelectedItem = animation;
+                    }
+                }
+            };
+            popup.Show(true);
+            popup.Center();
         }
 
         void animations_SelectedItemChanged(object sender, ListBox<ListBoxItem>.SelectedItemEventArgs e)

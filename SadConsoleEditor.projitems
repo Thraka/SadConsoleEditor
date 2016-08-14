@@ -10,7 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Consoles\BorderConsole.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Consoles\LayerMetadata.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Consoles\QuickSelectPane.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Consoles\ToolPane.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\CharacterPicker.cs" />

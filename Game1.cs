@@ -48,6 +48,8 @@ namespace SadConsoleEditor
                 SadConsole.Engine.ActiveConsole = EditorConsoleManager.Instance;
                 
                 EditorConsoleManager.Instance.ShowNewConsolePopup(false);
+
+                graphics.ApplyChanges();
             });
 
             Components.Add(sadConsoleComponent);
