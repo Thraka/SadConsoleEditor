@@ -65,7 +65,7 @@ namespace SadConsoleEditor.Panels
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.FileFilter = "*.con;*.console;*.brush";
+            popup.FileFilter = "*.entity";
             popup.Show(true);
             popup.Center();
         }
@@ -119,21 +119,35 @@ namespace SadConsoleEditor.Panels
             var previouslySelected = _entities.SelectedItem;
             EditorConsoleManager.Instance.SelectedEditor.AddNewLayer("New");
             RebuildListBox();
-            _entities.SelectedItem = previouslySelected;
+
+            if (previouslySelected != null)
+                _entities.SelectedItem = previouslySelected;
+            else
+                _entities.SelectedItem = _entities.Items[0];
         }
 
         void _layers_SelectedItemChanged(object sender, ListBox<EntityListBoxItem>.SelectedItemEventArgs e)
         {
-            _removeSelected.IsEnabled = _entities.Items.Count != 1;
+            if (_entities.SelectedItem != null)
+            {
+                _removeSelected.IsEnabled = _entities.Items.Count != 1;
 
-            _moveSelectedUp.IsEnabled = true;
-            _moveSelectedDown.IsEnabled = true;
-            _renameLayer.IsEnabled = true;
+                _moveSelectedUp.IsEnabled = true;
+                _moveSelectedDown.IsEnabled = true;
+                _renameLayer.IsEnabled = true;
 
-            var entity = (GameObject)_entities.SelectedItem;
-            var editor = (Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor;
+                var entity = (GameObject)_entities.SelectedItem;
+                var editor = (Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor;
 
-            editor.SelectedEntity = entity;
+                editor.SelectedEntity = entity;
+            }
+            else
+            {
+                _removeSelected.IsEnabled = false;
+                _moveSelectedDown.IsEnabled = false;
+                _moveSelectedUp.IsEnabled = false;
+                _renameLayer.IsEnabled = false;
+            }
         }
 
         void _toggleHideShow_IsSelectedChanged(object sender, EventArgs e)
@@ -170,10 +184,13 @@ namespace SadConsoleEditor.Panels
         {
             var previouslySelected = _entities.SelectedItem;
             RebuildListBox();
-            if (previouslySelected == null || !_entities.Items.Contains(previouslySelected))
-                _entities.SelectedItem = _entities.Items[0];
-            else
-                _entities.SelectedItem = previouslySelected;
+            if (_entities.Items.Count != 0)
+            {
+                if (previouslySelected == null || !_entities.Items.Contains(previouslySelected))
+                    _entities.SelectedItem = _entities.Items[0];
+                else
+                    _entities.SelectedItem = previouslySelected;
+            }
         }
 
         private class EntityListBoxItem : ListBoxItem

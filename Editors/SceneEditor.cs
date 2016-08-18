@@ -45,6 +45,8 @@ namespace SadConsoleEditor.Editors
 
         public CustomPanel[] ControlPanels { get; private set; }
 
+        public Panels.EntityManagementPanel EntityPanel;
+
         public SadConsole.Game.GameObject SelectedEntity
         {
             get { return _selectedEntity; }
@@ -68,13 +70,14 @@ namespace SadConsoleEditor.Editors
         {
             _consoleLayers = new Console(new LayeredTextSurface(10, 10, 2));
             _consoleLayers.Renderer = new LayeredTextRenderer();
+            EntityPanel = new Panels.EntityManagementPanel();
             Reset();
         }
 
         public void Reset()
         {
             Entities = new List<SadConsole.Game.GameObject>();
-            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, new Panels.EntityManagementPanel(), EditorConsoleManager.Instance.ToolPane.ToolsPanel };
+            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, EntityPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
 
             if (_consoleLayers != null)
             {
@@ -105,7 +108,10 @@ namespace SadConsoleEditor.Editors
 
         internal bool LoadEntity(string selectedFile)
         {
-            throw new NotImplementedException();
+            var entity = SadConsole.Game.GameObject.Load(selectedFile);
+            Entities.Add(entity);
+            EntityPanel.RebuildListBox();
+            return false;
         }
 
         public override string ToString()
