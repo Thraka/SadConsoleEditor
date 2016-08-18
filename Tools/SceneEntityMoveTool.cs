@@ -3,15 +3,16 @@
     using Microsoft.Xna.Framework;
     using SadConsole;
     using SadConsole.Consoles;
-    using SadConsole.Entities;
     using SadConsole.Input;
     using System;
     using SadConsoleEditor.Panels;
     using System.Collections.Generic;
+    using SadConsole.Game;
+
     class SceneEntityMoveTool : ITool
     {
         private EntityBrush _entity;
-        private Animation _animSinglePoint;
+        private GameObject _animSinglePoint;
 
         private BoxToolPanel _settingsPanel;
 
@@ -38,15 +39,12 @@
 
         public SceneEntityMoveTool()
         {
-            _animSinglePoint = new Animation("single", 1, 1);
-            _animSinglePoint.Font = Engine.DefaultFont;
-            var _frameSinglePoint = _animSinglePoint.CreateFrame();
-            _frameSinglePoint[0].CharacterIndex = 42;
+
         }
 
         public void OnSelected()
         {
-            _entity = new EntityBrush();
+            _entity = new EntityBrush(1, 1);
             _entity.IsVisible = false;
             
             EditorConsoleManager.Instance.UpdateBrush(_entity);
@@ -67,18 +65,25 @@
 
         public void ProcessMouse(MouseInfo info, ITextSurface surface)
         {
-            var entities = new List<SadConsole.Entities.Entity>((EditorConsoleManager.Instance.SelectedEditor as Editors.SceneEditor).GetEntities());
-            entities.Reverse();
+            //var entities = new List<SadConsole.Entities.Entity>((EditorConsoleManager.Instance.SelectedEditor as Editors.SceneEditor).GetEntities());
+            //entities.Reverse();
 
-            foreach (var ent in entities)
+            //foreach (var ent in entities)
+            //{
+            //    var rect = new Rectangle(ent.Position.X, ent.Position.Y, ent.TextSurface.Width, ent.TextSurface.Height);
+            //    rect.Offset(ent.PositionOffset);
+
+            //    if (rect.Contains(info.ConsoleLocation))
+            //    {
+
+            //    }
+            //}
+
+            var editor = (Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor;
+
+            if (editor.SelectedEntity != null)
             {
-                var rect = new Rectangle(ent.Position.X, ent.Position.Y, ent.TextSurface.Width, ent.TextSurface.Height);
-                rect.Offset(ent.PositionOffset);
-
-                if (rect.Contains(info.ConsoleLocation))
-                {
-
-                }
+                editor.SelectedEntity.Position = info.ConsoleLocation;
             }
         }
 

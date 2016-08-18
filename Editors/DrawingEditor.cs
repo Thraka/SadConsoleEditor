@@ -7,6 +7,7 @@ using SadConsoleEditor.Consoles;
 using SadConsoleEditor.Panels;
 using SadConsole.Consoles;
 using SadConsole;
+using System.IO;
 
 namespace SadConsoleEditor.Editors
 {
@@ -185,9 +186,8 @@ namespace SadConsoleEditor.Editors
                 // Support REXPaint
                 if (file.EndsWith(".xp"))
                 {
-                    //SadConsole.Readers.REXPaint
-                    //SadConsole.Readers.REXPaint.RexReader reader = new SadConsole.Readers.REXPaint.RexReader(file);
-                    //_consoleLayers = reader.GetMap().ToLayeredConsole();
+                    using (var filestream = new FileStream(file, FileMode.Open))
+                        _consoleLayers.TextSurface = SadConsole.Readers.REXPaint.Image.Load(filestream).ToTextSurface();
                 }
                 else
                 {

@@ -79,7 +79,7 @@ namespace SadConsoleEditor.Consoles
             _tools.Add(SelectionTool.ID, new SelectionTool());
             _tools.Add(CircleTool.ID, new CircleTool());
             _tools.Add(EntityCenterTool.ID, new EntityCenterTool());
-            //_tools.Add(SceneEntityMoveTool.ID, new SceneEntityMoveTool());
+            _tools.Add(SceneEntityMoveTool.ID, new SceneEntityMoveTool());
 
             FilesPanel = new FilesPanel();
             ToolsPanel = new ToolsPanel();

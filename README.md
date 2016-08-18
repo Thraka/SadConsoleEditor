@@ -1,7 +1,7 @@
 # SadConsole Editor
 An editor for creating consoles and animations used by SadConsole.
 
-SadConsole Editor provides three types of editors: Console, GameScreen, and Entity.
+SadConsole Editor provides three types of editors: Console, ~~GameScreen~~, and Entity. The current code base has been updated for the latest [SadConsole](http://github.com/thraka/sadconsole) release.
 
 A config file named `settings.json` is provided which controls how SadConsole Editor behaves. You can adjust which font file you're using (to match whatever font your game is going to use). the size of the program window (in characters), the default size of each editor's console, and the bounds of those.
 
