@@ -199,6 +199,9 @@ namespace SadConsoleEditor.Panels
             {
                 string value = ((GameObject)Item).Name;
 
+                if (string.IsNullOrEmpty(value))
+                    value = "<no name>";
+
                 if (value.Length < area.Width)
                     value += new string(' ', area.Width - value.Length);
                 else if (value.Length > area.Width)

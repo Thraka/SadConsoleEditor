@@ -34,6 +34,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Panels\CharacterPickPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\Circle.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\CustomPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\EntityNamePanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\FilesPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\LayersPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\LinePanel.cs" />

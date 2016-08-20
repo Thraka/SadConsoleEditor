@@ -84,6 +84,9 @@
             if (editor.SelectedEntity != null)
             {
                 editor.SelectedEntity.Position = info.ConsoleLocation;
+
+                if (info.LeftClicked)
+                    EditorConsoleManager.Instance.ToolPane.SelectedTool = (ITool) EditorConsoleManager.Instance.ToolPane.ToolsPanel.ToolsListBox.Items[0];
             }
         }
 

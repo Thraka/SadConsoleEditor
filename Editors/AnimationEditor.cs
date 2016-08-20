@@ -20,6 +20,7 @@ namespace SadConsoleEditor.Editors
         private int _height;
         private Console _consoleLayers;
         private AnimationsPanel _animationPanel;
+        private EntityNamePanel entityNamePanel;
         private AnimationFramesPanel _framesPanel;
 
         public event EventHandler<MouseEventArgs> MouseEnter;
@@ -71,6 +72,7 @@ namespace SadConsoleEditor.Editors
         public EntityEditor()
         {
             _animationPanel = new AnimationsPanel(SelectedAnimationChanged);
+            entityNamePanel = new EntityNamePanel();
             _framesPanel = new AnimationFramesPanel(SelectedFrameChanged);
             _specialToolRenderer = new LayeredTextRenderer();
             _entity = new GameObject(SadConsoleEditor.Settings.Config.ScreenFont);
@@ -136,7 +138,7 @@ namespace SadConsoleEditor.Editors
 
         public void Reset()
         {
-            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, _animationPanel, _framesPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
+            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, entityNamePanel, _animationPanel, _framesPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
 
             if (_consoleLayers != null)
             {
@@ -171,6 +173,7 @@ namespace SadConsoleEditor.Editors
             _entity.Animation = animation;
 
             _animationPanel.SetEntity(_entity);
+            entityNamePanel.SetEntity(_entity);
         }
 
         public override string ToString()
@@ -266,6 +269,7 @@ namespace SadConsoleEditor.Editors
             //EditorConsoleManager.Instance.UpdateBox();
 
             _animationPanel.SetEntity(_entity);
+            entityNamePanel.SetEntity(_entity);
         }
 
         public void Position(int x, int y)
@@ -296,6 +300,7 @@ namespace SadConsoleEditor.Editors
                 _entity.Font = SadConsoleEditor.Settings.Config.ScreenFont;
 
                 _animationPanel.SetEntity(_entity);
+                entityNamePanel.SetEntity(_entity);
             }
         }
 
