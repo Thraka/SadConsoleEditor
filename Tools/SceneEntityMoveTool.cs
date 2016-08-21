@@ -16,6 +16,9 @@
 
         private BoxToolPanel _settingsPanel;
 
+        private Point clickOffset;
+        private bool isDragging;
+
         public const string ID = "SCENE-ENT-MOVE";
         public string Id
         {
@@ -81,13 +84,58 @@
 
             var editor = (Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor;
 
-            if (editor.SelectedEntity != null)
+            if (!isDragging)
             {
-                editor.SelectedEntity.Position = info.ConsoleLocation;
+                bool overEntity = false;
 
-                if (info.LeftClicked)
-                    EditorConsoleManager.Instance.ToolPane.SelectedTool = (ITool) EditorConsoleManager.Instance.ToolPane.ToolsPanel.ToolsListBox.Items[0];
+                for (int i = 0; i < editor.Entities.Count; i++)
+                {
+                    var area = editor.Entities[i].Animation.RenderArea;
+                    area.Offset(editor.Entities[i].Position);
+                    editor.Entities[i].Position = new Point(10, 10);
+
+                    Point mousePosition = info.WorldLocation - editor.Entities[i].Position + editor.Entities[i].RenderOffset;
+
+
+                    // is mouse over?
+                    if (area.Contains(mousePosition))
+                    {
+                        overEntity = true;
+                        _entity = new EntityBrush(editor.Entities[i].Animation.Width + 2, editor.Entities[i].Animation.Height + 2);
+                        _entity.RenderOffset = editor.Entities[i].RenderOffset;
+                        _entity.Position = editor.Entities[i].Position - new Point(1);
+                        _entity.IsVisible = true;
+
+                        var box = SadConsole.Shapes.Box.GetDefaultBox();
+                        box.Width = _entity.Animation.Width;
+                        box.Height = _entity.Animation.Height;
+                        box.Fill = false;
+                        box.TopLeftCharacter = box.TopSideCharacter = box.TopRightCharacter = box.LeftSideCharacter = box.RightSideCharacter = box.BottomLeftCharacter = box.BottomSideCharacter = box.BottomRightCharacter = 177;
+
+                        Settings.QuickEditor.TextSurface = _entity.Animation.CurrentFrame;
+
+                        box.Draw(Settings.QuickEditor);
+
+                        EditorConsoleManager.Instance.UpdateBrush(_entity);
+                        overEntity = true;
+                        break;
+                    }
+                }
+
+                if (!overEntity)
+                    _entity.IsVisible = false;
             }
+            else
+            {
+
+            }
+            //if (editor.SelectedEntity != null)
+            //{
+            //    editor.SelectedEntity.Position = info.ConsoleLocation;
+
+            //    if (info.LeftClicked)
+            //        EditorConsoleManager.Instance.ToolPane.SelectedTool = (ITool) EditorConsoleManager.Instance.ToolPane.ToolsPanel.ToolsListBox.Items[0];
+            //}
         }
 
         public void MouseEnterSurface(MouseInfo info, ITextSurface surface)

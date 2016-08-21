@@ -109,6 +109,7 @@ namespace SadConsoleEditor.Editors
         internal bool LoadEntity(string selectedFile)
         {
             var entity = SadConsole.Game.GameObject.Load(selectedFile);
+            entity.RenderOffset = _consoleLayers.Position;
             Entities.Add(entity);
             EntityPanel.RebuildListBox();
             return false;
