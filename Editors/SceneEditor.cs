@@ -18,7 +18,9 @@ namespace SadConsoleEditor.Editors
         private int _height;
         public SadConsole.Game.GameObject _selectedEntity;
         private Console _consoleLayers;
-        public List<SadConsole.Game.GameObject> Entities;
+
+        //public List<SadConsole.Game.GameObject> Entities;
+        public SadConsole.Game.GameObjectCollection Entities;
 
         public event EventHandler<MouseEventArgs> MouseEnter;
         public event EventHandler<MouseEventArgs> MouseExit;
@@ -46,11 +48,12 @@ namespace SadConsoleEditor.Editors
         public CustomPanel[] ControlPanels { get; private set; }
 
         public Panels.EntityManagementPanel EntityPanel;
+        public Panels.Scene.AnimationListPanel AnimationsPanel;
 
         public SadConsole.Game.GameObject SelectedEntity
         {
             get { return _selectedEntity; }
-            set { _selectedEntity = value; }
+            set { _selectedEntity = value; AnimationsPanel.RebuildListBox(); }
         }
 
         public string[] Tools
@@ -71,13 +74,16 @@ namespace SadConsoleEditor.Editors
             _consoleLayers = new Console(new LayeredTextSurface(10, 10, 2));
             _consoleLayers.Renderer = new LayeredTextRenderer();
             EntityPanel = new Panels.EntityManagementPanel();
+            AnimationsPanel = new Panels.Scene.AnimationListPanel();
             Reset();
         }
 
+
         public void Reset()
         {
-            Entities = new List<SadConsole.Game.GameObject>();
-            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, EntityPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
+            Entities = new SadConsole.Game.GameObjectCollection();
+            //Entities = new List<SadConsole.Game.GameObject>();
+            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, EditorConsoleManager.Instance.ToolPane.LayersPanel, EntityPanel, AnimationsPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
 
             if (_consoleLayers != null)
             {
@@ -207,6 +213,7 @@ namespace SadConsoleEditor.Editors
         public void Save(string file)
         {
             ((LayeredTextSurface)_consoleLayers.TextSurface).Save(file, typeof(LayerMetadata));
+
         }
 
         public void Load(string file)
