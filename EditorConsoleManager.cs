@@ -270,12 +270,9 @@ namespace SadConsoleEditor
         {
             var result = base.ProcessMouse(info);
 
-            
-
             if (!ToolPane.IsMouseOver && !_backingPanel.IsMouseOver)
                 SelectedEditor.ProcessMouse(info);
             
-
             return result;
         }
 

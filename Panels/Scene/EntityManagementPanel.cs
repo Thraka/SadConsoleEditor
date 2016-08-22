@@ -49,6 +49,8 @@ namespace SadConsoleEditor.Panels
             _addNewLayerFromFile.ButtonClicked += _addNewLayerFromFile_ButtonClicked;
 
             Controls = new ControlBase[] { _entities, _removeSelected, _moveSelectedUp, _moveSelectedDown, _renameLayer, _addNewLayerFromFile };
+
+            _layers_SelectedItemChanged(null, null);
         }
         
         void _addNewLayerFromFile_ButtonClicked(object sender, EventArgs e)
