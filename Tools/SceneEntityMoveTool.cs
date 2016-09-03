@@ -102,27 +102,33 @@
                     if (area.Contains(mousePosition))
                     {
                         overEntity = true;
-                        movingEntity = editor.Entities[i];
 
-                        _entity = new EntityBrush(editor.Entities[i].Animation.Width + 2, editor.Entities[i].Animation.Height + 2);
-                        _entity.RenderOffset = editor.Entities[i].RenderOffset;
-                        _entity.Position = editor.Entities[i].Position - new Point(1);
-                        _entity.IsVisible = true;
+                        if (movingEntity != editor.Entities[i])
+                        {
+                            movingEntity = editor.Entities[i];
+                            _entity = new EntityBrush(editor.Entities[i].Animation.Width + 2, editor.Entities[i].Animation.Height + 2);
+                            _entity.RenderOffset = editor.Entities[i].RenderOffset;
+                            _entity.Position = editor.Entities[i].Position - new Point(1);
 
-                        var box = SadConsole.Shapes.Box.GetDefaultBox();
-                        box.Width = _entity.Animation.Width;
-                        box.Height = _entity.Animation.Height;
-                        box.Fill = false;
-                        box.TopLeftCharacter = box.TopSideCharacter = box.TopRightCharacter = box.LeftSideCharacter = box.RightSideCharacter = box.BottomLeftCharacter = box.BottomSideCharacter = box.BottomRightCharacter = 177;
+                            var box = SadConsole.Shapes.Box.GetDefaultBox();
+                            box.Width = _entity.Animation.Width;
+                            box.Height = _entity.Animation.Height;
+                            box.Fill = false;
+                            box.TopLeftCharacter = box.TopSideCharacter = box.TopRightCharacter = box.LeftSideCharacter = box.RightSideCharacter = box.BottomLeftCharacter = box.BottomSideCharacter = box.BottomRightCharacter = 177;
 
-                        Settings.QuickEditor.TextSurface = _entity.Animation.CurrentFrame;
+                            Settings.QuickEditor.TextSurface = _entity.Animation.CurrentFrame;
 
-                        box.Draw(Settings.QuickEditor);
-                        Settings.QuickEditor.SetGlyph(movingEntity.Animation.Center.X + 1, movingEntity.Animation.Center.Y + 1, '*');
-                        _entity.Animation.Tint = Color.Black * 0.3f;
+                            box.Draw(Settings.QuickEditor);
+
+                            Settings.QuickEditor.SetGlyph(movingEntity.Animation.Center.X + 1, movingEntity.Animation.Center.Y + 1, '*');
+                            Settings.QuickEditor.SetBackground(movingEntity.Animation.Center.X + 1, movingEntity.Animation.Center.Y + 1, Color.Black);
+                            _entity.Animation.Tint = Color.Black * 0.3f;
+                        }
 
                         EditorConsoleManager.Instance.UpdateBrush(_entity);
                         overEntity = true;
+                        _entity.IsVisible = true;
+
                         break;
                     }
                 }
