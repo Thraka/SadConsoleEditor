@@ -52,14 +52,17 @@ namespace SadConsoleEditor.Panels.Scene
         {
             AnimationList.Items.Clear();
 
-            var animations = ((Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor).SelectedEntity.Animations;
-
-            if (animations.Count != 0)
+            if (((Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor).SelectedEntity != null)
             {
-                foreach (var item in animations.Values)
-                    AnimationList.Items.Add(item);
+                var animations = ((Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor).SelectedEntity.Animations;
 
-                AnimationList.SelectedItem = ((Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor).SelectedEntity.Animation;
+                if (animations.Count != 0)
+                {
+                    foreach (var item in animations.Values)
+                        AnimationList.Items.Add(item);
+
+                    AnimationList.SelectedItem = ((Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor).SelectedEntity.Animation;
+                }
             }
         }
 

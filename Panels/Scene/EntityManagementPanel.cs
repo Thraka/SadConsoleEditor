@@ -45,7 +45,7 @@ namespace SadConsoleEditor.Panels
             renameLayer.ButtonClicked += RenameEntity_ButtonClicked;
 
             importGameObject = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            importGameObject.Text = "Import";
+            importGameObject.Text = "Import File";
             importGameObject.ButtonClicked += ImportEntity_ButtonClicked;
 
             Controls = new ControlBase[] { GameObjectList, removeSelected, moveSelectedUp, moveSelectedDown, renameLayer, importGameObject };

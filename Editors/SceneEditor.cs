@@ -9,6 +9,8 @@ using SadConsole.Consoles;
 using SadConsole;
 using System.IO;
 using System.Collections.Generic;
+using SadConsole.Game;
+using System.Linq;
 
 namespace SadConsoleEditor.Editors
 {
@@ -16,10 +18,10 @@ namespace SadConsoleEditor.Editors
     {
         private int _width;
         private int _height;
-        public SadConsole.Game.GameObject _selectedEntity;
+        public GameObject _selectedEntity;
         private Console _consoleLayers;
 
-        //public List<SadConsole.Game.GameObject> Entities;
+        public Dictionary<GameObject, GameObject> LinkedGameObjects = new Dictionary<GameObject, GameObject>();
         public SadConsole.Game.GameObjectCollection Entities;
 
         public event EventHandler<MouseEventArgs> MouseEnter;
@@ -50,7 +52,7 @@ namespace SadConsoleEditor.Editors
         public Panels.EntityManagementPanel EntityPanel;
         public Panels.Scene.AnimationListPanel AnimationsPanel;
 
-        public SadConsole.Game.GameObject SelectedEntity
+        public GameObject SelectedEntity
         {
             get { return _selectedEntity; }
             set { _selectedEntity = value; AnimationsPanel.RebuildListBox(); }
@@ -115,9 +117,26 @@ namespace SadConsoleEditor.Editors
         internal bool LoadEntity(string selectedFile)
         {
             var entity = SadConsole.Game.GameObject.Load(selectedFile);
-            entity.RenderOffset = _consoleLayers.Position;
-            Entities.Add(entity);
+            var editor = new Editors.EntityEditor();
+            editor.SetEntity(entity);
+            editor.LinkedEditor = this;
+            EditorConsoleManager.Instance.AddDocument(editor, false);
+
+            var localEntity = new GameObject(entity.Font);
+
+            foreach (var item in entity.Animations.Values)
+                localEntity.Animations.Add(item.Name, item);
+
+            localEntity.Animation = localEntity.Animations[entity.Animation.Name];
+
+            localEntity.RenderOffset = _consoleLayers.Position;
+            Entities.Add(localEntity);
             EntityPanel.RebuildListBox();
+
+            localEntity.Position = new Point(0, 0);
+
+            LinkedGameObjects.Add(localEntity, entity);
+
             return false;
         }
 
@@ -208,6 +227,50 @@ namespace SadConsoleEditor.Editors
         public Point GetPosition()
         {
             return _consoleLayers.Position;
+        }
+
+        public void OnSelected()
+        {
+            foreach (var item in EditorConsoleManager.Instance.Documents)
+            {
+                var editor = item as EntityEditor;
+
+                if (editor != null && editor.LinkedEditor == this)
+                {
+                    // sync back up any entities.
+                    foreach (var gameObject in Entities)
+                    {
+                        var animationName = gameObject.Animation.Name;
+                        gameObject.Animations.Clear();
+
+                        foreach (var animation in LinkedGameObjects[gameObject].Animations)
+                            gameObject.Animations.Add(animation.Key, animation.Value);
+
+                        if (animationName != null && gameObject.Animations.ContainsKey(animationName))
+                            gameObject.Animation = gameObject.Animations[animationName];
+                        else
+                            gameObject.Animation = gameObject.Animations.First().Value;
+                    }
+                }
+            }
+
+            AnimationsPanel.RebuildListBox();
+        }
+
+        public void OnDeselected()
+        {
+
+        }
+
+        public void OnClosed()
+        {
+            foreach (var item in EditorConsoleManager.Instance.Editors.Values)
+            {
+                var editor = item as EntityEditor;
+
+                if (editor != null && editor.LinkedEditor == this)
+                    editor.LinkedEditor = null;
+            }
         }
 
         public void Save(string file)
@@ -319,4 +382,5 @@ namespace SadConsoleEditor.Editors
             ((LayeredTextSurface)_consoleLayers.TextSurface).SetActiveLayer(index);
         }
     }
+    
 }

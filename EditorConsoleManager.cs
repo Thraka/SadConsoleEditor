@@ -37,7 +37,7 @@ namespace SadConsoleEditor
         private Dictionary<SadConsole.Controls.RadioButton, IEditor> _documentButtons = new Dictionary<SadConsole.Controls.RadioButton, IEditor>();
         private Dictionary<IEditor, string> _editorsLastSelectedTool = new Dictionary<IEditor, string>();
 
-
+        
         public int EditingSurfaceWidth { get { return SelectedEditor.Width; } }
         public int EditingSurfaceHeight { get { return SelectedEditor.Height; } }
 
@@ -48,6 +48,8 @@ namespace SadConsoleEditor
 		public Consoles.QuickSelectPane QuickSelectPane { get; private set; }
 
 		public bool AllowKeyboardToMoveConsole { get; set; }
+
+        public IEnumerable<IEditor> Documents { get { return _documentButtons.Values; } }
 
         private Point topBarMousePosition;
         private string topBarLayerName = "None";
@@ -179,11 +181,15 @@ namespace SadConsoleEditor
                     _editorsLastSelectedTool.Remove(SelectedEditor);
 
                 _editorsLastSelectedTool.Add(SelectedEditor, ToolPane.SelectedTool.Id);
+
+                SelectedEditor.OnDeselected();
             }
 
             SelectedEditor = editor;
             ToolPane.SetupEditor();
             UpdateBox();
+
+            SelectedEditor.OnSelected();
 
             if (_editorsLastSelectedTool.ContainsKey(SelectedEditor))
             {
@@ -404,7 +410,8 @@ namespace SadConsoleEditor
                     editor.Resize(popup.SettingWidth, popup.SettingHeight);
                     Settings.QuickEditor.TextSurface = editor.Surface;
                     Settings.QuickEditor.Fill(popup.SettingForeground, popup.SettingBackground, 0, null);
-                    AddDocument(editor);
+                    AddDocument(editor, true);
+                    //switch
                 }
             };
 
@@ -454,14 +461,16 @@ namespace SadConsoleEditor
         }
 
 
-        public void AddDocument(IEditor editor)
+        public void AddDocument(IEditor editor, bool selectEditor)
         {
             var button = new SadConsole.Controls.RadioButton(editor.ShortName.Length + 6, 1) { Text = editor.ShortName };
             button.IsSelectedChanged += DocumentButtonClick;
             _documentButtons.Add(button, editor);
             _backingPanel.Add(button);
             ArrangeDocumentButtons();
-            button.IsSelected = true;
+
+            if (selectEditor)
+                button.IsSelected = true;
         }
 
         public void CloseDocument(IEditor editor)
@@ -495,6 +504,8 @@ namespace SadConsoleEditor
                     }
                 }
             }
+
+            editor.OnClosed();
         }
 
         private void DocumentButtonClick(object sender, EventArgs e)

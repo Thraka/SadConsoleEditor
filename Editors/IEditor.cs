@@ -69,5 +69,11 @@ namespace SadConsoleEditor.Editors
         void SaveLayer(int index, string file);
 
         void SetActiveLayer(int index);
+
+        void OnSelected();
+
+        void OnDeselected();
+
+        void OnClosed();
     }
 }

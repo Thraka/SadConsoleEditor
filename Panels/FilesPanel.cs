@@ -10,50 +10,50 @@ namespace SadConsoleEditor.Panels
 {
     class FilesPanel : CustomPanel
     {
-        private Button _newButton;
-        private Button _loadButton;
-        private Button _saveButton;
-        private Button _resizeButton;
-        private Button _closeButton;
+        public Button NewButton;
+        public Button LoadButton;
+        public Button SaveButton;
+        public Button ResizeButton;
+        public Button CloseButton;
 
         public FilesPanel()
         {
             Title = "File";
 
-            _newButton = new Button(8, 1)
+            NewButton = new Button(8, 1)
             {
                 Text = " New",
                 TextAlignment = System.Windows.HorizontalAlignment.Left,
                 CanUseKeyboard = false,
             };
-            _newButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowNewConsolePopup(true);
+            NewButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowNewConsolePopup(true);
 
-            _loadButton = new Button(8, 1)
+            LoadButton = new Button(8, 1)
             {
                 Text = "Import",
             };
-            _loadButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.LoadSurface();
+            LoadButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.LoadSurface();
 
-            _saveButton = new Button(8, 1)
+            SaveButton = new Button(8, 1)
             {
                 Text = "Save",
             };
-            _saveButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.SaveSurface();
+            SaveButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.SaveSurface();
 
-            _resizeButton = new Button(8, 1)
+            ResizeButton = new Button(8, 1)
             {
                 Text = "Resize",
             };
-            _resizeButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowResizeConsolePopup();
+            ResizeButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowResizeConsolePopup();
 
-            _closeButton = new Button(8, 1)
+            CloseButton = new Button(8, 1)
             {
                 Text = " Close",
                 TextAlignment = System.Windows.HorizontalAlignment.Left
             };
-            _closeButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowCloseConsolePopup();
+            CloseButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowCloseConsolePopup();
 
-            Controls = new ControlBase[] { _newButton, _loadButton, _saveButton, _resizeButton, _closeButton };
+            Controls = new ControlBase[] { NewButton, LoadButton, SaveButton, ResizeButton, CloseButton };
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseInfo info)
@@ -63,18 +63,18 @@ namespace SadConsoleEditor.Panels
 
         public override int Redraw(SadConsole.Controls.ControlBase control)
         {
-            if (control == _newButton)
-                _newButton.Position = new Point(1, _newButton.Position.Y);
-            else if (control == _loadButton)
+            if (control == NewButton)
+                NewButton.Position = new Point(1, NewButton.Position.Y);
+            else if (control == LoadButton)
             {
-                _loadButton.Position = new Point(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 8, _newButton.Position.Y);
+                LoadButton.Position = new Point(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 8, NewButton.Position.Y);
                 return -1;
             }
-            else if (control == _saveButton)
-                _saveButton.Position = new Point(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 8, _saveButton.Position.Y);
-            else if (control == _resizeButton)
+            else if (control == SaveButton)
+                SaveButton.Position = new Point(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 8, SaveButton.Position.Y);
+            else if (control == ResizeButton)
             {
-                _resizeButton.Position = new Point(1, _saveButton.Position.Y);
+                ResizeButton.Position = new Point(1, SaveButton.Position.Y);
                 return -1;
             }
             

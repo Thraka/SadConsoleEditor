@@ -265,6 +265,21 @@ namespace SadConsoleEditor.Editors
                 return false;
         }
 
+        public void OnSelected()
+        {
+
+        }
+
+        public void OnDeselected()
+        {
+
+        }
+
+        public void OnClosed()
+        {
+
+        }
+
         public void SaveLayer(int index, string file)
         {
             SadConsole.Serializer.Save(((LayeredTextSurface)_consoleLayers.TextSurface).GetLayer(index), file, new Type[] { typeof(LayerMetadata) });

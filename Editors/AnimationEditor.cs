@@ -27,6 +27,10 @@ namespace SadConsoleEditor.Editors
         public event EventHandler<MouseEventArgs> MouseExit;
         public event EventHandler<MouseEventArgs> MouseMove;
 
+        public SceneEditor LinkedEditor;
+
+        public bool IsLinked { get { return LinkedEditor != null; } }
+
         public int Width { get { return _width; } }
         public int Height { get { return _height; } }
 
@@ -272,6 +276,23 @@ namespace SadConsoleEditor.Editors
             entityNamePanel.SetEntity(_entity);
         }
 
+        public void OnSelected()
+        {
+            if (IsLinked)
+                EditorConsoleManager.Instance.ToolPane.FilesPanel.CloseButton.IsEnabled = false;
+            else
+                EditorConsoleManager.Instance.ToolPane.FilesPanel.CloseButton.IsEnabled = true;
+        }
+
+        public void OnDeselected()
+        {
+            EditorConsoleManager.Instance.ToolPane.FilesPanel.CloseButton.IsEnabled = true;
+        }
+        public void OnClosed()
+        {
+
+        }
+
         public void Position(int x, int y)
         {
             _consoleLayers.Position = new Point(x, y);
@@ -296,12 +317,17 @@ namespace SadConsoleEditor.Editors
         {
             if (System.IO.File.Exists(file))
             {
-                _entity = GameObject.Load(file);
-                _entity.Font = SadConsoleEditor.Settings.Config.ScreenFont;
-
-                _animationPanel.SetEntity(_entity);
-                entityNamePanel.SetEntity(_entity);
+                SetEntity(GameObject.Load(file));
             }
+        }
+
+        public void SetEntity(GameObject entity)
+        {
+            _entity = entity;
+            _entity.Font = SadConsoleEditor.Settings.Config.ScreenFont;
+
+            _animationPanel.SetEntity(_entity);
+            entityNamePanel.SetEntity(_entity);
         }
 
         public void RemoveLayer(int index)

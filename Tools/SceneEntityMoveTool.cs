@@ -11,7 +11,7 @@
 
     class SceneEntityMoveTool : ITool
     {
-        private EntityBrush _entity;
+        private EntityBrush _boundingBox;
         private GameObject _animSinglePoint;
 
         private BoxToolPanel _settingsPanel;
@@ -48,10 +48,10 @@
 
         public void OnSelected()
         {
-            _entity = new EntityBrush(1, 1);
-            _entity.IsVisible = false;
+            _boundingBox = new EntityBrush(1, 1);
+            _boundingBox.IsVisible = false;
             
-            EditorConsoleManager.Instance.UpdateBrush(_entity);
+            EditorConsoleManager.Instance.UpdateBrush(_boundingBox);
         }
 
         public void OnDeselected()
@@ -94,7 +94,7 @@
                 for (int i = 0; i < editor.Entities.Count; i++)
                 {
                     var area = editor.Entities[i].Animation.RenderArea;
-                    area.Offset(editor.Entities[i].Position);
+                    area.Offset(editor.Entities[i].Position - editor.Entities[i].Animation.Center);
 
                     mousePosition = info.WorldLocation - editor.Entities[i].RenderOffset;
 
@@ -106,35 +106,38 @@
                         if (movingEntity != editor.Entities[i])
                         {
                             movingEntity = editor.Entities[i];
-                            _entity = new EntityBrush(editor.Entities[i].Animation.Width + 2, editor.Entities[i].Animation.Height + 2);
-                            _entity.RenderOffset = editor.Entities[i].RenderOffset;
-                            _entity.Position = editor.Entities[i].Position - new Point(1);
+                            _boundingBox = new EntityBrush(movingEntity.Animation.Width + 2, movingEntity.Animation.Height + 2);
+                            _boundingBox.RenderOffset = movingEntity.RenderOffset;
+                            _boundingBox.Position = movingEntity.Position - movingEntity.Animation.Center - new Point(1);
 
                             var box = SadConsole.Shapes.Box.GetDefaultBox();
-                            box.Width = _entity.Animation.Width;
-                            box.Height = _entity.Animation.Height;
+                            box.Width = _boundingBox.Animation.Width;
+                            box.Height = _boundingBox.Animation.Height;
                             box.Fill = false;
                             box.TopLeftCharacter = box.TopSideCharacter = box.TopRightCharacter = box.LeftSideCharacter = box.RightSideCharacter = box.BottomLeftCharacter = box.BottomSideCharacter = box.BottomRightCharacter = 177;
 
-                            Settings.QuickEditor.TextSurface = _entity.Animation.CurrentFrame;
+                            Settings.QuickEditor.TextSurface = _boundingBox.Animation.CurrentFrame;
 
                             box.Draw(Settings.QuickEditor);
 
                             Settings.QuickEditor.SetGlyph(movingEntity.Animation.Center.X + 1, movingEntity.Animation.Center.Y + 1, '*');
                             Settings.QuickEditor.SetBackground(movingEntity.Animation.Center.X + 1, movingEntity.Animation.Center.Y + 1, Color.Black);
-                            _entity.Animation.Tint = Color.Black * 0.3f;
+                            _boundingBox.Animation.Tint = Color.Black * 0.3f;
                         }
 
-                        EditorConsoleManager.Instance.UpdateBrush(_entity);
+                        EditorConsoleManager.Instance.UpdateBrush(_boundingBox);
                         overEntity = true;
-                        _entity.IsVisible = true;
+                        _boundingBox.IsVisible = true;
 
                         break;
                     }
                 }
 
                 if (!overEntity)
-                    _entity.IsVisible = false;
+                {
+                    _boundingBox.IsVisible = false;
+                    movingEntity = null;
+                }
                 else
                 {
                     if (info.LeftButtonDown)
@@ -150,7 +153,7 @@
                 else
                 {
                     movingEntity.Position = info.WorldLocation - movingEntity.RenderOffset - clickOffset;
-                    _entity.Position = movingEntity.Position - new Point(1);
+                    _boundingBox.Position = movingEntity.Position - movingEntity.Animation.Center - new Point(1);
                 }
             }
             //if (editor.SelectedEntity != null)
