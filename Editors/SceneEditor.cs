@@ -117,6 +117,12 @@ namespace SadConsoleEditor.Editors
         internal bool LoadEntity(string selectedFile)
         {
             var entity = SadConsole.Game.GameObject.Load(selectedFile);
+
+            return LoadEntity(entity);
+        }
+
+        internal bool LoadEntity(GameObject entity)
+        {
             var editor = new Editors.EntityEditor();
             editor.SetEntity(entity);
             editor.LinkedEditor = this;
@@ -133,11 +139,11 @@ namespace SadConsoleEditor.Editors
             Entities.Add(localEntity);
             EntityPanel.RebuildListBox();
 
-            localEntity.Position = new Point(0, 0);
+            localEntity.Position = entity.Position;
 
             LinkedGameObjects.Add(localEntity, entity);
 
-            return false;
+            return true;
         }
 
         public override string ToString()
@@ -277,6 +283,9 @@ namespace SadConsoleEditor.Editors
         {
             ((LayeredTextSurface)_consoleLayers.TextSurface).Save(file, typeof(LayerMetadata));
 
+            GameObject[] objects = Entities.ToArray();
+
+            SadConsole.Serializer.Save(objects, file + ".objects");
         }
 
         public void Load(string file)
@@ -306,6 +315,8 @@ namespace SadConsoleEditor.Editors
 
                 _consoleLayers.TextSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
 
+                EditorConsoleManager.Instance.ToolPane.LayersPanel.RebuildListBox();
+
                 _consoleLayers.MouseMove += _mouseMoveHandler;
                 _consoleLayers.MouseEnter += _mouseEnterHandler;
                 _consoleLayers.MouseExit += _mouseExitHandler;
@@ -314,6 +325,20 @@ namespace SadConsoleEditor.Editors
                 _height = _consoleLayers.Height;
 
                 EditorConsoleManager.Instance.UpdateBox();
+                
+
+                // Load game objects
+                file += ".objects";
+
+                if (System.IO.File.Exists(file))
+                {
+                    GameObject[] objects = SadConsole.Serializer.Load<GameObject[]>(file);
+
+                    foreach (var item in objects)
+                    {
+                        LoadEntity(item);
+                    }
+                }
             }
         }
 

@@ -52,15 +52,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SadConsole.Controls.Windows, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SadConsole.Controls.3.0.1\lib\net45\SadConsole.Controls.Windows.dll</HintPath>
+      <HintPath>..\..\packages\SadConsole.Controls.3.0.2-pre1a\lib\net45\SadConsole.Controls.Windows.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SadConsole.Core.Windows, Version=4.2.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SadConsole.Core.4.2.2-pre3\lib\net45\SadConsole.Core.Windows.dll</HintPath>
+    <Reference Include="SadConsole.Core.Windows, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SadConsole.Core.5.0.0\lib\net45\SadConsole.Core.Windows.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SadConsole.GameHelpers.Windows, Version=3.2.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SadConsole.GameHelpers.3.2.1-pre4\lib\net45\SadConsole.GameHelpers.Windows.dll</HintPath>
+    <Reference Include="SadConsole.GameHelpers.Windows, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SadConsole.GameHelpers.4.0.0\lib\net45\SadConsole.GameHelpers.Windows.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

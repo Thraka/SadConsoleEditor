@@ -9,7 +9,7 @@ namespace SadConsoleEditor.Panels
 {
     class EntityNamePanel: CustomPanel
     {
-        private InputBox nameBox;
+        private Button setName;
         private DrawingSurface nameTitle;
         private GameObject entity;
 
@@ -18,13 +18,28 @@ namespace SadConsoleEditor.Panels
         {
             Title = "Entity";
 
-            nameTitle = new DrawingSurface(Consoles.ToolPane.PanelWidth, 1);
+            nameTitle = new DrawingSurface(Consoles.ToolPane.PanelWidth - 3, 2);
+
+            setName = new Button(3, 1);
+            setName.ShowEnds = false;
+            setName.Text = "Set";
+
+            setName.ButtonClicked += (s, e) =>
+            {
+                Windows.RenamePopup rename = new Windows.RenamePopup(entity.Name);
+                rename.Closed += (s2, e2) => { if (rename.DialogResult) entity.Name = rename.NewName; PrintName(); };
+                rename.Center();
+                rename.Show(true);
+            };
+
+            Controls = new ControlBase[] { setName, nameTitle };
+        }
+
+        private void PrintName()
+        {
+            nameTitle.Clear();
             nameTitle.Print(0, 0, "Name");
-
-            nameBox = new InputBox(Consoles.ToolPane.PanelWidth);
-            nameBox.TextChanged += NameBox_TextChanged;
-
-            Controls = new ControlBase[] { nameTitle, nameBox };
+            nameTitle.Print(0, 1, entity.Name);
         }
 
         public override void Loaded()
@@ -37,30 +52,19 @@ namespace SadConsoleEditor.Panels
 
         public override int Redraw(ControlBase control)
         {
-            return 0;//control == nameTitle ? 1 : 0;
-        }
-
-        private void NameBox_TextChanged(object sender, EventArgs e)
-        {
-            if (entity != null)
-                entity.Name = nameBox.Text;
+            if (control == setName)
+            {
+                control.Position = new Microsoft.Xna.Framework.Point(Consoles.ToolPane.PanelWidth - 3, control.Position.Y);
+                return -1;
+            }
+            return 0;
         }
 
         public void SetEntity(GameObject entity)
         {
             this.entity = entity;
-
-            if (entity == null)
-            {
-                nameBox.Text = "";
-                nameBox.IsEnabled = false;
-            }
-            else
-            {
-                nameBox.Text = entity.Name;
-                nameBox.IsEnabled = true;
-            }
-
+            PrintName();
+            setName.IsEnabled = entity != null;
         }
     }
 }

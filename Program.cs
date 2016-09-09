@@ -59,6 +59,7 @@ namespace SadConsoleEditor
             SadConsole.Engine.ActiveConsole = EditorConsoleManager.Instance;
 
             // Start
+            SadConsole.Libraries.GameHelpers.Initialize();
             EditorConsoleManager.Instance.ShowNewConsolePopup(false);
         }
     }
