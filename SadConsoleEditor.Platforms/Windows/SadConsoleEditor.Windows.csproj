@@ -51,8 +51,8 @@
       <HintPath>..\..\packages\MonoGame.Framework.WindowsDX.3.5.1.1679\lib\net40\MonoGame.Framework.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SadConsole.Controls.Windows, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SadConsole.Controls.3.0.2-pre1a\lib\net45\SadConsole.Controls.Windows.dll</HintPath>
+    <Reference Include="SadConsole.Controls.Windows, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SadConsole.Controls.3.0.3\lib\net45\SadConsole.Controls.Windows.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SadConsole.Core.Windows, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
