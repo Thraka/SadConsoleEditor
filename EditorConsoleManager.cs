@@ -98,7 +98,7 @@ namespace SadConsoleEditor
 
         private EditorConsoleManager()
         {
-            _backingPanel = new ControlsConsole(Settings.Config.WindowWidth, 2);
+            _backingPanel = new ControlsConsole(Settings.Config.WindowWidth, 1);
 
             _backingPanel.TextSurface.DefaultBackground = Settings.Color_MenuBack;
             _backingPanel.Clear();
@@ -134,7 +134,7 @@ namespace SadConsoleEditor
         private void FinishCreating()
         {
             ToolPane = new Consoles.ToolPane();
-            ToolPane.Position = new Point(_backingPanel.TextSurface.Width - ToolPane.TextSurface.Width - 1, 2);
+            ToolPane.Position = new Point(_backingPanel.TextSurface.Width - ToolPane.TextSurface.Width - 1, 1);
             //ToolPane.TextSurface.Resize(ToolPane.TextSurface.Width, ToolPane.TextSurface.Height * 2);
             ToolPane.TextSurface.RenderArea = new Rectangle(0, 0, ToolPane.TextSurface.Width, Settings.Config.WindowHeight - 2);
             this.Add(ToolPane);
@@ -463,47 +463,54 @@ namespace SadConsoleEditor
 
         public void AddDocument(IEditor editor, bool selectEditor)
         {
-            var button = new SadConsole.Controls.RadioButton(editor.ShortName.Length + 6, 1) { Text = editor.ShortName };
-            button.IsSelectedChanged += DocumentButtonClick;
-            _documentButtons.Add(button, editor);
-            _backingPanel.Add(button);
-            ArrangeDocumentButtons();
+            Instance.ToolPane.FilesPanel.DocumentsListbox.Items.Add(editor);
+
+            //var button = new SadConsole.Controls.RadioButton(editor.ShortName.Length + 6, 1) { Text = editor.ShortName };
+            //button.IsSelectedChanged += DocumentButtonClick;
+            //_documentButtons.Add(button, editor);
+            //_backingPanel.Add(button);
+            //ArrangeDocumentButtons();
 
             if (selectEditor)
-                button.IsSelected = true;
+                Instance.ToolPane.FilesPanel.DocumentsListbox.SelectedItem = editor;
         }
 
         public void CloseDocument(IEditor editor)
         {
-            SadConsole.Controls.RadioButton button = null;
-            
-            foreach (var item in _documentButtons.Keys)
-            {
-                if (_documentButtons[item] == editor)
-                {
-                    button = item;
-                    break;
-                }
-            }
+            //SadConsole.Controls.RadioButton button = null;
 
-            if (button != null)
-            {
-                _backingPanel.Remove(button);
-                _documentButtons.Remove(button);
+            Instance.ToolPane.FilesPanel.DocumentsListbox.Items.Remove(editor);
 
-                if (_documentButtons.Count == 0)
-                    ShowNewConsolePopup(false);
-                else
-                {
-                    ArrangeDocumentButtons();
+            //foreach (var item in _documentButtons.Keys)
+            //{
+            //    if (_documentButtons[item] == editor)
+            //    {
+            //        button = item;
+            //        break;
+            //    }
+            //}
 
-                    foreach (var item in _documentButtons.Keys)
-                    {
-                        item.IsSelected = true;
-                        break;
-                    }
-                }
-            }
+            //if (button != null)
+            //{
+            //    _backingPanel.Remove(button);
+            //    _documentButtons.Remove(button);
+
+            //    if (_documentButtons.Count == 0)
+            //        ShowNewConsolePopup(false);
+            //    else
+            //    {
+            //        ArrangeDocumentButtons();
+
+            //        foreach (var item in _documentButtons.Keys)
+            //        {
+            //            item.IsSelected = true;
+            //            break;
+            //        }
+            //    }
+            //}
+
+            if (Instance.ToolPane.FilesPanel.DocumentsListbox.Items.Count == 0)
+                ShowNewConsolePopup(false);
 
             editor.OnClosed();
         }

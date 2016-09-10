@@ -16,6 +16,8 @@ namespace SadConsoleEditor.Panels
         public Button ResizeButton;
         public Button CloseButton;
 
+        public ListBox DocumentsListbox;
+
         public FilesPanel()
         {
             Title = "File";
@@ -53,7 +55,20 @@ namespace SadConsoleEditor.Panels
             };
             CloseButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowCloseConsolePopup();
 
-            Controls = new ControlBase[] { NewButton, LoadButton, SaveButton, ResizeButton, CloseButton };
+            DocumentsListbox = new ListBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 6);
+            DocumentsListbox.HideBorder = true;
+            DocumentsListbox.CompareByReference = true;
+
+            DocumentsListbox.SelectedItemChanged += DocumentsListbox_SelectedItemChanged;
+
+            Controls = new ControlBase[] { NewButton, LoadButton, SaveButton, ResizeButton, CloseButton, DocumentsListbox };
+            
+
+        }
+
+        private void DocumentsListbox_SelectedItemChanged(object sender, ListBox<ListBoxItem>.SelectedItemEventArgs e)
+        {
+            EditorConsoleManager.Instance.ChangeEditor((Editors.IEditor)e.Item);
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseInfo info)
@@ -77,6 +92,8 @@ namespace SadConsoleEditor.Panels
                 ResizeButton.Position = new Point(1, SaveButton.Position.Y);
                 return -1;
             }
+            else if (control == CloseButton)
+                return 1;
             
             return 0;
         }
