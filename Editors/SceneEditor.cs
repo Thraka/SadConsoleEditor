@@ -8,14 +8,21 @@ using SadConsoleEditor.Panels;
 using SadConsole.Consoles;
 using SadConsole;
 using System.IO;
+using System.Collections.Generic;
+using SadConsole.Game;
+using System.Linq;
 
 namespace SadConsoleEditor.Editors
 {
-    class DrawingEditor: IEditor
+    class SceneEditor : IEditor
     {
         private int _width;
         private int _height;
+        public GameObject _selectedEntity;
         private Console _consoleLayers;
+
+        public Dictionary<GameObject, GameObject> LinkedGameObjects = new Dictionary<GameObject, GameObject>();
+        public SadConsole.Game.GameObjectCollection Entities;
 
         public event EventHandler<MouseEventArgs> MouseEnter;
         public event EventHandler<MouseEventArgs> MouseExit;
@@ -28,25 +35,34 @@ namespace SadConsoleEditor.Editors
 
         public ITextSurface Surface { get { return _consoleLayers.TextSurface; } }
 
-        public const string ID = "DRAW";
+        public const string ID = "SCENE";
 
-        public string ShortName { get { return "Con"; } }
+        public string ShortName { get { return "Scene"; } }
 
         public string Id { get { return ID; } }
 
-        public string Title { get { return "Console"; } }
+        public string Title { get { return "Scene Maker"; } }
 
-        public string FileExtensionsLoad { get { return "*.lconsole;*.xp"; } }
+        public string FileExtensionsLoad { get { return "*.scene"; } }
 
-        public string FileExtensionsSave { get { return "*.lconsole;"; } }
+        public string FileExtensionsSave { get { return "*.scene"; } }
 
         public CustomPanel[] ControlPanels { get; private set; }
+
+        public Panels.EntityManagementPanel EntityPanel;
+        public Panels.Scene.AnimationListPanel AnimationsPanel;
+
+        public GameObject SelectedEntity
+        {
+            get { return _selectedEntity; }
+            set { _selectedEntity = value; AnimationsPanel.RebuildListBox(); }
+        }
 
         public string[] Tools
         {
             get
             {
-                return new string[] { PaintTool.ID, RecolorTool.ID, FillTool.ID, TextTool.ID, SelectionTool.ID, LineTool.ID, BoxTool.ID, CircleTool.ID };
+                return new string[] { SceneEntityMoveTool.ID, PaintTool.ID, RecolorTool.ID, FillTool.ID, TextTool.ID, SelectionTool.ID, LineTool.ID, BoxTool.ID, CircleTool.ID };
             }
         }
 
@@ -55,17 +71,21 @@ namespace SadConsoleEditor.Editors
         private EventHandler<MouseEventArgs> _mouseExitHandler;
 
 
-        public DrawingEditor()
+        public SceneEditor()
         {
             _consoleLayers = new Console(new LayeredTextSurface(10, 10, 2));
             _consoleLayers.Renderer = new LayeredTextRenderer();
+            EntityPanel = new Panels.EntityManagementPanel();
+            AnimationsPanel = new Panels.Scene.AnimationListPanel();
             Reset();
         }
 
+
         public void Reset()
         {
-            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, EditorConsoleManager.Instance.ToolPane.LayersPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
-            //ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
+            Entities = new SadConsole.Game.GameObjectCollection();
+            //Entities = new List<SadConsole.Game.GameObject>();
+            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, EditorConsoleManager.Instance.ToolPane.LayersPanel, EntityPanel, AnimationsPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
 
             if (_consoleLayers != null)
             {
@@ -74,11 +94,12 @@ namespace SadConsoleEditor.Editors
                 _consoleLayers.MouseExit -= _mouseExitHandler;
             }
 
-            _consoleLayers.TextSurface = new LayeredTextSurface(10, 10, 1);
+            _consoleLayers.TextSurface = new LayeredTextSurface(25, 25, 1);
             _consoleLayers.TextSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
             LayerMetadata.Create("Root", false, false, false, ((LayeredTextSurface)_consoleLayers.TextSurface).GetLayer(0));
             _consoleLayers.CanUseMouse = true;
             _consoleLayers.CanUseKeyboard = true;
+            
 
             _width = 25;
             _height = 10;
@@ -91,6 +112,38 @@ namespace SadConsoleEditor.Editors
             _consoleLayers.MouseEnter += _mouseEnterHandler;
             _consoleLayers.MouseExit += _mouseExitHandler;
 
+        }
+
+        internal bool LoadEntity(string selectedFile)
+        {
+            var entity = SadConsole.Game.GameObject.Load(selectedFile);
+
+            return LoadEntity(entity);
+        }
+
+        internal bool LoadEntity(GameObject entity)
+        {
+            var editor = new Editors.EntityEditor();
+            editor.SetEntity(entity);
+            editor.LinkedEditor = this;
+            EditorConsoleManager.Instance.AddDocument(editor, false);
+
+            var localEntity = new GameObject(entity.Font);
+
+            foreach (var item in entity.Animations.Values)
+                localEntity.Animations.Add(item.Name, item);
+
+            localEntity.Animation = localEntity.Animations[entity.Animation.Name];
+
+            localEntity.RenderOffset = _consoleLayers.Position;
+            Entities.Add(localEntity);
+            EntityPanel.RebuildListBox();
+
+            localEntity.Position = entity.Position;
+
+            LinkedGameObjects.Add(localEntity, entity);
+
+            return true;
         }
 
         public override string ToString()
@@ -119,11 +172,21 @@ namespace SadConsoleEditor.Editors
         public void Render()
         {
             _consoleLayers.Render();
+
+            foreach (var entity in Entities)
+            {
+                entity.Render();
+            }
         }
 
         public void Update()
         {
             _consoleLayers.Update();
+
+            foreach (var entity in Entities)
+            {
+                entity.Update();
+            }
         }
 
         public void Resize(int width, int height)
@@ -133,7 +196,7 @@ namespace SadConsoleEditor.Editors
 
             var oldSurface = (LayeredTextSurface)_consoleLayers.TextSurface;
             var newSurface = new LayeredTextSurface(width, height, oldSurface.LayerCount);
-            
+
             for (int i = 0; i < oldSurface.LayerCount; i++)
             {
                 var oldLayer = oldSurface.GetLayer(i);
@@ -154,12 +217,17 @@ namespace SadConsoleEditor.Editors
 
         public void Position(int x, int y)
         {
-            _consoleLayers.Position = new Point(x, y);
+            Position(new Point(x, y));
         }
 
         public void Position(Point newPosition)
         {
             _consoleLayers.Position = newPosition;
+
+            foreach (var entity in Entities)
+            {
+                entity.RenderOffset = newPosition;
+            }
         }
 
         public Point GetPosition()
@@ -167,9 +235,57 @@ namespace SadConsoleEditor.Editors
             return _consoleLayers.Position;
         }
 
+        public void OnSelected()
+        {
+            foreach (var item in EditorConsoleManager.Instance.Documents)
+            {
+                var editor = item as EntityEditor;
+
+                if (editor != null && editor.LinkedEditor == this)
+                {
+                    // sync back up any entities.
+                    foreach (var gameObject in Entities)
+                    {
+                        var animationName = gameObject.Animation.Name;
+                        gameObject.Animations.Clear();
+
+                        foreach (var animation in LinkedGameObjects[gameObject].Animations)
+                            gameObject.Animations.Add(animation.Key, animation.Value);
+
+                        if (animationName != null && gameObject.Animations.ContainsKey(animationName))
+                            gameObject.Animation = gameObject.Animations[animationName];
+                        else
+                            gameObject.Animation = gameObject.Animations.First().Value;
+                    }
+                }
+            }
+
+            AnimationsPanel.RebuildListBox();
+        }
+
+        public void OnDeselected()
+        {
+
+        }
+
+        public void OnClosed()
+        {
+            foreach (var item in EditorConsoleManager.Instance.Editors.Values)
+            {
+                var editor = item as EntityEditor;
+
+                if (editor != null && editor.LinkedEditor == this)
+                    editor.LinkedEditor = null;
+            }
+        }
+
         public void Save(string file)
         {
             ((LayeredTextSurface)_consoleLayers.TextSurface).Save(file, typeof(LayerMetadata));
+
+            GameObject[] objects = Entities.ToArray();
+
+            SadConsole.Serializer.Save(objects, file + ".objects");
         }
 
         public void Load(string file)
@@ -193,11 +309,13 @@ namespace SadConsoleEditor.Editors
                 {
                     // TODO: Is there an API to load the JSON and examine it? Do that and see what the root type is
                     // then deserialize it into the appropriate type.
-                    
+
                     _consoleLayers.TextSurface = LayeredTextSurface.Load(file, typeof(LayerMetadata));
                 }
 
                 _consoleLayers.TextSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
+
+                EditorConsoleManager.Instance.ToolPane.LayersPanel.RebuildListBox();
 
                 _consoleLayers.MouseMove += _mouseMoveHandler;
                 _consoleLayers.MouseEnter += _mouseEnterHandler;
@@ -207,6 +325,20 @@ namespace SadConsoleEditor.Editors
                 _height = _consoleLayers.Height;
 
                 EditorConsoleManager.Instance.UpdateBox();
+                
+
+                // Load game objects
+                file += ".objects";
+
+                if (System.IO.File.Exists(file))
+                {
+                    GameObject[] objects = SadConsole.Serializer.Load<GameObject[]>(file);
+
+                    foreach (var item in objects)
+                    {
+                        LoadEntity(item);
+                    }
+                }
             }
         }
 
@@ -265,21 +397,6 @@ namespace SadConsoleEditor.Editors
                 return false;
         }
 
-        public void OnSelected()
-        {
-
-        }
-
-        public void OnDeselected()
-        {
-
-        }
-
-        public void OnClosed()
-        {
-
-        }
-
         public void SaveLayer(int index, string file)
         {
             SadConsole.Serializer.Save(((LayeredTextSurface)_consoleLayers.TextSurface).GetLayer(index), file, new Type[] { typeof(LayerMetadata) });
@@ -290,4 +407,5 @@ namespace SadConsoleEditor.Editors
             ((LayeredTextSurface)_consoleLayers.TextSurface).SetActiveLayer(index);
         }
     }
+    
 }

@@ -35,7 +35,7 @@
 
         public TextTool()
         {
-            tempConsole = new Console();
+            tempConsole = new Console(1, 1);
             tempConsole.CanUseKeyboard = true;
             tempConsole.VirtualCursor.AutomaticallyShiftRowsUp = false;
             ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel };
@@ -45,12 +45,13 @@
         {
             SadConsole.Effects.Blink blinkEffect = new SadConsole.Effects.Blink();
             blinkEffect.BlinkSpeed = 0.35f;
-            _brush = new EntityBrush();
-            EditorConsoleManager.Instance.UpdateBrush(_brush);
-            _brush.CurrentAnimation.Frames[0].Fill(Color.White, Color.Black, _cursorCharacter, blinkEffect);
+            _brush = new EntityBrush(1, 1);
+            Settings.QuickEditor.TextSurface = _brush.Animation.Frames[0];
+            Settings.QuickEditor.Fill(Color.White, Color.Black, _cursorCharacter);
+            Settings.QuickEditor.SetEffect(0, blinkEffect);
             _brush.IsVisible = false;
             EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = true;
-
+            EditorConsoleManager.Instance.UpdateBrush(_brush);
         }
 
         public void OnDeselected()
@@ -63,7 +64,7 @@
             EditorConsoleManager.Instance.ToolPane.KeyboardHandler = null;
         }
 
-        public bool ProcessKeyboard(KeyboardInfo info, CellSurface surface)
+        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
         {
             if (writing)
             {
@@ -75,7 +76,7 @@
                 }
                 else
                 {
-                    tempConsole.CellData = surface;
+                    tempConsole.TextSurface = (ITextSurfaceRendered)surface;
                     tempConsole.VirtualCursor.PrintAppearance = new CellAppearance(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground);
                     tempConsole.ProcessKeyboard(info);
                     _brush.Position = tempConsole.VirtualCursor.Position;
@@ -87,28 +88,28 @@
             return false;
         }
 
-        public void ProcessMouse(MouseInfo info, CellSurface surface)
+        public void ProcessMouse(MouseInfo info, ITextSurface surface)
         {
             
         }
 
-        public void MouseEnterSurface(MouseInfo info, CellSurface surface)
+        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
         {
             
         }
 
-        public void MouseExitSurface(MouseInfo info, CellSurface surface)
+        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
         {
         }
 
-        public void MouseMoveSurface(MouseInfo info, CellSurface surface)
+        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
         {
             if (info.LeftClicked)
             {
                 EditorConsoleManager.Instance.AllowKeyboardToMoveConsole = false;
                 writing = true;
 
-                tempConsole.CellData = surface;
+                tempConsole.TextSurface = (ITextSurfaceRendered)surface;
                 tempConsole.VirtualCursor.Position = _brush.Position = info.ConsoleLocation;
 
                 _brush.IsVisible = true;

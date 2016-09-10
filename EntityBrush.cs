@@ -1,21 +1,23 @@
-﻿using SadConsole.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using SadConsole.Consoles;
+using SadConsole.Game;
 
 namespace SadConsoleEditor
 {
-    class EntityBrush : Entity, IEntityBrush
+    class EntityBrush : GameObject, IEntityBrush
     {
-        public List<Entity> TopLayers;
+        public List<GameObject> TopLayers;
 
-        public EntityBrush()
+        public EntityBrush(int width, int height): base(Settings.Config.ScreenFont)
         {
-            this.Font = Settings.Config.ScreenFont;
-            TopLayers = new List<Entity>();
+            Animation = new AnimatedTextSurface("defualt", width, height, Settings.Config.ScreenFont);
+            Animation.CreateFrame();
+            TopLayers = new List<GameObject>();
         }
 
         public void SyncLayers()
@@ -24,9 +26,9 @@ namespace SadConsoleEditor
             {
                 item.Position = this.Position;
                 item.IsVisible = this.IsVisible;
-                item.PositionOffset = this.PositionOffset;
-                item.Font = this.Font;
-                item.CurrentAnimation.Center = this.CurrentAnimation.Center;
+                item.RenderOffset = this.RenderOffset;
+                item.Animation.Font = Settings.Config.ScreenFont;
+                item.Animation.Center = this.Animation.Center;
             }
         }
 

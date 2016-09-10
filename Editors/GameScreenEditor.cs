@@ -79,9 +79,9 @@ namespace SadConsoleEditor.Editors
 
             _objectsSurface = new SadConsole.Consoles.Console(25, 10);
             _objectsSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
-            _objectsSurface.CellData.DefaultForeground = Color.White;
-            _objectsSurface.CellData.DefaultBackground = Color.Transparent;
-            _objectsSurface.CellData.Clear();
+            _objectsSurface.Data.DefaultForeground = Color.White;
+            _objectsSurface.Data.DefaultBackground = Color.Transparent;
+            _objectsSurface.Data.Clear();
             _objectsSurface.BeforeRenderHandler = (cr) => cr.Batch.Draw(SadConsole.Engine.BackgroundCell, cr.RenderBox, null, new Color(0, 0, 0, 0.5f)); 
 
             _consoleLayers = new LayeredConsole(1, 25, 10);
@@ -138,7 +138,7 @@ namespace SadConsoleEditor.Editors
             _height = height;
 
             _consoleLayers.Resize(width, height);
-            _objectsSurface.CellData.Resize(width, height);
+            _objectsSurface.Data.Resize(width, height);
 
             // inform the outer box we've changed size
             EditorConsoleManager.Instance.UpdateBox();
@@ -294,14 +294,14 @@ namespace SadConsoleEditor.Editors
         /// </summary>
         public void SyncObjectsToLayer()
         {
-            _objectsSurface.CellData.Clear();
+            _objectsSurface.Data.Clear();
 
-            _objectsSurface.CellData.Resize(_width, _height);
+            _objectsSurface.Data.Resize(_width, _height);
 
             foreach (var item in SelectedGameObjects)
             {
-                _objectsSurface.CellData.Print(item.Key.X, item.Key.Y, " ", item.Value.Character);
-                _objectsSurface.CellData.SetCharacter(item.Key.X, item.Key.Y, item.Value.Character.CharacterIndex);
+                _objectsSurface.Data.Print(item.Key.X, item.Key.Y, " ", item.Value.Character);
+                _objectsSurface.Data.SetCharacter(item.Key.X, item.Key.Y, item.Value.Character.CharacterIndex);
             }
         }
 
@@ -339,7 +339,7 @@ namespace SadConsoleEditor.Editors
         {
             if (System.IO.File.Exists(file))
             {
-                var surface = SadConsole.CellSurface.Load(file);
+                var surface = SadConsole.TextSurface.Load(file);
 
                 if (surface.Width != EditorConsoleManager.Instance.SelectedEditor.Surface.Width || surface.Height != EditorConsoleManager.Instance.SelectedEditor.Height)
                 {
@@ -363,7 +363,7 @@ namespace SadConsoleEditor.Editors
 
         public void SaveLayer(int index, string file)
         {
-            EditorConsoleManager.Instance.SelectedEditor.Surface[index].CellData.Save(file);
+            EditorConsoleManager.Instance.SelectedEditor.Surface[index].Data.Save(file);
             GameObjectCollection.Save(SelectedGameObjects, file.Replace(System.IO.Path.GetExtension(file), ".object"));
         }
 

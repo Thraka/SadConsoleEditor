@@ -78,7 +78,7 @@ namespace SadConsoleEditor.Panels
             _charPreview.DisableColorPicker = true;
             _charPreview.EnableCharacterPicker = true;
 
-            _popupCharacterWindow.Font = Settings.Config.ScreenFont;
+            _popupCharacterWindow.TextSurface.Font = Settings.Config.ScreenFont;
             _popupCharacterWindow.Closed += (o, e) => { _characterPicker.SelectedCharacter = _popupCharacterWindow.SelectedCharacter; };
 
             _mirrorLR.IsSelectedChanged += Mirror_IsSelectedChanged;

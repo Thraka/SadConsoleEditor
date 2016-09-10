@@ -9,11 +9,12 @@ using System.Threading.Tasks;
 
 namespace SadConsoleEditor
 {
-    public interface IEntityBrush: IUpdate
+    public interface IEntityBrush
     {
-        Point PositionOffset { get; set; }
+        Point RenderOffset { get; set; }
 
         void Render();
-        
+
+        void Update();
     }
 }

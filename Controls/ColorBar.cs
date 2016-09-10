@@ -57,9 +57,8 @@
         private Color _startingColor;
         private Color _endingColor;
 
-        public ColorBar(int width)
+        public ColorBar(int width): base (width, 2)
         {
-            Resize(width, 2);
             StartingColor = Color.White;
             EndingColor = Color.Black;
         }
@@ -67,10 +66,10 @@
         private void SetClosestIndex(Color color)
         {
             ColorMine.ColorSpaces.Rgb rgbColorStop = new ColorMine.ColorSpaces.Rgb() { R = color.R, G = color.G, B = color.B };
-            Tuple<Color, double, int>[] colorWeights = new Tuple<Color, double, int>[_width];
+            Tuple<Color, double, int>[] colorWeights = new Tuple<Color, double, int>[Width];
 
             // Create a color weight for every cell compared to the color stop
-            for (int x = 0; x < _width; x++)
+            for (int x = 0; x < Width; x++)
             {
                 ColorMine.ColorSpaces.Rgb rgbColor = new ColorMine.ColorSpaces.Rgb() { R = this[x, 0].Foreground.R, G = this[x, 0].Foreground.G, B = this[x, 0].Foreground.B };
                 ColorMine.ColorSpaces.Cmy cmyColor = rgbColor.To<ColorMine.ColorSpaces.Cmy>();
@@ -89,16 +88,16 @@
         {
             this.Fill(Color.White, Color.Black, 0, null);
 
-            _positions = _width;
-            _colorSteps = StartingColor.LerpSteps(EndingColor, _width);
+            _positions = Width;
+            _colorSteps = StartingColor.LerpSteps(EndingColor, Width);
 
-            for (int x = 0; x < _width; x++)
+            for (int x = 0; x < Width; x++)
             {
-                this[x, 0].CharacterIndex = 219;
+                this[x, 0].GlyphIndex = 219;
                 this[x, 0].Foreground = _colorSteps[x];
             }
 
-            this[_selectedPosition, 1].CharacterIndex = 30;
+            this[_selectedPosition, 1].GlyphIndex = 30;
             this[_selectedPosition, 1].Foreground = Color.LightGray;//this[_selectedPosition, 0].Foreground;
         }
 
@@ -136,7 +135,7 @@
                     var location = this.TransformConsolePositionByControlPosition(info);
 
                     //if (info.ConsoleLocation.X >= Position.X && info.ConsoleLocation.X < Position.X + Width)
-                    if (location.X >= 0 && location.X <= _width - 1 && location.Y > -4 && location.Y < _height + 3)
+                    if (location.X >= 0 && location.X <= base.Width - 1 && location.Y > -4 && location.Y < Height + 3)
                     {
                         _selectedPosition = location.X;
                         SelectedColorSafe = this[_selectedPosition, 0].Foreground;
@@ -154,7 +153,6 @@
     {
         // 223
         // 30
-
 
         public event EventHandler ColorChanged;
 
@@ -194,19 +192,18 @@
 
         private Color _selectedColor;
 
-        public HueBar(int width)
+        public HueBar(int width): base(width, 2)
         {
-            Resize(width, 2);
             Compose(true);
         }
 
         private void SetClosestIndex(Color color)
         {
             ColorMine.ColorSpaces.Rgb rgbColorStop = new ColorMine.ColorSpaces.Rgb() { R = color.R, G = color.G, B = color.B };
-            Tuple<Color, double, int>[] colorWeights = new Tuple<Color, double, int>[_width];
+            Tuple<Color, double, int>[] colorWeights = new Tuple<Color, double, int>[Width];
 
             // Create a color weight for every cell compared to the color stop
-            for (int x = 0; x < _width; x++)
+            for (int x = 0; x < Width; x++)
             {
                 ColorMine.ColorSpaces.Rgb rgbColor = new ColorMine.ColorSpaces.Rgb() { R = this[x, 0].Foreground.R, G = this[x, 0].Foreground.G, B = this[x, 0].Foreground.B };
                 ColorMine.ColorSpaces.Cmy cmyColor = rgbColor.To<ColorMine.ColorSpaces.Cmy>();
@@ -226,32 +223,32 @@
             {
                 this.Fill(Color.White, Color.Black, 0, null);
 
-                _positions = _width;
+                _positions = Width;
                 ColorGradient gradient = new ColorGradient(Color.Red, Color.Yellow, Color.Green, Color.Turquoise, Color.Blue, Color.Purple, Color.Red);
 
-                for (int x = 0; x < _width; x++)
+                for (int x = 0; x < Width; x++)
                 {
-                    this[x, 0].CharacterIndex = 219;
-                    this[x, 0].Foreground = gradient.Lerp((float)x / (float)(_width - 1));
+                    this[x, 0].GlyphIndex = 219;
+                    this[x, 0].Foreground = gradient.Lerp((float)x / (float)(Width - 1));
                 }
 
-                this[_selectedPosition, 1].CharacterIndex = 30;
+                this[_selectedPosition, 1].GlyphIndex = 30;
                 this[_selectedPosition, 1].Foreground = Color.LightGray;//this[_selectedPosition, 0].Foreground;
 
                 // Build an array of all the colors
-                Color[] colors = new Color[_width];
-                for (int x = 0; x < _width; x++)
+                Color[] colors = new Color[Width];
+                for (int x = 0; x < Width; x++)
                     colors[x] = this[x, 0].Foreground;
 
-                List<int> colorIndexesFinished = new List<int>(_width);
+                List<int> colorIndexesFinished = new List<int>(Width);
 
                 foreach (var stop in gradient.Stops)
                 {
                     ColorMine.ColorSpaces.Rgb rgbColorStop = new ColorMine.ColorSpaces.Rgb() { R = stop.Color.R, G = stop.Color.G, B = stop.Color.B };
-                    Tuple<Color, double, int>[] colorWeights = new Tuple<Color, double, int>[_width];
+                    Tuple<Color, double, int>[] colorWeights = new Tuple<Color, double, int>[Width];
 
                     // Create a color weight for every cell compared to the color stop
-                    for (int x = 0; x < _width; x++)
+                    for (int x = 0; x < Width; x++)
                     {
                         if (!colorIndexesFinished.Contains(x))
                         {
@@ -308,7 +305,7 @@
                     var location = this.TransformConsolePositionByControlPosition(info);
 
                     //if (info.ConsoleLocation.X >= Position.X && info.ConsoleLocation.X < Position.X + Width)
-                    if (location.X >= 0 && location.X <= _width - 1 && location.Y > -4 && location.Y < _height + 3 )
+                    if (location.X >= 0 && location.X <= Width - 1 && location.Y > -4 && location.Y < Height + 3 )
                     {
                         _selectedPosition = location.X;
                         SelectedColorSafe = this[_selectedPosition, 0].Foreground;

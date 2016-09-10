@@ -34,8 +34,8 @@ namespace SadConsoleEditor.Consoles
 
 		public QuickSelectPane() : base(Settings.Config.WindowWidth - 21, 3)
 		{
-			_cellData.DefaultBackground = Settings.Color_MenuBack;
-			_cellData.DefaultForeground = Settings.Color_TitleText;
+			textSurface.DefaultBackground = Settings.Color_MenuBack;
+			textSurface.DefaultForeground = Settings.Color_TitleText;
 
             currentCharSet = 0;
 			
@@ -65,7 +65,7 @@ namespace SadConsoleEditor.Consoles
 
 		public void Redraw()
 		{
-			_cellData.Clear();
+			Clear();
 
 			int x = 2;
 			int y = 1;
@@ -73,11 +73,11 @@ namespace SadConsoleEditor.Consoles
 			for (int i = 1; i < 13; i++)
 			{
 				string text = "F" + i.ToString() + " ";
-				_cellData.Print(x, y, text);
+				Print(x, y, text);
                 x += text.Length;
-                _cellData.SetCharacter(x, y, Characters[i - 1]);
-                _cellData.SetForeground(x, y, charForeground);
-                _cellData.SetBackground(x, y, charBackground);
+                SetGlyph(x, y, Characters[i - 1]);
+                SetForeground(x, y, charForeground);
+                SetBackground(x, y, charBackground);
 				x += 2;
             }
 		}

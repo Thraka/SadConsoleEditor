@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using SadConsole.Controls;
 using SadConsoleEditor.Windows;
 using SadConsole;
-using SadConsole.Entities;
 using SadConsoleEditor.Editors;
+using SadConsole.Consoles;
 
 namespace SadConsoleEditor.Panels
 {
@@ -25,11 +25,11 @@ namespace SadConsoleEditor.Panels
         private Button _nextFrame;
         private Button _previousFrame;
 
-        private Action<Frame> _frameChangeCallback;
-        private Animation _currentAnimation;
-        private Frame _selectedFrame;
+        private Action<TextSurfaceBasic> _frameChangeCallback;
+        private AnimatedTextSurface _currentAnimation;
+        private TextSurfaceBasic _selectedFrame;
 
-        public AnimationFramesPanel(Action<Frame> frameChangeCallback)
+        public AnimationFramesPanel(Action<TextSurfaceBasic> frameChangeCallback)
         {
             Title = "Frames";
 
@@ -91,7 +91,7 @@ namespace SadConsoleEditor.Panels
                 previousFrame_ButtonClicked(null, EventArgs.Empty);
         }
 
-        public void SetAnimation(Animation animation)
+        public void SetAnimation(AnimatedTextSurface animation)
         {
             _currentAnimation = animation;
 
@@ -175,18 +175,10 @@ namespace SadConsoleEditor.Panels
                 {
                     if (System.IO.File.Exists(popup.SelectedFile))
                     {
-                        var surface = Frame.Load(popup.SelectedFile);
+                        var surface = TextSurface.Load(popup.SelectedFile);
+                        var newFrame = _currentAnimation.CreateFrame();
 
-                        if (surface.Width != _currentAnimation.Width || surface.Height != _currentAnimation.Height)
-                        {
-                            var newFrame = _currentAnimation.CreateFrame();
-                            surface.Copy(newFrame);
-                        }
-                        else
-                        {
-                            var newFrame = _currentAnimation.CreateFrame();
-                            surface.Copy(newFrame);
-                        }
+                        surface.Copy(newFrame);
 
                         EnableDisableControls(0);
                         DrawFrameCount();
@@ -231,7 +223,8 @@ namespace SadConsoleEditor.Panels
         void addNewFrame_ButtonClicked(object sender, EventArgs e)
         {
             var frame = _currentAnimation.CreateFrame();
-            frame.Fill(Settings.Config.EntityEditor.DefaultForeground, Settings.Config.EntityEditor.DefaultBackground, 0, null);
+            Settings.QuickEditor.TextSurface = frame;
+            Settings.QuickEditor.Fill(Settings.Config.EntityEditor.DefaultForeground, Settings.Config.EntityEditor.DefaultBackground, 0, null);
             EnableDisableControls(_currentAnimation.Frames.IndexOf(_selectedFrame));
             DrawFrameCount();
         }
@@ -242,9 +235,9 @@ namespace SadConsoleEditor.Panels
 
         private void DrawFrameCount()
         {
-            ColoredString frameNumber = new ColoredString((_currentAnimation.Frames.IndexOf(_selectedFrame) + 1).ToString(), Settings.Blue, Settings.Color_MenuBack, null);
-            ColoredString frameSep = new ColoredString(" \\ ", Settings.Grey, Settings.Color_MenuBack, null);
-            ColoredString frameMax = new ColoredString(_currentAnimation.Frames.Count.ToString(), Settings.Blue, Settings.Color_MenuBack, null);
+            ColoredString frameNumber = new ColoredString((_currentAnimation.Frames.IndexOf(_selectedFrame) + 1).ToString(), Settings.Blue, Settings.Color_MenuBack);
+            ColoredString frameSep = new ColoredString(" \\ ", Settings.Grey, Settings.Color_MenuBack);
+            ColoredString frameMax = new ColoredString(_currentAnimation.Frames.Count.ToString(), Settings.Blue, Settings.Color_MenuBack);
             _framesCounterBox.Fill(Settings.Blue, Settings.Color_MenuBack, 0, null);
             _framesCounterBox.Print(0, 0, frameNumber + frameSep + frameMax);
         }

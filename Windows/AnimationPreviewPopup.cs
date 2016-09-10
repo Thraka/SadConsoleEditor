@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using SadConsole.Consoles;
 using SadConsole.Controls;
-using SadConsole.Entities;
 using SadConsoleEditor.Controls;
 using System;
 using System.Collections.Generic;
@@ -10,54 +9,54 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using SadConsole.Input;
+using Microsoft.Xna.Framework.Graphics;
+using SadConsole.Game;
 
 namespace SadConsoleEditor.Windows
 {
     public class PreviewAnimationPopup : Window
     {
-        private Entity _entity;
-        private Animation _animation;
+        private GameObject _entity;
+        private AnimatedTextSurface _animation;
         private Button _restartAnimation;
 
-        public PreviewAnimationPopup(Animation animation) : base(animation.Width + 2, animation.Height + 4)
+        public PreviewAnimationPopup(AnimatedTextSurface animation) : base(animation.Width + 2, animation.Height + 4)
         {
-            Font = Settings.Config.ScreenFont;
+            textSurface.Font = Settings.Config.ScreenFont;
             _animation = animation;
 
             CloseOnESC = true;
-            _entity = new Entity();
-            _entity.Font = Settings.Config.ScreenFont;
+            _entity = new GameObject(Settings.Config.ScreenFont);
             _entity.Position = new Point(1, 1);
-            _entity.AddAnimation(animation);
-            _entity.SetActiveAnimation(animation);
+            _entity.Animation = animation;
             animation.Restart();
-            _entity.Start();
+            _entity.Animation.Start();
 
             _restartAnimation = new Button(animation.Width, 1);
             _restartAnimation.Text = "Restart";
-            _restartAnimation.Position = new Point(1, CellData.Height - 2);
+            _restartAnimation.Position = new Point(1, textSurface.Height - 2);
             _restartAnimation.ButtonClicked += (s, e) => _animation.Restart();
             Add(_restartAnimation);
         }
 
-        protected override void OnAfterRender()
+        protected override void OnAfterRender(SpriteBatch batch)
         {
-            base.OnAfterRender();
+            base.OnAfterRender(batch);
 
-            _entity.RenderToSurface(_cellData);
+            _entity.Animation.CurrentFrame.Copy(textSurface, _entity.Position.X, _entity.Position.Y);
 
             // Draw bar
-            for (int i = 1; i < CellData.Width - 1; i++)
+            for (int i = 1; i < textSurface.Width - 1; i++)
             {
-                SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(CellData[i, CellData.Height - 3]);
-                CellData[i, CellData.Height - 3].CharacterIndex = 205;
+                SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(i, textSurface.Height - 3));
+                textSurface.GetCell(i, textSurface.Height - 3).GlyphIndex = 205;
             }
 
-            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(CellData[0, CellData.Height - 3]);
-            CellData[0, CellData.Height - 3].CharacterIndex = 204;
+            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(0, textSurface.Height - 3));
+            textSurface.GetCell(0, textSurface.Height - 3).GlyphIndex = 204;
 
-            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(CellData[CellData.Width - 1, CellData.Height - 3]);
-            CellData[CellData.Width - 1, CellData.Height - 3].CharacterIndex = 185;
+            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(textSurface.Width - 1, textSurface.Height - 3));
+            textSurface.GetCell(textSurface.Width - 1, textSurface.Height - 3).GlyphIndex = 185;
         }
 
         public override bool ProcessKeyboard(KeyboardInfo info)

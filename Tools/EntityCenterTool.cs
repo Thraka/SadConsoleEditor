@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using SadConsole;
+using SadConsole.Consoles;
 using SadConsole.Input;
 using SadConsoleEditor.Panels;
 using System;
@@ -37,9 +38,9 @@ namespace SadConsoleEditor.Tools
 
         public void OnSelected()
         {
-            _brush = new EntityBrush();
+            _brush = new EntityBrush(1, 1);
             EditorConsoleManager.Instance.UpdateBrush(_brush);
-            _brush.CurrentAnimation.Frames[0][0,0].CharacterIndex = 42;
+            _brush.Animation.Frames[0][0,0].GlyphIndex = 42;
             _brush.IsVisible = false;
             EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = true;
 
@@ -66,39 +67,39 @@ namespace SadConsoleEditor.Tools
             //_brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
         }
 
-        public bool ProcessKeyboard(KeyboardInfo info, CellSurface surface)
+        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
         {
             return false;
         }
 
-        public void ProcessMouse(MouseInfo info, CellSurface surface)
+        public void ProcessMouse(MouseInfo info, ITextSurface surface)
         {
         }
 
-        public void MouseEnterSurface(MouseInfo info, CellSurface surface)
+        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
         {
             _brush.IsVisible = true;
         }
 
-        public void MouseExitSurface(MouseInfo info, CellSurface surface)
+        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
         {
             _brush.IsVisible = false;
         }
 
-        public void MouseMoveSurface(MouseInfo info, CellSurface surface)
+        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
         {
             _brush.Position = info.ConsoleLocation;
             _brush.IsVisible = true;
 
             if (info.LeftClicked)
             {
-                var cell = surface[info.ConsoleLocation.X, info.ConsoleLocation.Y];
+                var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
 
                 var editor = EditorConsoleManager.Instance.SelectedEditor as Editors.EntityEditor;
 
                 if (editor != null)
                 {
-                    editor.SetAnimationCenter(cell.Position);
+                    editor.SetAnimationCenter(new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y));
                 }
             }
         }

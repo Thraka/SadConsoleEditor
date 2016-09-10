@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using SadConsole;
+using SadConsole.Consoles;
 using SadConsole.Controls;
 using SadConsole.Entities;
 using System;
@@ -12,7 +13,7 @@ namespace SadConsoleEditor.Controls
 {
     public class ListBoxItemFrame : ListBoxItem
     {
-        public override void Draw(CellSurface surface, Rectangle area)
+        public override void Draw(ITextSurface surface, Rectangle area)
         {
             string value = ((Editors.EntityEditor.FrameWrapper)Item).CurrentIndex.ToString();
             if (value.Length < area.Width)
@@ -20,7 +21,8 @@ namespace SadConsoleEditor.Controls
             else if (value.Length > area.Width)
                 value = value.Substring(0, area.Width);
 
-            surface.Print(area.X, area.Y, value, _currentAppearance);
+            var editor = new SurfaceEditor(surface);
+            editor.Print(area.X, area.Y, value, _currentAppearance);
             _isDirty = false;
         }
     }

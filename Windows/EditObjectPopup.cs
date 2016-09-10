@@ -66,7 +66,7 @@ namespace SadConsoleEditor.Windows
             _foregroundPresenter.ColorChanged += (o, e) => _characterPresenter.CharacterColor = _foregroundPresenter.SelectedColor;
             _backgroundPresenter.ColorChanged += (o, e) => _characterPresenter.SelectedColor = _backgroundPresenter.SelectedColor;
 
-            _cellData.Print(2, 2, "Name", Settings.Green);
+            textSurface.Print(2, 2, "Name", Settings.Green);
             _nameInput.Position = new Point(7, 2);
             _foregroundPresenter.Position = new Point(2, 4);
             _backgroundPresenter.Position = new Point(2, 5);
@@ -104,26 +104,26 @@ namespace SadConsoleEditor.Windows
             _objectSettingsListbox.HideBorder = true;
 
 
-            _cellData.Print(2, 10, "Settings/Flags", Settings.Green);
+            textSurface.Print(2, 10, "Settings/Flags", Settings.Green);
             _objectSettingsListbox.Position = new Point(2, 11);
 
-            _cellData.Print(2, 19, "Setting Name", Settings.Green);
-            _cellData.Print(2, 22, "Setting Value", Settings.Green);
+            textSurface.Print(2, 19, "Setting Name", Settings.Green);
+            textSurface.Print(2, 22, "Setting Value", Settings.Green);
             _settingNameInput.Position = new Point(2, 20);
             _settingValueInput.Position = new Point(2, 23);
 
             _addFieldButton = new Button(16, 1);
             _addFieldButton.Text = "Save New Setting";
-            _addFieldButton.Position = new Point(_cellData.Width - 18, 20);
+            _addFieldButton.Position = new Point(textSurface.Width - 18, 20);
 
             _removeFieldButton = new Button(16, 1);
             _removeFieldButton.Text = "Remove Setting";
-            _removeFieldButton.Position = new Point(_cellData.Width - 18, 21);
+            _removeFieldButton.Position = new Point(textSurface.Width - 18, 21);
             _removeFieldButton.IsEnabled = false;
 
             _updateFieldButton = new Button(16, 1);
             _updateFieldButton.Text = "Update Setting";
-            _updateFieldButton.Position = new Point(_cellData.Width - 18, 22);
+            _updateFieldButton.Position = new Point(textSurface.Width - 18, 22);
             _updateFieldButton.IsEnabled = false;
 
             _objectSettingsListbox.SelectedItemChanged += _objectSettingsListbox_SelectedItemChanged;
@@ -148,7 +148,7 @@ namespace SadConsoleEditor.Windows
             _saveButton.ButtonClicked += _saveButton_ButtonClicked;
             _cancelButton.ButtonClicked += (o, e) => { DialogResult = false; Hide(); };
 
-            _saveButton.Position = new Point(_cellData.Width - 12, 26);
+            _saveButton.Position = new Point(textSurface.Width - 12, 26);
             _cancelButton.Position = new Point(2, 26);
 
             Add(_saveButton);
@@ -268,32 +268,32 @@ namespace SadConsoleEditor.Windows
         {
             base.Redraw();
 
-            _cellData.Print(2, 2, "Name", Settings.Green);
-            _cellData.Print(2, 10, "Settings/Flags", Settings.Green);
-            _cellData.Print(2, 19, "Setting Name", Settings.Green);
-            _cellData.Print(2, 22, "Setting Value", Settings.Green);
+            textSurface.Print(2, 2, "Name", Settings.Green);
+            textSurface.Print(2, 10, "Settings/Flags", Settings.Green);
+            textSurface.Print(2, 19, "Setting Name", Settings.Green);
+            textSurface.Print(2, 22, "Setting Value", Settings.Green);
 
-            _cellData.SetCharacter(0, 9, 199);
+            textSurface.SetCharacter(0, 9, 199);
             for (int i = 1; i < 20; i++)
-                _cellData.SetCharacter(i, 9, 196);
+                textSurface.SetCharacter(i, 9, 196);
 
-            _cellData.SetCharacter(20, 9, 191);
+            textSurface.SetCharacter(20, 9, 191);
 
             for (int i = 10; i < 18; i++)
-                _cellData.SetCharacter(20, i, 179);
+                textSurface.SetCharacter(20, i, 179);
 
-            _cellData.SetCharacter(20, 18, 192);
+            textSurface.SetCharacter(20, 18, 192);
 
-            for (int i = 21; i < _cellData.Width; i++)
-                _cellData.SetCharacter(i, 18, 196);
+            for (int i = 21; i < textSurface.Width; i++)
+                textSurface.SetCharacter(i, 18, 196);
 
-            _cellData.SetCharacter(_cellData.Width - 1, 18, 182);
+            textSurface.SetCharacter(textSurface.Width - 1, 18, 182);
 
             // Long line under field
-            _cellData.SetCharacter(0, 24, 199);
-            for (int i = 1; i < _cellData.Width; i++)
-                _cellData.SetCharacter(i, 24, 196);
-            _cellData.SetCharacter(_cellData.Width - 1, 24, 182);
+            textSurface.SetCharacter(0, 24, 199);
+            for (int i = 1; i < textSurface.Width; i++)
+                textSurface.SetCharacter(i, 24, 196);
+            textSurface.SetCharacter(textSurface.Width - 1, 24, 182);
         }
     }
 }

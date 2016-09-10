@@ -3,7 +3,6 @@
     using Microsoft.Xna.Framework;
     using SadConsole;
     using SadConsole.Consoles;
-    using SadConsole.Entities;
     using SadConsole.Input;
     using System;
     using SadConsoleEditor.Panels;
@@ -11,7 +10,7 @@
     class BoxTool : ITool
     {
         private EntityBrush _entity;
-        private Animation _animSinglePoint;
+        private AnimatedTextSurface _animSinglePoint;
         private SadConsole.Effects.Fade _frameEffect;
         private Point? _firstPoint;
         private Point? _secondPoint;
@@ -42,10 +41,9 @@
 
         public BoxTool()
         {
-            _animSinglePoint = new Animation("single", 1, 1);
-            _animSinglePoint.Font = Engine.DefaultFont;
+            _animSinglePoint = new AnimatedTextSurface("single", 1, 1, Settings.Config.ScreenFont);
             var _frameSinglePoint = _animSinglePoint.CreateFrame();
-            _frameSinglePoint[0].CharacterIndex = 42;
+            _frameSinglePoint[0].GlyphIndex = 42;
 
 
             _frameEffect = new SadConsole.Effects.Fade()
@@ -63,11 +61,11 @@
 
         public void OnSelected()
         {
-            _entity = new EntityBrush();
+            _entity = new EntityBrush(1, 1);
             _entity.IsVisible = false;
 
-            _entity.AddAnimation(_animSinglePoint);
-            _entity.SetActiveAnimation("single");
+            _entity.Animations[_animSinglePoint.Name] = _animSinglePoint;
+            _entity.Animation = _animSinglePoint;
 
             EditorConsoleManager.Instance.UpdateBrush(_entity);
         }
@@ -82,12 +80,12 @@
         {
         }
 
-        public bool ProcessKeyboard(KeyboardInfo info, CellSurface surface)
+        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
         {
             return false;
         }
 
-        public void ProcessMouse(MouseInfo info, CellSurface surface)
+        public void ProcessMouse(MouseInfo info, ITextSurface surface)
         {
             _entity.IsVisible = true;
             if (!_firstPoint.HasValue)
@@ -98,11 +96,10 @@
             {
                 // Draw the line (erase old) to where the mouse is
                 // create the animation frame
-                Animation animation = new Animation("line", Math.Max(_firstPoint.Value.X, info.ConsoleLocation.X) - Math.Min(_firstPoint.Value.X, info.ConsoleLocation.X) + 1,
-                                                            Math.Max(_firstPoint.Value.Y, info.ConsoleLocation.Y) - Math.Min(_firstPoint.Value.Y, info.ConsoleLocation.Y) + 1);
-
-                _entity.AddAnimation(animation);
-
+                AnimatedTextSurface animation = new AnimatedTextSurface("line", Math.Max(_firstPoint.Value.X, info.ConsoleLocation.X) - Math.Min(_firstPoint.Value.X, info.ConsoleLocation.X) + 1,
+                                                                                Math.Max(_firstPoint.Value.Y, info.ConsoleLocation.Y) - Math.Min(_firstPoint.Value.Y, info.ConsoleLocation.Y) + 1,
+                                                                                Settings.Config.ScreenFont);
+                
                 var frame = animation.CreateFrame();
 
                 Point p1;
@@ -139,9 +136,9 @@
                 _boxShape.Location = new Point(0, 0);
                 _boxShape.Width = frame.Width;
                 _boxShape.Height = frame.Height;
-                _boxShape.Draw(frame);
+                _boxShape.Draw(new SurfaceEditor(frame));
 
-                _entity.SetActiveAnimation("line");
+                _entity.Animation = animation;
             }
 
 
@@ -161,13 +158,12 @@
 
 
                     _boxShape.Location = p1;
-                    _boxShape.Draw(surface);
+                    _boxShape.Draw(new SurfaceEditor(surface));
 
                     _firstPoint = null;
                     _secondPoint = null;
 
-
-                    _entity.SetActiveAnimation("single");
+                    _entity.Animation = _entity.Animations["single"];
 
                     //surface.ResyncAllCellEffects();
                 }
@@ -179,22 +175,22 @@
                     _firstPoint = null;
                     _secondPoint = null;
 
-                    _entity.SetActiveAnimation("single");
+                    _entity.Animation = _entity.Animations["single"];
                 }
             }
         }
 
-        public void MouseEnterSurface(MouseInfo info, CellSurface surface)
+        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
         {
             _entity.IsVisible = true;
         }
 
-        public void MouseExitSurface(MouseInfo info, CellSurface surface)
+        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
         {
             _entity.IsVisible = false;
         }
 
-        public void MouseMoveSurface(MouseInfo info, CellSurface surface)
+        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
         {
             
 

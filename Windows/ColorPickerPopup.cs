@@ -71,7 +71,7 @@ namespace SadConsoleEditor.Windows
                 }
             };
 
-            _picker = new Controls.ColorPicker(_cellData.Width - RideSideX - 1, _cellData.Height - 11, Color.YellowGreen) { Position = new Point(1, 1) };
+            _picker = new Controls.ColorPicker(textSurface.Width - RideSideX - 1, textSurface.Height - 11, Color.YellowGreen) { Position = new Point(1, 1) };
             _picker.SelectedColorChanged += _picker_SelectedColorChanged;
             Add(_picker);
 
@@ -79,60 +79,60 @@ namespace SadConsoleEditor.Windows
             _redInput = new InputBox(5);
             _redInput.IsNumeric = true;
             _redInput.MaxLength = 3;
-            _redInput.Position = new Point(_cellData.Width - 7, _cellData.Height - 14);
+            _redInput.Position = new Point(textSurface.Width - 7, textSurface.Height - 14);
             _redInput.TextChanged += (sender, e) => { _barR.SelectedColor = new Color(int.Parse(_redInput.Text), 0, 0); };
             Add(_redInput);
 
             _greenInput = new InputBox(5);
             _greenInput.IsNumeric = true;
             _greenInput.MaxLength = 3;
-            _greenInput.Position = new Point(_cellData.Width - 7, _cellData.Height - 13);
+            _greenInput.Position = new Point(textSurface.Width - 7, textSurface.Height - 13);
             _greenInput.TextChanged += (sender, e) => { _barG.SelectedColor = new Color(0, int.Parse(_greenInput.Text), 0); };
             Add(_greenInput);
 
             _blueInput = new InputBox(5);
             _blueInput.IsNumeric = true;
             _blueInput.MaxLength = 3;
-            _blueInput.Position = new Point(_cellData.Width - 7, _cellData.Height - 12);
+            _blueInput.Position = new Point(textSurface.Width - 7, textSurface.Height - 12);
             _blueInput.TextChanged += (sender, e) => { _barB.SelectedColor = new Color(0, 0, int.Parse(_blueInput.Text)); };
             Add(_blueInput);
 
             _alphaInput = new InputBox(5);
             _alphaInput.IsNumeric = true;
             _alphaInput.MaxLength = 3;
-            _alphaInput.Position = new Point(_cellData.Width - 7, _cellData.Height - 11);
+            _alphaInput.Position = new Point(textSurface.Width - 7, textSurface.Height - 11);
             _alphaInput.Text = "255";
             Add(_alphaInput);
             #endregion
 
             #region Bars
-            _barH = new HueBar(base.ViewArea.Width - 2);
+            _barH = new HueBar(base.TextSurface.RenderArea.Width - 2);
 
-            _barH.Position = new Point(1, _cellData.Height - 9);
+            _barH.Position = new Point(1, textSurface.Height - 9);
             _barH.ColorChanged += _barH_ColorChanged;
             Add(_barH);
 
-            _barR = new ColorBar(base.ViewArea.Width - 2);
+            _barR = new ColorBar(base.TextSurface.RenderArea.Width - 2);
 
             _barR.StartingColor = Color.Black;
             _barR.EndingColor = Color.Red;
-            _barR.Position = new Point(1, _cellData.Height - 7);
+            _barR.Position = new Point(1, textSurface.Height - 7);
             _barR.ColorChanged += bar_ColorChanged;
             Add(_barR);
 
-            _barG = new ColorBar(base.ViewArea.Width - 2);
+            _barG = new ColorBar(base.TextSurface.RenderArea.Width - 2);
 
             _barG.StartingColor = Color.Black;
             _barG.EndingColor = new Color(0, 255, 0);
-            _barG.Position = new Point(1, _cellData.Height - 5);
+            _barG.Position = new Point(1, textSurface.Height - 5);
             _barG.ColorChanged += bar_ColorChanged;
             Add(_barG);
 
-            _barB = new ColorBar(base.ViewArea.Width - 2);
+            _barB = new ColorBar(base.TextSurface.RenderArea.Width - 2);
 
             _barB.StartingColor = Color.Black;
             _barB.EndingColor = Color.Blue;
-            _barB.Position = new Point(1, _cellData.Height - 3);
+            _barB.Position = new Point(1, textSurface.Height - 3);
             _barB.ColorChanged += bar_ColorChanged;
             Add(_barB);
 
@@ -144,7 +144,7 @@ namespace SadConsoleEditor.Windows
             #region Buttons
             _okButton = new Button(RideSideX - 4, 1);
             _okButton.Text = "OK";
-            _okButton.Position = new Point(_cellData.Width - RideSideX + 2, _cellData.Height - 18);
+            _okButton.Position = new Point(textSurface.Width - RideSideX + 2, textSurface.Height - 18);
             _okButton.ButtonClicked += (sender, r) =>
             {
                 this.DialogResult = true;
@@ -156,19 +156,19 @@ namespace SadConsoleEditor.Windows
 
             _cancelButton = new Button(RideSideX - 4, 1);
             _cancelButton.Text = "Cancel";
-            _cancelButton.Position = new Point(_cellData.Width - RideSideX + 2, _cellData.Height - 16);
+            _cancelButton.Position = new Point(textSurface.Width - RideSideX + 2, textSurface.Height - 16);
             _cancelButton.ButtonClicked += (sender, r) => { this.DialogResult = false; Hide(); };
             Add(_cancelButton);
 
             _otherColorsButton = new Button(RideSideX - 4, 1);
             _otherColorsButton.Text = "Other Colors";
-            _otherColorsButton.Position = new Point(_cellData.Width - RideSideX + 2, _cellData.Height - 20);
+            _otherColorsButton.Position = new Point(textSurface.Width - RideSideX + 2, textSurface.Height - 20);
             _otherColorsButton.ButtonClicked += (sender, e) => { otherColorPopup.Show(true); };
             Add(_otherColorsButton);
             #endregion
 
-            _previousColors = new ListBox<ListBoxItemColor>(RideSideX - 4, _cellData.Height - 20 - 9 + 1);
-            _previousColors.Position = new Point(_cellData.Width - RideSideX + 2, 8);
+            _previousColors = new ListBox<ListBoxItemColor>(RideSideX - 4, textSurface.Height - 20 - 9 + 1);
+            _previousColors.Position = new Point(textSurface.Width - RideSideX + 2, 8);
             _previousColors.SelectedItemChanged += (sender, e) => { if (_previousColors.SelectedItem != null) SelectedColor = (Color)_previousColors.SelectedItem; };
             Add(_previousColors);
 
@@ -207,44 +207,43 @@ namespace SadConsoleEditor.Windows
         public override void Redraw()
         {
             base.Redraw();
-            int lineY = _cellData.Height - 10;
-            int lineX = _cellData.Width - RideSideX;
+            int lineY = textSurface.Height - 10;
+            int lineX = textSurface.Width - RideSideX;
 
             // Bar above color bars
             for (int x = 1; x < lineX; x++)
             {
-                _cellData[x, lineY].CharacterIndex = 196;
+                textSurface[x, lineY].GlyphIndex = 196;
             }
-            _cellData[0, lineY].CharacterIndex = 199;
-            _cellData[lineX, lineY].CharacterIndex = 217;
+            textSurface[0, lineY].GlyphIndex = 199;
+            textSurface[lineX, lineY].GlyphIndex = 217;
 
             // Long bar right of color picker
             for (int y = 1; y < lineY; y++)
             {
-                _cellData[lineX, y].CharacterIndex = 179;
+                textSurface[lineX, y].GlyphIndex = 179;
             }
-            _cellData[lineX, lineY].CharacterIndex = 217;
-            _cellData[lineX, 0].CharacterIndex = 209;
+            textSurface[lineX, lineY].GlyphIndex = 217;
+            textSurface[lineX, 0].GlyphIndex = 209;
 
 
             // Bar above red input
-            for (int x = lineX + 1; x < _cellData.Width - 1; x++)
+            for (int x = lineX + 1; x < textSurface.Width - 1; x++)
             {
-                _cellData[x, lineY - 5].CharacterIndex = 205;// 196;
+                textSurface[x, lineY - 5].GlyphIndex = 205;// 196;
             }
-            //_cellData[lineX, lineY - 5].CharacterIndex = 195;
-            //_cellData[_cellData.Width - 1, lineY - 5].CharacterIndex = 182;
-            _cellData[lineX, lineY - 5].CharacterIndex = 198;
-            _cellData[_cellData.Width - 1, lineY - 5].CharacterIndex = 185;
+            //textSurface[lineX, lineY - 5].GlyphIndex = 195;
+            //textSurface[textSurface.Width - 1, lineY - 5].GlyphIndex = 182;
+            textSurface[lineX, lineY - 5].GlyphIndex = 198;
+            textSurface[textSurface.Width - 1, lineY - 5].GlyphIndex = 185;
 
-
-            _cellData.Print(lineX + 2, lineY - 4, "Red", ColorAnsi.Red);
-            _cellData.Print(lineX + 2, lineY - 3, "Green", ColorAnsi.Green);
-            _cellData.Print(lineX + 2, lineY - 2, "Blue", ColorAnsi.BlueBright);
-            _cellData.Print(lineX + 2, lineY - 1, "Alpha", Color.Gray);
+            Print(lineX + 2, lineY - 4, "Red", ColorAnsi.Red);
+            Print(lineX + 2, lineY - 3, "Green", ColorAnsi.Green);
+            Print(lineX + 2, lineY - 2, "Blue", ColorAnsi.BlueBright);
+            Print(lineX + 2, lineY - 1, "Alpha", Color.Gray);
 
             // Preview area
-            _cellData.Print(lineX + 2, 1, "Selected Color");
+            Print(lineX + 2, 1, "Selected Color");
 
             SadConsole.Shapes.Box box = new SadConsole.Shapes.Box();
             box.Fill = true;
@@ -256,15 +255,15 @@ namespace SadConsoleEditor.Windows
             box.BottomLeftCharacter = box.BottomRightCharacter = box.BottomSideCharacter = 220;
             box.Foreground = Theme.FillStyle.Background;
 
-            box.Draw(_cellData);
+            box.Draw(this);
 
             // Current selected gradient colors
-            _cellData.Print(lineX + 2, 5, SelectedColor.R.ToString().PadLeft(3, '0'), ColorAnsi.Red);
-            _cellData.Print(lineX + 2, 6, SelectedColor.G.ToString().PadLeft(3, '0'), ColorAnsi.Green);
-            _cellData.Print(lineX + 13, 5, SelectedColor.B.ToString().PadLeft(3, '0'), ColorAnsi.BlueBright);
+            Print(lineX + 2, 5, SelectedColor.R.ToString().PadLeft(3, '0'), ColorAnsi.Red);
+            Print(lineX + 2, 6, SelectedColor.G.ToString().PadLeft(3, '0'), ColorAnsi.Green);
+            Print(lineX + 13, 5, SelectedColor.B.ToString().PadLeft(3, '0'), ColorAnsi.BlueBright);
 
             // Previous Colors
-            _cellData.Print(lineX + 2, 8, "Prior Colors");
+            Print(lineX + 2, 8, "Prior Colors");
 
         }
         

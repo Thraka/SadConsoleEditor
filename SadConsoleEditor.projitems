@@ -17,13 +17,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ColorPicker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ColorPresenter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\FileDirectoryListbox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\ListboxItemFame.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\NoCheckRadioButton.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EditorConsoleManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\AnimationEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\DrawingEditor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Editors\GameScreenEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\IEditor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Editors\SceneEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntityBrush.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameHelpers\GameObjectMeta.cs" />
@@ -35,11 +34,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Panels\CharacterPickPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\Circle.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\CustomPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\EntityNamePanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\FilesPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\LayersPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\LinePanel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Panels\ObjectTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\RecolorTool.Panel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\AnimationListPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\EntityManagementPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\SelectionTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolsPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
@@ -52,8 +53,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tools\FillTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\ITool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\LineTool.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Tools\ObjectTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\RecolorTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\SceneEntityMoveTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\SelectionTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\TextTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Undo.cs" />
@@ -61,7 +62,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Windows\AnimationSpeedPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\CharacterQuickSelectPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\ColorPickerPopup.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Windows\EditObjectPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\NewConsolePopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\OtherColorsPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\RenamePopup.cs" />
@@ -69,8 +69,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Windows\SelectFilePopup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)16x16_sm.png" />
-    <Content Include="$(MSBuildThisFileDirectory)Cheepicus_12x12.png" />
+    <Content Include="$(MSBuildThisFileDirectory)16x16_sm.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)Cheepicus_12x12.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="$(MSBuildThisFileDirectory)EditorFont_IBM8x16.png" />
     <Content Include="$(MSBuildThisFileDirectory)Icon.ico" />
     <Content Include="$(MSBuildThisFileDirectory)quickselect.json">
@@ -81,8 +85,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)16sm.font" />
-    <None Include="$(MSBuildThisFileDirectory)Cheepicus12.font" />
+    <None Include="$(MSBuildThisFileDirectory)16sm.font">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)Cheepicus12.font">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="$(MSBuildThisFileDirectory)EditorFont.font" />
   </ItemGroup>
 </Project>

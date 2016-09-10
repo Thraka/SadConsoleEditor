@@ -33,7 +33,7 @@ namespace SadConsoleEditor.Editors
         string FileExtensionsLoad { get; }
         string FileExtensionsSave { get; }
 
-        SadConsole.Consoles.LayeredConsole Surface { get; }
+        ITextSurface Surface { get; }
 
         CustomPanel[] ControlPanels { get; }
 
@@ -48,6 +48,8 @@ namespace SadConsoleEditor.Editors
         Point GetPosition();
 
         void Render();
+
+        void Update();
 
         void Load(string file);
 
@@ -67,5 +69,11 @@ namespace SadConsoleEditor.Editors
         void SaveLayer(int index, string file);
 
         void SetActiveLayer(int index);
+
+        void OnSelected();
+
+        void OnDeselected();
+
+        void OnClosed();
     }
 }

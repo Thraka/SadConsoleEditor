@@ -33,14 +33,14 @@ namespace SadConsoleEditor.Windows
         {
             Center();
 
-            _ansiSelectButton = new RadioButton(_cellData.Width - 4, 1);
+            _ansiSelectButton = new RadioButton(textSurface.Width - 4, 1);
             _ansiSelectButton.Position = new Point(2, 2);
             _ansiSelectButton.Text = "Ansi Colors";
             _ansiSelectButton.CanFocus = false;
             _ansiSelectButton.IsSelectedChanged += _ansiSelectButton_IsSelectedChanged;
             Add(_ansiSelectButton);
 
-            _knownSelectButton = new RadioButton(_cellData.Width - 4, 1);
+            _knownSelectButton = new RadioButton(textSurface.Width - 4, 1);
             _knownSelectButton.Position = new Point(2, 3);
             _knownSelectButton.Text = "List of Known Colors";
             _knownSelectButton.CanFocus = false;
@@ -183,7 +183,7 @@ namespace SadConsoleEditor.Windows
             #endregion
 
             #region Named Color Control
-            _namedColorsList = new ListBox<ListBoxItemColor>(_cellData.Width - 4, _cellData.Height - 3 - ansiButtonStartY);
+            _namedColorsList = new ListBox<ListBoxItemColor>(textSurface.Width - 4, textSurface.Height - 3 - ansiButtonStartY);
             _namedColorsList.Position = new Point(ansiButtonStartX - 1, ansiButtonStartY);
             Add(_namedColorsList);
 
@@ -207,13 +207,13 @@ namespace SadConsoleEditor.Windows
             #endregion
 
             _cancelButton = new Button(12, 1);
-            _cancelButton.Position = new Point(2, _cellData.Height - 2);
+            _cancelButton.Position = new Point(2, textSurface.Height - 2);
             _cancelButton.Text = "Cancel";
             _cancelButton.ButtonClicked += (sender, e) => { DialogResult = false; Hide(); };
             Add(_cancelButton);
 
             _okButton = new Button(12, 1);
-            _okButton.Position = new Point(_cellData.Width - 2 - _okButton.Width, _cellData.Height - 2);
+            _okButton.Position = new Point(textSurface.Width - 2 - _okButton.Width, textSurface.Height - 2);
             _okButton.Text = "OK";
             _okButton.ButtonClicked += (sender, e) => { SelectedColor = _ansiSelectButton.IsSelected ? _selectedAnsiColor : (Color)((Tuple<Color, Color, string>)_namedColorsList.SelectedItem).Item1; DialogResult = true; Hide(); };
             Add(_okButton);
@@ -272,22 +272,22 @@ namespace SadConsoleEditor.Windows
             base.Redraw();
 
             if (_selectedAnsiColorIconPrevious != Point.Zero)
-                _cellData[_selectedAnsiColorIconPrevious.X, _selectedAnsiColorIconPrevious.Y].CharacterIndex = 0;
+                textSurface[_selectedAnsiColorIconPrevious.X, _selectedAnsiColorIconPrevious.Y].GlyphIndex = 0;
 
             if (_selectedAnsiColorIcon != Point.Zero)
             {
-                _cellData[_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y].CharacterIndex = 16;
-                _cellData[_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y].Foreground = Settings.Color_TitleText;
+                textSurface[_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y].GlyphIndex = 16;
+                textSurface[_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y].Foreground = Settings.Color_TitleText;
             }
 
             // Bar above buttons
-            int lineY = _cellData.Height - 3;
-            for (int x = 1; x < _cellData.Width - 1; x++)
+            int lineY = textSurface.Height - 3;
+            for (int x = 1; x < textSurface.Width - 1; x++)
             {
-                _cellData[x, lineY].CharacterIndex = 196;
+                textSurface[x, lineY].GlyphIndex = 196;
             }
-            _cellData[0, lineY].CharacterIndex = 199;
-            _cellData[_cellData.Width - 1, lineY].CharacterIndex = 182;
+            textSurface[0, lineY].GlyphIndex = 199;
+            textSurface[textSurface.Width - 1, lineY].GlyphIndex = 182;
         }
     }
 }

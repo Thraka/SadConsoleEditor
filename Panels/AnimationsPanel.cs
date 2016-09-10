@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using SadConsole.Controls;
 using SadConsoleEditor.Windows;
 using SadConsole;
-using SadConsole.Entities;
+using SadConsole.Game;
+using SadConsole.Consoles;
 
 namespace SadConsoleEditor.Panels
 {
@@ -27,9 +28,9 @@ namespace SadConsoleEditor.Panels
         private DrawingSurface _animationSpeedLabel;
         private Button _playPreview;
 
-        private SadConsole.Entities.Entity _entity;
+        private GameObject _entity;
 
-        private Action<Animation> _animationChangeCallback;
+        private Action<AnimatedTextSurface> _animationChangeCallback;
         private Action<CustomTool> _invokeCustomToolCallback;
 
         public enum CustomTool
@@ -39,7 +40,7 @@ namespace SadConsoleEditor.Panels
             None
         }
 
-        public AnimationsPanel(Action<Animation> animationChangeCallback)
+        public AnimationsPanel(Action<AnimatedTextSurface> animationChangeCallback)
         {
             Title = "Animations";
             _animations = new ListBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 4);
@@ -105,7 +106,7 @@ namespace SadConsoleEditor.Panels
 
         private void reverseAnimation_ButtonClicked(object sender, EventArgs e)
         {
-            var animation = (Animation)_animations.SelectedItem;
+            var animation = (AnimatedTextSurface)_animations.SelectedItem;
             animation.Frames.Reverse();
             animations_SelectedItemChanged(this, null);
         }
@@ -117,10 +118,8 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
-                    var animation = (Animation)_animations.SelectedItem;
-                    var newAnimation = new Animation(popup.NewName, animation.Width, animation.Height);
-
-                    newAnimation.Frames.Clear();
+                    var animation = (AnimatedTextSurface)_animations.SelectedItem;
+                    var newAnimation = new AnimatedTextSurface(popup.NewName, animation.Width, animation.Height, Settings.Config.ScreenFont);
 
                     foreach (var frame in animation.Frames)
                     {
@@ -130,7 +129,7 @@ namespace SadConsoleEditor.Panels
 
                     newAnimation.CurrentFrameIndex = 0;
 
-                    _entity.AddAnimation(newAnimation);
+                    _entity.Animations[newAnimation.Name] = newAnimation;
                     RebuildListBox();
                 }
             };
@@ -140,12 +139,12 @@ namespace SadConsoleEditor.Panels
 
         private void repeatCheck_IsSelectedChanged(object sender, EventArgs e)
         {
-            ((Animation)_animations.SelectedItem).Repeat = _repeatCheck.IsSelected;
+            ((AnimatedTextSurface)_animations.SelectedItem).Repeat = _repeatCheck.IsSelected;
         }
 
         private void changeSpeedButton_ButtonClicked(object sender, EventArgs e)
         {
-            var animation = (Animation)_animations.SelectedItem;
+            var animation = (AnimatedTextSurface)_animations.SelectedItem;
             AnimationSpeedPopup popup = new AnimationSpeedPopup(animation.AnimationDuration);
             popup.Closed += (s2, e2) =>
             {
@@ -153,7 +152,7 @@ namespace SadConsoleEditor.Panels
                 {
                     animation.AnimationDuration = popup.NewSpeed;
                     _animationSpeedLabel.Fill(Settings.Green, Settings.Color_MenuBack, 0, null);
-                    _animationSpeedLabel.Print(0, 0, new ColoredString("Speed: ", Settings.Green, Settings.Color_MenuBack, null) + new ColoredString(((Animation)_animations.SelectedItem).AnimationDuration.ToString(), Settings.Blue, Settings.Color_MenuBack, null));
+                    _animationSpeedLabel.Print(0, 0, new ColoredString("Speed: ", Settings.Green, Settings.Color_MenuBack) + new ColoredString(((AnimatedTextSurface)_animations.SelectedItem).AnimationDuration.ToString(), Settings.Blue, Settings.Color_MenuBack));
                 }
             };
             popup.Center();
@@ -162,7 +161,7 @@ namespace SadConsoleEditor.Panels
 
         void saveAnimationToFile_ButtonClicked(object sender, EventArgs e)
         {
-            var animation = (Animation)_animations.SelectedItem;
+            var animation = (AnimatedTextSurface)_animations.SelectedItem;
 
             SelectFilePopup popup = new SelectFilePopup();
             popup.Closed += (o2, e2) =>
@@ -189,9 +188,9 @@ namespace SadConsoleEditor.Panels
                 {
                     if (System.IO.File.Exists(popup.SelectedFile))
                     {
-                        var animation = Animation.Load(popup.SelectedFile);
+                        var animation = AnimatedTextSurface.Load(popup.SelectedFile);
 
-                        _entity.AddAnimation(animation);
+                        _entity.Animations[animation.Name] = animation;
 
                         RebuildListBox();
 
@@ -206,16 +205,25 @@ namespace SadConsoleEditor.Panels
 
         void renameAnimation_ButtonClicked(object sender, EventArgs e)
         {
-            var animation = (Animation)_animations.SelectedItem;
+            var animation = (AnimatedTextSurface)_animations.SelectedItem;
             RenamePopup popup = new RenamePopup(animation.Name);
-            popup.Closed += (o, e2) => { if (popup.DialogResult) animation.Name = popup.NewName; _animations.IsDirty = true; };
+            popup.Closed += (o, e2) => 
+            {
+                if (popup.DialogResult)
+                {
+                    _entity.Animations.Remove(animation.Name);
+                    animation.Name = popup.NewName;
+                    _entity.Animations[animation.Name] = animation;
+                    _animations.IsDirty = true;
+                }
+            };
             popup.Show(true);
             popup.Center();
         }
 
         void removeAnimation_ButtonClicked(object sender, EventArgs e)
         {
-            var animation = (Animation)_animations.SelectedItem;
+            var animation = (AnimatedTextSurface)_animations.SelectedItem;
 
             if (animation.Name == "default")
             {
@@ -223,7 +231,7 @@ namespace SadConsoleEditor.Panels
             }
             else
             {
-                _entity.RemoveAnimation(animation);
+                _entity.Animations.Remove(animation.Name);
                 RebuildListBox();
                 _animations.SelectedItem = _animations.Items[0];
             }
@@ -231,12 +239,37 @@ namespace SadConsoleEditor.Panels
 
         void addNewAnimation_ButtonClicked(object sender, EventArgs e)
         {
-            var previouslySelected = (Animation)_animations.SelectedItem;
-            var animation = new Animation("New", previouslySelected.Width, previouslySelected.Height);
-            animation.CreateFrame();
-            _entity.AddAnimation(animation);
-            RebuildListBox();
-            _animations.SelectedItem = previouslySelected;
+            RenamePopup popup = new RenamePopup("", "Animation Name");
+            popup.Closed += (o, e2) =>
+            {
+
+                if (popup.DialogResult)
+                {
+                    string newName = popup.NewName.Trim();
+                    var keys = _entity.Animations.Keys.Select(k => k.ToLower()).ToList();
+
+                    if (keys.Contains(newName.ToLower()))
+                    {
+                        Window.Message("Name must be unique", "Close");
+                    }
+                    else if (string.IsNullOrEmpty(newName))
+                    {
+                        Window.Message("Name cannot be blank", "Close");
+                    }
+                    else
+                    {
+                        var previouslySelected = (AnimatedTextSurface)_animations.SelectedItem;
+                        var animation = new AnimatedTextSurface(newName, previouslySelected.Width, previouslySelected.Height, Settings.Config.ScreenFont);
+                        animation.CreateFrame();
+                        animation.AnimationDuration = 1;
+                        _entity.Animations[animation.Name] = animation;
+                        RebuildListBox();
+                        _animations.SelectedItem = animation;
+                    }
+                }
+            };
+            popup.Show(true);
+            popup.Center();
         }
 
         void animations_SelectedItemChanged(object sender, ListBox<ListBoxItem>.SelectedItemEventArgs e)
@@ -247,13 +280,13 @@ namespace SadConsoleEditor.Panels
 
             if (_animations.SelectedItem != null)
             {
-                var animation = (Animation)_animations.SelectedItem;
+                var animation = (AnimatedTextSurface)_animations.SelectedItem;
 
                 _removeSelected.IsEnabled = _animations.Items.Count != 1;
 
                 _repeatCheck.IsSelected = animation.Repeat;
                 _animationSpeedLabel.Fill(Settings.Green, Settings.Color_MenuBack, 0, null);
-                _animationSpeedLabel.Print(0, 0, new ColoredString("Speed: ", Settings.Green, Settings.Color_MenuBack, null) + new ColoredString(((Animation)_animations.SelectedItem).AnimationDuration.ToString(), Settings.Blue, Settings.Color_MenuBack, null));
+                _animationSpeedLabel.Print(0, 0, new ColoredString("Speed: ", Settings.Green, Settings.Color_MenuBack) + new ColoredString(((AnimatedTextSurface)_animations.SelectedItem).AnimationDuration.ToString(), Settings.Blue, Settings.Color_MenuBack));
 
                 _animationChangeCallback(animation);
             }
@@ -261,7 +294,7 @@ namespace SadConsoleEditor.Panels
 
         private void playPreview_ButtonClicked(object sender, EventArgs e)
         {
-            PreviewAnimationPopup popup = new PreviewAnimationPopup((Animation)_animations.SelectedItem);
+            PreviewAnimationPopup popup = new PreviewAnimationPopup((AnimatedTextSurface)_animations.SelectedItem);
             popup.Center();
             popup.Show(true);
         }
@@ -271,7 +304,7 @@ namespace SadConsoleEditor.Panels
             _animations.Items.Clear();
 
             foreach (var item in _entity.Animations)
-                _animations.Items.Add(item);
+                _animations.Items.Add(item.Value);
 
             _animations.SelectedItem = _animations.Items[0];
         }
@@ -285,7 +318,7 @@ namespace SadConsoleEditor.Panels
             if (control == _changeSpeedButton)
             {
                 _animationSpeedLabel.Fill(Settings.Green, Settings.Color_MenuBack, 0, null);
-                _animationSpeedLabel.Print(0, 0, new ColoredString("Speed: ", Settings.Green, Settings.Color_MenuBack, null) + new ColoredString(((Animation)_animations.SelectedItem).AnimationDuration.ToString(), Settings.Blue, Settings.Color_MenuBack, null));
+                _animationSpeedLabel.Print(0, 0, new ColoredString("Speed: ", Settings.Green, Settings.Color_MenuBack) + new ColoredString(((AnimatedTextSurface)_animations.SelectedItem).AnimationDuration.ToString(), Settings.Blue, Settings.Color_MenuBack));
                 _changeSpeedButton.Position = new Microsoft.Xna.Framework.Point(Consoles.ToolPane.PanelWidth - _changeSpeedButton.Width + 1, _animationSpeedLabel.Position.Y);
             }
 
@@ -302,7 +335,7 @@ namespace SadConsoleEditor.Panels
             //    _animations.SelectedItem = previouslySelected;
         }
 
-        public void SetEntity(Entity entity)
+        public void SetEntity(GameObject entity)
         {
             _entity = entity;
             RebuildListBox();

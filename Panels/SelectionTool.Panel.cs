@@ -68,8 +68,8 @@ namespace SadConsoleEditor.Panels
 
         private string lastFolder = null;
 
-        private Func<CellSurface> _saveBrushHandler;
-        private Action<CellSurface> _loadBrushHandler;
+        private Func<TextSurface> _saveBrushHandler;
+        private Action<TextSurface> _loadBrushHandler;
 
         private int _currentStepChar = 175;
 
@@ -105,7 +105,7 @@ namespace SadConsoleEditor.Panels
 
         
 
-        public SelectionToolPanel(Action<CellSurface> loadBrushHandler, Func<CellSurface> saveBrushHandler)
+        public SelectionToolPanel(Action<TextSurface> loadBrushHandler, Func<TextSurface> saveBrushHandler)
         {
             _reset = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
             _reset.Text = "Reset Steps";
@@ -187,20 +187,20 @@ namespace SadConsoleEditor.Panels
                     {
                         lastFolder = System.IO.Path.GetDirectoryName(popup.SelectedFile);
 
-                        if (System.IO.Path.GetExtension(popup.SelectedFile) == ".ans")
-                        {
-                            using (var ansi = new SadConsole.Ansi.Document(popup.SelectedFile))
-                            {
-                                var console = new SadConsole.Consoles.Console(80, 1);
-                                console.CellData.ResizeOnShift = true;
-                                SadConsole.Ansi.AnsiWriter writer = new SadConsole.Ansi.AnsiWriter(ansi, console);
-                                writer.ReadEntireDocument();
-                                _loadBrushHandler(console.CellData);
-                            }
+                        //if (System.IO.Path.GetExtension(popup.SelectedFile) == ".ans")
+                        //{
+                        //    using (var ansi = new SadConsole.Ansi.Document(popup.SelectedFile))
+                        //    {
+                        //        var console = new SadConsole.Consoles.Console(80, 1);
+                        //        console.TextSurface.ResizeOnShift = true;
+                        //        SadConsole.Ansi.AnsiWriter writer = new SadConsole.Ansi.AnsiWriter(ansi, console);
+                        //        writer.ReadEntireDocument();
+                        //        _loadBrushHandler(console.CellData);
+                        //    }
 
-                        }
-                        else
-                            _loadBrushHandler(CellSurface.Load(popup.SelectedFile));
+                        //}
+                        //else
+                            _loadBrushHandler(TextSurface.Load(popup.SelectedFile));
                     }
                 }
             };
