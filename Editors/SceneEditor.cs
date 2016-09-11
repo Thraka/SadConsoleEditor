@@ -249,6 +249,8 @@ namespace SadConsoleEditor.Editors
                         var animationName = gameObject.Animation.Name;
                         gameObject.Animations.Clear();
 
+                        gameObject.Name = LinkedGameObjects[gameObject].Name;
+
                         foreach (var animation in LinkedGameObjects[gameObject].Animations)
                             gameObject.Animations.Add(animation.Key, animation.Value);
 
@@ -261,6 +263,7 @@ namespace SadConsoleEditor.Editors
             }
 
             AnimationsPanel.RebuildListBox();
+            EntityPanel.RebuildListBox();
         }
 
         public void OnDeselected()

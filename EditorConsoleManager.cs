@@ -49,7 +49,7 @@ namespace SadConsoleEditor
 
 		public bool AllowKeyboardToMoveConsole { get; set; }
 
-        public IEnumerable<IEditor> Documents { get { return _documentButtons.Values; } }
+        public IEnumerable<IEditor> Documents { get { return Instance.ToolPane.FilesPanel.DocumentsListbox.Items.Cast<IEditor>(); } }
 
         private Point topBarMousePosition;
         private string topBarLayerName = "None";
