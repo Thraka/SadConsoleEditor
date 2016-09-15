@@ -200,12 +200,25 @@ namespace SadConsoleEditor.Panels
 
                         //}
                         //else
+                        if (System.IO.Path.GetExtension(popup.SelectedFile) == ".txt")
+                        {
+                            string[] text = System.IO.File.ReadAllLines(popup.SelectedFile);
+                            int maxLineWidth = text.Max(s => s.Length);
+
+
+                            SadConsole.Consoles.Console importConsole = new SadConsole.Consoles.Console(maxLineWidth, text.Length);
+                            importConsole.VirtualCursor.AutomaticallyShiftRowsUp = false;
+                            foreach (var line in text)
+                                importConsole.VirtualCursor.Print(line);
+                            _loadBrushHandler((TextSurface)importConsole.TextSurface);
+                        }
+                        else
                             _loadBrushHandler(TextSurface.Load(popup.SelectedFile));
                     }
                 }
             };
             popup.CurrentFolder = lastFolder ?? Environment.CurrentDirectory;
-            popup.FileFilter = "*.con;*.console;*.brush;*.ans";
+            popup.FileFilter = "*.con;*.console;*.brush;*.ans;*.txt";
             popup.Show(true);
             popup.Center();
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using SadConsole;
 using SadConsole.Controls;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,7 @@ namespace SadConsoleEditor.Panels
         public Button ResizeButton;
         public Button CloseButton;
 
+        private DrawingSurface documentsTitle;
         public ListBox DocumentsListbox;
 
         public FilesPanel()
@@ -61,7 +63,11 @@ namespace SadConsoleEditor.Panels
 
             DocumentsListbox.SelectedItemChanged += DocumentsListbox_SelectedItemChanged;
 
-            Controls = new ControlBase[] { NewButton, LoadButton, SaveButton, ResizeButton, CloseButton, DocumentsListbox };
+            documentsTitle = new DrawingSurface(13, 1);
+            documentsTitle.Fill(Settings.Green, Settings.Color_MenuBack, 0, null);
+            documentsTitle.Print(0, 0, new ColoredString("Opened Files", Settings.Blue, Settings.Color_MenuBack));
+
+            Controls = new ControlBase[] { NewButton, LoadButton, SaveButton, ResizeButton, CloseButton, documentsTitle, DocumentsListbox };
             
 
         }

@@ -8,6 +8,7 @@ using SadConsoleEditor.Panels;
 using SadConsole.Consoles;
 using SadConsole;
 using System.IO;
+using System.Collections.Generic;
 
 namespace SadConsoleEditor.Editors
 {
@@ -15,6 +16,9 @@ namespace SadConsoleEditor.Editors
     {
         private int _width;
         private int _height;
+        private List<FileLoaders.IFileLoader> loadersLoad;
+        private List<FileLoaders.IFileLoader> loadersSave;
+
         private Console _consoleLayers;
 
         public event EventHandler<MouseEventArgs> MouseEnter;
@@ -36,9 +40,9 @@ namespace SadConsoleEditor.Editors
 
         public string Title { get { return "Console"; } }
 
-        public string FileExtensionsLoad { get { return "*.lconsole;*.xp"; } }
+        public IEnumerable<FileLoaders.IFileLoader> FileExtensionsLoad { get { return loadersLoad; } }
 
-        public string FileExtensionsSave { get { return "*.lconsole;"; } }
+        public IEnumerable<FileLoaders.IFileLoader> FileExtensionsSave { get { return loadersSave; } }
 
         public CustomPanel[] ControlPanels { get; private set; }
 
@@ -57,6 +61,8 @@ namespace SadConsoleEditor.Editors
 
         public DrawingEditor()
         {
+            loadersSave = new List<FileLoaders.IFileLoader>() { new FileLoaders.Scene() };
+            loadersLoad = new List<FileLoaders.IFileLoader>(loadersSave);
             _consoleLayers = new Console(new LayeredTextSurface(10, 10, 2));
             _consoleLayers.Renderer = new LayeredTextRenderer();
             Reset();
@@ -167,12 +173,12 @@ namespace SadConsoleEditor.Editors
             return _consoleLayers.Position;
         }
 
-        public void Save(string file)
+        public void Save(string file, FileLoaders.IFileLoader loader)
         {
             ((LayeredTextSurface)_consoleLayers.TextSurface).Save(file, typeof(LayerMetadata));
         }
 
-        public void Load(string file)
+        public void Load(string file, FileLoaders.IFileLoader loader)
         {
             if (System.IO.File.Exists(file))
             {

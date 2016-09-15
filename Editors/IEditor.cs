@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SadConsoleEditor.Panels;
+using SadConsoleEditor.FileLoaders;
 
 namespace SadConsoleEditor.Editors
 {
@@ -30,8 +31,8 @@ namespace SadConsoleEditor.Editors
 
         string[] Tools { get; }
 
-        string FileExtensionsLoad { get; }
-        string FileExtensionsSave { get; }
+        IEnumerable<IFileLoader> FileExtensionsLoad { get; }
+        IEnumerable<IFileLoader> FileExtensionsSave { get; }
 
         ITextSurface Surface { get; }
 
@@ -51,9 +52,10 @@ namespace SadConsoleEditor.Editors
 
         void Update();
 
-        void Load(string file);
+        void Load(string file, IFileLoader loader);
 
-        void Save(string file);
+        void Save(string file, IFileLoader loader);
+
         void Reset();
 
         void RemoveLayer(int index);

@@ -428,7 +428,7 @@ namespace SadConsoleEditor
         {
             if (_fileDialogPopup.DialogResult)
             {
-                SelectedEditor.Load(_fileDialogPopup.SelectedFile);
+                SelectedEditor.Load(_fileDialogPopup.SelectedFile, null);
                 //ToolPane.LayersPanel.RebuildListBox();
             }
         }
@@ -437,14 +437,20 @@ namespace SadConsoleEditor
         {
             if (_fileDialogPopup.DialogResult)
             {
-                SelectedEditor.Save(_fileDialogPopup.SelectedFile);
+                SelectedEditor.Save(_fileDialogPopup.SelectedFile, null);
             }
         }
 
         public void LoadSurface()
         {
+            List<string> filters = new List<string>();
+
+            foreach (var loader in SelectedEditor.FileExtensionsLoad)
+                foreach (var ext in loader.Extensions)
+                    filters.Add($"*.{ext};");
+
             _popupCallback = LoadSurfaceAction;
-            _fileDialogPopup.FileFilter = SelectedEditor.FileExtensionsLoad;
+            _fileDialogPopup.FileFilter = string.Concat(filters);
             _fileDialogPopup.SelectButtonText = "Open";
             _fileDialogPopup.Show(true);
             _fileDialogPopup.Center();
@@ -452,9 +458,15 @@ namespace SadConsoleEditor
 
         public void SaveSurface()
         {
+            List<string> filters = new List<string>();
+
+            foreach (var loader in SelectedEditor.FileExtensionsSave)
+                foreach (var ext in loader.Extensions)
+                    filters.Add($"*.{ext};");
+
             _popupCallback = SaveSurfaceAction;
             _fileDialogPopup.SelectButtonText = "Save";
-            _fileDialogPopup.FileFilter = SelectedEditor.FileExtensionsSave;
+            _fileDialogPopup.FileFilter = string.Concat(filters);
             _fileDialogPopup.SkipFileExistCheck = true;
             _fileDialogPopup.Show(true);
             _fileDialogPopup.Center();

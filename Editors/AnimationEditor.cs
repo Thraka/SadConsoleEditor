@@ -18,6 +18,8 @@ namespace SadConsoleEditor.Editors
     {
         private int _width;
         private int _height;
+        private List<FileLoaders.IFileLoader> loadersLoad;
+        private List<FileLoaders.IFileLoader> loadersSave;
         private Console _consoleLayers;
         private AnimationsPanel _animationPanel;
         private EntityNamePanel entityNamePanel;
@@ -54,8 +56,9 @@ namespace SadConsoleEditor.Editors
 
         public string Title { get { return "Entity"; } }
 
-        public string FileExtensionsLoad { get { return "*.entity"; } }
-        public string FileExtensionsSave { get { return "*.entity"; } }
+        public IEnumerable<FileLoaders.IFileLoader> FileExtensionsLoad { get { return loadersLoad; } }
+
+        public IEnumerable<FileLoaders.IFileLoader> FileExtensionsSave { get { return loadersSave; } }
         public CustomPanel[] ControlPanels { get; private set; }
 
         public AnimatedTextSurface SelectedAnimation { get { return _selectedAnimation; } }
@@ -75,6 +78,9 @@ namespace SadConsoleEditor.Editors
 
         public EntityEditor()
         {
+            loadersSave = new List<FileLoaders.IFileLoader>() { new FileLoaders.Entity() };
+            loadersLoad = new List<FileLoaders.IFileLoader>(loadersSave);
+
             _animationPanel = new AnimationsPanel(SelectedAnimationChanged);
             entityNamePanel = new EntityNamePanel();
             _framesPanel = new AnimationFramesPanel(SelectedFrameChanged);
@@ -308,12 +314,12 @@ namespace SadConsoleEditor.Editors
             return _consoleLayers.Position;
         }
 
-        public void Save(string file)
+        public void Save(string file, FileLoaders.IFileLoader loader)
         {
             _entity.Save(file);
         }
 
-        public void Load(string file)
+        public void Load(string file, FileLoaders.IFileLoader loader)
         {
             if (System.IO.File.Exists(file))
             {

@@ -24,6 +24,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Editors\IEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\SceneEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EntityBrush.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Entity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\IFileLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Scene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\TextFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\TextSurface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Game1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameHelpers\GameObjectMeta.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HSLColor.cs" />

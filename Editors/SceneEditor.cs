@@ -18,6 +18,8 @@ namespace SadConsoleEditor.Editors
     {
         private int _width;
         private int _height;
+        private List<FileLoaders.IFileLoader> loadersLoad;
+        private List<FileLoaders.IFileLoader> loadersSave;
         public GameObject _selectedEntity;
         private Console _consoleLayers;
 
@@ -43,9 +45,9 @@ namespace SadConsoleEditor.Editors
 
         public string Title { get { return "Scene Maker"; } }
 
-        public string FileExtensionsLoad { get { return "*.scene"; } }
+        public IEnumerable<FileLoaders.IFileLoader> FileExtensionsLoad { get { return loadersLoad; } }
 
-        public string FileExtensionsSave { get { return "*.scene"; } }
+        public IEnumerable<FileLoaders.IFileLoader> FileExtensionsSave { get { return loadersSave; } }
 
         public CustomPanel[] ControlPanels { get; private set; }
 
@@ -73,18 +75,34 @@ namespace SadConsoleEditor.Editors
 
         public SceneEditor()
         {
-            _consoleLayers = new Console(new LayeredTextSurface(10, 10, 2));
+            loadersSave = new List<FileLoaders.IFileLoader>() { new FileLoaders.Scene() };
+            loadersLoad = new List<FileLoaders.IFileLoader>(loadersSave);
+            _consoleLayers = new Console(20, 25);
             _consoleLayers.Renderer = new LayeredTextRenderer();
             EntityPanel = new Panels.EntityManagementPanel();
             AnimationsPanel = new Panels.Scene.AnimationListPanel();
+            Entities = new GameObjectCollection();
+            LinkedGameObjects = new Dictionary<GameObject, GameObject>();
             Reset();
         }
 
 
         public void Reset()
         {
-            Entities = new SadConsole.Game.GameObjectCollection();
-            //Entities = new List<SadConsole.Game.GameObject>();
+            Entities.Clear();
+
+            List<IEditor> docs = new List<IEditor>();
+
+            foreach (var doc in EditorConsoleManager.Instance.Documents)
+                if (doc is EntityEditor)
+                    if (((EntityEditor)doc).LinkedEditor == this)
+                        docs.Add(doc);
+
+            LinkedGameObjects.Clear();
+
+            foreach (var doc in docs)
+                EditorConsoleManager.Instance.CloseDocument(doc);
+            
             ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, EditorConsoleManager.Instance.ToolPane.LayersPanel, EntityPanel, AnimationsPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
 
             if (_consoleLayers != null)
@@ -282,7 +300,7 @@ namespace SadConsoleEditor.Editors
             }
         }
 
-        public void Save(string file)
+        public void Save(string file, FileLoaders.IFileLoader loader)
         {
             ((LayeredTextSurface)_consoleLayers.TextSurface).Save(file, typeof(LayerMetadata));
 
@@ -291,10 +309,15 @@ namespace SadConsoleEditor.Editors
             SadConsole.Serializer.Save(objects, file + ".objects");
         }
 
-        public void Load(string file)
+        public void Load(string file, FileLoaders.IFileLoader loader)
         {
             if (System.IO.File.Exists(file))
             {
+                Reset();
+
+                EntityPanel.RebuildListBox();
+                AnimationsPanel.RebuildListBox();
+
                 if (_consoleLayers != null)
                 {
                     _consoleLayers.MouseMove -= _mouseMoveHandler;
@@ -303,18 +326,16 @@ namespace SadConsoleEditor.Editors
                 }
 
                 // Support REXPaint
-                if (file.EndsWith(".xp"))
-                {
-                    using (var filestream = new FileStream(file, FileMode.Open))
-                        _consoleLayers.TextSurface = SadConsole.Readers.REXPaint.Image.Load(filestream).ToTextSurface();
-                }
-                else
-                {
-                    // TODO: Is there an API to load the JSON and examine it? Do that and see what the root type is
-                    // then deserialize it into the appropriate type.
-
-                    _consoleLayers.TextSurface = LayeredTextSurface.Load(file, typeof(LayerMetadata));
-                }
+                //if (file.EndsWith(".xp"))
+                //{
+                //    using (var filestream = new FileStream(file, FileMode.Open))
+                //        _consoleLayers.TextSurface = SadConsole.Readers.REXPaint.Image.Load(filestream).ToTextSurface();
+                //}
+                //else
+                //{
+                loader = new FileLoaders.Scene();
+                _consoleLayers.TextSurface = loader.Load(file);
+                //}
 
                 _consoleLayers.TextSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
 
