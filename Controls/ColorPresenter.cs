@@ -34,7 +34,7 @@
 
         private Color _selectedColor;
         private string _title;
-        private Windows.ColorPickerPopup _popup;
+        //private Windows.ColorPickerPopup _popup;
         private int _character;
         private Color _characterColor;
 
@@ -44,12 +44,12 @@
             textSurface.DefaultForeground = foreground;
             Clear();
             _title = title;
-            _popup = new Windows.ColorPickerPopup();
-            _popup.Closed += (o, e) =>
-                {
-                    if (_popup.DialogResult)
-                        SelectedColor = _popup.SelectedColor;
-                };
+            //_popup = new Windows.ColorPickerPopup();
+            //_popup.Closed += (o, e) =>
+            //    {
+            //        if (_popup.DialogResult)
+            //            SelectedColor = _popup.SelectedColor;
+            //    };
         }
 
         public override void Compose()
@@ -78,8 +78,8 @@
                 var location = this.TransformConsolePositionByControlPosition(info);
                 if (location.X >= Width - 3)
                 {
-                    _popup.SelectedColor = _selectedColor;
-                    _popup.Show(true);
+                    //_popup.SelectedColor = _selectedColor;
+                    //_popup.Show(true);
                     base.OnLeftMouseClicked(info);
                 }
             }

@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace SadConsoleEditor.Consoles
 {
-    class BorderRenderer: SadConsole.Consoles.Console
+    class BorderConsole: SadConsole.Consoles.Console
     {
-        public BorderRenderer(int width, int height): base(width, height)
+        public BorderConsole(int width, int height): base(width, height)
         {
             textSurface.Font = Settings.Config.ScreenFont;
             Renderer = new CachedTextSurfaceRenderer(textSurface);

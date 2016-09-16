@@ -7,7 +7,7 @@ using SadConsole;
 using Microsoft.Xna.Framework;
 using SadConsole.Consoles;
 
-namespace SadEditor.Controls
+namespace SadConsoleEditor.Controls
 {
     internal class FileDirectoryListbox : ListBox<FileDirectoryListboxItem>
     {

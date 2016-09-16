@@ -37,6 +37,9 @@ namespace SadConsoleEditor
         [DataMember]
         public WindowSettings ColorPickerSettings;
 
+        [DataMember]
+        public int ToolPaneWidth;
+
         public Font ScreenFont;
     }
     [DataContract]

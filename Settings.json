@@ -53,12 +53,13 @@
     "DefaultHeight": 50,
     "DefaultWidth": 60
   },
-  "ProgramFontFile": "Cheepicus12.font",
+  "ProgramFontFile": "Editor.font",
   "ScreenFontFile": "Cheepicus12.font",
-  "WindowHeight": 65,
-  "WindowWidth": 95,
+  "WindowHeight": 50,
+  "WindowWidth": 150,
   "ColorPickerSettings": {
     "WindowWidth": 50,
     "WindowHeight": 40
-  }
+  },
+  "ToolPaneWidth": 35
 }

@@ -29,16 +29,11 @@ namespace SadConsoleEditor
 
             // Hook the start event so we can add consoles to the system.
             SadConsole.Engine.EngineStart += Engine_EngineStart;
-
-            // Hook the update event that happens each frame so we can trap keys and respond.
-            //SadConsole.Engine.EngineUpdated += Engine_EngineUpdated;
-
-            //SadConsole.Engine.EngineDrawFrame += Engine_EngineDrawFrame;
-
+            
             // Start the game.
             SadConsole.Engine.Run();
         }
-
+        
         private static void Engine_EngineStart(object sender, EventArgs e)
         {
             SadConsole.Engine.MonoGameInstance.Window.Title = "SadConsole Editor - v" + System.Reflection.Assembly.GetCallingAssembly().GetName().Version.ToString();
@@ -54,13 +49,11 @@ namespace SadConsoleEditor
             // Helper editor for any text surface
             Settings.QuickEditor = new SadConsole.Consoles.SurfaceEditor(new SadConsole.Consoles.TextSurface(10, 10, SadConsole.Engine.DefaultFont));
 
-            // Setup system to run
-            SadConsole.Engine.ConsoleRenderStack = EditorConsoleManager.Instance;
-            SadConsole.Engine.ActiveConsole = EditorConsoleManager.Instance;
-
             // Start
             SadConsole.Libraries.GameHelpers.Initialize();
-            EditorConsoleManager.Instance.ShowNewConsolePopup(false);
+
+            // Setup system to run
+            EditorConsoleManager.Initialize();
         }
     }
 #endif

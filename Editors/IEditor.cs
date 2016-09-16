@@ -7,12 +7,57 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SadConsoleEditor.Panels;
+//using SadConsoleEditor.Panels;
 using SadConsoleEditor.FileLoaders;
 
 namespace SadConsoleEditor.Editors
 {
+    public enum Editors
+    {
+        Console,
+        GameObject,
+        Scene,
+        GUI
+    }
+
     public interface IEditor
+    {
+        EditorSettings Settings { get; }
+
+        Editors EditorType { get; }
+
+        string EditorTypeName { get; }
+
+        int Width { get; }
+
+        int Height { get; }
+
+        string DocumentTitle { get; }
+
+        Point Position { get; }
+
+        void Render();
+
+        void Update();
+
+        void Move(int x, int y);
+
+        void New(Color foreground, Color background, int width, int height);
+
+        void Load(string file, IFileLoader loader);
+
+        void Save(string file, IFileLoader loader);
+
+        void Reset();
+
+        void OnSelected();
+
+        void OnDeselected();
+
+        void OnClosed();
+    }
+
+    public interface IEditor2
     {
         EditorSettings Settings { get; }
 
@@ -36,7 +81,7 @@ namespace SadConsoleEditor.Editors
 
         ITextSurface Surface { get; }
 
-        CustomPanel[] ControlPanels { get; }
+        //CustomPanel[] ControlPanels { get; }
 
         void ProcessKeyboard(KeyboardInfo info);
 

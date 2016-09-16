@@ -32,7 +32,7 @@ namespace SadConsoleEditor.Consoles
 			set { charBackground = value; Redraw(); }
 		}
 
-		public QuickSelectPane() : base(Settings.Config.WindowWidth - 21, 3)
+		public QuickSelectPane() : base(Settings.Config.WindowWidth - Settings.Config.ToolPaneWidth, 3)
 		{
 			textSurface.DefaultBackground = Settings.Color_MenuBack;
 			textSurface.DefaultForeground = Settings.Color_TitleText;
@@ -115,7 +115,7 @@ namespace SadConsoleEditor.Consoles
 				{
 					if (key == keys[i])
 					{
-						EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter = Characters[i];
+						//EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter = Characters[i];
                         return true;
 					}
 				}
@@ -126,8 +126,8 @@ namespace SadConsoleEditor.Consoles
 
 		public void CommonCharacterPickerPanel_ChangedHandler(object sender, EventArgs e)
 		{
-			CharacterForeground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground;
-			CharacterBackground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground;
+			//CharacterForeground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground;
+			//CharacterBackground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground;
 		}
 	}
 }

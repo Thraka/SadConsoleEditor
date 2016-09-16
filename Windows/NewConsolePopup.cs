@@ -33,7 +33,7 @@ namespace SadConsoleEditor.Windows
         public bool AllowCancel { set { _cancelButton.IsEnabled = value; } }
         #endregion
 
-        public NewConsolePopup() : base(30, 14)
+        public NewConsolePopup() : base(40, 14)
         {
             //this.DefaultShowPosition = StartupPosition.CenterScreen;
             Title = "New Console";
@@ -62,7 +62,7 @@ namespace SadConsoleEditor.Windows
             Print(2, 7, "Width");
             Print(2, 8, "Height");
 
-            _editorsListBox = new ListBox(19, 4)
+            _editorsListBox = new ListBox(Width - 11, 4)
             {
                 Position = new Point(9, 2),
                 HideBorder = true
@@ -108,19 +108,19 @@ namespace SadConsoleEditor.Windows
             Add(_backgroundPicker);
             //Add(_name);
 
-            foreach (var editor in EditorConsoleManager.Instance.Editors)
-                _editorsListBox.Items.Add(editor.Value);
+            foreach (var editor in EditorConsoleManager.Editors.Keys)
+                _editorsListBox.Items.Add(editor);
 
             _editorsListBox.SelectedItem = _editorsListBox.Items[0];
         }
 
         private void editorsListBox_SelectedItemChanged(object sender, ListBox<ListBoxItem>.SelectedItemEventArgs e)
         {
-            Editor = (Editors.IEditor)_editorsListBox.SelectedItem;
-            _widthBox.Text = Editor.Settings.DefaultWidth.ToString();
-            _heightBox.Text = Editor.Settings.DefaultHeight.ToString();
-            _foregroundPicker.SelectedColor = Editor.Settings.DefaultForeground;
-            _backgroundPicker.SelectedColor = Editor.Settings.DefaultBackground;
+            //Editor = (Editors.IEditor)_editorsListBox.SelectedItem;
+            //_widthBox.Text = Editor.Settings.DefaultWidth.ToString();
+            //_heightBox.Text = Editor.Settings.DefaultHeight.ToString();
+            //_foregroundPicker.SelectedColor = Editor.Settings.DefaultForeground;
+            //_backgroundPicker.SelectedColor = Editor.Settings.DefaultBackground;
         }
 
         void _cancelButton_Action(object sender, EventArgs e)
