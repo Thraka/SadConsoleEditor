@@ -59,7 +59,11 @@ namespace SadConsoleEditor
             Editors.Add("User Interface Console", SadConsoleEditor.Editors.Editors.GUI);
 
             // Show new window
+            ShowStartup();
+        }
 
+        private static void ShowStartup()
+        {
             Window.Prompt("Create new or open existing?", "New", "Open",
             (b) =>
             {
@@ -68,20 +72,19 @@ namespace SadConsoleEditor
                     Windows.NewConsolePopup popup = new Windows.NewConsolePopup();
                     popup.Center();
                     popup.AllowCancel = false;
-                    popup.Closed += (s, e) => { };
+                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); };
                     popup.Show(true);
                 }
                 else
                 {
                     Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
-                    popup.AllowCancel = false;
-                    popup.Closed += (s, e) => { };
-                    popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.TextSurface(), new FileLoaders.Scene(), new FileLoaders.Entity() };
+                    popup.Center();
+                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); };
+                    popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface(), new FileLoaders.Scene(), new FileLoaders.Entity() };
                     popup.Show(true);
                 }
 
             });
-
         }
 
         public static void UpdateBorder(Point position)

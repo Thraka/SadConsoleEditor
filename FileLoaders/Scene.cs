@@ -33,13 +33,13 @@ namespace SadConsoleEditor.FileLoaders
 
             }
 
-            return LayeredTextSurface.Load(file, typeof(LayerMetadata));
+            return SadConsole.Consoles.LayeredTextSurface.Load(file, typeof(LayerMetadata));
         }
 
         public void Save(ITextSurfaceRendered surface, string file)
         {
-            if (surface is LayeredTextSurface)
-                ((LayeredTextSurface)surface).Save(file, typeof(LayerMetadata));
+            if (surface is SadConsole.Consoles.LayeredTextSurface)
+                ((SadConsole.Consoles.LayeredTextSurface)surface).Save(file, typeof(LayerMetadata));
         }
     }
 }

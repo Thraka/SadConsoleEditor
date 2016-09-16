@@ -44,7 +44,7 @@ namespace SadConsoleEditor.Windows
 
         public bool AllowCancel
         {
-            set { cancelButton.IsEnabled = !value; }
+            set { cancelButton.IsEnabled = value; }
         }
 
         public IEnumerable<FileLoaders.IFileLoader> FileLoaderTypes
@@ -77,39 +77,49 @@ namespace SadConsoleEditor.Windows
             : base(70, 30)
         {
             Title = "Select File";
-            directoryListBox = new SadConsoleEditor.Controls.FileDirectoryListbox(this.TextSurface.Width - 2, this.TextSurface.Height - 5)
+
+            fileLoadersList = new ListBox<FileLoaderListBoxItem>(15, Height - 7);
+            fileLoadersList.Position = new Point(2, 4);
+            fileLoadersList.SelectedItemChanged += FileLoadersList_SelectedItemChanged;
+            fileLoadersList.HideBorder = true;
+            Print(fileLoadersList.Bounds.Left, fileLoadersList.Bounds.Top - 2, "Type of file", Settings.Color_TitleText);
+            Print(fileLoadersList.Bounds.Left, fileLoadersList.Bounds.Top - 1, new string((char)196, fileLoadersList.Width));
+
+            directoryListBox = new SadConsoleEditor.Controls.FileDirectoryListbox(this.TextSurface.Width - fileLoadersList.Bounds.Right - 3, Height - 10)
             {
-                Position = new Point(1, 1),
+                Position = new Point(fileLoadersList.Bounds.Right + 1, fileLoadersList.Bounds.Top),
                 HideBorder = true
             };
             directoryListBox.HighlightedExtentions = ".con;.console;.brush";
             directoryListBox.SelectedItemChanged += _directoryListBox_SelectedItemChanged;
             directoryListBox.SelectedItemExecuted += _directoryListBox_SelectedItemExecuted;
+            directoryListBox.CurrentFolder = Environment.CurrentDirectory;
+            //directoryListBox.HideBorder = true;
 
-            fileName = new InputBox(this.TextSurface.Width - 11)
+            Print(directoryListBox.Bounds.Left, directoryListBox.Bounds.Top - 2, "Files/Directories", Settings.Color_TitleText);
+            Print(directoryListBox.Bounds.Left, directoryListBox.Bounds.Top - 1, new string((char)196, directoryListBox.Width));
+
+            fileName = new InputBox(directoryListBox.Width)
             {
-                Position = new Point(2, this.TextSurface.Height - 3),
+                Position = new Point(directoryListBox.Bounds.Left, directoryListBox.Bounds.Bottom + 2),
             };
             fileName.TextChanged += _fileName_TextChanged;
+            Print(fileName.Bounds.Left, fileName.Bounds.Top - 1, "Selected file", Settings.Color_TitleText);
 
-            selectButton = new Button(6, 1)
+            selectButton = new Button(8, 1)
             {
                 Text = "Open",
-                Position = new Point(this.TextSurface.Width - 8, this.TextSurface.Height - 3),
+                Position = new Point(Width - 10, this.TextSurface.Height - 2),
                 IsEnabled = false
             };
             selectButton.ButtonClicked += new EventHandler(_selectButton_Action);
 
-            cancelButton = new Button(6, 1)
+            cancelButton = new Button(8, 1)
             {
                 Text = "Cancel",
-                Position = new Point(this.TextSurface.Width - 8, this.TextSurface.Height - 2)
+                Position = new Point(2, this.TextSurface.Height - 2)
             };
             cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
-
-            fileLoadersList = new ListBox<FileLoaderListBoxItem>(15, Height - 2);
-            fileLoadersList.Position = new Point(1, 1);
-            fileLoadersList.SelectedItemChanged += FileLoadersList_SelectedItemChanged;
 
             Add(directoryListBox);
             Add(fileName);
@@ -127,7 +137,8 @@ namespace SadConsoleEditor.Windows
                     filters.Add($"*.{ext};");
 
                 fileFilterString = string.Concat(filters);
-                directoryListBox.HighlightedExtentions = fileFilterString.Replace("*", "");
+                directoryListBox.FileFilter = fileFilterString;
+                Print(fileName.Bounds.Left, fileName.Bounds.Bottom, fileFilterString.Replace("*", ""));
             }
         }
         #endregion

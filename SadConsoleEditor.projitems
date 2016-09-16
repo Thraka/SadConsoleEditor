@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\IFileLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Scene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\TextFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\LayeredTextSurface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\TextSurface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HSLColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
