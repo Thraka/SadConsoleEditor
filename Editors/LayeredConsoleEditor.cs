@@ -22,8 +22,6 @@ namespace SadConsoleEditor.Editors
 
         public Point Position { get { return consoleWrapper.Position; } }
 
-        public EditorSettings Settings { get; private set; }
-
         public int Width { get { return textSurface.Width; } }
 
         public LayeredConsoleEditor()
@@ -47,7 +45,8 @@ namespace SadConsoleEditor.Editors
             consoleWrapper.TextSurface = textSurface;
 
             // Update the border
-            EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            if (EditorConsoleManager.ActiveEditor == this)
+                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
         }
 
         public void Load(string file, FileLoaders.IFileLoader loader)
@@ -71,7 +70,8 @@ namespace SadConsoleEditor.Editors
                 consoleWrapper.TextSurface = textSurface;
 
                 // Update the border
-                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+                if (EditorConsoleManager.ActiveEditor == this)
+                    EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
             }
         }
 
@@ -87,7 +87,9 @@ namespace SadConsoleEditor.Editors
         public void Move(int x, int y)
         {
             consoleWrapper.Position = new Point(x, y);
-            EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+
+            if (EditorConsoleManager.ActiveEditor == this)
+                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
 
             //TODO: Offest brush
         }

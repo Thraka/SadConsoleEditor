@@ -66,6 +66,8 @@ namespace SadConsoleEditor.Windows
 
         public string SelectedFile { get; private set; }
 
+        public FileLoaders.IFileLoader SelectedLoader { get; private set; }
+
         public bool SkipFileExistCheck { get; set; }
 
         public string SelectButtonText { get { return selectButton.Text; } set { selectButton.Text = value; } }
@@ -138,7 +140,9 @@ namespace SadConsoleEditor.Windows
 
                 fileFilterString = string.Concat(filters);
                 directoryListBox.FileFilter = fileFilterString;
-                Print(fileName.Bounds.Left, fileName.Bounds.Bottom, fileFilterString.Replace("*", ""));
+                Print(fileName.Bounds.Left, fileName.Bounds.Bottom, fileFilterString.Replace("*", "").Replace(";", " "));
+
+                SelectedLoader = (FileLoaders.IFileLoader)e.Item;
             }
         }
         #endregion

@@ -22,8 +22,6 @@ namespace SadConsoleEditor.Editors
 
     public interface IEditor
     {
-        EditorSettings Settings { get; }
-
         Editors EditorType { get; }
 
         string EditorTypeName { get; }

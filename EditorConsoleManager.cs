@@ -17,7 +17,10 @@ namespace SadConsoleEditor
         public static Dictionary<Type, FileLoaders.IFileLoader[]> EditorFileTypes;
         public static Dictionary<string, Editors.Editors> Editors;
 
-        public static Editors.IEditor ActiveEditor;
+        public static List<Editors.IEditor> OpenEditors;
+
+        public static Editors.IEditor ActiveEditor { get; private set; }
+
 
         public static void Initialize()
         {
@@ -45,10 +48,10 @@ namespace SadConsoleEditor
             // Add the consoles to the main console list
             Consoles.Add(topBarPane);
             Consoles.Add(quickSelectPane);
-            Consoles.Add(borderConsole);
 
             // Setup the file types for base editors.
             EditorFileTypes = new Dictionary<Type, FileLoaders.IFileLoader[]>(3);
+            OpenEditors = new List<SadConsoleEditor.Editors.IEditor>();
             //EditorFileTypes.Add(typeof(Editors.DrawingEditor), new FileLoaders.IFileLoader[] { new FileLoaders.TextSurface() });
 
             // Add valid editors
@@ -71,21 +74,71 @@ namespace SadConsoleEditor
                 {
                     Windows.NewConsolePopup popup = new Windows.NewConsolePopup();
                     popup.Center();
-                    popup.AllowCancel = false;
-                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); };
+                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else HandleStartupNew(popup.Editor, popup.SettingWidth, popup.SettingHeight); };
                     popup.Show(true);
                 }
                 else
                 {
                     Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
                     popup.Center();
-                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); };
+                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else HandleStartupLoad(popup.SelectedFile, popup.SelectedLoader); };
                     popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface(), new FileLoaders.Scene(), new FileLoaders.Entity() };
                     popup.Show(true);
                 }
 
             });
         }
+
+        
+        private static void HandleStartupNew(Editors.Editors editorType, int width, int height)
+        {
+            Editors.IEditor editor = null;
+
+            switch (editorType)
+            {
+                case SadConsoleEditor.Editors.Editors.Console:
+                    editor = new Editors.LayeredConsoleEditor();
+                    editor.New(Color.White, Color.Transparent, width, height);
+                    break;
+                case SadConsoleEditor.Editors.Editors.GameObject:
+                    break;
+                case SadConsoleEditor.Editors.Editors.Scene:
+                    break;
+                case SadConsoleEditor.Editors.Editors.GUI:
+                    break;
+                default:
+                    break;
+            }
+
+            if (editor != null)
+            {
+                AddEditor(editor, true);
+            }
+        }
+
+        private static void HandleStartupLoad(string file, FileLoaders.IFileLoader loader)
+        {
+
+        }
+
+        public static void AddEditor(Editors.IEditor editor, bool show)
+        {
+            OpenEditors.Add(editor);
+
+            if (show)
+                ChangeActiveEditor(editor);
+        }
+
+        public static void ChangeActiveEditor(Editors.IEditor editor)
+        {
+            if (OpenEditors.Contains(editor))
+            {
+                ActiveEditor = editor;
+                CenterEditor();
+                UpdateBorder(editor.Position);
+            }
+        }
+
 
         public static void UpdateBorder(Point position)
         {
@@ -116,7 +169,10 @@ namespace SadConsoleEditor
 
         private static void Engine_EngineDrawFrame(object sender, EventArgs e)
         {
-
+            if (ActiveEditor != null)
+            {
+                borderConsole.Render();
+            }
         }
 
         private static void Engine_EngineUpdated(object sender, EventArgs e)
