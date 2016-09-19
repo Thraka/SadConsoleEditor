@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using SadConsole.Consoles;
 using Console = SadConsole.Consoles.Console;
+using SadConsoleEditor.Panels;
 
 namespace SadConsoleEditor.Editors
 {
@@ -11,6 +12,7 @@ namespace SadConsoleEditor.Editors
     {
         private LayeredTextSurface textSurface;
         private Console consoleWrapper;
+        private CustomPanel[] panels;
 
         public string DocumentTitle { get; set; }
 
@@ -24,10 +26,14 @@ namespace SadConsoleEditor.Editors
 
         public int Width { get { return textSurface.Width; } }
 
+        public CustomPanel[] Panels { get { return panels; } }
+
         public LayeredConsoleEditor()
         {
             consoleWrapper = new Console(1, 1);
             consoleWrapper.Renderer = new LayeredTextRenderer();
+
+            panels = new CustomPanel[] {  };
         }
 
         public void New(Color foreground, Color background, int width, int height)

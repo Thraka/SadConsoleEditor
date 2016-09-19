@@ -21,6 +21,9 @@ namespace SadConsoleEditor
 
         public static Editors.IEditor ActiveEditor { get; private set; }
 
+        public static Consoles.ToolPane ToolsPane { get; private set; }
+
+        public static SadConsole.Controls.ScrollBar ToolsPaneScroller { get; private set; }
 
         public static void Initialize()
         {
@@ -45,9 +48,29 @@ namespace SadConsoleEditor
 
             borderConsole = new SadConsoleEditor.Consoles.BorderConsole(10, 10);
 
+            ToolsPane = new Consoles.ToolPane();
+            ToolsPane.Position = new Point(Settings.Config.WindowWidth - ToolsPane.Width - 1, 1);
+
+            // Scroll bar for toolpane
+            // Create scrollbar
+            ToolsPaneScroller = SadConsole.Controls.ScrollBar.Create(System.Windows.Controls.Orientation.Vertical, Settings.Config.WindowHeight - 1);
+            ToolsPaneScroller.Maximum = ToolsPane.TextSurface.Height - Settings.Config.WindowHeight;
+            ToolsPaneScroller.ValueChanged += (o, e) =>
+            {
+                ToolsPane.TextSurface.RenderArea = new Rectangle(0, ToolsPaneScroller.Value, ToolsPane.Width, Settings.Config.WindowHeight);
+            };
+            var scrollerContainer = new ControlsConsole(1, ToolsPaneScroller.Height);
+            scrollerContainer.Add(ToolsPaneScroller);
+            scrollerContainer.Position = new Point(Settings.Config.WindowWidth - 1, 1);
+            scrollerContainer.IsVisible = true;
+            scrollerContainer.MouseCanFocus = false;
+            scrollerContainer.ProcessMouseWithoutFocus = true;
+
             // Add the consoles to the main console list
             Consoles.Add(topBarPane);
             Consoles.Add(quickSelectPane);
+            Consoles.Add(ToolsPane);
+            Consoles.Add(scrollerContainer);
 
             // Setup the file types for base editors.
             EditorFileTypes = new Dictionary<Type, FileLoaders.IFileLoader[]>(3);
@@ -136,6 +159,7 @@ namespace SadConsoleEditor
                 ActiveEditor = editor;
                 CenterEditor();
                 UpdateBorder(editor.Position);
+                ToolsPane.RedrawPanels();
             }
         }
 

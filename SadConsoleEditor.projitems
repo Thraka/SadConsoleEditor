@@ -11,6 +11,10 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Consoles\BorderConsole.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Consoles\QuickSelectPane.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Consoles\ToolPane.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\CharacterPicker.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ColorBar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ColorPicker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ColorPresenter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\FileDirectoryListbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EditorConsoleManager.cs" />
@@ -23,9 +27,18 @@
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\LayeredTextSurface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\TextSurface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HSLColor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\CharacterPickPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\CustomPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\FilesPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolsPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\DrawTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\ITool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\CharacterQuickSelectPopup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\ColorPickerPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\NewConsolePopup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\OtherColorsPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\SelectFilePopup.cs" />
   </ItemGroup>
   <ItemGroup>

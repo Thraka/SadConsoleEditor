@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 //using SadConsoleEditor.Panels;
 using SadConsoleEditor.FileLoaders;
+using SadConsoleEditor.Panels;
 
 namespace SadConsoleEditor.Editors
 {
@@ -25,6 +26,8 @@ namespace SadConsoleEditor.Editors
         Editors EditorType { get; }
 
         string EditorTypeName { get; }
+
+        CustomPanel[] Panels { get; }
 
         int Width { get; }
 
