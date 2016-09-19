@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using SadConsole;
+using SadConsole.Consoles;
 using SadConsole.Controls;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace SadConsoleEditor.Panels
         public Button CloseButton;
 
         private DrawingSurface documentsTitle;
-        public ListBox DocumentsListbox;
+        public ListBox<EditorListBoxItem> DocumentsListbox;
 
         public FilesPanel()
         {
@@ -26,17 +27,16 @@ namespace SadConsoleEditor.Panels
 
             NewButton = new Button(7, 1)
             {
-                Text = " New",
-                TextAlignment = System.Windows.HorizontalAlignment.Left,
+                Text = "New",
                 CanUseKeyboard = false,
             };
-            //NewButton.ButtonClicked += (o, e) => EditorConsoleManager.ShowNewConsolePopup(true);
+            NewButton.ButtonClicked += (o, e) => EditorConsoleManager.ShowNewEditorPopup();
 
             LoadButton = new Button(8, 1)
             {
                 Text = "Load",
             };
-            //LoadButton.ButtonClicked += (o, e) => EditorConsoleManager.LoadSurface();
+            LoadButton.ButtonClicked += (o, e) => EditorConsoleManager.ShowLoadEditorPopup();
 
             SaveButton = new Button(8, 1)
             {
@@ -54,9 +54,9 @@ namespace SadConsoleEditor.Panels
             {
                 Text = "Close",
             };
-            //CloseButton.ButtonClicked += (o, e) => EditorConsoleManager.ShowCloseConsolePopup();
+            CloseButton.ButtonClicked += (o, e) => EditorConsoleManager.ShowCloseConsolePopup();
 
-            DocumentsListbox = new ListBox(Consoles.ToolPane.PanelWidth - 2, 6);
+            DocumentsListbox = new ListBox<EditorListBoxItem>(Consoles.ToolPane.PanelWidth - 2, 6);
             DocumentsListbox.HideBorder = true;
             DocumentsListbox.CompareByReference = true;
 
@@ -71,9 +71,15 @@ namespace SadConsoleEditor.Panels
 
         }
 
-        private void DocumentsListbox_SelectedItemChanged(object sender, ListBox<ListBoxItem>.SelectedItemEventArgs e)
+        private void DocumentsListbox_SelectedItemChanged(object sender, ListBox<EditorListBoxItem>.SelectedItemEventArgs e)
         {
-            //EditorConsoleManager.Instance.ChangeEditor((Editors.IEditor)e.Item);
+            if (e.Item != null)
+            {
+                var editor = (Editors.IEditor)e.Item;
+                //EditorConsoleManager.Instance.ChangeEditor((Editors.IEditor)e.Item);
+                if (EditorConsoleManager.ActiveEditor != editor)
+                    EditorConsoleManager.ChangeActiveEditor(editor);
+            }
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseInfo info)
@@ -109,6 +115,21 @@ namespace SadConsoleEditor.Panels
         public override void Loaded()
         {
             
+        }
+
+        public class EditorListBoxItem : ListBoxItem
+        {
+            public override void Draw(ITextSurface surface, Rectangle area)
+            {
+                string value = ((Editors.IEditor)Item).EditorTypeName;
+                if (value.Length < area.Width)
+                    value += new string(' ', area.Width - value.Length);
+                else if (value.Length > area.Width)
+                    value = value.Substring(0, area.Width);
+                var editor = new SurfaceEditor(surface);
+                editor.Print(area.Left, area.Top, value, _currentAppearance);
+                _isDirty = false;
+            }
         }
     }
 }

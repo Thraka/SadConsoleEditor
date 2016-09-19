@@ -71,6 +71,7 @@ namespace SadConsoleEditor
             Consoles.Add(quickSelectPane);
             Consoles.Add(ToolsPane);
             Consoles.Add(scrollerContainer);
+            Consoles.Add(borderConsole);
 
             // Setup the file types for base editors.
             EditorFileTypes = new Dictionary<Type, FileLoaders.IFileLoader[]>(3);
@@ -97,14 +98,14 @@ namespace SadConsoleEditor
                 {
                     Windows.NewConsolePopup popup = new Windows.NewConsolePopup();
                     popup.Center();
-                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else HandleStartupNew(popup.Editor, popup.SettingWidth, popup.SettingHeight); };
+                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else CreateNewEditor(popup.Editor, popup.SettingWidth, popup.SettingHeight); };
                     popup.Show(true);
                 }
                 else
                 {
                     Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
                     popup.Center();
-                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else HandleStartupLoad(popup.SelectedFile, popup.SelectedLoader); };
+                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else LoadEditor(popup.SelectedFile, popup.SelectedLoader); };
                     popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface(), new FileLoaders.Scene(), new FileLoaders.Entity() };
                     popup.Show(true);
                 }
@@ -113,7 +114,7 @@ namespace SadConsoleEditor
         }
 
         
-        private static void HandleStartupNew(Editors.Editors editorType, int width, int height)
+        private static void CreateNewEditor(Editors.Editors editorType, int width, int height)
         {
             Editors.IEditor editor = null;
 
@@ -139,17 +140,56 @@ namespace SadConsoleEditor
             }
         }
 
-        private static void HandleStartupLoad(string file, FileLoaders.IFileLoader loader)
+        private static void LoadEditor(string file, FileLoaders.IFileLoader loader)
         {
 
+        }
+
+        public static void ShowCloseConsolePopup()
+        {
+            Window.Prompt(new SadConsole.ColoredString("Are you sure? You will lose any unsaved changes."), "Yes", "No", (r) =>
+            {
+                if (r)
+                    RemoveEditor(ActiveEditor);
+            });
+        }
+
+        public static void ShowNewEditorPopup()
+        {
+            Windows.NewConsolePopup popup = new Windows.NewConsolePopup();
+            popup.Center();
+            popup.Closed += (s, e) => { if (popup.DialogResult) CreateNewEditor(popup.Editor, popup.SettingWidth, popup.SettingHeight); };
+            popup.Show(true);
+        }
+
+        public static void ShowLoadEditorPopup()
+        {
+            Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
+            popup.Center();
+            popup.Closed += (s, e) => { if (popup.DialogResult) LoadEditor(popup.SelectedFile, popup.SelectedLoader); };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface(), new FileLoaders.Scene(), new FileLoaders.Entity() };
+            popup.Show(true);
         }
 
         public static void AddEditor(Editors.IEditor editor, bool show)
         {
             OpenEditors.Add(editor);
+            ToolsPane.PanelFiles.DocumentsListbox.Items.Add(editor);
 
             if (show)
                 ChangeActiveEditor(editor);
+        }
+
+        public static void RemoveEditor(Editors.IEditor editor)
+        {
+            ToolsPane.PanelFiles.DocumentsListbox.Items.Remove(editor);
+            OpenEditors.Remove(editor);
+            editor.OnClosed();
+
+            if (OpenEditors.Count == 0)
+                ShowStartup();
+            else
+                ChangeActiveEditor(OpenEditors[0]);
         }
 
         public static void ChangeActiveEditor(Editors.IEditor editor)
@@ -160,6 +200,9 @@ namespace SadConsoleEditor
                 CenterEditor();
                 UpdateBorder(editor.Position);
                 ToolsPane.RedrawPanels();
+
+                if (ToolsPane.PanelFiles.DocumentsListbox.SelectedItem != editor)
+                    ToolsPane.PanelFiles.DocumentsListbox.SelectedItem = editor;
             }
         }
 
@@ -167,8 +210,11 @@ namespace SadConsoleEditor
         public static void UpdateBorder(Point position)
         {
             if (borderConsole.Width != ActiveEditor.Width + 2 || borderConsole.Height != ActiveEditor.Height + 2)
+            {
+                Consoles.Remove(borderConsole);
                 borderConsole = new Consoles.BorderConsole(ActiveEditor.Width + 2, ActiveEditor.Height + 2);
-
+                Consoles.Add(borderConsole);
+            }
             borderConsole.Position = position - new Point(1, 1);
         }
 
@@ -193,10 +239,7 @@ namespace SadConsoleEditor
 
         private static void Engine_EngineDrawFrame(object sender, EventArgs e)
         {
-            if (ActiveEditor != null)
-            {
-                borderConsole.Render();
-            }
+            
         }
 
         private static void Engine_EngineUpdated(object sender, EventArgs e)
