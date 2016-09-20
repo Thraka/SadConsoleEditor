@@ -9,36 +9,36 @@ namespace SadConsoleEditor.Windows
 {
     class RenamePopup : SadConsole.Consoles.Window
     {
-        private Button _okButton;
-        private Button _cancelButton;
-        private InputBox _textBox;
+        private Button okButton;
+        private Button cancelButton;
+        private InputBox textBox;
 
-        public string NewName { get { return _textBox.Text; } }
+        public string NewName { get { return textBox.Text; } }
 
         public RenamePopup(string text, string title = "Rename") : base(22, 7)
         {
             Title = title;
 
-            _okButton = new Button(8, 1);
-            _cancelButton = new Button(8, 1);
-            _textBox = new InputBox(textSurface.Width - 4);
-            _textBox.Text = text;
+            okButton = new Button(8, 1);
+            cancelButton = new Button(8, 1);
+            textBox = new InputBox(textSurface.Width - 4);
+            textBox.Text = text;
 
-            _okButton.Position = new Microsoft.Xna.Framework.Point(textSurface.Width - _okButton.Width - 2, textSurface.Height - 3);
-            _cancelButton.Position = new Microsoft.Xna.Framework.Point(2, textSurface.Height - 3);
-            _textBox.Position = new Microsoft.Xna.Framework.Point(2, 2);
+            okButton.Position = new Microsoft.Xna.Framework.Point(textSurface.Width - okButton.Width - 2, textSurface.Height - 3);
+            cancelButton.Position = new Microsoft.Xna.Framework.Point(2, textSurface.Height - 3);
+            textBox.Position = new Microsoft.Xna.Framework.Point(2, 2);
 
-            _okButton.ButtonClicked += (o, e) => { DialogResult = true; Hide(); };
-            _cancelButton.ButtonClicked += (o, e) => { DialogResult = false; Hide(); };
+            okButton.ButtonClicked += (o, e) => { DialogResult = true; Hide(); };
+            cancelButton.ButtonClicked += (o, e) => { DialogResult = false; Hide(); };
 
-            _okButton.Text = "Ok";
-            _cancelButton.Text = "Cancel";
+            okButton.Text = "Ok";
+            cancelButton.Text = "Cancel";
 
-            Add(_okButton);
-            Add(_cancelButton);
-            Add(_textBox);
+            Add(okButton);
+            Add(cancelButton);
+            Add(textBox);
 
-            FocusedControl = _textBox;
+            FocusedControl = textBox;
         }
     }
 }

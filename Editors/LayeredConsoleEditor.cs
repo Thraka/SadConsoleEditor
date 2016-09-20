@@ -13,6 +13,7 @@ namespace SadConsoleEditor.Editors
         private LayeredTextSurface textSurface;
         private Console consoleWrapper;
         private CustomPanel[] panels;
+        private LayersPanel layerManagementPanel;
 
         public string DocumentTitle { get; set; }
 
@@ -33,7 +34,9 @@ namespace SadConsoleEditor.Editors
             consoleWrapper = new Console(1, 1);
             consoleWrapper.Renderer = new LayeredTextRenderer();
 
-            panels = new CustomPanel[] {  };
+            layerManagementPanel = new LayersPanel();
+
+            panels = new CustomPanel[] { layerManagementPanel };
         }
 
         public void New(Color foreground, Color background, int width, int height)

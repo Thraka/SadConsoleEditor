@@ -42,6 +42,7 @@ namespace SadConsoleEditor.Panels
             {
                 Text = "Save",
             };
+            
             //SaveButton.ButtonClicked += (o, e) => EditorConsoleManager.SaveSurface();
 
             ResizeButton = new Button(10, 1)

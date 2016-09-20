@@ -30,6 +30,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Panels\CharacterPickPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\CustomPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\FilesPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\LayersPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolsPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
@@ -39,6 +40,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Windows\ColorPickerPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\NewConsolePopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\OtherColorsPopup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\RenamePopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\SelectFilePopup.cs" />
   </ItemGroup>
   <ItemGroup>
