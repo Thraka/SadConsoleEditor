@@ -18,12 +18,42 @@ namespace SadConsoleEditor
         public static Dictionary<string, Editors.Editors> Editors;
 
         public static List<Editors.IEditor> OpenEditors;
+        private static string topBarLayerName = "None";
+        private static string topBarToolName = "None";
+        private static Point topBarMousePosition;
 
         public static Editors.IEditor ActiveEditor { get; private set; }
 
         public static Consoles.ToolPane ToolsPane { get; private set; }
 
         public static SadConsole.Controls.ScrollBar ToolsPaneScroller { get; private set; }
+
+        public static string LayerName
+        {
+            set
+            {
+                topBarLayerName = value;
+                RefreshBackingPanel();
+            }
+        }
+
+        public static string ToolName
+        {
+            set
+            {
+                topBarToolName = value;
+                RefreshBackingPanel();
+            }
+        }
+
+        public static Point SurfaceMouseLocation
+        {
+            set
+            {
+                topBarMousePosition = value;
+                RefreshBackingPanel();
+            }
+        }
 
         public static void Initialize()
         {
@@ -267,6 +297,18 @@ namespace SadConsoleEditor
                 position.Y = (screenSize.Y - ActiveEditor.Height) / 2;
 
             ActiveEditor.Move(position.X, position.Y);
+        }
+
+        private static void RefreshBackingPanel()
+        {
+            topBarPane.Clear();
+
+            var text = new SadConsole.ColoredString("   X: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarMousePosition.X.ToString(), Settings.Appearance_TextValue) +
+                       new SadConsole.ColoredString(" Y: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarMousePosition.Y.ToString(), Settings.Appearance_TextValue) +
+                       new SadConsole.ColoredString("   Layer: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarLayerName, Settings.Appearance_TextValue) +
+                       new SadConsole.ColoredString("   Tool: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarToolName, Settings.Appearance_TextValue);
+
+            topBarPane.Print(0, 0, text);
         }
 
         private static void Engine_EngineDrawFrame(object sender, EventArgs e)

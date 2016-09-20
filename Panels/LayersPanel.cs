@@ -32,36 +32,36 @@ namespace SadConsoleEditor.Panels
             _layers.SelectedItemChanged += _layers_SelectedItemChanged;
             _layers.CompareByReference = true;
 
-            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             removeSelected.Text = "Remove";
             removeSelected.ButtonClicked += _removeSelected_ButtonClicked;
 
-            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             moveSelectedUp.Text = "Move Up";
             moveSelectedUp.ButtonClicked += _moveSelectedUp_ButtonClicked;
 
-            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             moveSelectedDown.Text = "Move Down";
             moveSelectedDown.ButtonClicked += _moveSelectedDown_ButtonClicked;
 
-            toggleHideShow = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            toggleHideShow = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             toggleHideShow.Text = "Show/Hide";
             toggleHideShow.TextAlignment = System.Windows.HorizontalAlignment.Center;
             toggleHideShow.IsSelectedChanged += _toggleHideShow_IsSelectedChanged;
 
-            addNewLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            addNewLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             addNewLayer.Text = "Add New";
             addNewLayer.ButtonClicked += _addNewLayer_ButtonClicked;
 
-            renameLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            renameLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             renameLayer.Text = "Rename";
             renameLayer.ButtonClicked += _renameLayer_ButtonClicked;
 
-            addNewLayerFromFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            addNewLayerFromFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             addNewLayerFromFile.Text = "Load From File";
             addNewLayerFromFile.ButtonClicked += _addNewLayerFromFile_ButtonClicked;
 
-            saveLayerToFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            saveLayerToFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             saveLayerToFile.Text = "Save Layer to File";
             saveLayerToFile.ButtonClicked += saveLayerToFile_ButtonClicked;
 
@@ -73,6 +73,7 @@ namespace SadConsoleEditor.Panels
             this.surface = surface;
 
             // Do updates
+            RebuildListBox();
         }
 
         void saveLayerToFile_ButtonClicked(object sender, EventArgs e)
@@ -84,8 +85,8 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
-                    
-                    //EditorConsoleManager.Instance.SelectedEditor.SaveLayer(layer.Index, popup.SelectedFile);
+                    TextSurface newSurface = new TextSurface(surface.Width, surface.Height, layer.Cells);
+                    newSurface.Save(popup.SelectedFile);
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
@@ -103,10 +104,26 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
-                    //if (EditorConsoleManager.Instance.SelectedEditor.LoadLayer(popup.SelectedFile))
-                    //{
-                    //        RebuildListBox();
-                    //}
+                    TextSurface newSurface = TextSurface.Load(popup.SelectedFile);
+
+                    if (newSurface.Width != surface.Width || newSurface.Height != surface.Height)
+                    {
+                        var newLayer = surface.Add();
+                        LayerMetadata.Create("Loaded", true, true, true, newLayer);
+                        var tempSurface = new TextSurface(surface.Width, surface.Height,
+                                                          newLayer.Cells, surface.Font);
+                        newSurface.Copy(tempSurface);
+                        newLayer.Cells = tempSurface.Cells;
+                    }
+                    else
+                    {
+                        var layer = surface.Add();
+                        LayerMetadata.Create("Loaded", true, true, true, layer);
+                        layer.Cells = newSurface.Cells;
+
+                    }
+
+                    RebuildListBox();
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
@@ -128,7 +145,7 @@ namespace SadConsoleEditor.Panels
         void _moveSelectedDown_ButtonClicked(object sender, EventArgs e)
         {
             var layer = (LayeredTextSurface.Layer)_layers.SelectedItem;
-            //EditorConsoleManager.Instance.SelectedEditor.MoveLayerDown(layer.Index);
+            surface.Move(layer, layer.Index - 1);
             RebuildListBox();
             _layers.SelectedItem = layer;
         }
@@ -136,7 +153,7 @@ namespace SadConsoleEditor.Panels
         void _moveSelectedUp_ButtonClicked(object sender, EventArgs e)
         {
             var layer = (LayeredTextSurface.Layer)_layers.SelectedItem;
-            //EditorConsoleManager.Instance.SelectedEditor.MoveLayerUp(layer.Index);
+            surface.Move(layer, layer.Index + 1);
             RebuildListBox();
             _layers.SelectedItem = layer;
         }
@@ -144,7 +161,7 @@ namespace SadConsoleEditor.Panels
         void _removeSelected_ButtonClicked(object sender, EventArgs e)
         {
             var layer = (LayeredTextSurface.Layer)_layers.SelectedItem;
-            //EditorConsoleManager.Instance.SelectedEditor.RemoveLayer(layer.Index);
+            surface.Remove(layer);
             RebuildListBox();
             _layers.SelectedItem = _layers.Items[0];
         }
@@ -152,7 +169,7 @@ namespace SadConsoleEditor.Panels
         void _addNewLayer_ButtonClicked(object sender, EventArgs e)
         {
             var previouslySelected = _layers.SelectedItem;
-            //EditorConsoleManager.Instance.SelectedEditor.AddNewLayer("New");
+            LayerMetadata.Create("new", true, true, true, surface.Add());
             RebuildListBox();
             _layers.SelectedItem = previouslySelected;
         }
@@ -169,7 +186,7 @@ namespace SadConsoleEditor.Panels
             {
                 var layer = (LayeredTextSurface.Layer)_layers.SelectedItem;
                 var meta = (LayerMetadata)layer.Metadata;
-                
+
                 moveSelectedUp.IsEnabled = meta.IsMoveable && _layers.Items.Count != 1 && layer.Index != _layers.Items.Count - 1;
                 moveSelectedDown.IsEnabled = meta.IsMoveable && _layers.Items.Count != 1 && layer.Index != 0;
                 removeSelected.IsEnabled = meta.IsRemoveable && _layers.Items.Count != 1;
@@ -177,12 +194,11 @@ namespace SadConsoleEditor.Panels
 
                 toggleHideShow.IsSelected = layer.IsVisible;
 
-                //EditorConsoleManager.Instance.SelectedEditor.SetActiveLayer(layer.Index);
-
-                //EditorConsoleManager.Instance.LayerName = meta.Name;
+                surface.SetActiveLayer(layer.Index);
+                EditorConsoleManager.LayerName = meta.Name;
             }
-            //else
-                //EditorConsoleManager.Instance.LayerName = "None";
+            else
+                EditorConsoleManager.LayerName = "None";
         }
 
         void _toggleHideShow_IsSelectedChanged(object sender, EventArgs e)
@@ -196,13 +212,10 @@ namespace SadConsoleEditor.Panels
         {
             _layers.Items.Clear();
 
-            //var layers = (LayeredTextSurface)EditorConsoleManager.Instance.SelectedEditor.Surface;
+            for (int i = surface.LayerCount - 1; i >= 0; i--)
+                _layers.Items.Add(surface.GetLayer(i));
 
-
-            //for (int i = layers.LayerCount - 1; i >= 0 ; i--)
-            //    _layers.Items.Add(layers.GetLayer(i));
-
-            //_layers.SelectedItem = _layers.Items[0];
+            _layers.SelectedItem = _layers.Items[0];
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseInfo info)

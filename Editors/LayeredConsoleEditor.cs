@@ -52,6 +52,9 @@ namespace SadConsoleEditor.Editors
             textSurface.SetActiveLayer(0);
             textSurface.Font = Settings.Config.ScreenFont;
 
+            // Update the layer management panel
+            layerManagementPanel.SetLayeredTextSurface(textSurface);
+
             // Set the text surface as the one we're displaying
             consoleWrapper.TextSurface = textSurface;
 
@@ -76,7 +79,7 @@ namespace SadConsoleEditor.Editors
                 // Use the loaded surface
                 textSurface.ActiveLayer.Cells = surface.Cells;
                 textSurface.SetActiveLayer(0);
-
+                
                 // Set the text surface as the one we're displaying
                 consoleWrapper.TextSurface = textSurface;
 
@@ -94,6 +97,9 @@ namespace SadConsoleEditor.Editors
             }
 
             textSurface.Font = Settings.Config.ScreenFont;
+
+            // Update the layer management panel
+            layerManagementPanel.SetLayeredTextSurface(textSurface);
         }
 
         public void Save()
