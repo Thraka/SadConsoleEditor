@@ -28,6 +28,7 @@ namespace SadConsoleEditor.Editors
 
         public CustomPanel[] Panels { get { return panels; } }
 
+        public Console RenderedConsole { get { return consoleWrapper; } }
         public LayeredConsoleEditor()
         {
             consoleWrapper = new Console(1, 1);
@@ -46,6 +47,7 @@ namespace SadConsoleEditor.Editors
             // Update metadata
             LayerMetadata.Create("main", false, false, true, textSurface.GetLayer(0));
             textSurface.SetActiveLayer(0);
+            textSurface.Font = Settings.Config.ScreenFont;
 
             // Set the text surface as the one we're displaying
             consoleWrapper.TextSurface = textSurface;
@@ -79,10 +81,30 @@ namespace SadConsoleEditor.Editors
                 if (EditorConsoleManager.ActiveEditor == this)
                     EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
             }
+            else if (loader is FileLoaders.LayeredTextSurface)
+            {
+                textSurface = (LayeredTextSurface)loader.Load(file);
+                consoleWrapper.TextSurface = textSurface;
+
+                if (EditorConsoleManager.ActiveEditor == this)
+                    EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            }
+
+            textSurface.Font = Settings.Config.ScreenFont;
         }
 
-        public void Save(string file, FileLoaders.IFileLoader loader)
+        public void Save()
         {
+            var popup = new Windows.SelectFilePopup();
+            popup.Center();
+            popup.SkipFileExistCheck = true;
+            popup.Closed += (s, e) =>
+            {
+                if (popup.DialogResult)
+                    textSurface.Save(popup.SelectedFile, typeof(LayerMetadata));
+            };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface() };
+            popup.Show(true);
         }
 
         public void Reset()

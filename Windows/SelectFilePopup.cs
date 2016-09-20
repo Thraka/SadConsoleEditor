@@ -130,6 +130,8 @@ namespace SadConsoleEditor.Windows
             Add(fileLoadersList);
         }
 
+        #endregion
+
         private void FileLoadersList_SelectedItemChanged(object sender, ListBox<FileLoaderListBoxItem>.SelectedItemEventArgs e)
         {
             if (e.Item != null)
@@ -140,13 +142,12 @@ namespace SadConsoleEditor.Windows
 
                 fileFilterString = string.Concat(filters);
                 directoryListBox.FileFilter = fileFilterString;
+                Print(fileName.Bounds.Left, fileName.Bounds.Bottom, new string(' ', Width - fileName.Bounds.Left - 1));
                 Print(fileName.Bounds.Left, fileName.Bounds.Bottom, fileFilterString.Replace("*", "").Replace(";", " "));
 
                 SelectedLoader = (FileLoaders.IFileLoader)e.Item;
             }
         }
-        #endregion
-
         public override void Show(bool modal)
         {
             SelectedFile = "";
