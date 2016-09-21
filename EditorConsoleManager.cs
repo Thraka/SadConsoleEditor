@@ -10,9 +10,10 @@ namespace SadConsoleEditor
     static class EditorConsoleManager
     {
         private static ConsoleList Consoles;
-        private static Consoles.QuickSelectPane quickSelectPane;
+        public static Consoles.QuickSelectPane QuickSelectPane;
         private static Console topBarPane;
         private static Consoles.BorderConsole borderConsole;
+        private static ControlsConsole scrollerContainer;
 
         public static Dictionary<Type, FileLoaders.IFileLoader[]> EditorFileTypes;
         public static Dictionary<string, Editors.Editors> Editors;
@@ -21,6 +22,8 @@ namespace SadConsoleEditor
         private static string topBarLayerName = "None";
         private static string topBarToolName = "None";
         private static Point topBarMousePosition;
+
+        public static SadConsole.Game.GameObject Brush;
 
         public static Editors.IEditor ActiveEditor { get; private set; }
 
@@ -66,21 +69,23 @@ namespace SadConsoleEditor
             SadConsole.Engine.EngineDrawFrame += Engine_EngineDrawFrame;
 
             // Create the basic consoles
-            quickSelectPane = new SadConsoleEditor.Consoles.QuickSelectPane();
-            quickSelectPane.Position = new Point(0, Settings.Config.WindowHeight - quickSelectPane.TextSurface.Height);
-            quickSelectPane.Redraw();
-            quickSelectPane.IsVisible = true;
+            QuickSelectPane = new SadConsoleEditor.Consoles.QuickSelectPane();
+            QuickSelectPane.Position = new Point(0, Settings.Config.WindowHeight - QuickSelectPane.TextSurface.Height);
+            QuickSelectPane.Redraw();
+            QuickSelectPane.IsVisible = false;
 
             topBarPane = new SadConsole.Consoles.Console(Settings.Config.WindowWidth, 1);
             topBarPane.TextSurface.DefaultBackground = Settings.Color_MenuBack;
             topBarPane.Clear();
             topBarPane.MouseCanFocus = false;
+            topBarPane.IsVisible = false;
 
             borderConsole = new SadConsoleEditor.Consoles.BorderConsole(10, 10);
             borderConsole.IsVisible = false;
 
             ToolsPane = new Consoles.ToolPane();
             ToolsPane.Position = new Point(Settings.Config.WindowWidth - ToolsPane.Width - 1, 1);
+            ToolsPane.IsVisible = false;
 
             // Scroll bar for toolpane
             // Create scrollbar
@@ -90,16 +95,16 @@ namespace SadConsoleEditor
             {
                 ToolsPane.TextSurface.RenderArea = new Rectangle(0, ToolsPaneScroller.Value, ToolsPane.Width, Settings.Config.WindowHeight);
             };
-            var scrollerContainer = new ControlsConsole(1, ToolsPaneScroller.Height);
+            scrollerContainer = new ControlsConsole(1, ToolsPaneScroller.Height);
             scrollerContainer.Add(ToolsPaneScroller);
             scrollerContainer.Position = new Point(Settings.Config.WindowWidth - 1, 1);
-            scrollerContainer.IsVisible = true;
+            scrollerContainer.IsVisible = false;
             scrollerContainer.MouseCanFocus = false;
             scrollerContainer.ProcessMouseWithoutFocus = true;
 
             // Add the consoles to the main console list
             Consoles.Add(topBarPane);
-            Consoles.Add(quickSelectPane);
+            Consoles.Add(QuickSelectPane);
             Consoles.Add(ToolsPane);
             Consoles.Add(scrollerContainer);
             Consoles.Add(borderConsole);
@@ -169,6 +174,10 @@ namespace SadConsoleEditor
             {
                 AddEditor(editor, true);
             }
+
+            topBarPane.IsVisible = true;
+            ToolsPane.IsVisible = true;
+            scrollerContainer.IsVisible = true;
         }
 
         private static void LoadEditor(string file, FileLoaders.IFileLoader loader)
@@ -191,6 +200,10 @@ namespace SadConsoleEditor
 
             if (editor != null)
                 AddEditor(editor, true);
+
+            topBarPane.IsVisible = true;
+            ToolsPane.IsVisible = true;
+            scrollerContainer.IsVisible = true;
         }
 
         public static void ShowCloseConsolePopup()
@@ -311,14 +324,24 @@ namespace SadConsoleEditor
             topBarPane.Print(0, 0, text);
         }
 
+        public static void UpdateBrush()
+        {
+            if (Brush != null)
+            {
+                Brush.RenderOffset = ActiveEditor.Position;
+            }
+        }
+
         private static void Engine_EngineDrawFrame(object sender, EventArgs e)
         {
-            
+            if (Brush != null && Brush.IsVisible)
+                Brush.Render();
         }
 
         private static void Engine_EngineUpdated(object sender, EventArgs e)
         {
-
+            if (Brush != null && Brush.IsVisible)
+                Brush.Update();
         }
     }
 }

@@ -27,7 +27,7 @@ namespace SadConsoleEditor.Panels
         public LayersPanel()
         {
             Title = "Layers";
-            layers = new ListBox<LayerListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 4);
+            layers = new ListBox<LayerListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 4);
             layers.HideBorder = true;
             layers.SelectedItemChanged += layers_SelectedItemChanged;
             layers.CompareByReference = true;

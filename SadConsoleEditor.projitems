@@ -72,4 +72,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\" />
+  </ItemGroup>
 </Project>

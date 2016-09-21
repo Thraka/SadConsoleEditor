@@ -14,6 +14,9 @@ namespace SadConsoleEditor.Editors
         private Console consoleWrapper;
         private CustomPanel[] panels;
         private LayersPanel layerManagementPanel;
+        private ToolsPanel toolsPanel;
+        private Dictionary<string, Tools.ITool> tools;
+        private Tools.ITool selectedTool;
 
         public string DocumentTitle { get; set; }
 
@@ -30,14 +33,56 @@ namespace SadConsoleEditor.Editors
         public CustomPanel[] Panels { get { return panels; } }
 
         public Console RenderedConsole { get { return consoleWrapper; } }
+
+        private Tools.ITool SelectedTool
+        {
+            get { return selectedTool; }
+            set
+            {
+                toolsPanel.ToolsListBox.SelectedItem = value;
+            }
+        }
+
         public LayeredConsoleEditor()
         {
             consoleWrapper = new Console(1, 1);
             consoleWrapper.Renderer = new LayeredTextRenderer();
+            consoleWrapper.MouseHandler = ProcessMouse;
+            consoleWrapper.CanUseKeyboard = false;
+
+            consoleWrapper.MouseMove += (o, e) => { toolsPanel.SelectedTool?.MouseMoveSurface(e.OriginalMouseInfo, textSurface); };
+            consoleWrapper.MouseEnter += (o, e) => { toolsPanel.SelectedTool?.MouseEnterSurface(e.OriginalMouseInfo, textSurface); };
+            consoleWrapper.MouseExit += (o, e) => { toolsPanel.SelectedTool?.MouseExitSurface(e.OriginalMouseInfo, textSurface); };
 
             layerManagementPanel = new LayersPanel();
+            toolsPanel = new ToolsPanel();
 
-            panels = new CustomPanel[] { layerManagementPanel };
+            // Fill tools
+            tools = new Dictionary<string, Tools.ITool>();
+            tools.Add(Tools.PaintTool.ID, new Tools.PaintTool());
+
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.PaintTool.ID]);
+
+            toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
+
+            panels = new CustomPanel[] { layerManagementPanel, toolsPanel };
+        }
+
+        private void ToolsListBox_SelectedItemChanged(object sender, SadConsole.Controls.ListBox<SadConsole.Controls.ListBoxItem>.SelectedItemEventArgs e)
+        {
+            Tools.ITool tool = e.Item as Tools.ITool;
+
+            if (e.Item != null)
+            {
+
+                List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, toolsPanel };
+
+                if (tool.ControlPanels != null || tool.ControlPanels.Length != 0)
+                    newPanels.AddRange(tool.ControlPanels);
+
+                panels = newPanels.ToArray();
+                EditorConsoleManager.ToolsPane.RedrawPanels();
+            }
         }
 
         public void New(Color foreground, Color background, int width, int height)
@@ -128,7 +173,7 @@ namespace SadConsoleEditor.Editors
             if (EditorConsoleManager.ActiveEditor == this)
                 EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
 
-            //TODO: Offest brush
+            EditorConsoleManager.UpdateBrush();
         }
 
         public void OnClosed()
@@ -150,6 +195,32 @@ namespace SadConsoleEditor.Editors
         public void Update()
         {
         }
-        
+
+        public void ProcessKeyboard(IConsole console, SadConsole.Input.MouseInfo info)
+        {
+            //EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.TextSurface);
+        }
+
+        public bool ProcessMouse(IConsole console, SadConsole.Input.MouseInfo info)
+        {
+            consoleWrapper.MouseHandler = null;
+            consoleWrapper.CanUseMouse = true;
+            consoleWrapper.ProcessMouse(info);
+            consoleWrapper.MouseHandler = ProcessMouse;
+
+            toolsPanel.SelectedTool?.ProcessMouse(info, textSurface);
+
+            if (consoleWrapper.IsMouseOver)
+            {
+                EditorConsoleManager.SurfaceMouseLocation = info.ConsoleLocation;
+                return true;
+            }
+            else
+                EditorConsoleManager.SurfaceMouseLocation = Point.Zero;
+
+            consoleWrapper.CanUseMouse = false;
+            return false;
+        }
+
     }
 }

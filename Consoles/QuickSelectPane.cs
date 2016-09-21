@@ -126,8 +126,8 @@ namespace SadConsoleEditor.Consoles
 
 		public void CommonCharacterPickerPanel_ChangedHandler(object sender, EventArgs e)
 		{
-			//CharacterForeground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground;
-			//CharacterBackground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground;
+			CharacterForeground = ((Panels.CharacterPickPanel)sender).SettingForeground;
+			CharacterBackground = ((Panels.CharacterPickPanel)sender).SettingBackground;
 		}
 	}
 }

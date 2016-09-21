@@ -25,7 +25,7 @@ namespace SadConsoleEditor.Consoles
         private Dictionary<string, ITool> _tools;
 
         public FilesPanel PanelFiles;
-        public ToolsPanel PanelTools;
+        //public ToolsPanel PanelTools;
         
         public ToolPane() : base(Settings.Config.ToolPaneWidth - 1, Settings.Config.WindowHeight * 2)
         {
@@ -48,7 +48,7 @@ namespace SadConsoleEditor.Consoles
 
             // Create panels
             PanelFiles = new FilesPanel();
-            PanelTools = new ToolsPanel();
+            //PanelTools = new ToolsPanel();
         }
 
         public void ResetPanels()
