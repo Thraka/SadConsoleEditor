@@ -60,8 +60,10 @@ namespace SadConsoleEditor.Editors
             // Fill tools
             tools = new Dictionary<string, Tools.ITool>();
             tools.Add(Tools.PaintTool.ID, new Tools.PaintTool());
+            tools.Add(Tools.LineTool.ID, new Tools.LineTool());
 
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.PaintTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.LineTool.ID]);
 
             toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
 

@@ -10,7 +10,8 @@
 
     class LineTool : ITool
     {
-        private EntityBrush _entity;
+        public SadConsole.Game.GameObject Brush;
+
         private AnimatedTextSurface _animSinglePoint;
         private SadConsole.Effects.Fade _frameEffect;
         private Point? _firstPoint;
@@ -41,12 +42,6 @@
 
         public LineTool()
         {
-            _animSinglePoint = new AnimatedTextSurface("single", 1, 1, Settings.Config.ScreenFont);
-            _animSinglePoint.Font = Engine.DefaultFont;
-            var _frameSinglePoint = _animSinglePoint.CreateFrame();
-            _frameSinglePoint[0].GlyphIndex = 42;
-
-            
             _frameEffect = new SadConsole.Effects.Fade()
             {
                 UseCellBackground = true,
@@ -59,35 +54,111 @@
 
             _settingsPanel = new LineToolPanel();
 
-            ControlPanels = new CustomPanel[] { _settingsPanel, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel };
+
+            // Configure the animations
+            Brush = new SadConsole.Game.GameObject();
+            Brush.Font = Settings.Config.ScreenFont;
+            AnimatedTextSurface animation = new AnimatedTextSurface("single", 1, 1, Settings.Config.ScreenFont);
+            animation.CreateFrame()[0].GlyphIndex = 42;
+            Brush.Animations.Add(animation.Name, animation);
+            SetAnimationSingle();
+
+            ControlPanels = new CustomPanel[] { _settingsPanel, CharacterPickPanel.SharedInstance };
+        }
+
+        private void SetAnimationLine(Point mousePosition)
+        {
+            // Draw the line (erase old) to where the mouse is
+            // create the animation frame
+            AnimatedTextSurface animation = new AnimatedTextSurface("line", Math.Max(_firstPoint.Value.X, mousePosition.X) - Math.Min(_firstPoint.Value.X, mousePosition.X) + 1,
+                                                                            Math.Max(_firstPoint.Value.Y, mousePosition.Y) - Math.Min(_firstPoint.Value.Y, mousePosition.Y) + 1,
+                                                                            Settings.Config.ScreenFont);
+
+
+            var frame = animation.CreateFrame();
+
+            Point p1;
+            Point p2;
+
+            if (_firstPoint.Value.X > mousePosition.X)
+            {
+                if (_firstPoint.Value.Y > mousePosition.Y)
+                {
+                    p1 = new Point(frame.Width - 1, frame.Height - 1);
+                    p2 = new Point(0, 0);
+                }
+                else
+                {
+                    p1 = new Point(frame.Width - 1, 0);
+                    p2 = new Point(0, frame.Height - 1);
+                }
+            }
+            else
+            {
+                if (_firstPoint.Value.Y > mousePosition.Y)
+                {
+                    p1 = new Point(0, frame.Height - 1);
+                    p2 = new Point(frame.Width - 1, 0);
+                }
+                else
+                {
+                    p1 = new Point(0, 0);
+                    p2 = new Point(frame.Width - 1, frame.Height - 1);
+                }
+            }
+
+            animation.Center = p1;
+
+            //_lineStyle = new CellAppearance(
+            //                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+            //                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
+            //                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
+            //_lineStyle.SpriteEffect = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect;
+            //_lineStyle.CopyAppearanceTo(_lineCell);
+
+            _lineShape = new SadConsole.Shapes.Line();
+            _lineShape.CellAppearance = _lineCell;
+            _lineShape.UseEndingCell = false;
+            _lineShape.UseStartingCell = false;
+            _lineShape.StartingLocation = p1;
+            _lineShape.EndingLocation = p2;
+            _lineShape.Draw(new SurfaceEditor(frame));
+
+            _settingsPanel.LineLength = frame.Width > frame.Height ? frame.Width : frame.Height;
+
+            Brush.Animation = animation;
+        }
+
+        private void SetAnimationSingle()
+        {
+            Brush.Animation = Brush.Animations["single"];
         }
 
         public void OnSelected()
         {
-            _lineStyle = new CellAppearance(
-                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
-                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
-                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
-            _lineStyle.SpriteEffect = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect;
+            RefreshTool();
+            EditorConsoleManager.Brush = Brush;
+            EditorConsoleManager.UpdateBrush();
+
+            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
+            CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
+            EditorConsoleManager.QuickSelectPane.IsVisible = true;
+
+
+            _lineStyle = new CellAppearance(CharacterPickPanel.SharedInstance.SettingForeground,
+                                              CharacterPickPanel.SharedInstance.SettingBackground,
+                                              CharacterPickPanel.SharedInstance.SettingCharacter,
+                                              CharacterPickPanel.SharedInstance.SettingMirrorEffect);
+
+
             _lineStyle.CopyAppearanceTo(_lineCell);
-
-            _entity = new EntityBrush(1, 1);
-            _entity.IsVisible = false;
-
-            _entity.Animations[_animSinglePoint.Name] = _animSinglePoint;
-            _entity.Animation = _animSinglePoint;
-
-            EditorConsoleManager.Instance.UpdateBrush(_entity);
-
-			EditorConsoleManager.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel, System.EventArgs.Empty);
-			EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.Changed += EditorConsoleManager.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler;
-			EditorConsoleManager.Instance.QuickSelectPane.IsVisible = true;
+            
 		}
 
         public void OnDeselected()
         {
-			EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.Changed -= EditorConsoleManager.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler;
-			EditorConsoleManager.Instance.QuickSelectPane.IsVisible = false;
+            CharacterPickPanel.SharedInstance.Changed -= CharPanelChanged;
+            EditorConsoleManager.QuickSelectPane.IsVisible = false;
 
             _settingsPanel.LineLength = 0;
             _firstPoint = null;
@@ -96,13 +167,19 @@
 
         }
 
+        private void CharPanelChanged(object sender, System.EventArgs e)
+        {
+            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
+            RefreshTool();
+        }
+
         public void RefreshTool()
         {
-            _lineStyle = new CellAppearance(
-                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
-                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
-                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
-            _lineStyle.SpriteEffect = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect;
+            _lineStyle = new CellAppearance(CharacterPickPanel.SharedInstance.SettingForeground,
+                                              CharacterPickPanel.SharedInstance.SettingBackground,
+                                              CharacterPickPanel.SharedInstance.SettingCharacter,
+                                              CharacterPickPanel.SharedInstance.SettingMirrorEffect);
+
             _lineStyle.CopyAppearanceTo(_lineCell);
         }
 
@@ -117,82 +194,26 @@
 
         public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
         {
-            _entity.IsVisible = true;
+            Brush.IsVisible = true;
         }
 
         public void MouseExitSurface(MouseInfo info, ITextSurface surface)
         {
-            _entity.IsVisible = false;
+            Brush.IsVisible = false;
         }
 
         public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
         {
-            _entity.IsVisible = true;
+            Brush.IsVisible = true;
+
             if (!_firstPoint.HasValue)
             {
-                _entity.Position = info.ConsoleLocation;
+                Brush.Position = info.ConsoleLocation;
             }
             else
             {
-                // Draw the line (erase old) to where the mouse is
-                // create the animation frame
-                AnimatedTextSurface animation = new AnimatedTextSurface("line", Math.Max(_firstPoint.Value.X, info.ConsoleLocation.X) - Math.Min(_firstPoint.Value.X, info.ConsoleLocation.X) + 1,
-                                                                                Math.Max(_firstPoint.Value.Y, info.ConsoleLocation.Y) - Math.Min(_firstPoint.Value.Y, info.ConsoleLocation.Y) + 1,
-                                                                                Settings.Config.ScreenFont);
-
-
-                var frame = animation.CreateFrame();
-
-                Point p1;
-                Point p2;
-
-                if (_firstPoint.Value.X > info.ConsoleLocation.X)
-                {
-                    if (_firstPoint.Value.Y > info.ConsoleLocation.Y)
-                    {
-                        p1 = new Point(frame.Width - 1, frame.Height - 1);
-                        p2 = new Point(0, 0);
-                    }
-                    else
-                    {
-                        p1 = new Point(frame.Width - 1, 0);
-                        p2 = new Point(0, frame.Height - 1);
-                    }
-                }
-                else
-                {
-                    if (_firstPoint.Value.Y > info.ConsoleLocation.Y)
-                    {
-                        p1 = new Point(0, frame.Height - 1);
-                        p2 = new Point(frame.Width - 1, 0);
-                    }
-                    else
-                    {
-                        p1 = new Point(0, 0);
-                        p2 = new Point(frame.Width - 1, frame.Height - 1);
-                    }
-                }
-
-                animation.Center = p1;
-
-                _lineStyle = new CellAppearance(
-                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
-                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
-                                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
-                _lineStyle.SpriteEffect = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect;
-                _lineStyle.CopyAppearanceTo(_lineCell);
-
-                _lineShape = new SadConsole.Shapes.Line();
-                _lineShape.CellAppearance = _lineCell;
-                _lineShape.UseEndingCell = false;
-                _lineShape.UseStartingCell = false;
-                _lineShape.StartingLocation = p1;
-                _lineShape.EndingLocation = p2;
-                _lineShape.Draw(new SurfaceEditor(frame));
+                SetAnimationLine(info.ConsoleLocation);
                 
-                _settingsPanel.LineLength = frame.Width > frame.Height ? frame.Width : frame.Height;
-
-                _entity.Animation = animation;
             }
 
 
@@ -216,7 +237,7 @@
                     _secondPoint = null;
                     _lineShape = null;
 
-                    _entity.Animation = _entity.Animations["single"];
+                    Brush.Animation = Brush.Animations["single"];
 
                     //surface.ResyncAllCellEffects();
                     _settingsPanel.LineLength = 0;
@@ -230,7 +251,7 @@
                     _secondPoint = null;
                     _lineShape = null;
 
-                    _entity.Animation = _entity.Animations["single"];
+                    Brush.Animation = Brush.Animations["single"];
 
                     _settingsPanel.LineLength = 0;
                 }
