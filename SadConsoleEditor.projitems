@@ -39,6 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\Circle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\DrawTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\FillTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\ITool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\LineTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\RecolorTool.cs" />

@@ -26,7 +26,6 @@
         public PaintTool()
         {
             ControlPanels = new CustomPanel[] { CharacterPickPanel.SharedInstance };
-            //_brush = new EntityBrush(1, 1);
         }
 
         public override string ToString()
@@ -48,17 +47,17 @@
             CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
             EditorConsoleManager.QuickSelectPane.IsVisible = true;
         }
+        
+        public void OnDeselected()
+        {
+            CharacterPickPanel.SharedInstance.Changed -= CharPanelChanged;
+            EditorConsoleManager.QuickSelectPane.IsVisible = false;
+        }
 
         private void CharPanelChanged(object sender, System.EventArgs e)
         {
             EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
             RefreshTool();
-        }
-
-        public void OnDeselected()
-        {
-            CharacterPickPanel.SharedInstance.Changed -= CharPanelChanged;
-            EditorConsoleManager.QuickSelectPane.IsVisible = false;
         }
 
         public void RefreshTool()

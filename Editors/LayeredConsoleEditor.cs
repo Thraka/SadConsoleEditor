@@ -63,11 +63,13 @@ namespace SadConsoleEditor.Editors
             tools.Add(Tools.LineTool.ID, new Tools.LineTool());
             tools.Add(Tools.CircleTool.ID, new Tools.CircleTool());
             tools.Add(Tools.RecolorTool.ID, new Tools.RecolorTool());
+            tools.Add(Tools.FillTool.ID, new Tools.FillTool());
 
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.PaintTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.LineTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.CircleTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.RecolorTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.FillTool.ID]);
 
             toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
 
