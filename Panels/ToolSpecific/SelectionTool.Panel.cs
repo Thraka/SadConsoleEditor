@@ -14,29 +14,29 @@ namespace SadConsoleEditor.Panels
 {
     class SelectionToolAltPanel : CustomPanel
     {
-        private CheckBox _skipEmptyColor;
-        private CheckBox _altEmptyColorCheck;
-        private Controls.ColorPresenter _altEmptyColor;
+        private CheckBox skipEmptyColor;
+        private CheckBox altEmptyColorCheck;
+        private Controls.ColorPresenter altEmptyColor;
 
 
-        public bool SkipEmptyCells { get { return _skipEmptyColor.IsSelected; } }
-        public bool UseAltEmptyColor { get { return _altEmptyColorCheck.IsSelected; } }
-        public Color AltEmptyColor { get { return _altEmptyColor.SelectedColor; } }
+        public bool SkipEmptyCells { get { return skipEmptyColor.IsSelected; } }
+        public bool UseAltEmptyColor { get { return altEmptyColorCheck.IsSelected; } }
+        public Color AltEmptyColor { get { return altEmptyColor.SelectedColor; } }
 
         public SelectionToolAltPanel()
         {
             Title = "Sel.Rect Options";
 
-            _skipEmptyColor = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            _skipEmptyColor.Text = "Skip Empty";
+            skipEmptyColor = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            skipEmptyColor.Text = "Skip Empty";
 
-            _altEmptyColorCheck = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            _altEmptyColorCheck.Text = "Use Alt. Empty";
+            altEmptyColorCheck = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            altEmptyColorCheck.Text = "Use Alt. Empty";
 
-            _altEmptyColor = new Controls.ColorPresenter("Alt. Empty Clr", Settings.Green, 18);
-            _altEmptyColor.SelectedColor = Color.Black;
+            altEmptyColor = new Controls.ColorPresenter("Alt. Empty Clr", Settings.Green, 18);
+            altEmptyColor.SelectedColor = Color.Black;
 
-            Controls = new ControlBase[] { _skipEmptyColor, _altEmptyColorCheck, _altEmptyColor };
+            Controls = new ControlBase[] { skipEmptyColor, altEmptyColorCheck, altEmptyColor };
         }
 
         public override void ProcessMouse(MouseInfo info)
@@ -45,7 +45,7 @@ namespace SadConsoleEditor.Panels
 
         public override int Redraw(ControlBase control)
         {
-            if (control == _skipEmptyColor)
+            if (control == skipEmptyColor)
                 return 1;
 
             return 0;
@@ -58,33 +58,33 @@ namespace SadConsoleEditor.Panels
 
     class SelectionToolPanel : CustomPanel
     {
-        private CloneState _state;
-        private Button _reset;
-        private Button _loadBrush;
-        private Button _saveBrush;
-        private Button _clone;
-        private Button _clear;
-        private Button _move;
+        private CloneState state;
+        private Button reset;
+        private Button loadBrush;
+        private Button saveBrush;
+        private Button clone;
+        private Button clear;
+        private Button move;
 
         private string lastFolder = null;
 
-        private Func<TextSurface> _saveBrushHandler;
-        private Action<TextSurface> _loadBrushHandler;
+        private Func<TextSurface> saveBrushHandler;
+        private Action<TextSurface> loadBrushHandler;
 
         private int _currentStepChar = 175;
 
 
         public CloneState State
         {
-            get { return _state; }
+            get { return state; }
             set
             {
-                _state = value;
+                state = value;
 
-                _saveBrush.IsEnabled = value == CloneState.Selected;
-                _clone.IsEnabled = value == CloneState.Selected;
-                _clear.IsEnabled = value == CloneState.Selected;
-                _move.IsEnabled = value == CloneState.Selected;
+                saveBrush.IsEnabled = value == CloneState.Selected;
+                clone.IsEnabled = value == CloneState.Selected;
+                clear.IsEnabled = value == CloneState.Selected;
+                move.IsEnabled = value == CloneState.Selected;
 
                 if (StateChangedHandler != null)
                     StateChangedHandler(value);
@@ -107,36 +107,36 @@ namespace SadConsoleEditor.Panels
 
         public SelectionToolPanel(Action<TextSurface> loadBrushHandler, Func<TextSurface> saveBrushHandler)
         {
-            _reset = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            _reset.Text = "Reset Steps";
-            _reset.ButtonClicked += (o, e) => State = CloneState.SelectingPoint1;
+            reset = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            reset.Text = "Reset Steps";
+            reset.ButtonClicked += (o, e) => State = CloneState.SelectingPoint1;
 
-            _loadBrush = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            _loadBrush.Text = "Import Brush";
-            _loadBrush.ButtonClicked += _loadBrush_ButtonClicked;
+            loadBrush = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            loadBrush.Text = "Import Brush";
+            loadBrush.ButtonClicked += _loadBrush_ButtonClicked;
 
-            _saveBrush = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            _saveBrush.Text = "Export Brush";
-            _saveBrush.ButtonClicked += _saveBrush_ButtonClicked;
+            saveBrush = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            saveBrush.Text = "Export Brush";
+            saveBrush.ButtonClicked += _saveBrush_ButtonClicked;
 
-            _clone = new Button(Consoles.ToolPane.PanelWidth, 1);
-            _clone.Text = "Clone";
-            _clone.ButtonClicked += clone_ButtonClicked;
+            clone = new Button(Consoles.ToolPane.PanelWidth, 1);
+            clone.Text = "Clone";
+            clone.ButtonClicked += clone_ButtonClicked;
 
-            _clear = new Button(Consoles.ToolPane.PanelWidth, 1);
-            _clear.Text = "Clear";
-            _clear.ButtonClicked += clear_ButtonClicked;
+            clear = new Button(Consoles.ToolPane.PanelWidth, 1);
+            clear.Text = "Clear";
+            clear.ButtonClicked += clear_ButtonClicked;
 
-            _move = new Button(Consoles.ToolPane.PanelWidth, 1);
-            _move.Text = "Move";
-            _move.ButtonClicked += move_ButtonClicked;
+            move = new Button(Consoles.ToolPane.PanelWidth, 1);
+            move.Text = "Move";
+            move.ButtonClicked += move_ButtonClicked;
 
             
 
-            Controls = new ControlBase[] { _reset, _loadBrush, _saveBrush, _clone, _clear, _move };
+            Controls = new ControlBase[] { reset, loadBrush, saveBrush, clone, clear, move };
 
-            _loadBrushHandler = loadBrushHandler;
-            _saveBrushHandler = saveBrushHandler;
+            this.loadBrushHandler = loadBrushHandler;
+            this.saveBrushHandler = saveBrushHandler;
 
             Title = "Clone";
             State = CloneState.SelectingPoint1;
@@ -164,12 +164,11 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
-                    lastFolder = System.IO.Path.GetDirectoryName(popup.SelectedFile);
-                    _saveBrushHandler().Save(popup.SelectedFile);
+                    popup.SelectedLoader.Save(saveBrushHandler(), popup.SelectedFile);
                 }
             };
             popup.CurrentFolder = lastFolder ?? Environment.CurrentDirectory;
-            popup.FileFilter = "*.con;*.console;*.brush";
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.TextSurface(), new FileLoaders.TextFile() };
             popup.SelectButtonText = "Save";
             popup.SkipFileExistCheck = true;
             popup.Show(true);
@@ -200,25 +199,12 @@ namespace SadConsoleEditor.Panels
 
                         //}
                         //else
-                        if (System.IO.Path.GetExtension(popup.SelectedFile) == ".txt")
-                        {
-                            string[] text = System.IO.File.ReadAllLines(popup.SelectedFile);
-                            int maxLineWidth = text.Max(s => s.Length);
-
-
-                            SadConsole.Consoles.Console importConsole = new SadConsole.Consoles.Console(maxLineWidth, text.Length);
-                            importConsole.VirtualCursor.AutomaticallyShiftRowsUp = false;
-                            foreach (var line in text)
-                                importConsole.VirtualCursor.Print(line);
-                            _loadBrushHandler((TextSurface)importConsole.TextSurface);
-                        }
-                        else
-                            _loadBrushHandler(TextSurface.Load(popup.SelectedFile));
+                        loadBrushHandler((TextSurface)popup.SelectedLoader.Load(popup.SelectedFile));
                     }
                 }
             };
             popup.CurrentFolder = lastFolder ?? Environment.CurrentDirectory;
-            popup.FileFilter = "*.con;*.console;*.brush;*.ans;*.txt";
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.TextSurface(), new FileLoaders.TextFile() };
             popup.Show(true);
             popup.Center();
         }
@@ -230,7 +216,7 @@ namespace SadConsoleEditor.Panels
 
         public override int Redraw(ControlBase control)
         {
-            if (control == _saveBrush || control == _move)
+            if (control == saveBrush || control == move)
             {
                 return 1;
             }

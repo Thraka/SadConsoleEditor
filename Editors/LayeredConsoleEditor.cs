@@ -65,6 +65,7 @@ namespace SadConsoleEditor.Editors
             tools.Add(Tools.RecolorTool.ID, new Tools.RecolorTool());
             tools.Add(Tools.FillTool.ID, new Tools.FillTool());
             tools.Add(Tools.BoxTool.ID, new Tools.BoxTool());
+            tools.Add(Tools.SelectionTool.ID, new Tools.SelectionTool());
 
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.PaintTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.LineTool.ID]);
@@ -72,6 +73,7 @@ namespace SadConsoleEditor.Editors
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.RecolorTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.FillTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.BoxTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.SelectionTool.ID]);
 
             toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
 
