@@ -34,12 +34,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolsPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\Circle.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\LinePanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\RecolorTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\Circle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\DrawTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\ITool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\LineTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\RecolorTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\CharacterQuickSelectPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\ColorPickerPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\NewConsolePopup.cs" />
