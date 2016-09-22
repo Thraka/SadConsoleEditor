@@ -32,9 +32,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Panels\FilesPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\LayersPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolsPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\Circle.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\LinePanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\Circle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\DrawTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\ITool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\LineTool.cs" />
