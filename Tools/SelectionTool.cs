@@ -95,6 +95,7 @@
 
             var animation = new AnimatedTextSurface(AnimationSingle, 1, 1, Settings.Config.ScreenFont);
             animation.CreateFrame()[0].GlyphIndex = 42;
+            animation.Frames[0][0].Background = Color.Black;
             Brush.Animations.Add(animation.Name, animation);
 
             animation = new AnimatedTextSurface(AnimationSelection, 1, 1, Settings.Config.ScreenFont);
@@ -216,6 +217,7 @@
             _boxShape.Draw(Settings.QuickEditor);
 
             //frame.SetEffect(frame, _pulseAnimation);
+            animation.Center = center;
 
             Brush.Animations[animation.Name] = animation;
             Brush.Animation = animation;
@@ -428,8 +430,8 @@
 
         private void StampBrush(int consoleLocationX, int consoleLocationY, ITextSurface surface)
         {
-            int destinationX = consoleLocationX - Brush.SelectedSurface.Animation.Center.X;
-            int destinationY = consoleLocationY - Brush.SelectedSurface.Animation.Center.Y;
+            int destinationX = consoleLocationX - Brush.Animation.Center.X;
+            int destinationY = consoleLocationY - Brush.Animation.Center.Y;
             int destX = destinationX;
             int destY = destinationY;
 
