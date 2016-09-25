@@ -106,7 +106,16 @@
 
         public void ProcessMouse(MouseInfo info, ITextSurface surface)
         {
-            Brush.IsVisible = true;
+            
+            if (EditorConsoleManager.ToolsPane.IsMouseOver)
+            {
+                Brush.IsVisible = false;
+                return;
+            }
+            else
+                Brush.IsVisible = true;
+
+
             if (!firstPoint.HasValue)
             {
                 Brush.Position = info.ConsoleLocation;

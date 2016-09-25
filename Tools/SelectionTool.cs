@@ -268,6 +268,16 @@
 
         public void ProcessMouse(MouseInfo info, ITextSurface surface)
         {
+            if (EditorConsoleManager.ToolsPane.IsMouseOver)
+            {
+                Brush.IsVisible = false;
+                return;
+            }
+            else
+                Brush.IsVisible = true;
+
+
+
             _previousSurface = surface;
             
             if (_panel.State == SelectionToolPanel.CloneState.Clone || _panel.State == SelectionToolPanel.CloneState.Move)
@@ -307,7 +317,7 @@
         {
             if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1 || _panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
             {
-                Brush.IsVisible = true;
+                Brush.IsVisible = false;
                 //_entity.SyncLayers();
             }
         }
