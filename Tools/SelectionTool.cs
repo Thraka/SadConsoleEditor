@@ -10,11 +10,13 @@
 
     class LayeredGameObject : GameObject
     {
-        public GameObject UnderAnimation;
+        public GameObject SelectedSurface;
+        public bool ShowSelectedSurface;
+
 
         public LayeredGameObject()
         {
-            UnderAnimation = new GameObject(Settings.Config.ScreenFont);
+            SelectedSurface = new GameObject(Settings.Config.ScreenFont);
         }
 
         public override void Render()
@@ -23,12 +25,14 @@
             {
                 if (repositionRects)
                 {
-                    renderer.Render(UnderAnimation, NoMatrix);
+                    if (ShowSelectedSurface)
+                        renderer.Render(SelectedSurface, NoMatrix);
                     renderer.Render(this, NoMatrix);
                 }
                 else
                 {
-                    renderer.Render(UnderAnimation, position + renderOffset - animation.Center, usePixelPositioning);
+                    if (ShowSelectedSurface)
+                        renderer.Render(SelectedSurface, position + renderOffset - animation.Center, usePixelPositioning);
                     renderer.Render(this, position + renderOffset - animation.Center, usePixelPositioning);
                 }
             }
@@ -41,7 +45,7 @@
 
         protected override void OnPositionChanged(Point oldLocation)
         {
-            UnderAnimation.Position = Position;
+            SelectedSurface.Position = Position;
             base.OnPositionChanged(oldLocation);
         }
     }
@@ -129,12 +133,14 @@
         {
             if (state == SelectionToolPanel.CloneState.SelectingPoint1)
             {
+                Brush.ShowSelectedSurface = false;
                 Brush.IsVisible = false;
                 Brush.Animation = Brush.Animations[AnimationSingle];
             }
             else if (state == SelectionToolPanel.CloneState.Move)
             {
                 var animation = Brush.Animation;
+                Brush.ShowSelectedSurface = false;
                 ClearBrush(Brush.Position.X, Brush.Position.Y, _previousSurface);
                 animation.Center = new Point(animation.Width / 2, animation.Height / 2);
                 Brush.Position += animation.Center;
@@ -143,12 +149,14 @@
             else if (state == SelectionToolPanel.CloneState.Clear)
             {
                 var animation = Brush.Animation;
+                Brush.ShowSelectedSurface = false;
                 ClearBrush(Brush.Position.X, Brush.Position.Y, _previousSurface);
                 _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
             }
             else if (state == SelectionToolPanel.CloneState.Clone)
             {
                 var animation = Brush.Animation;
+                Brush.ShowSelectedSurface = true;
                 animation.Center = new Point(animation.Width / 2, animation.Height / 2);
                 Brush.Position += animation.Center;
             }
@@ -156,10 +164,10 @@
 
         private TextSurface SaveBrush()
         {
-            TextSurface newSurface = new TextSurface(Brush.UnderAnimation.Animation.CurrentFrame.Width,
-                                                     Brush.UnderAnimation.Animation.CurrentFrame.Height, Settings.Config.ScreenFont);
+            TextSurface newSurface = new TextSurface(Brush.SelectedSurface.Animation.CurrentFrame.Width,
+                                                     Brush.SelectedSurface.Animation.CurrentFrame.Height, Settings.Config.ScreenFont);
 
-            Brush.UnderAnimation.Animation.CurrentFrame.Copy(newSurface);
+            Brush.SelectedSurface.Animation.CurrentFrame.Copy(newSurface);
 
             return newSurface;
         }
@@ -175,7 +183,7 @@
 
             cloneAnimation.Center = new Point(cloneAnimation.Width / 2, cloneAnimation.Height / 2);
 
-            Brush.UnderAnimation.Animation = cloneAnimation;
+            Brush.SelectedSurface.Animation = cloneAnimation;
             //Brush.Animation.Tint = new Color(0f, 0f, 0f, 0f);
 
             Brush.IsVisible = true;
@@ -338,7 +346,7 @@
 
                     cloneAnimation.Center = Brush.Animation.Center;
 
-                    Brush.UnderAnimation.Animation = cloneAnimation;
+                    Brush.SelectedSurface.Animation = cloneAnimation;
                     //Brush.Animations[cloneAnimation.Name] = cloneAnimation;
                     //Brush.Animation = cloneAnimation;
                     //Brush.Animation.Tint = new Color(0f, 0f, 0f, 0f);
@@ -420,18 +428,18 @@
 
         private void StampBrush(int consoleLocationX, int consoleLocationY, ITextSurface surface)
         {
-            int destinationX = consoleLocationX - Brush.UnderAnimation.Animation.Center.X;
-            int destinationY = consoleLocationY - Brush.UnderAnimation.Animation.Center.Y;
+            int destinationX = consoleLocationX - Brush.SelectedSurface.Animation.Center.X;
+            int destinationY = consoleLocationY - Brush.SelectedSurface.Animation.Center.Y;
             int destX = destinationX;
             int destY = destinationY;
 
-            for (int curx = 0; curx < Brush.UnderAnimation.Animation.Width; curx++)
+            for (int curx = 0; curx < Brush.SelectedSurface.Animation.Width; curx++)
             {
-                for (int cury = 0; cury < Brush.UnderAnimation.Animation.Height; cury++)
+                for (int cury = 0; cury < Brush.SelectedSurface.Animation.Height; cury++)
                 {
-                    if (Brush.UnderAnimation.Animation.CurrentFrame.IsValidCell(curx, cury))
+                    if (Brush.SelectedSurface.Animation.CurrentFrame.IsValidCell(curx, cury))
                     {
-                        var sourceCell = Brush.UnderAnimation.Animation.CurrentFrame.GetCell(curx, cury);
+                        var sourceCell = Brush.SelectedSurface.Animation.CurrentFrame.GetCell(curx, cury);
 
                         // Not working, breakpoint here to remind me.
                         if (_altPanel.SkipEmptyCells && sourceCell.GlyphIndex == 0 && (sourceCell.Background == Color.Transparent || (_altPanel.UseAltEmptyColor && sourceCell.Background == _altPanel.AltEmptyColor)))
@@ -457,18 +465,18 @@
 
         private void ClearBrush(int consoleLocationX, int consoleLocationY, ITextSurface surface)
         {
-            int destinationX = consoleLocationX - Brush.UnderAnimation.Animation.Center.X;
-            int destinationY = consoleLocationY - Brush.UnderAnimation.Animation.Center.Y;
+            int destinationX = consoleLocationX - Brush.SelectedSurface.Animation.Center.X;
+            int destinationY = consoleLocationY - Brush.SelectedSurface.Animation.Center.Y;
             int destX = destinationX;
             int destY = destinationY;
 
             Settings.QuickEditor.TextSurface = surface;
 
-            for (int curx = 0; curx < Brush.UnderAnimation.Animation.CurrentFrame.Width; curx++)
+            for (int curx = 0; curx < Brush.SelectedSurface.Animation.CurrentFrame.Width; curx++)
             {
-                for (int cury = 0; cury < Brush.UnderAnimation.Animation.CurrentFrame.Height; cury++)
+                for (int cury = 0; cury < Brush.SelectedSurface.Animation.CurrentFrame.Height; cury++)
                 {
-                    if (Brush.UnderAnimation.Animation.CurrentFrame.IsValidCell(curx, cury))
+                    if (Brush.SelectedSurface.Animation.CurrentFrame.IsValidCell(curx, cury))
                     {
                         if (surface.IsValidCell(destX, destY))
                         {
