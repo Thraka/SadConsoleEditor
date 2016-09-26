@@ -134,7 +134,7 @@ namespace SadConsoleEditor
                 {
                     Windows.NewConsolePopup popup = new Windows.NewConsolePopup();
                     popup.Center();
-                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else CreateNewEditor(popup.Editor, popup.SettingWidth, popup.SettingHeight); };
+                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else CreateNewEditor(popup.Editor, popup.SettingWidth, popup.SettingHeight, popup.SettingForeground, popup.SettingBackground); };
                     popup.Show(true);
                 }
                 else
@@ -142,15 +142,15 @@ namespace SadConsoleEditor
                     Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
                     popup.Center();
                     popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else LoadEditor(popup.SelectedFile, popup.SelectedLoader); };
-                    popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface(), new FileLoaders.TextSurface(), new FileLoaders.Scene(), new FileLoaders.Entity() };
+                    popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface(), new FileLoaders.TextSurface(), new FileLoaders.Scene(), new FileLoaders.GameObject() };
                     popup.Show(true);
                 }
 
             });
         }
 
-        
-        private static void CreateNewEditor(Editors.Editors editorType, int width, int height)
+
+        private static void CreateNewEditor(Editors.Editors editorType, int width, int height, Color defaultForeground, Color defaultBackground)
         {
             Editors.IEditor editor = null;
 
@@ -158,9 +158,11 @@ namespace SadConsoleEditor
             {
                 case SadConsoleEditor.Editors.Editors.Console:
                     editor = new Editors.LayeredConsoleEditor();
-                    editor.New(Color.White, Color.Transparent, width, height);
+                    editor.New(defaultForeground, defaultBackground, width, height);
                     break;
                 case SadConsoleEditor.Editors.Editors.GameObject:
+                    editor = new Editors.GameObjectEditor();
+                    editor.New(defaultForeground, defaultBackground, width, height);
                     break;
                 case SadConsoleEditor.Editors.Editors.Scene:
                     break;
@@ -189,9 +191,10 @@ namespace SadConsoleEditor
                 editor = new Editors.LayeredConsoleEditor();
                 editor.Load(file, loader);
             }
-            else if (loader is FileLoaders.Entity)
+            else if (loader is FileLoaders.GameObject)
             {
-
+                editor = new Editors.GameObjectEditor();
+                editor.Load(file, loader);
             }
             else if (loader is FileLoaders.Scene)
             {
@@ -219,7 +222,7 @@ namespace SadConsoleEditor
         {
             Windows.NewConsolePopup popup = new Windows.NewConsolePopup();
             popup.Center();
-            popup.Closed += (s, e) => { if (popup.DialogResult) CreateNewEditor(popup.Editor, popup.SettingWidth, popup.SettingHeight); };
+            popup.Closed += (s, e) => { if (popup.DialogResult) CreateNewEditor(popup.Editor, popup.SettingWidth, popup.SettingHeight, popup.SettingForeground, popup.SettingBackground); };
             popup.Show(true);
         }
 
@@ -228,7 +231,7 @@ namespace SadConsoleEditor
             Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
             popup.Center();
             popup.Closed += (s, e) => { if (popup.DialogResult) LoadEditor(popup.SelectedFile, popup.SelectedLoader); };
-            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface(), new FileLoaders.Scene(), new FileLoaders.Entity() };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface(), new FileLoaders.Scene(), new FileLoaders.GameObject() };
             popup.Show(true);
         }
 

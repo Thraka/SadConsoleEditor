@@ -16,34 +16,34 @@ namespace SadConsoleEditor.Windows
 {
     public class PreviewAnimationPopup : Window
     {
-        private GameObject _entity;
-        private AnimatedTextSurface _animation;
-        private Button _restartAnimation;
+        private GameObject entity;
+        private AnimatedTextSurface animation;
+        private Button restartAnimation;
 
         public PreviewAnimationPopup(AnimatedTextSurface animation) : base(animation.Width + 2, animation.Height + 4)
         {
             textSurface.Font = Settings.Config.ScreenFont;
-            _animation = animation;
+            this.animation = animation;
 
             CloseOnESC = true;
-            _entity = new GameObject(Settings.Config.ScreenFont);
-            _entity.Position = new Point(1, 1);
-            _entity.Animation = animation;
+            entity = new GameObject(Settings.Config.ScreenFont);
+            entity.Position = new Point(1, 1);
+            entity.Animation = animation;
             animation.Restart();
-            _entity.Animation.Start();
+            entity.Animation.Start();
 
-            _restartAnimation = new Button(animation.Width, 1);
-            _restartAnimation.Text = "Restart";
-            _restartAnimation.Position = new Point(1, textSurface.Height - 2);
-            _restartAnimation.ButtonClicked += (s, e) => _animation.Restart();
-            Add(_restartAnimation);
+            restartAnimation = new Button(animation.Width, 1);
+            restartAnimation.Text = "Restart";
+            restartAnimation.Position = new Point(1, textSurface.Height - 2);
+            restartAnimation.ButtonClicked += (s, e) => this.animation.Restart();
+            Add(restartAnimation);
         }
 
         protected override void OnAfterRender(SpriteBatch batch)
         {
             base.OnAfterRender(batch);
 
-            _entity.Animation.CurrentFrame.Copy(textSurface, _entity.Position.X, _entity.Position.Y);
+            entity.Animation.CurrentFrame.Copy(textSurface, entity.Position.X, entity.Position.Y);
 
             // Draw bar
             for (int i = 1; i < textSurface.Width - 1; i++)
@@ -62,7 +62,7 @@ namespace SadConsoleEditor.Windows
         public override bool ProcessKeyboard(KeyboardInfo info)
         {
             if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Space))
-                _animation.Restart();
+                animation.Restart();
 
             return base.ProcessKeyboard(info);
         }
@@ -87,7 +87,7 @@ namespace SadConsoleEditor.Windows
         {
             base.Update();
 
-            _entity.Update();
+            entity.Update();
         }
     }
 }

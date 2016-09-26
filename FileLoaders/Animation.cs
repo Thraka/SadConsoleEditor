@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SadConsoleEditor.FileLoaders
 {
-    class Entity : IFileLoader
+    class Animation : IFileLoader
     {
         public bool SupportsLoad { get { return true; } }
 
@@ -14,7 +14,7 @@ namespace SadConsoleEditor.FileLoaders
         {
             get
             {
-                return new string[] { "entity", "object" };
+                return new string[] { "anim", "animation" };
             }
         }
 
@@ -22,24 +22,18 @@ namespace SadConsoleEditor.FileLoaders
         {
             get
             {
-                return "Game Object";
+                return "Animation";
             }
         }
 
         public ITextSurfaceRendered Load(string file)
         {
-            if (System.IO.Path.GetExtension(file) == ".scene")
-            {
-
-            }
-
-            return SadConsole.Game.GameObject.Load(file);
+            return SadConsole.Consoles.AnimatedTextSurface.Load(file);
         }
 
         public void Save(ITextSurfaceRendered surface, string file)
         {
-            if (surface is SadConsole.Consoles.LayeredTextSurface)
-                ((SadConsole.Consoles.LayeredTextSurface)surface).Save(file, typeof(LayerMetadata));
+            ((SadConsole.Consoles.AnimatedTextSurface)surface).Save(file);
         }
     }
 }

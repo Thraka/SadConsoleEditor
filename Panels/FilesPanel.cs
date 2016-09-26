@@ -64,7 +64,7 @@ namespace SadConsoleEditor.Panels
 
             documentsTitle = new DrawingSurface(13, 1);
             documentsTitle.Fill(Settings.Green, Settings.Color_MenuBack, 0, null);
-            documentsTitle.Print(0, 0, new ColoredString("Opened Files", Settings.Blue, Settings.Color_MenuBack));
+            documentsTitle.Print(0, 0, new ColoredString("Opened Files", Settings.Green, Settings.Color_MenuBack));
 
             Controls = new ControlBase[] { NewButton, LoadButton, SaveButton, ResizeButton, CloseButton, documentsTitle, DocumentsListbox };
             

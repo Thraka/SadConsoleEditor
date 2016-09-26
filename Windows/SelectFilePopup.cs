@@ -153,7 +153,6 @@ namespace SadConsoleEditor.Windows
             SelectedFile = "";
             fileLoadersList.SelectedItem = null;
             fileLoadersList.SelectedItem = fileLoadersList.Items[0];
-            Print(2, textSurface.Height - 2, fileFilterString.Replace(';', ' ').Replace("*", ""));
             base.Show(modal);
         }
 

@@ -18,15 +18,20 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ColorPresenter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\FileDirectoryListbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)EditorConsoleManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Editors\GameObjectEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\IEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\LayeredConsoleEditor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Entity.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\GameObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Animation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\IFileLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Scene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\TextFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\LayeredTextSurface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\TextSurface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HSLColor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\Animation\AnimationFramesPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\Animation\AnimationsPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\Animation\GameObjectNamePanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\CharacterPickPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\CustomPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\FilesPanel.cs" />
@@ -47,6 +52,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tools\LineTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\RecolorTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\SelectionTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\Animation\AnimationPreviewPopup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\Animation\AnimationSpeedPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\CharacterQuickSelectPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\ColorPickerPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\NewConsolePopup.cs" />
@@ -82,5 +89,8 @@
     <None Include="$(MSBuildThisFileDirectory)Editor.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Tools\Animation\" />
   </ItemGroup>
 </Project>

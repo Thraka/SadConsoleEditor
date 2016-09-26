@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using SadConsole.Consoles;
 using Console = SadConsole.Consoles.Console;
 using SadConsoleEditor.Panels;
+using System.Linq;
 
 namespace SadConsoleEditor.Editors
 {
@@ -167,7 +168,8 @@ namespace SadConsoleEditor.Editors
             popup.Closed += (s, e) =>
             {
                 if (popup.DialogResult)
-                    textSurface.Save(popup.SelectedFile, typeof(LayerMetadata));
+                    popup.SelectedLoader.Save(textSurface, popup.SelectedFile);
+
             };
             popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface() };
             popup.Show(true);
@@ -198,6 +200,10 @@ namespace SadConsoleEditor.Editors
 
         public void OnSelected()
         {
+            if (selectedTool == null)
+                SelectedTool = tools.First().Value;
+            else
+                SelectedTool = selectedTool;
         }
 
         public void Render()
@@ -208,9 +214,10 @@ namespace SadConsoleEditor.Editors
         {
         }
 
-        public void ProcessKeyboard(IConsole console, SadConsole.Input.MouseInfo info)
+        public bool ProcessKeyboard(IConsole console, SadConsole.Input.KeyboardInfo info)
         {
             //EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.TextSurface);
+            return false;
         }
 
         public bool ProcessMouse(IConsole console, SadConsole.Input.MouseInfo info)
@@ -234,5 +241,11 @@ namespace SadConsoleEditor.Editors
             return false;
         }
 
+
+        public override string ToString()
+        {
+            return this.ToString();
+        }
+        
     }
 }
