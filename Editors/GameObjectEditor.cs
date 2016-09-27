@@ -91,7 +91,8 @@ namespace SadConsoleEditor.Editors
             tools.Add(Tools.FillTool.ID, new Tools.FillTool());
             tools.Add(Tools.BoxTool.ID, new Tools.BoxTool());
             tools.Add(Tools.SelectionTool.ID, new Tools.SelectionTool());
-
+            tools.Add(Tools.EntityCenterTool.ID, new Tools.EntityCenterTool());
+            
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.PaintTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.LineTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.CircleTool.ID]);
@@ -99,6 +100,7 @@ namespace SadConsoleEditor.Editors
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.FillTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.BoxTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.SelectionTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.EntityCenterTool.ID]);
 
             toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
 
@@ -113,16 +115,25 @@ namespace SadConsoleEditor.Editors
             {
                 List<CustomPanel> newPanels = new List<CustomPanel>() { gameObjectNamePanel, animationPanel, framesPanel, toolsPanel };
 
-                if (tool.ControlPanels != null || tool.ControlPanels.Length != 0)
+                if (tool.ControlPanels != null && tool.ControlPanels.Length != 0)
                     newPanels.AddRange(tool.ControlPanels);
 
                 panels = newPanels.ToArray();
                 EditorConsoleManager.ToolsPane.RedrawPanels();
 
-                //if (e.Item == AnimTool)
-                //    textSurface.Tint = new Color(0f, 0f, 0f, 0.2f);
-                //else
-                //    textSurface.Tint = new Color(0f, 0f, 0f, 1f);
+                if (tool is Tools.EntityCenterTool)
+                {
+                    textSurface.GetLayer(LayerAnimCenter).IsVisible = true;
+                    textSurface.GetLayer(LayerBackground).IsVisible = true;
+                    
+                    //textSurface.Tint = new Color(0f, 0f, 0f, 0.2f);
+                }
+                else
+                {
+                    textSurface.GetLayer(LayerAnimCenter).IsVisible = false;
+                    textSurface.GetLayer(LayerBackground).IsVisible = false;
+                    //textSurface.Tint = new Color(0f, 0f, 0f, 1f);
+                }
             }
         }
         
@@ -170,11 +181,11 @@ namespace SadConsoleEditor.Editors
             textSurface.GetCell(selectedAnimation.Center.X, selectedAnimation.Center.Y).Background = Color.Black;
 
             textSurface.SetActiveLayer(LayerBackground);
-            consoleWrapper.Fill(Color.White, Color.Transparent, 0);
+            consoleWrapper.Fill(Color.White, Color.White * 0.6f, 0);
             
-            textSurface.GetLayer(LayerAnimCenter).IsVisible = false;
-            textSurface.GetLayer(LayerAnimBox).IsVisible = false;
-            textSurface.GetLayer(LayerBackground).IsVisible = false;
+            //textSurface.GetLayer(LayerAnimCenter).IsVisible = false;
+            //textSurface.GetLayer(LayerAnimBox).IsVisible = false;
+            //textSurface.GetLayer(LayerBackground).IsVisible = false;
 
             textSurface.SetActiveLayer(previousSelectedLayer);
             // TODO: Draw box on LayerAnimBox for collision rect

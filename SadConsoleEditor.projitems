@@ -44,6 +44,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\SelectionTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\Animation\EntityCenterTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\BoxTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\Circle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\DrawTool.cs" />
@@ -89,8 +90,5 @@
     <None Include="$(MSBuildThisFileDirectory)Editor.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Tools\Animation\" />
   </ItemGroup>
 </Project>
