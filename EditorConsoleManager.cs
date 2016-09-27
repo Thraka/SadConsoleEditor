@@ -165,6 +165,8 @@ namespace SadConsoleEditor
                     editor.New(defaultForeground, defaultBackground, width, height);
                     break;
                 case SadConsoleEditor.Editors.Editors.Scene:
+                    editor = new Editors.SceneEditor();
+                    editor.New(defaultForeground, defaultBackground, width, height);
                     break;
                 case SadConsoleEditor.Editors.Editors.GUI:
                     break;
@@ -198,7 +200,8 @@ namespace SadConsoleEditor
             }
             else if (loader is FileLoaders.Scene)
             {
-
+                editor = new Editors.SceneEditor();
+                editor.Load(file, loader);
             }
 
             if (editor != null)
@@ -337,12 +340,18 @@ namespace SadConsoleEditor
 
         private static void Engine_EngineDrawFrame(object sender, EventArgs e)
         {
+            if (ActiveEditor != null)
+                ActiveEditor.Render();
+
             if (Brush != null && Brush.IsVisible)
                 Brush.Render();
         }
 
         private static void Engine_EngineUpdated(object sender, EventArgs e)
         {
+            if (ActiveEditor != null)
+                ActiveEditor.Update();
+
             if (Brush != null && Brush.IsVisible)
                 Brush.Update();
         }

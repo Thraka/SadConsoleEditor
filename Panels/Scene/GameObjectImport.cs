@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Text;
 using SadConsole.Controls;
 using SadConsole.Input;
+using SadConsole.Game;
 
 namespace SadConsoleEditor.Panels.Scene
 {
-    class EntityImport : CustomPanel
+    class GameObjectImport : CustomPanel
     {
         private Button _importButton;
         private Button _deleteButton;
 
-        public EntityImport()
+        public GameObjectImport()
         {
             Title = "Scene Editor";
 
@@ -32,7 +33,7 @@ namespace SadConsoleEditor.Panels.Scene
         {
             Windows.SelectFilePopup fileDialogPopup = new Windows.SelectFilePopup();
 
-            fileDialogPopup.FileFilter = "*.entity";
+            fileDialogPopup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.GameObject() };
             fileDialogPopup.SelectButtonText = "Open";
             fileDialogPopup.Show(true);
             fileDialogPopup.Center();
@@ -43,10 +44,10 @@ namespace SadConsoleEditor.Panels.Scene
                 {
                     try
                     {
-                        var entity = SadConsole.Entities.Entity.Load(fileDialogPopup.SelectedFile);
+                        var entity = (GameObject)fileDialogPopup.SelectedLoader.Load(fileDialogPopup.SelectedFile);
                         entity.Position = new Microsoft.Xna.Framework.Point(0, 0);
-                        entity.PositionOffset = (EditorConsoleManager.Instance.SelectedEditor as Editors.SceneEditor).GetPosition();
-                        (EditorConsoleManager.Instance.SelectedEditor as Editors.SceneEditor)?.AddEntity(entity);
+                        //entity.RenderOffset = (EditorConsoleManager.ActiveEditor as Editors.SceneEditor).Position;
+                        (EditorConsoleManager.ActiveEditor as Editors.SceneEditor)?.LoadEntity(entity);
                     }
                     catch
                     {

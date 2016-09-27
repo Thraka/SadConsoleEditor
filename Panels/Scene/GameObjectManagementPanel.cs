@@ -23,28 +23,28 @@ namespace SadConsoleEditor.Panels
         public EntityManagementPanel()
         {
             Title = "Entities";
-            GameObjectList = new ListBox<EntityListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 4);
+            GameObjectList = new ListBox<EntityListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 4);
             GameObjectList.HideBorder = true;
             GameObjectList.SelectedItemChanged += GameObject_SelectedItemChanged;
             GameObjectList.CompareByReference = true;
 
-            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             removeSelected.Text = "Remove";
             removeSelected.ButtonClicked += RemoveSelected_ButtonClicked;
 
-            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             moveSelectedUp.Text = "Move Up";
             moveSelectedUp.ButtonClicked += MoveSelectedUp_ButtonClicked;
 
-            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             moveSelectedDown.Text = "Move Down";
             moveSelectedDown.ButtonClicked += MoveSelectedDown_ButtonClicked;
             
-            renameLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            renameLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             renameLayer.Text = "Rename";
             renameLayer.ButtonClicked += RenameEntity_ButtonClicked;
 
-            importGameObject = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            importGameObject = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             importGameObject.Text = "Import File";
             importGameObject.ButtonClicked += ImportEntity_ButtonClicked;
 
@@ -60,14 +60,14 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
-                    if (((Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor).LoadEntity(popup.SelectedFile))
-                    {
-                        RebuildListBox();
-                    }
+                    var entity = (GameObject)popup.SelectedLoader.Load(popup.SelectedFile);
+                    entity.Position = new Microsoft.Xna.Framework.Point(0, 0);
+                    //entity.RenderOffset = (EditorConsoleManager.ActiveEditor as Editors.SceneEditor).Position;
+                    (EditorConsoleManager.ActiveEditor as Editors.SceneEditor)?.LoadEntity(entity);
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.FileFilter = "*.entity";
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.GameObject() };
             popup.Show(true);
             popup.Center();
         }
@@ -84,7 +84,7 @@ namespace SadConsoleEditor.Panels
         void MoveSelectedDown_ButtonClicked(object sender, EventArgs e)
         {
             var entity = (GameObject)GameObjectList.SelectedItem;
-            var editor = (Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor;
+            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
             int index = editor.Entities.IndexOf(entity);
             editor.Entities.Remove(entity);
@@ -96,7 +96,7 @@ namespace SadConsoleEditor.Panels
         void MoveSelectedUp_ButtonClicked(object sender, EventArgs e)
         {
             var entity = (GameObject)GameObjectList.SelectedItem;
-            var editor = (Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor;
+            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
             int index = editor.Entities.IndexOf(entity);
             editor.Entities.Remove(entity);
@@ -108,7 +108,7 @@ namespace SadConsoleEditor.Panels
         void RemoveSelected_ButtonClicked(object sender, EventArgs e)
         {
             var entity = (GameObject)GameObjectList.SelectedItem;
-            var editor = (Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor;
+            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
             editor.Entities.Remove(entity);
 
@@ -121,7 +121,7 @@ namespace SadConsoleEditor.Panels
             if (GameObjectList.SelectedItem != null)
             {
                 var entity = (GameObject)GameObjectList.SelectedItem;
-                var editor = (Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor;
+                var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
                 removeSelected.IsEnabled = GameObjectList.Items.Count != 1;
 
@@ -144,7 +144,7 @@ namespace SadConsoleEditor.Panels
         {
             GameObjectList.Items.Clear();
 
-            var entities = ((Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor).Entities;
+            var entities = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Entities;
 
             if (entities.Count != 0)
             {
