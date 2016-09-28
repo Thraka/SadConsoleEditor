@@ -144,15 +144,18 @@ namespace SadConsoleEditor.Panels
         {
             GameObjectList.Items.Clear();
 
-            var entities = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Entities;
-
-            if (entities.Count != 0)
+            if (EditorConsoleManager.ActiveEditor is Editors.SceneEditor)
             {
-                foreach (var item in entities)
-                    GameObjectList.Items.Add(item);
+                var entities = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Entities;
+
+                if (entities.Count != 0)
+                {
+                    foreach (var item in entities)
+                        GameObjectList.Items.Add(item);
 
 
-                GameObjectList.SelectedItem = GameObjectList.Items[0];
+                    GameObjectList.SelectedItem = GameObjectList.Items[0];
+                }
             }
         }
 

@@ -87,7 +87,9 @@ namespace SadConsoleEditor.Editors
             tools.Add(Tools.FillTool.ID, new Tools.FillTool());
             tools.Add(Tools.BoxTool.ID, new Tools.BoxTool());
             tools.Add(Tools.SelectionTool.ID, new Tools.SelectionTool());
-
+            tools.Add(Tools.SceneEntityMoveTool.ID, new Tools.SceneEntityMoveTool());
+            
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.SceneEntityMoveTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.PaintTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.LineTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.CircleTool.ID]);
@@ -115,7 +117,7 @@ namespace SadConsoleEditor.Editors
 
                 List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, EntityPanel, AnimationsPanel, toolsPanel };
 
-                if (tool.ControlPanels != null || tool.ControlPanels.Length != 0)
+                if (tool.ControlPanels != null && tool.ControlPanels.Length != 0)
                     newPanels.AddRange(tool.ControlPanels);
 
                 panels = newPanels.ToArray();
@@ -152,10 +154,16 @@ namespace SadConsoleEditor.Editors
             popup.Closed += (s, e) =>
             {
                 if (popup.DialogResult)
+                {
                     popup.SelectedLoader.Save(textSurface, popup.SelectedFile);
 
+                    GameObject[] objects = Entities.ToArray();
+
+                    SadConsole.Serializer.Save(objects, popup.SelectedFile + ".objects");
+                }
             };
-            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface() };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.Scene() };
+            popup.SelectButtonText = "Save";
             popup.Show(true);
         }
 
@@ -203,6 +211,11 @@ namespace SadConsoleEditor.Editors
 
         public void Reset()
         {
+            
+        }
+
+        private void ClearEntities()
+        {
             Entities.Clear();
 
             List<IEditor> docs = new List<IEditor>();
@@ -216,9 +229,6 @@ namespace SadConsoleEditor.Editors
 
             foreach (var doc in docs)
                 EditorConsoleManager.RemoveEditor(doc);
-
-            EntityPanel.RebuildListBox();
-            AnimationsPanel.RebuildListBox();
         }
 
         public void Move(int x, int y)
@@ -285,19 +295,10 @@ namespace SadConsoleEditor.Editors
                     editor.LinkedEditor = null;
             }
         }
-
-        public void Save(string file, FileLoaders.IFileLoader loader)
-        {
-            textSurface.Save(file, typeof(LayerMetadata));
-
-            GameObject[] objects = Entities.ToArray();
-
-            SadConsole.Serializer.Save(objects, file + ".objects");
-        }
-
+        
         public void Load(string file, FileLoaders.IFileLoader loader)
         {
-            Reset();
+            ClearEntities();
 
             if (loader is FileLoaders.TextSurface)
             {
@@ -322,6 +323,14 @@ namespace SadConsoleEditor.Editors
                     EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
             }
             else if (loader is FileLoaders.LayeredTextSurface)
+            {
+                textSurface = (LayeredTextSurface)loader.Load(file);
+                consoleWrapper.TextSurface = textSurface;
+
+                if (EditorConsoleManager.ActiveEditor == this)
+                    EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            }
+            else if (loader is FileLoaders.Scene)
             {
                 textSurface = (LayeredTextSurface)loader.Load(file);
                 consoleWrapper.TextSurface = textSurface;

@@ -90,7 +90,7 @@ namespace SadConsoleEditor.Editors
 
                 List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, toolsPanel };
 
-                if (tool.ControlPanels != null || tool.ControlPanels.Length != 0)
+                if (tool.ControlPanels != null && tool.ControlPanels.Length != 0)
                     newPanels.AddRange(tool.ControlPanels);
 
                 panels = newPanels.ToArray();
@@ -172,6 +172,7 @@ namespace SadConsoleEditor.Editors
 
             };
             popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface() };
+            popup.SelectButtonText = "Save";
             popup.Show(true);
         }
 

@@ -301,6 +301,7 @@ namespace SadConsoleEditor.Editors
                 }
             };
             popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.GameObject() };
+            popup.SelectButtonText = "Save";
             popup.Show(true);
         }
 
