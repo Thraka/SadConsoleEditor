@@ -26,12 +26,12 @@ namespace SadConsoleEditor.FileLoaders
             }
         }
 
-        public ITextSurfaceRendered Load(string file)
+        public object Load(string file)
         {
             return SadConsole.Game.GameObject.Load(file);
         }
 
-        public void Save(ITextSurfaceRendered surface, string file)
+        public void Save(object surface, string file)
         {
             ((SadConsole.Game.GameObject)surface).Save(file);
         }

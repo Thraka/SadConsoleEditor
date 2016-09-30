@@ -26,7 +26,7 @@ namespace SadConsoleEditor.FileLoaders
             }
         }
 
-        public ITextSurfaceRendered Load(string file)
+        public object Load(string file)
         {
             string[] text = System.IO.File.ReadAllLines(file);
             int maxLineWidth = text.Max(s => s.Length);
@@ -40,13 +40,14 @@ namespace SadConsoleEditor.FileLoaders
             return importConsole.TextSurface;
         }
 
-        public void Save(ITextSurfaceRendered surface, string file)
+        public void Save(object surface, string file)
         {
-            SurfaceEditor editor = new SurfaceEditor(surface);
-            string[] lines = new string[surface.Height];
+            ITextSurface textSurface = (ITextSurface)surface;
+            SurfaceEditor editor = new SurfaceEditor(textSurface);
+            string[] lines = new string[textSurface.Height];
 
-            for (int y = 0; y < surface.Height; y++)
-                lines[y] = editor.GetString(0, y, surface.Width);
+            for (int y = 0; y < textSurface.Height; y++)
+                lines[y] = editor.GetString(0, y, textSurface.Width);
 
             System.IO.File.WriteAllLines(file, lines);
         }

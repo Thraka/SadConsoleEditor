@@ -11,7 +11,7 @@ namespace SadConsoleEditor.FileLoaders
         bool SupportsSave { get; }
         string FileTypeName { get; }
         string[] Extensions { get; }
-        ITextSurfaceRendered Load(string file);
-        void Save(ITextSurfaceRendered surface, string file);
+        object Load(string file);
+        void Save(object surface, string file);
     }
 }

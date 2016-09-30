@@ -26,20 +26,19 @@ namespace SadConsoleEditor.FileLoaders
             }
         }
 
-        public ITextSurfaceRendered Load(string file)
+        public object Load(string file)
         {
             if (System.IO.Path.GetExtension(file) == ".scene")
             {
 
             }
 
-            return SadConsole.Consoles.LayeredTextSurface.Load(file, typeof(LayerMetadata));
+            return SadConsole.Game.Scene.Load(file, null, typeof(LayerMetadata));
         }
 
-        public void Save(ITextSurfaceRendered surface, string file)
+        public void Save(object surface, string file)
         {
-            if (surface is SadConsole.Consoles.LayeredTextSurface)
-                ((SadConsole.Consoles.LayeredTextSurface)surface).Save(file, typeof(LayerMetadata));
+            ((SadConsole.Game.Scene)surface).Save(file, typeof(LayerMetadata));
         }
     }
 }

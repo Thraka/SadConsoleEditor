@@ -22,8 +22,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Editors\IEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\LayeredConsoleEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\SceneEditor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\GameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Animation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\GameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\IFileLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Scene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\TextFile.cs" />

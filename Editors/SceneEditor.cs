@@ -155,11 +155,14 @@ namespace SadConsoleEditor.Editors
             {
                 if (popup.DialogResult)
                 {
-                    popup.SelectedLoader.Save(textSurface, popup.SelectedFile);
+                    SadConsole.Game.Scene scene = new Scene(textSurface);
+                    scene.Objects = this.Entities;
 
-                    GameObject[] objects = Entities.ToArray();
+                    popup.SelectedLoader.Save(scene, popup.SelectedFile);
 
-                    SadConsole.Serializer.Save(objects, popup.SelectedFile + ".objects");
+                    //GameObject[] objects = Entities.ToArray();
+
+                    //SadConsole.Serializer.Save(objects, popup.SelectedFile + ".objects");
                 }
             };
             popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.Scene() };
@@ -300,40 +303,44 @@ namespace SadConsoleEditor.Editors
         {
             ClearEntities();
 
-            if (loader is FileLoaders.TextSurface)
+            //if (loader is FileLoaders.TextSurface)
+            //{
+            //    // Load the plain surface
+            //    TextSurface surface = (TextSurface)loader.Load(file);
+
+            //    // Load up a new layered text surface
+            //    textSurface = new LayeredTextSurface(surface.Width, surface.Height, 1);
+
+            //    // Setup metadata
+            //    LayerMetadata.Create("main", false, false, true, textSurface.GetLayer(0));
+
+            //    // Use the loaded surface
+            //    textSurface.ActiveLayer.Cells = surface.Cells;
+            //    textSurface.SetActiveLayer(0);
+
+            //    // Set the text surface as the one we're displaying
+            //    consoleWrapper.TextSurface = textSurface;
+
+            //    // Update the border
+            //    if (EditorConsoleManager.ActiveEditor == this)
+            //        EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            //}
+            //else if (loader is FileLoaders.LayeredTextSurface)
+            //{
+            //    textSurface = (LayeredTextSurface)loader.Load(file);
+            //    consoleWrapper.TextSurface = textSurface;
+
+            //    if (EditorConsoleManager.ActiveEditor == this)
+            //        EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            //}
+            if (loader is FileLoaders.Scene)
             {
-                // Load the plain surface
-                TextSurface surface = (TextSurface)loader.Load(file);
-
-                // Load up a new layered text surface
-                textSurface = new LayeredTextSurface(surface.Width, surface.Height, 1);
-
-                // Setup metadata
-                LayerMetadata.Create("main", false, false, true, textSurface.GetLayer(0));
-
-                // Use the loaded surface
-                textSurface.ActiveLayer.Cells = surface.Cells;
-                textSurface.SetActiveLayer(0);
-
-                // Set the text surface as the one we're displaying
+                var scene = (SadConsole.Game.Scene)loader.Load(file);
+                textSurface = scene.BackgroundSurface;
                 consoleWrapper.TextSurface = textSurface;
 
-                // Update the border
-                if (EditorConsoleManager.ActiveEditor == this)
-                    EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
-            }
-            else if (loader is FileLoaders.LayeredTextSurface)
-            {
-                textSurface = (LayeredTextSurface)loader.Load(file);
-                consoleWrapper.TextSurface = textSurface;
-
-                if (EditorConsoleManager.ActiveEditor == this)
-                    EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
-            }
-            else if (loader is FileLoaders.Scene)
-            {
-                textSurface = (LayeredTextSurface)loader.Load(file);
-                consoleWrapper.TextSurface = textSurface;
+                foreach (var item in scene.Objects)
+                    LoadEntity(item);
 
                 if (EditorConsoleManager.ActiveEditor == this)
                     EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
@@ -345,17 +352,17 @@ namespace SadConsoleEditor.Editors
             layerManagementPanel.SetLayeredTextSurface(textSurface);
 
             // Load game objects
-            file += ".objects";
+            //file += ".objects";
 
-            if (System.IO.File.Exists(file))
-            {
-                GameObject[] objects = SadConsole.Serializer.Load<GameObject[]>(file);
+            //if (System.IO.File.Exists(file))
+            //{
+            //    GameObject[] objects = SadConsole.Serializer.Load<GameObject[]>(file);
 
-                foreach (var item in objects)
-                {
-                    LoadEntity(item);
-                }
-            }
+            //    foreach (var item in objects)
+            //    {
+            //        LoadEntity(item);
+            //    }
+            //}
         }
         
         

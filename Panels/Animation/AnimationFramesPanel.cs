@@ -179,7 +179,7 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
-                    var surface = popup.SelectedLoader.Load(popup.SelectedFile);
+                    var surface = (ITextSurfaceRendered)popup.SelectedLoader.Load(popup.SelectedFile);
                     var newFrame = currentAnimation.CreateFrame();
 
                     surface.Copy(newFrame);

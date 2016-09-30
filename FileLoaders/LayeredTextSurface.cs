@@ -26,12 +26,12 @@ namespace SadConsoleEditor.FileLoaders
             }
         }
 
-        public ITextSurfaceRendered Load(string file)
+        public object Load(string file)
         {
             return SadConsole.Consoles.LayeredTextSurface.Load(file, typeof(LayerMetadata));
         }
 
-        public void Save(ITextSurfaceRendered surface, string file)
+        public void Save(object surface, string file)
         {
             ((SadConsole.Consoles.LayeredTextSurface)surface).Save(file, typeof(LayerMetadata));
         }

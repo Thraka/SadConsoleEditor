@@ -7,9 +7,55 @@ using System.Collections.Generic;
 
 namespace SadConsoleEditor
 {
+    class CustomConsoleList : ConsoleList
+    {
+        public override void Render()
+        {
+            if (IsVisible)
+            {
+                var copyList = new List<IConsole>(_consoles);
+
+                for (int i = 0; i < copyList.Count; i++)
+                {
+                    copyList[i].Render();
+
+                    if (EditorConsoleManager.ActiveEditor != null && copyList[i] == EditorConsoleManager.ActiveEditor.RenderedConsole)
+                    {
+                        EditorConsoleManager.ActiveEditor.Render();
+
+                        if (EditorConsoleManager.Brush != null && EditorConsoleManager.Brush.IsVisible)
+                            EditorConsoleManager.Brush.Render();
+                    }
+                }
+            }
+        }
+
+        public override void Update()
+        {
+            if (DoUpdate)
+            {
+                var copyList = new List<IConsole>(_consoles);
+
+                for (int i = copyList.Count - 1; i >= 0; i--)
+                {
+                    copyList[i].Update();
+
+                    if (EditorConsoleManager.ActiveEditor != null && copyList[i] == EditorConsoleManager.ActiveEditor.RenderedConsole)
+                    {
+                        EditorConsoleManager.ActiveEditor.Update();
+
+                        if (EditorConsoleManager.Brush != null && EditorConsoleManager.Brush.IsVisible)
+                            EditorConsoleManager.Brush.Update();
+                    }
+                }
+            }
+        }
+    }
+
+
     static class EditorConsoleManager
     {
-        private static ConsoleList Consoles;
+        private static CustomConsoleList Consoles;
         public static Consoles.QuickSelectPane QuickSelectPane;
         private static Console topBarPane;
         private static Consoles.BorderConsole borderConsole;
@@ -60,13 +106,11 @@ namespace SadConsoleEditor
 
         public static void Initialize()
         {
-            Consoles = new ConsoleList();
+            Consoles = new CustomConsoleList();
 
             // Hook the update event that happens each frame so we can trap keys and respond.
             SadConsole.Engine.ConsoleRenderStack = Consoles;
             SadConsole.Engine.ActiveConsole = Consoles;
-            SadConsole.Engine.EngineUpdated += Engine_EngineUpdated;
-            SadConsole.Engine.EngineDrawFrame += Engine_EngineDrawFrame;
 
             // Create the basic consoles
             QuickSelectPane = new SadConsoleEditor.Consoles.QuickSelectPane();
@@ -336,24 +380,6 @@ namespace SadConsoleEditor
             {
                 Brush.RenderOffset = ActiveEditor.Position;
             }
-        }
-
-        private static void Engine_EngineDrawFrame(object sender, EventArgs e)
-        {
-            if (ActiveEditor != null)
-                ActiveEditor.Render();
-
-            if (Brush != null && Brush.IsVisible)
-                Brush.Render();
-        }
-
-        private static void Engine_EngineUpdated(object sender, EventArgs e)
-        {
-            if (ActiveEditor != null)
-                ActiveEditor.Update();
-
-            if (Brush != null && Brush.IsVisible)
-                Brush.Update();
         }
     }
 }
