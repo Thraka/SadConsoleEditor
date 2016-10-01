@@ -23,7 +23,7 @@ namespace SadConsoleEditor.Editors
 
         public Editors EditorType { get { return Editors.Console; } }
 
-        public string Title { get; private set; }
+        public string Title { get; set; }
 
         public string EditorTypeName { get { return "Console"; } }
 

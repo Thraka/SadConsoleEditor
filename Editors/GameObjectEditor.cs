@@ -37,11 +37,13 @@ namespace SadConsoleEditor.Editors
 
         public SceneEditor LinkedEditor;
 
+        public GameObject GameObject { get { return gameObject; } }
+
         public string DocumentTitle { get; set; }
 
-        public Editors EditorType { get { return Editors.Console; } }
+        public Editors EditorType { get { return Editors.GameObject; } }
 
-        public string Title { get; private set; }
+        public string Title { get; set; }
 
         public string EditorTypeName { get { return "Animated Game Object"; } }
 

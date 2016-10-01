@@ -18,6 +18,8 @@ namespace SadConsoleEditor
         [STAThread]
         static void Main()
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             // Load our program settings
             var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(ProgramSettings));
             using (var fileObject = System.IO.File.OpenRead("Settings.json"))
@@ -33,7 +35,12 @@ namespace SadConsoleEditor
             // Start the game.
             SadConsole.Engine.Run();
         }
-        
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         private static void Engine_EngineStart(object sender, EventArgs e)
         {
             SadConsole.Engine.MonoGameInstance.Window.Title = "SadConsole Editor - v" + System.Reflection.Assembly.GetCallingAssembly().GetName().Version.ToString();

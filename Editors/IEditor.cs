@@ -27,7 +27,7 @@ namespace SadConsoleEditor.Editors
 
         string EditorTypeName { get; }
 
-        string Title { get; }
+        string Title { get; set; }
 
         CustomPanel[] Panels { get; }
 
