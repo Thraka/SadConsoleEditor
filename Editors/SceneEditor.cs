@@ -24,18 +24,18 @@ namespace SadConsoleEditor.Editors
         private Dictionary<string, Tools.ITool> tools;
         private Tools.ITool selectedTool;
 
-        public Panels.EntityManagementPanel EntityPanel;
+        public Panels.EntityManagementPanel GameObjectPanel;
         public Panels.Scene.AnimationListPanel AnimationsPanel;
 
 
-        private GameObject _selectedEntity;
+        private GameObject _selectedGameObject;
         public Dictionary<GameObject, GameObject> LinkedGameObjects = new Dictionary<GameObject, GameObject>();
-        public GameObjectCollection Entities;
+        public GameObjectCollection GameObjects;
 
         public GameObject SelectedEntity
         {
-            get { return _selectedEntity; }
-            set { _selectedEntity = value; AnimationsPanel.RebuildListBox(); }
+            get { return _selectedGameObject; }
+            set { _selectedGameObject = value; AnimationsPanel.RebuildListBox(); }
         }
 
 
@@ -102,12 +102,12 @@ namespace SadConsoleEditor.Editors
 
             toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
 
-            EntityPanel = new Panels.EntityManagementPanel();
+            GameObjectPanel = new Panels.EntityManagementPanel();
             AnimationsPanel = new Panels.Scene.AnimationListPanel();
-            Entities = new GameObjectCollection();
+            GameObjects = new GameObjectCollection();
             LinkedGameObjects = new Dictionary<GameObject, GameObject>();
 
-            panels = new CustomPanel[] { layerManagementPanel, EntityPanel, AnimationsPanel, toolsPanel };
+            panels = new CustomPanel[] { layerManagementPanel, GameObjectPanel, AnimationsPanel, toolsPanel };
         }
 
         private void ToolsListBox_SelectedItemChanged(object sender, SadConsole.Controls.ListBox<SadConsole.Controls.ListBoxItem>.SelectedItemEventArgs e)
@@ -117,7 +117,7 @@ namespace SadConsoleEditor.Editors
             if (e.Item != null)
             {
 
-                List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, EntityPanel, AnimationsPanel, toolsPanel };
+                List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, GameObjectPanel, AnimationsPanel, toolsPanel };
 
                 if (tool.ControlPanels != null && tool.ControlPanels.Length != 0)
                     newPanels.AddRange(tool.ControlPanels);
@@ -158,7 +158,7 @@ namespace SadConsoleEditor.Editors
                 if (popup.DialogResult)
                 {
                     SadConsole.Game.Scene scene = new Scene(textSurface);
-                    scene.Objects = this.Entities;
+                    scene.Objects = this.GameObjects;
 
                     popup.SelectedLoader.Save(scene, popup.SelectedFile);
 
@@ -174,7 +174,7 @@ namespace SadConsoleEditor.Editors
 
         public void Render()
         {
-            foreach (var entity in Entities)
+            foreach (var entity in GameObjects)
             {
                 entity.Render();
             }
@@ -182,7 +182,7 @@ namespace SadConsoleEditor.Editors
 
         public void Update()
         {
-            foreach (var entity in Entities)
+            foreach (var entity in GameObjects)
             {
                 entity.Update();
             }
@@ -230,7 +230,7 @@ namespace SadConsoleEditor.Editors
 
             EditorConsoleManager.UpdateBrush();
 
-            foreach (var entity in Entities)
+            foreach (var entity in GameObjects)
                 entity.RenderOffset = consoleWrapper.Position;
         }
 
@@ -248,7 +248,7 @@ namespace SadConsoleEditor.Editors
                 if (editor != null && editor.LinkedEditor == this)
                 {
                     // sync back up any entities.
-                    foreach (var gameObject in Entities)
+                    foreach (var gameObject in GameObjects)
                     {
                         var animationName = gameObject.Animation.Name;
                         gameObject.Animations.Clear();
@@ -268,7 +268,7 @@ namespace SadConsoleEditor.Editors
 
             
             AnimationsPanel.RebuildListBox();
-            EntityPanel.RebuildListBox();
+            GameObjectPanel.RebuildListBox();
         }
 
         public void OnDeselected()
@@ -404,8 +404,8 @@ namespace SadConsoleEditor.Editors
             localEntity.Animation = localEntity.Animations[entity.Animation.Name];
 
             localEntity.RenderOffset = consoleWrapper.Position;
-            Entities.Add(localEntity);
-            EntityPanel.RebuildListBox();
+            GameObjects.Add(localEntity);
+            GameObjectPanel.RebuildListBox();
 
             localEntity.Position = entity.Position;
 
@@ -417,7 +417,7 @@ namespace SadConsoleEditor.Editors
 
         private void ClearEntities()
         {
-            Entities.Clear();
+            GameObjects.Clear();
 
             List<IEditor> docs = new List<IEditor>();
 
@@ -434,15 +434,15 @@ namespace SadConsoleEditor.Editors
 
         private void FixLinkedObjectTitles()
         {
-            for (int i = 0; i < Entities.Count; i++)
+            for (int i = 0; i < GameObjects.Count; i++)
             {
-                var linkedEntity = LinkedGameObjects[Entities[i]];
+                var linkedEntity = LinkedGameObjects[GameObjects[i]];
                 IEditor linkedEditor = EditorConsoleManager.OpenEditors.Where(e => e.EditorType == Editors.GameObject && ((GameObjectEditor)e).GameObject == linkedEntity).FirstOrDefault();
 
                 if (linkedEditor != null)
                 {
                     // last one
-                    if (i == Entities.Count - 1)
+                    if (i == GameObjects.Count - 1)
                     {
                         linkedEditor.Title = (char)192 + " " + linkedEntity.Name;
                     }
@@ -452,9 +452,6 @@ namespace SadConsoleEditor.Editors
 
                     }
                 }
-
-                //192, 195
-                //
 
                 EditorConsoleManager.ToolsPane.PanelFiles.DocumentsListbox.IsDirty = true;
             }

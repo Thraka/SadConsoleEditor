@@ -86,21 +86,21 @@
 
                 Point mousePosition = new Point(0);
 
-                for (int i = 0; i < editor.Entities.Count; i++)
+                for (int i = 0; i < editor.GameObjects.Count; i++)
                 {
-                    var area = editor.Entities[i].Animation.RenderArea;
-                    area.Offset(editor.Entities[i].Position - editor.Entities[i].Animation.Center);
+                    var area = editor.GameObjects[i].Animation.RenderArea;
+                    area.Offset(editor.GameObjects[i].Position - editor.GameObjects[i].Animation.Center);
 
-                    mousePosition = info.WorldLocation - editor.Entities[i].RenderOffset;
+                    mousePosition = info.WorldLocation - editor.GameObjects[i].RenderOffset;
 
                     // is mouse over?
                     if (area.Contains(mousePosition))
                     {
                         overEntity = true;
 
-                        if (movingEntity != editor.Entities[i])
+                        if (movingEntity != editor.GameObjects[i])
                         {
-                            movingEntity = editor.Entities[i];
+                            movingEntity = editor.GameObjects[i];
                             _boundingBox = new GameObject(Settings.Config.ScreenFont);
                             _boundingBox.RenderOffset = movingEntity.RenderOffset;
                             _boundingBox.Position = movingEntity.Position - movingEntity.Animation.Center - new Point(1);

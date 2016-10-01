@@ -86,9 +86,9 @@ namespace SadConsoleEditor.Panels
             var entity = (GameObject)GameObjectList.SelectedItem;
             var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
-            int index = editor.Entities.IndexOf(entity);
-            editor.Entities.Remove(entity);
-            editor.Entities.Insert(index + 1, entity);
+            int index = editor.GameObjects.IndexOf(entity);
+            editor.GameObjects.Remove(entity);
+            editor.GameObjects.Insert(index + 1, entity);
             RebuildListBox();
             GameObjectList.SelectedItem = entity;
         }
@@ -98,9 +98,9 @@ namespace SadConsoleEditor.Panels
             var entity = (GameObject)GameObjectList.SelectedItem;
             var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
-            int index = editor.Entities.IndexOf(entity);
-            editor.Entities.Remove(entity);
-            editor.Entities.Insert(index - 1, entity);
+            int index = editor.GameObjects.IndexOf(entity);
+            editor.GameObjects.Remove(entity);
+            editor.GameObjects.Insert(index - 1, entity);
             RebuildListBox();
             GameObjectList.SelectedItem = entity;
         }
@@ -110,7 +110,7 @@ namespace SadConsoleEditor.Panels
             var entity = (GameObject)GameObjectList.SelectedItem;
             var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
-            editor.Entities.Remove(entity);
+            editor.GameObjects.Remove(entity);
 
             RebuildListBox();
             GameObjectList.SelectedItem = GameObjectList.Items[0];
@@ -125,8 +125,8 @@ namespace SadConsoleEditor.Panels
 
                 removeSelected.IsEnabled = GameObjectList.Items.Count != 1;
 
-                moveSelectedUp.IsEnabled = editor.Entities.IndexOf(entity) != 0;
-                moveSelectedDown.IsEnabled = editor.Entities.IndexOf(entity) != editor.Entities.Count - 1;
+                moveSelectedUp.IsEnabled = editor.GameObjects.IndexOf(entity) != 0;
+                moveSelectedDown.IsEnabled = editor.GameObjects.IndexOf(entity) != editor.GameObjects.Count - 1;
                 renameLayer.IsEnabled = true;
                 
                 editor.SelectedEntity = entity;
@@ -146,7 +146,7 @@ namespace SadConsoleEditor.Panels
 
             if (EditorConsoleManager.ActiveEditor is Editors.SceneEditor)
             {
-                var entities = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Entities;
+                var entities = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).GameObjects;
 
                 if (entities.Count != 0)
                 {
