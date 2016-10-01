@@ -49,22 +49,18 @@ namespace SadConsoleEditor.Tools
             EditorConsoleManager.Brush = Brush;
             EditorConsoleManager.UpdateBrush();
 
-            //var editor = EditorConsoleManager.Instance.SelectedEditor as Editors.EntityEditor;
+            var editor = EditorConsoleManager.ActiveEditor as Editors.GameObjectEditor;
 
-            //if (editor != null)
-            //{
-            //    editor.Surface.Tint = new Color(0f, 0f, 0f, 0.2f);
-            //}
+            if (editor != null)
+                editor.ShowCenterLayer = true;
         }
 
         public void OnDeselected()
         {
-            //var editor = EditorConsoleManager.Instance.SelectedEditor as Editors.EntityEditor;
+            var editor = EditorConsoleManager.ActiveEditor as Editors.GameObjectEditor;
 
-            //if (editor != null)
-            //{
-            //    editor.Surface.Tint = new Color(0f, 0f, 0f, 0.2f);
-            //}
+            if (editor != null)
+                editor.ShowCenterLayer = false;
         }
 
         public void RefreshTool()

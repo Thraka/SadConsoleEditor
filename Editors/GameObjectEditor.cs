@@ -64,6 +64,22 @@ namespace SadConsoleEditor.Editors
 
         public bool IsLinked { get { return LinkedEditor != null; } }
 
+        private bool showCenterLayer;
+
+        public bool ShowCenterLayer
+        {
+            get
+            {
+                return showCenterLayer;
+            }
+            set
+            {
+                showCenterLayer = value;
+                SyncSpecialLayerToAnimation();
+            }
+        }
+
+
 
         public GameObjectEditor()
         {
@@ -153,6 +169,7 @@ namespace SadConsoleEditor.Editors
                 EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
 
             framesPanel.SetAnimation(animation);
+            SelectedTool = selectedTool;
         }
 
         private void SelectedFrameChanged(TextSurfaceBasic frame)
@@ -182,10 +199,11 @@ namespace SadConsoleEditor.Editors
 
             textSurface.SetActiveLayer(LayerBackground);
             consoleWrapper.Fill(Color.White, Color.White * 0.6f, 0);
-            
-            //textSurface.GetLayer(LayerAnimCenter).IsVisible = false;
-            //textSurface.GetLayer(LayerAnimBox).IsVisible = false;
-            //textSurface.GetLayer(LayerBackground).IsVisible = false;
+
+            // Change this to a prop (SHOWCENTER LAYER) and have tool on selected
+            textSurface.GetLayer(LayerAnimCenter).IsVisible = ShowCenterLayer;
+            textSurface.GetLayer(LayerAnimBox).IsVisible = false;
+            textSurface.GetLayer(LayerBackground).IsVisible = ShowCenterLayer;
 
             textSurface.SetActiveLayer(previousSelectedLayer);
             // TODO: Draw box on LayerAnimBox for collision rect
@@ -195,7 +213,9 @@ namespace SadConsoleEditor.Editors
         {
             gameObject = entity;
             gameObject.Font = SadConsoleEditor.Settings.Config.ScreenFont;
-            gameObject.Animation = gameObject.Animations.First().Value;
+
+            if (!gameObject.Animations.ContainsValue(gameObject.Animation))
+                gameObject.Animation = gameObject.Animations.First().Value;
 
             animationPanel.SetEntity(gameObject);
             gameObjectNamePanel.SetEntity(gameObject);

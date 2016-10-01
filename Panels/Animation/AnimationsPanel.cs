@@ -301,9 +301,15 @@ namespace SadConsoleEditor.Panels
             animations.Items.Clear();
 
             foreach (var item in entity.Animations)
+            {
                 animations.Items.Add(item.Value);
 
-            animations.SelectedItem = animations.Items[0];
+                if (item.Value == entity.Animation)
+                    animations.SelectedItem = item.Value;
+            }
+
+            if (animations.SelectedItem == null)
+                animations.SelectedItem = animations.Items[0];
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseInfo info)
