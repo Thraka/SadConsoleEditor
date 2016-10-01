@@ -23,6 +23,8 @@ namespace SadConsoleEditor.Editors
 
         public Editors EditorType { get { return Editors.Console; } }
 
+        public string Title { get; private set; }
+
         public string EditorTypeName { get { return "Console"; } }
 
         public int Height { get { return textSurface.Height; } }
@@ -155,6 +157,7 @@ namespace SadConsoleEditor.Editors
             }
 
             textSurface.Font = Settings.Config.ScreenFont;
+            Title = System.IO.Path.GetFileName(file);
 
             // Update the layer management panel
             layerManagementPanel.SetLayeredTextSurface(textSurface);

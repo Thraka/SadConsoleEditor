@@ -41,6 +41,8 @@ namespace SadConsoleEditor.Editors
 
         public Editors EditorType { get { return Editors.Console; } }
 
+        public string Title { get; private set; }
+
         public string EditorTypeName { get { return "Animated Game Object"; } }
 
         public int Height { get { return textSurface.Height; } }
@@ -219,6 +221,7 @@ namespace SadConsoleEditor.Editors
 
             animationPanel.SetEntity(gameObject);
             gameObjectNamePanel.SetEntity(gameObject);
+            Title = entity.Name;
 
             SelectedAnimationChanged(gameObject.Animation);
         }
@@ -305,6 +308,8 @@ namespace SadConsoleEditor.Editors
             if (loader is FileLoaders.GameObject)
             {
                 SetEntity((GameObject)((FileLoaders.GameObject)loader).Load(file));
+                Title = System.IO.Path.GetFileName(file);
+
             }
         }
 

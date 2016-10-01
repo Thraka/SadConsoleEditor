@@ -235,21 +235,23 @@ namespace SadConsoleEditor
             if (loader is FileLoaders.LayeredTextSurface || loader is FileLoaders.TextSurface)
             {
                 editor = new Editors.LayeredConsoleEditor();
+                AddEditor(editor, false);
                 editor.Load(file, loader);
             }
             else if (loader is FileLoaders.GameObject)
             {
                 editor = new Editors.GameObjectEditor();
+                AddEditor(editor, false);
                 editor.Load(file, loader);
             }
             else if (loader is FileLoaders.Scene)
             {
                 editor = new Editors.SceneEditor();
+                AddEditor(editor, false);
                 editor.Load(file, loader);
             }
-
             if (editor != null)
-                AddEditor(editor, true);
+                ChangeActiveEditor(editor);
 
             topBarPane.IsVisible = true;
             ToolsPane.IsVisible = true;

@@ -45,6 +45,8 @@ namespace SadConsoleEditor.Editors
 
         public string EditorTypeName { get { return "Scene"; } }
 
+        public string Title { get; private set; }
+
         public int Height { get { return textSurface.Height; } }
 
         public Point Position { get { return consoleWrapper.Position; } }
@@ -347,7 +349,7 @@ namespace SadConsoleEditor.Editors
             }
 
             textSurface.Font = Settings.Config.ScreenFont;
-
+            Title = Path.GetFileName(file);
             // Update the layer management panel
             layerManagementPanel.SetLayeredTextSurface(textSurface);
 

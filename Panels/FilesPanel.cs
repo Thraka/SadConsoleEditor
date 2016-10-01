@@ -121,7 +121,7 @@ namespace SadConsoleEditor.Panels
         {
             public override void Draw(ITextSurface surface, Rectangle area)
             {
-                string value = ((Editors.IEditor)Item).EditorTypeName;
+                string value = ((Editors.IEditor)Item).Title??((Editors.IEditor)Item).EditorTypeName;
                 if (value.Length < area.Width)
                     value += new string(' ', area.Width - value.Length);
                 else if (value.Length > area.Width)
