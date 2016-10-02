@@ -6,6 +6,7 @@ using SadConsole.Consoles;
 using Console = SadConsole.Consoles.Console;
 using SadConsoleEditor.Panels;
 using System.Linq;
+using SadConsole.Input;
 
 namespace SadConsoleEditor.Editors
 {
@@ -221,6 +222,11 @@ namespace SadConsoleEditor.Editors
         public bool ProcessKeyboard(IConsole console, SadConsole.Input.KeyboardInfo info)
         {
             //EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.TextSurface);
+            return false;
+        }
+
+        public bool ProcessKeyboard(KeyboardInfo info)
+        {
             return false;
         }
 

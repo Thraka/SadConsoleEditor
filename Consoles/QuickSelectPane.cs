@@ -32,8 +32,9 @@ namespace SadConsoleEditor.Consoles
 			set { charBackground = value; Redraw(); }
 		}
 
-		public QuickSelectPane() : base(Settings.Config.WindowWidth - Settings.Config.ToolPaneWidth, 3)
+		public QuickSelectPane() : base(Settings.Config.WindowWidth - Settings.Config.ToolPaneWidth + 1, 3)
 		{
+            textSurface.Font = Settings.Config.ScreenFont;
 			textSurface.DefaultBackground = Settings.Color_MenuBack;
 			textSurface.DefaultForeground = Settings.Color_TitleText;
 
@@ -61,9 +62,12 @@ namespace SadConsoleEditor.Consoles
 			CanFocus = false;
 			CanUseMouse = false;
 			CanUseKeyboard = false;
-		}
 
-		public void Redraw()
+            UsePixelPositioning = true;
+            Position = new Point(0, SadConsole.Engine.WindowHeight - textSurface.AbsoluteArea.Height);
+        }
+
+        public void Redraw()
 		{
 			Clear();
 

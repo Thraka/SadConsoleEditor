@@ -42,6 +42,22 @@ namespace SadConsoleEditor
 
         public Font ScreenFont;
 
+        public int WindowWidthAsScreenFont
+        {
+            get
+            {
+                return new Point(Engine.WindowWidth, 0).WorldLocationToConsole(ScreenFont.Size.X, ScreenFont.Size.Y).X;
+            }
+        }
+
+        public int WindowHeightAsScreenFont
+        {
+            get
+            {
+                return new Point(0, Engine.WindowHeight).WorldLocationToConsole(ScreenFont.Size.X, ScreenFont.Size.Y).Y;
+            }
+        }
+
         public EditorSettings GetSettings(Editors.Editors editor)
         {
             switch (editor)

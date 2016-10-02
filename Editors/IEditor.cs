@@ -40,9 +40,12 @@ namespace SadConsoleEditor.Editors
         Point Position { get; }
 
         SadConsole.Consoles.Console RenderedConsole { get; }
+
         void Render();
 
         void Update();
+
+        bool ProcessKeyboard(KeyboardInfo info);
 
         void Move(int x, int y);
 

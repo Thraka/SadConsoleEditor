@@ -362,6 +362,11 @@ namespace SadConsoleEditor.Editors
             return false;
         }
 
+        public bool ProcessKeyboard(KeyboardInfo info)
+        {
+            return false;
+        }
+
         public bool ProcessMouse(IConsole console, SadConsole.Input.MouseInfo info)
         {
             consoleWrapper.MouseHandler = null;

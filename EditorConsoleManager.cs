@@ -4,6 +4,7 @@ using System.Linq;
 using System;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
+using SadConsole.Input;
 
 namespace SadConsoleEditor
 {
@@ -50,6 +51,17 @@ namespace SadConsoleEditor
                 }
             }
         }
+
+        public override bool ProcessKeyboard(KeyboardInfo info)
+        {
+            return EditorConsoleManager.ProcessKeyboard(info);
+        }
+
+        public override bool ProcessMouse(MouseInfo info)
+        {
+            return base.ProcessMouse(info);
+            //return EditorConsoleManager.ProcessMouse(info);
+        }
     }
 
 
@@ -70,6 +82,7 @@ namespace SadConsoleEditor
         private static Point topBarMousePosition;
 
         public static SadConsole.Game.GameObject Brush;
+        public static bool AllowKeyboardToMoveConsole;
 
         public static Editors.IEditor ActiveEditor { get; private set; }
 
@@ -114,7 +127,6 @@ namespace SadConsoleEditor
 
             // Create the basic consoles
             QuickSelectPane = new SadConsoleEditor.Consoles.QuickSelectPane();
-            QuickSelectPane.Position = new Point(0, Settings.Config.WindowHeight - QuickSelectPane.TextSurface.Height);
             QuickSelectPane.Redraw();
             QuickSelectPane.IsVisible = false;
 
@@ -126,6 +138,7 @@ namespace SadConsoleEditor
 
             borderConsole = new SadConsoleEditor.Consoles.BorderConsole(10, 10);
             borderConsole.IsVisible = false;
+            borderConsole.CanUseMouse = false;
 
             ToolsPane = new Consoles.ToolPane();
             ToolsPane.Position = new Point(Settings.Config.WindowWidth - ToolsPane.Width - 1, 1);
@@ -147,11 +160,10 @@ namespace SadConsoleEditor
             scrollerContainer.ProcessMouseWithoutFocus = true;
 
             // Add the consoles to the main console list
-            Consoles.Add(topBarPane);
             Consoles.Add(QuickSelectPane);
+            Consoles.Add(topBarPane);
             Consoles.Add(ToolsPane);
             Consoles.Add(scrollerContainer);
-            Consoles.Add(borderConsole);
 
             // Setup the file types for base editors.
             EditorFileTypes = new Dictionary<Type, FileLoaders.IFileLoader[]>(3);
@@ -307,6 +319,8 @@ namespace SadConsoleEditor
 
         public static void ChangeActiveEditor(Editors.IEditor editor)
         {
+            AllowKeyboardToMoveConsole = true;
+
             if (ActiveEditor != null)
             {
                 ActiveEditor.OnDeselected();
@@ -317,10 +331,11 @@ namespace SadConsoleEditor
             {
                 ActiveEditor = editor;
                 CenterEditor();
-                UpdateBorder(editor.Position);
                 ToolsPane.RedrawPanels();
                 ActiveEditor.OnSelected();
-                Consoles.Add(ActiveEditor.RenderedConsole);
+
+                Consoles.Insert(0, ActiveEditor.RenderedConsole);
+                UpdateBorder(editor.Position);
 
                 if (ToolsPane.PanelFiles.DocumentsListbox.SelectedItem != editor)
                     ToolsPane.PanelFiles.DocumentsListbox.SelectedItem = editor;
@@ -339,8 +354,11 @@ namespace SadConsoleEditor
             {
                 Consoles.Remove(borderConsole);
                 borderConsole = new Consoles.BorderConsole(ActiveEditor.Width + 2, ActiveEditor.Height + 2);
-                Consoles.Add(borderConsole);
             }
+
+            if (!Consoles.Contains(borderConsole) && Consoles.Contains(ActiveEditor.RenderedConsole))
+                Consoles.Insert(Consoles.IndexOf(ActiveEditor.RenderedConsole), borderConsole);
+
             borderConsole.Position = position - new Point(1, 1);
             borderConsole.IsVisible = true;
         }
@@ -382,6 +400,109 @@ namespace SadConsoleEditor
             {
                 Brush.RenderOffset = ActiveEditor.Position;
             }
+        }
+
+        public static bool ProcessKeyboard(KeyboardInfo info)
+        {
+            //var result = base.ProcessKeyboard(info);
+            if (AllowKeyboardToMoveConsole)
+            {
+                bool shifted = info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
+
+                var position = new Point(borderConsole.Position.X + 1, borderConsole.Position.Y + 1);
+                bool movekeyPressed = false;
+                if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+                {
+                    if (borderConsole.Position.X + borderConsole.Width - 1 != 0)
+                    {
+                        position.X -= 1;
+                        movekeyPressed = true;
+                    }
+                }
+                else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
+                {
+                    var max = ToolsPane.Position.TranslateFont(ToolsPane.TextSurface.Font, borderConsole.TextSurface.Font);
+                    
+                    
+                    if (borderConsole.Position.X != max.X - 1)
+                    {
+                        position.X += 1;
+                        movekeyPressed = true;
+                    }
+                }
+
+                if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
+                {
+                    if (borderConsole.Position.Y + borderConsole.Height - 2 != 0)
+                    {
+                        position.Y -= 1;
+                        movekeyPressed = true;
+                    }
+
+                }
+                else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
+                {
+                    if (QuickSelectPane.IsVisible)
+                    {
+                        if (borderConsole.Position.Y * borderConsole.TextSurface.Font.Size.Y + borderConsole.TextSurface.Font.Size.Y < QuickSelectPane.Position.Y)
+                        {
+                            position.Y += 1;
+                            movekeyPressed = true;
+                        }
+                    }
+                    else if (borderConsole.Position.Y != Settings.Config.WindowHeightAsScreenFont - 1)
+                    {
+                        position.Y += 1;
+                        movekeyPressed = true;
+                    }
+                }
+
+                if (movekeyPressed)
+                {
+                    ActiveEditor.Move(position.X, position.Y);
+                }
+                else
+                {
+                    //if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Subtract))
+                    //{
+                    //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X / 2, SelectedEditor.Surface.CellSize.Y / 2);
+                    //}
+                    //else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Add))
+                    //{
+                    //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X * 2, SelectedEditor.Surface.CellSize.Y * 2);
+                    //}
+                    //else
+                    {
+
+                        // Look for tool hotkeys
+                        if (ToolsPane.ProcessKeyboard(info))
+                        {
+                            return true;
+                        }
+                        // Look for quick select F* keys
+                        else if (QuickSelectPane.ProcessKeyboard(info))
+                        {
+                            return true;
+                        }
+                        else if (ActiveEditor != null)
+                        {
+                            return ActiveEditor.ProcessKeyboard(info);
+                        }
+                    }
+                }
+
+            }
+            
+            return false;
+        }
+
+        public static bool ProcessMouse(MouseInfo info)
+        {
+            //if (ActiveEditor != null && info.Console != ToolsPane && info.Console != ToolsPaneScroller)
+            //{
+            //    ActiveEditor.RenderedConsole.process
+            //}
+            return false;
         }
     }
 }
