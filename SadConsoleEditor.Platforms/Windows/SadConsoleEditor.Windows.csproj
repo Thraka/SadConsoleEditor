@@ -57,11 +57,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="SadConsole.Core.Windows, Version=5.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SadConsole.Core.5.0.4-pre2\lib\net45\SadConsole.Core.Windows.dll</HintPath>
+      <HintPath>..\..\packages\SadConsole.Core.5.0.4\lib\net45\SadConsole.Core.Windows.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SadConsole.GameHelpers.Windows, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\SadConsole.GameHelpers.4.1.0-pre5\lib\net45\SadConsole.GameHelpers.Windows.dll</HintPath>
+      <HintPath>..\..\packages\SadConsole.GameHelpers.4.1.0\lib\net45\SadConsole.GameHelpers.Windows.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
