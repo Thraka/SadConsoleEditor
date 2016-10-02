@@ -2,6 +2,7 @@
 {
     using SadConsole;
     using SadConsole.Consoles;
+    using SadConsole.Game;
     using SadConsole.Input;
     using SadConsoleEditor.Panels;
 
@@ -21,9 +22,9 @@
 
         public CustomPanel[] ControlPanels { get; private set; }
 
-        private RecolorToolPanel _settingsPanel;
+        private RecolorToolPanel settingsPanel;
 
-        private EntityBrush _brush;
+        public GameObject Brush;
 
         public override string ToString()
         {
@@ -32,31 +33,43 @@
 
         public RecolorTool()
         {
-            _settingsPanel = new RecolorToolPanel();
+            settingsPanel = new RecolorToolPanel();
 
-            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel, _settingsPanel };
+            ControlPanels = new CustomPanel[] { settingsPanel, CharacterPickPanel.SharedInstance };
         }
 
         public void OnSelected()
         {
-            _brush = new EntityBrush(1, 1);
-            EditorConsoleManager.Instance.UpdateBrush(_brush);
-            Settings.QuickEditor.TextSurface = _brush.Animation.Frames[0];
-            Settings.QuickEditor.Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
-                EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
-            _brush.IsVisible = false;
-            EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = true;
-		}
+            Brush = new SadConsole.Game.GameObject(Settings.Config.ScreenFont);
+            Brush.Animation = new AnimatedTextSurface("default", 1, 1);
+            Brush.Animation.CreateFrame();
+            Brush.IsVisible = false;
+            RefreshTool();
+            EditorConsoleManager.Brush = Brush;
+            EditorConsoleManager.UpdateBrush();
+
+            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
+            CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
+            CharacterPickPanel.SharedInstance.HideCharacter = true;
+        }
 
         public void OnDeselected()
         {
-		}
+            CharacterPickPanel.SharedInstance.Changed -= CharPanelChanged;
+            CharacterPickPanel.SharedInstance.HideCharacter = false;
+        }
+
+        private void CharPanelChanged(object sender, System.EventArgs e)
+        {
+            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
+            RefreshTool();
+        }
 
         public void RefreshTool()
         {
-            Settings.QuickEditor.TextSurface = _brush.Animation.Frames[0];
-            Settings.QuickEditor.Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, 
-                                      EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42);
+            Settings.QuickEditor.TextSurface = Brush.Animation.Frames[0];
+            Settings.QuickEditor.Fill(CharacterPickPanel.SharedInstance.SettingForeground,
+                                      CharacterPickPanel.SharedInstance.SettingBackground, 42);
         }
 
         public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
@@ -70,38 +83,38 @@
 
         public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
         {
-            _brush.IsVisible = true;
+            Brush.IsVisible = true;
         }
 
         public void MouseExitSurface(MouseInfo info, ITextSurface surface)
         {
-            _brush.IsVisible = false;
+            Brush.IsVisible = false;
         }
 
         public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
         {
-            _brush.Position = info.ConsoleLocation;
-            _brush.IsVisible = true;
+            Brush.Position = info.ConsoleLocation;
+            Brush.IsVisible = true;
 
             if (info.LeftButtonDown)
             {
                 var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
 
-                if (!_settingsPanel.IgnoreForeground)
-                    cell.Foreground = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground;
+                if (!settingsPanel.IgnoreForeground)
+                    cell.Foreground = CharacterPickPanel.SharedInstance.SettingForeground;
 
-                if (!_settingsPanel.IgnoreBackground)
-                    cell.Background = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground;
+                if (!settingsPanel.IgnoreBackground)
+                    cell.Background = CharacterPickPanel.SharedInstance.SettingBackground;
             }
             else if (info.RightButtonDown)
             {
                 var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
 
-                if (!_settingsPanel.IgnoreForeground)
-                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground = cell.Foreground;
+                if (!settingsPanel.IgnoreForeground)
+                    CharacterPickPanel.SharedInstance.SettingForeground = cell.Foreground;
 
-                if (!_settingsPanel.IgnoreBackground)
-                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground = cell.Background;
+                if (!settingsPanel.IgnoreBackground)
+                    CharacterPickPanel.SharedInstance.SettingBackground = cell.Background;
             }
         }
     }

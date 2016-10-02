@@ -11,8 +11,7 @@
 
     class SceneEntityMoveTool : ITool
     {
-        private EntityBrush _boundingBox;
-        private GameObject _animSinglePoint;
+        private GameObject _boundingBox;
 
         private BoxToolPanel _settingsPanel;
 
@@ -48,10 +47,6 @@
 
         public void OnSelected()
         {
-            _boundingBox = new EntityBrush(1, 1);
-            _boundingBox.IsVisible = false;
-            
-            EditorConsoleManager.Instance.UpdateBrush(_boundingBox);
         }
 
         public void OnDeselected()
@@ -83,7 +78,7 @@
             //    }
             //}
 
-            var editor = (Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor;
+            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
             if (!isDragging)
             {
@@ -91,24 +86,27 @@
 
                 Point mousePosition = new Point(0);
 
-                for (int i = 0; i < editor.Entities.Count; i++)
+                for (int i = 0; i < editor.GameObjects.Count; i++)
                 {
-                    var area = editor.Entities[i].Animation.RenderArea;
-                    area.Offset(editor.Entities[i].Position - editor.Entities[i].Animation.Center);
+                    var area = editor.GameObjects[i].Animation.RenderArea;
+                    area.Offset(editor.GameObjects[i].Position - editor.GameObjects[i].Animation.Center);
 
-                    mousePosition = info.WorldLocation - editor.Entities[i].RenderOffset;
+                    mousePosition = info.WorldLocation - editor.GameObjects[i].RenderOffset;
 
                     // is mouse over?
                     if (area.Contains(mousePosition))
                     {
                         overEntity = true;
 
-                        if (movingEntity != editor.Entities[i])
+                        if (movingEntity != editor.GameObjects[i])
                         {
-                            movingEntity = editor.Entities[i];
-                            _boundingBox = new EntityBrush(movingEntity.Animation.Width + 2, movingEntity.Animation.Height + 2);
+                            movingEntity = editor.GameObjects[i];
+                            _boundingBox = new GameObject(Settings.Config.ScreenFont);
                             _boundingBox.RenderOffset = movingEntity.RenderOffset;
                             _boundingBox.Position = movingEntity.Position - movingEntity.Animation.Center - new Point(1);
+
+                            _boundingBox.Animation = new AnimatedTextSurface("default", movingEntity.Animation.Width + 2, movingEntity.Animation.Height + 2, Settings.Config.ScreenFont);
+                            var frame = _boundingBox.Animation.CreateFrame();
 
                             var box = SadConsole.Shapes.Box.GetDefaultBox();
                             box.Width = _boundingBox.Animation.Width;
@@ -116,7 +114,7 @@
                             box.Fill = false;
                             box.TopLeftCharacter = box.TopSideCharacter = box.TopRightCharacter = box.LeftSideCharacter = box.RightSideCharacter = box.BottomLeftCharacter = box.BottomSideCharacter = box.BottomRightCharacter = 177;
 
-                            Settings.QuickEditor.TextSurface = _boundingBox.Animation.CurrentFrame;
+                            Settings.QuickEditor.TextSurface = frame;
 
                             box.Draw(Settings.QuickEditor);
 
@@ -125,7 +123,9 @@
                             _boundingBox.Animation.Tint = Color.Black * 0.3f;
                         }
 
-                        EditorConsoleManager.Instance.UpdateBrush(_boundingBox);
+                        EditorConsoleManager.Brush = _boundingBox;
+                        EditorConsoleManager.UpdateBrush();
+
                         overEntity = true;
                         _boundingBox.IsVisible = true;
 
@@ -135,7 +135,9 @@
 
                 if (!overEntity)
                 {
-                    _boundingBox.IsVisible = false;
+                    if (_boundingBox != null)
+                        _boundingBox.IsVisible = false;
+
                     movingEntity = null;
                 }
                 else

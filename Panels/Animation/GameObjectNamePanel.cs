@@ -7,16 +7,16 @@ using SadConsole.Game;
 
 namespace SadConsoleEditor.Panels
 {
-    class EntityNamePanel: CustomPanel
+    class GameObjectNamePanel: CustomPanel
     {
         private Button setName;
         private DrawingSurface nameTitle;
         private GameObject entity;
 
 
-        public EntityNamePanel()
+        public GameObjectNamePanel()
         {
-            Title = "Entity";
+            Title = "Game Object";
 
             nameTitle = new DrawingSurface(Consoles.ToolPane.PanelWidth - 3, 2);
 
@@ -38,8 +38,8 @@ namespace SadConsoleEditor.Panels
         private void PrintName()
         {
             nameTitle.Clear();
-            nameTitle.Print(0, 0, "Name");
-            nameTitle.Print(0, 1, entity.Name);
+            nameTitle.Print(0, 0, "Name", Settings.Green);
+            nameTitle.Print(0, 1, entity.Name, Settings.Blue);
         }
 
         public override void Loaded()
@@ -54,7 +54,7 @@ namespace SadConsoleEditor.Panels
         {
             if (control == setName)
             {
-                control.Position = new Microsoft.Xna.Framework.Point(Consoles.ToolPane.PanelWidth - 3, control.Position.Y);
+                control.Position = new Microsoft.Xna.Framework.Point(Consoles.ToolPane.PanelWidth - setName.Width - 1, control.Position.Y);
                 return -1;
             }
             return 0;

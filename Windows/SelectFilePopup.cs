@@ -8,90 +8,151 @@ using SadConsole.Controls;
 using SadConsole.Consoles;
 namespace SadConsoleEditor.Windows
 {
+    class FileLoaderListBoxItem: ListBoxItem
+    {
+        public override void Draw(ITextSurface surface, Rectangle area)
+        {
+            string value = ((FileLoaders.IFileLoader)Item).FileTypeName;
+            if (value.Length < area.Width)
+                value += new string(' ', area.Width - value.Length);
+            else if (value.Length > area.Width)
+                value = value.Substring(0, area.Width);
+            var editor = new SurfaceEditor(surface);
+            editor.Print(area.Left, area.Top, value, _currentAppearance);
+            _isDirty = false;
+        }
+    }
+
     class SelectFilePopup : Window
     {
         #region Fields
-        private string _currentFolder;
-        private SadEditor.Controls.FileDirectoryListbox _directoryListBox;
-        private InputBox _fileName;
-        private Button _selectButton;
-        private Button _cancelButton;
+        private string currentFolder;
+        private string fileFilterString;
+        private SadConsoleEditor.Controls.FileDirectoryListbox directoryListBox;
+        private InputBox fileName;
+        private Button selectButton;
+        private Button cancelButton;
+        private ListBox<FileLoaderListBoxItem> fileLoadersList;
         #endregion
 
         #region Properties
         public string CurrentFolder
         {
-            get { return _directoryListBox.CurrentFolder; }
-            set { _directoryListBox.CurrentFolder = value; }
+            get { return directoryListBox.CurrentFolder; }
+            set { directoryListBox.CurrentFolder = value; }
         }
 
-        public string FileFilter
+        public bool AllowCancel
         {
-            get { return _directoryListBox.FileFilter; }
-            set { _directoryListBox.FileFilter = value; }
+            set { cancelButton.IsEnabled = value; }
+        }
+
+        public IEnumerable<FileLoaders.IFileLoader> FileLoaderTypes
+        {
+            set
+            {
+                fileLoadersList.Clear();
+
+                foreach (var loader in value)
+                    fileLoadersList.Items.Add(loader);
+            }
         }
 
         public string PreferredExtensions
         {
-            get { return _directoryListBox.HighlightedExtentions; }
-            set { _directoryListBox.HighlightedExtentions = value; }
+            get { return directoryListBox.HighlightedExtentions; }
+            set { directoryListBox.HighlightedExtentions = value; }
         }
 
         public string SelectedFile { get; private set; }
 
+        public FileLoaders.IFileLoader SelectedLoader { get; private set; }
+
         public bool SkipFileExistCheck { get; set; }
 
-        public string SelectButtonText { get { return _selectButton.Text; } set { _selectButton.Text = value; } }
+        public string SelectButtonText { get { return selectButton.Text; } set { selectButton.Text = value; } }
         #endregion
 
         #region Constructors
 
         public SelectFilePopup()
-            : base(50, 30)
+            : base(70, 30)
         {
             Title = "Select File";
-            _directoryListBox = new SadEditor.Controls.FileDirectoryListbox(this.TextSurface.Width - 2, this.TextSurface.Height - 5)
+
+            fileLoadersList = new ListBox<FileLoaderListBoxItem>(15, Height - 7);
+            fileLoadersList.Position = new Point(2, 4);
+            fileLoadersList.SelectedItemChanged += FileLoadersList_SelectedItemChanged;
+            fileLoadersList.HideBorder = true;
+            Print(fileLoadersList.Bounds.Left, fileLoadersList.Bounds.Top - 2, "Type of file", Settings.Color_TitleText);
+            Print(fileLoadersList.Bounds.Left, fileLoadersList.Bounds.Top - 1, new string((char)196, fileLoadersList.Width));
+
+            directoryListBox = new SadConsoleEditor.Controls.FileDirectoryListbox(this.TextSurface.Width - fileLoadersList.Bounds.Right - 3, Height - 10)
             {
-                Position = new Point(1, 1),
+                Position = new Point(fileLoadersList.Bounds.Right + 1, fileLoadersList.Bounds.Top),
                 HideBorder = true
             };
-            _directoryListBox.HighlightedExtentions = ".con;.console;.brush";
-            _directoryListBox.SelectedItemChanged += _directoryListBox_SelectedItemChanged;
-            _directoryListBox.SelectedItemExecuted += _directoryListBox_SelectedItemExecuted;
+            directoryListBox.HighlightedExtentions = ".con;.console;.brush";
+            directoryListBox.SelectedItemChanged += _directoryListBox_SelectedItemChanged;
+            directoryListBox.SelectedItemExecuted += _directoryListBox_SelectedItemExecuted;
+            directoryListBox.CurrentFolder = Environment.CurrentDirectory;
+            //directoryListBox.HideBorder = true;
 
-            _fileName = new InputBox(this.TextSurface.Width - 11)
+            Print(directoryListBox.Bounds.Left, directoryListBox.Bounds.Top - 2, "Files/Directories", Settings.Color_TitleText);
+            Print(directoryListBox.Bounds.Left, directoryListBox.Bounds.Top - 1, new string((char)196, directoryListBox.Width));
+
+            fileName = new InputBox(directoryListBox.Width)
             {
-                Position = new Point(2, this.TextSurface.Height - 3),
+                Position = new Point(directoryListBox.Bounds.Left, directoryListBox.Bounds.Bottom + 2),
             };
-            _fileName.TextChanged += _fileName_TextChanged;
+            fileName.TextChanged += _fileName_TextChanged;
+            Print(fileName.Bounds.Left, fileName.Bounds.Top - 1, "Selected file", Settings.Color_TitleText);
 
-            _selectButton = new Button(6, 1)
+            selectButton = new Button(8, 1)
             {
                 Text = "Open",
-                Position = new Point(this.TextSurface.Width - 8, this.TextSurface.Height - 3),
+                Position = new Point(Width - 10, this.TextSurface.Height - 2),
                 IsEnabled = false
             };
-            _selectButton.ButtonClicked += new EventHandler(_selectButton_Action);
+            selectButton.ButtonClicked += new EventHandler(_selectButton_Action);
 
-            _cancelButton = new Button(6, 1)
+            cancelButton = new Button(8, 1)
             {
                 Text = "Cancel",
-                Position = new Point(this.TextSurface.Width - 8, this.TextSurface.Height - 2)
+                Position = new Point(2, this.TextSurface.Height - 2)
             };
-            _cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
+            cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
 
-            Add(_directoryListBox);
-            Add(_fileName);
-            Add(_selectButton);
-            Add(_cancelButton);
+            Add(directoryListBox);
+            Add(fileName);
+            Add(selectButton);
+            Add(cancelButton);
+            Add(fileLoadersList);
         }
+
         #endregion
 
+        private void FileLoadersList_SelectedItemChanged(object sender, ListBox<FileLoaderListBoxItem>.SelectedItemEventArgs e)
+        {
+            if (e.Item != null)
+            {
+                List<string> filters = new List<string>();
+                foreach (var ext in ((FileLoaders.IFileLoader)e.Item).Extensions)
+                    filters.Add($"*.{ext};");
+
+                fileFilterString = string.Concat(filters);
+                directoryListBox.FileFilter = fileFilterString;
+                Print(fileName.Bounds.Left, fileName.Bounds.Bottom, new string(' ', Width - fileName.Bounds.Left - 1));
+                Print(fileName.Bounds.Left, fileName.Bounds.Bottom, fileFilterString.Replace("*", "").Replace(";", " "));
+
+                SelectedLoader = (FileLoaders.IFileLoader)e.Item;
+            }
+        }
         public override void Show(bool modal)
         {
             SelectedFile = "";
-            Print(2, textSurface.Height - 2, FileFilter.Replace(';', ' ').Replace("*", ""));
-
+            fileLoadersList.SelectedItem = null;
+            fileLoadersList.SelectedItem = fileLoadersList.Items[0];
             base.Show(modal);
         }
 
@@ -103,11 +164,11 @@ namespace SadConsoleEditor.Windows
 
         void _selectButton_Action(object sender, EventArgs e)
         {
-            if (_fileName.Text != string.Empty)
+            if (fileName.Text != string.Empty)
             {
-                SelectedFile = System.IO.Path.Combine(_directoryListBox.CurrentFolder, _fileName.Text);
+                SelectedFile = System.IO.Path.Combine(directoryListBox.CurrentFolder, fileName.Text);
 
-                var extensions = FileFilter.Replace("*", "").Trim(';').Split(';');
+                var extensions = fileFilterString.Replace("*", "").Trim(';').Split(';');
                 bool foundExtension = false;
                 foreach (var item in extensions)
                 {
@@ -126,32 +187,32 @@ namespace SadConsoleEditor.Windows
             }
         }
 
-        void _directoryListBox_SelectedItemExecuted(object sender, SadEditor.Controls.FileDirectoryListbox.SelectedItemEventArgs e)
+        void _directoryListBox_SelectedItemExecuted(object sender, SadConsoleEditor.Controls.FileDirectoryListbox.SelectedItemEventArgs e)
         {
 
         }
 
-        void _directoryListBox_SelectedItemChanged(object sender, SadEditor.Controls.FileDirectoryListbox.SelectedItemEventArgs e)
+        void _directoryListBox_SelectedItemChanged(object sender, SadConsoleEditor.Controls.FileDirectoryListbox.SelectedItemEventArgs e)
         {
             if (e.Item is System.IO.FileInfo)
-                _fileName.Text = ((System.IO.FileInfo)e.Item).Name;
-            else if (e.Item is SadEditor.Controls.HighlightedExtFile)
-                _fileName.Text = ((SadEditor.Controls.HighlightedExtFile)e.Item).Name;
+                fileName.Text = ((System.IO.FileInfo)e.Item).Name;
+            else if (e.Item is SadConsoleEditor.Controls.HighlightedExtFile)
+                fileName.Text = ((SadConsoleEditor.Controls.HighlightedExtFile)e.Item).Name;
             else
-                _fileName.Text = "";
+                fileName.Text = "";
         }
 
         void _fileName_TextChanged(object sender, EventArgs e)
         {
-            _selectButton.IsEnabled = _fileName.Text != "" && (SkipFileExistCheck || System.IO.File.Exists(System.IO.Path.Combine(_directoryListBox.CurrentFolder, _fileName.Text)));
+            selectButton.IsEnabled = fileName.Text != "" && (SkipFileExistCheck || System.IO.File.Exists(System.IO.Path.Combine(directoryListBox.CurrentFolder, fileName.Text)));
         }
 
         public override void Redraw()
         {
             base.Redraw();
 
-            if (_directoryListBox != null)
-                Print(2, textSurface.Height - 2, FileFilter.Replace(';', ' ').Replace("*", ""));
+            if (directoryListBox != null)
+                Print(2, textSurface.Height - 2, fileFilterString.Replace(';', ' ').Replace("*", ""));
         }
     }
 }

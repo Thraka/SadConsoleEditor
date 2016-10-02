@@ -7,11 +7,61 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+//using SadConsoleEditor.Panels;
+using SadConsoleEditor.FileLoaders;
 using SadConsoleEditor.Panels;
 
 namespace SadConsoleEditor.Editors
 {
+    public enum Editors
+    {
+        Console,
+        GameObject,
+        Scene,
+        GUI
+    }
+
     public interface IEditor
+    {
+        Editors EditorType { get; }
+
+        string EditorTypeName { get; }
+
+        string Title { get; set; }
+
+        CustomPanel[] Panels { get; }
+
+        int Width { get; }
+
+        int Height { get; }
+
+        string DocumentTitle { get; }
+
+        Point Position { get; }
+
+        SadConsole.Consoles.Console RenderedConsole { get; }
+        void Render();
+
+        void Update();
+
+        void Move(int x, int y);
+
+        void New(Color foreground, Color background, int width, int height);
+
+        void Load(string file, IFileLoader loader);
+
+        void Save();
+
+        void Reset();
+
+        void OnSelected();
+
+        void OnDeselected();
+
+        void OnClosed();
+    }
+
+    public interface IEditor2
     {
         EditorSettings Settings { get; }
 
@@ -30,12 +80,12 @@ namespace SadConsoleEditor.Editors
 
         string[] Tools { get; }
 
-        string FileExtensionsLoad { get; }
-        string FileExtensionsSave { get; }
+        IEnumerable<IFileLoader> FileExtensionsLoad { get; }
+        IEnumerable<IFileLoader> FileExtensionsSave { get; }
 
         ITextSurface Surface { get; }
 
-        CustomPanel[] ControlPanels { get; }
+        //CustomPanel[] ControlPanels { get; }
 
         void ProcessKeyboard(KeyboardInfo info);
 
@@ -51,9 +101,10 @@ namespace SadConsoleEditor.Editors
 
         void Update();
 
-        void Load(string file);
+        void Load(string file, IFileLoader loader);
 
-        void Save(string file);
+        void Save(string file, IFileLoader loader);
+
         void Reset();
 
         void RemoveLayer(int index);

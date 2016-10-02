@@ -18,6 +18,8 @@ namespace SadConsoleEditor
         [STAThread]
         static void Main()
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             // Load our program settings
             var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(ProgramSettings));
             using (var fileObject = System.IO.File.OpenRead("Settings.json"))
@@ -29,14 +31,14 @@ namespace SadConsoleEditor
 
             // Hook the start event so we can add consoles to the system.
             SadConsole.Engine.EngineStart += Engine_EngineStart;
-
-            // Hook the update event that happens each frame so we can trap keys and respond.
-            //SadConsole.Engine.EngineUpdated += Engine_EngineUpdated;
-
-            //SadConsole.Engine.EngineDrawFrame += Engine_EngineDrawFrame;
-
+            
             // Start the game.
             SadConsole.Engine.Run();
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private static void Engine_EngineStart(object sender, EventArgs e)
@@ -54,13 +56,11 @@ namespace SadConsoleEditor
             // Helper editor for any text surface
             Settings.QuickEditor = new SadConsole.Consoles.SurfaceEditor(new SadConsole.Consoles.TextSurface(10, 10, SadConsole.Engine.DefaultFont));
 
-            // Setup system to run
-            SadConsole.Engine.ConsoleRenderStack = EditorConsoleManager.Instance;
-            SadConsole.Engine.ActiveConsole = EditorConsoleManager.Instance;
-
             // Start
             SadConsole.Libraries.GameHelpers.Initialize();
-            EditorConsoleManager.Instance.ShowNewConsolePopup(false);
+
+            // Setup system to run
+            EditorConsoleManager.Initialize();
         }
     }
 #endif

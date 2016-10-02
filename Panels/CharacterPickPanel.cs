@@ -12,6 +12,8 @@ namespace SadConsoleEditor.Panels
 {
     public class CharacterPickPanel: CustomPanel
     {
+        public static CharacterPickPanel SharedInstance = new CharacterPickPanel("Characters", false, false, false);
+
         public event EventHandler Changed;
 
         private Controls.ColorPresenter _foreColor;
@@ -55,11 +57,11 @@ namespace SadConsoleEditor.Panels
         {
             Title = title;
 
-            _foreColor = new ColorPresenter("Foreground", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidth);
-            _backColor = new ColorPresenter("Background", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidth);
-            _charPreview = new ColorPresenter("Character", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidth);
-            _mirrorLR = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
-            _mirrorTB = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 1);
+            _foreColor = new ColorPresenter("Foreground", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2);
+            _backColor = new ColorPresenter("Background", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2);
+            _charPreview = new ColorPresenter("Character", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2);
+            _mirrorLR = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            _mirrorTB = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
             _characterPicker = new CharacterPicker(Settings.Red, Settings.Color_ControlBack, Settings.Green);
             _popupCharacterWindow = new Windows.CharacterQuickSelectPopup(0);
 
@@ -141,8 +143,8 @@ namespace SadConsoleEditor.Panels
             if (Changed != null)
                 Changed(this, EventArgs.Empty);
 
-            if (EditorConsoleManager.Instance.ToolPane != null)
-                EditorConsoleManager.Instance.ToolPane.SelectedTool.RefreshTool();
+            //if (EditorConsoleManager.ToolsPane != null)
+                //EditorConsoleManager.ToolsPane.SelectedTool.RefreshTool();
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseInfo info)

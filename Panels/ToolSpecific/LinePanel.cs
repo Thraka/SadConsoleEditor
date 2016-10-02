@@ -11,28 +11,28 @@ namespace SadConsoleEditor.Panels
 {
     class LineToolPanel : CustomPanel
     {
-        private DrawingSurface _statusBox;
-        private int _lineLength;
+        private DrawingSurface statusBox;
+        private int lineLength;
 
-        public int LineLength { get { return _lineLength; } set { _lineLength = value; RedrawBox(); } }
+        public int LineLength { get { return lineLength; } set { lineLength = value; RedrawBox(); } }
         
 
         public LineToolPanel()
         {
             Title = "Line Status";
 
-            _statusBox = new DrawingSurface(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 2);
+            statusBox = new DrawingSurface(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 2);
             RedrawBox();
-            Controls = new ControlBase[] { _statusBox };
+            Controls = new ControlBase[] { statusBox };
         }
 
         private void RedrawBox()
         {
-            _statusBox.Fill(Settings.Yellow, Color.Transparent, 0, null);
+            statusBox.Fill(Settings.Yellow, Color.Transparent, 0, null);
 
-            var widthText = "Length: ".CreateColored(Settings.Yellow, Color.Transparent, null) + _lineLength.ToString().CreateColored(Settings.Blue, Color.Transparent, null);
+            var widthText = "Length: ".CreateColored(Settings.Yellow, Color.Transparent, null) + lineLength.ToString().CreateColored(Settings.Blue, Color.Transparent, null);
 
-            _statusBox.Print(0, 0, widthText);
+            statusBox.Print(0, 0, widthText);
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseInfo info)

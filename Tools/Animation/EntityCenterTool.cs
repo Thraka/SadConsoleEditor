@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using SadConsole;
 using SadConsole.Consoles;
+using SadConsole.Game;
 using SadConsole.Input;
 using SadConsoleEditor.Panels;
 using System;
@@ -25,7 +26,7 @@ namespace SadConsoleEditor.Tools
 
         public CustomPanel[] ControlPanels { get; private set; }
 
-        private EntityBrush _brush;
+        public GameObject Brush;
 
         public override string ToString()
         {
@@ -38,28 +39,28 @@ namespace SadConsoleEditor.Tools
 
         public void OnSelected()
         {
-            _brush = new EntityBrush(1, 1);
-            EditorConsoleManager.Instance.UpdateBrush(_brush);
-            _brush.Animation.Frames[0][0,0].GlyphIndex = 42;
-            _brush.IsVisible = false;
-            EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.HideCharacter = true;
+            Brush = new SadConsole.Game.GameObject(Settings.Config.ScreenFont);
+            Brush.Animation = new AnimatedTextSurface("default", 1, 1);
+            Brush.Animation.DefaultBackground = Color.Black;
+            Brush.Animation.DefaultForeground = Color.White;
+            Brush.Animation.CreateFrame()[0].GlyphIndex = 42;
+            Brush.IsVisible = false;
+            RefreshTool();
+            EditorConsoleManager.Brush = Brush;
+            EditorConsoleManager.UpdateBrush();
 
-            //var editor = EditorConsoleManager.Instance.SelectedEditor as Editors.EntityEditor;
+            var editor = EditorConsoleManager.ActiveEditor as Editors.GameObjectEditor;
 
-            //if (editor != null)
-            //{
-            //    editor.Surface.Tint = new Color(0f, 0f, 0f, 0.2f);
-            //}
+            if (editor != null)
+                editor.ShowCenterLayer = true;
         }
 
         public void OnDeselected()
         {
-            //var editor = EditorConsoleManager.Instance.SelectedEditor as Editors.EntityEditor;
+            var editor = EditorConsoleManager.ActiveEditor as Editors.GameObjectEditor;
 
-            //if (editor != null)
-            //{
-            //    editor.Surface.Tint = new Color(0f, 0f, 0f, 0.2f);
-            //}
+            if (editor != null)
+                editor.ShowCenterLayer = false;
         }
 
         public void RefreshTool()
@@ -78,24 +79,23 @@ namespace SadConsoleEditor.Tools
 
         public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
         {
-            _brush.IsVisible = true;
+            Brush.IsVisible = true;
         }
 
         public void MouseExitSurface(MouseInfo info, ITextSurface surface)
         {
-            _brush.IsVisible = false;
+            Brush.IsVisible = false;
         }
 
         public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
         {
-            _brush.Position = info.ConsoleLocation;
-            _brush.IsVisible = true;
+            Brush.Position = info.ConsoleLocation;
+            Brush.IsVisible = true;
 
             if (info.LeftClicked)
             {
                 var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
-
-                var editor = EditorConsoleManager.Instance.SelectedEditor as Editors.EntityEditor;
+                var editor = EditorConsoleManager.ActiveEditor as Editors.GameObjectEditor;
 
                 if (editor != null)
                 {

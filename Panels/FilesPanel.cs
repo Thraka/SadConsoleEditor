@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using SadConsole;
+using SadConsole.Consoles;
 using SadConsole.Controls;
 using System;
 using System.Collections.Generic;
@@ -16,59 +18,68 @@ namespace SadConsoleEditor.Panels
         public Button ResizeButton;
         public Button CloseButton;
 
-        public ListBox DocumentsListbox;
+        private DrawingSurface documentsTitle;
+        public ListBox<EditorListBoxItem> DocumentsListbox;
 
         public FilesPanel()
         {
             Title = "File";
 
-            NewButton = new Button(8, 1)
+            NewButton = new Button(7, 1)
             {
-                Text = " New",
-                TextAlignment = System.Windows.HorizontalAlignment.Left,
+                Text = "New",
                 CanUseKeyboard = false,
             };
-            NewButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowNewConsolePopup(true);
+            NewButton.ButtonClicked += (o, e) => EditorConsoleManager.ShowNewEditorPopup();
 
             LoadButton = new Button(8, 1)
             {
-                Text = "Import",
+                Text = "Load",
             };
-            LoadButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.LoadSurface();
+            LoadButton.ButtonClicked += (o, e) => EditorConsoleManager.ShowLoadEditorPopup();
 
             SaveButton = new Button(8, 1)
             {
                 Text = "Save",
             };
-            SaveButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.SaveSurface();
+            SaveButton.ButtonClicked += (o, e) => EditorConsoleManager.SaveEditor();
 
-            ResizeButton = new Button(8, 1)
+            ResizeButton = new Button(10, 1)
             {
                 Text = "Resize",
             };
-            ResizeButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowResizeConsolePopup();
+            //ResizeButton.ButtonClicked += (o, e) => EditorConsoleManager.ShowResizeConsolePopup();
 
-            CloseButton = new Button(8, 1)
+            CloseButton = new Button(9, 1)
             {
-                Text = " Close",
-                TextAlignment = System.Windows.HorizontalAlignment.Left
+                Text = "Close",
             };
-            CloseButton.ButtonClicked += (o, e) => EditorConsoleManager.Instance.ShowCloseConsolePopup();
+            CloseButton.ButtonClicked += (o, e) => EditorConsoleManager.ShowCloseConsolePopup();
 
-            DocumentsListbox = new ListBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 6);
+            DocumentsListbox = new ListBox<EditorListBoxItem>(Consoles.ToolPane.PanelWidth - 2, 6);
             DocumentsListbox.HideBorder = true;
             DocumentsListbox.CompareByReference = true;
 
             DocumentsListbox.SelectedItemChanged += DocumentsListbox_SelectedItemChanged;
 
-            Controls = new ControlBase[] { NewButton, LoadButton, SaveButton, ResizeButton, CloseButton, DocumentsListbox };
+            documentsTitle = new DrawingSurface(13, 1);
+            documentsTitle.Fill(Settings.Green, Settings.Color_MenuBack, 0, null);
+            documentsTitle.Print(0, 0, new ColoredString("Opened Files", Settings.Green, Settings.Color_MenuBack));
+
+            Controls = new ControlBase[] { NewButton, LoadButton, SaveButton, ResizeButton, CloseButton, documentsTitle, DocumentsListbox };
             
 
         }
 
-        private void DocumentsListbox_SelectedItemChanged(object sender, ListBox<ListBoxItem>.SelectedItemEventArgs e)
+        private void DocumentsListbox_SelectedItemChanged(object sender, ListBox<EditorListBoxItem>.SelectedItemEventArgs e)
         {
-            EditorConsoleManager.Instance.ChangeEditor((Editors.IEditor)e.Item);
+            if (e.Item != null)
+            {
+                var editor = (Editors.IEditor)e.Item;
+                //EditorConsoleManager.Instance.ChangeEditor((Editors.IEditor)e.Item);
+                if (EditorConsoleManager.ActiveEditor != editor)
+                    EditorConsoleManager.ChangeActiveEditor(editor);
+            }
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseInfo info)
@@ -82,25 +93,43 @@ namespace SadConsoleEditor.Panels
                 NewButton.Position = new Point(1, NewButton.Position.Y);
             else if (control == LoadButton)
             {
-                LoadButton.Position = new Point(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 8, NewButton.Position.Y);
-                return -1;
+                LoadButton.Position = new Point(NewButton.Bounds.Right + 2, NewButton.Position.Y);
             }
             else if (control == SaveButton)
-                SaveButton.Position = new Point(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 8, SaveButton.Position.Y);
+                SaveButton.Position = new Point(1, SaveButton.Position.Y);
             else if (control == ResizeButton)
             {
-                ResizeButton.Position = new Point(1, SaveButton.Position.Y);
+                ResizeButton.Position = new Point(SaveButton.Bounds.Right + 2, SaveButton.Position.Y);
                 return -1;
             }
             else if (control == CloseButton)
+            {
+                CloseButton.Position = new Point(ResizeButton.Bounds.Right + 2, SaveButton.Position.Y);
+            }
+            else if (control == documentsTitle)
                 return 1;
-            
+
             return 0;
         }
 
         public override void Loaded()
         {
             
+        }
+
+        public class EditorListBoxItem : ListBoxItem
+        {
+            public override void Draw(ITextSurface surface, Rectangle area)
+            {
+                string value = ((Editors.IEditor)Item).Title??((Editors.IEditor)Item).EditorTypeName;
+                if (value.Length < area.Width)
+                    value += new string(' ', area.Width - value.Length);
+                else if (value.Length > area.Width)
+                    value = value.Substring(0, area.Width);
+                var editor = new SurfaceEditor(surface);
+                editor.Print(area.Left, area.Top, value, _currentAppearance);
+                _isDirty = false;
+            }
         }
     }
 }

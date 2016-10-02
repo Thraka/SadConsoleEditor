@@ -37,7 +37,29 @@ namespace SadConsoleEditor
         [DataMember]
         public WindowSettings ColorPickerSettings;
 
+        [DataMember]
+        public int ToolPaneWidth;
+
         public Font ScreenFont;
+
+        public EditorSettings GetSettings(Editors.Editors editor)
+        {
+            switch (editor)
+            {
+                case Editors.Editors.Console:
+                    return ConsoleEditor;
+                case Editors.Editors.GameObject:
+                    return EntityEditor;
+                case Editors.Editors.Scene:
+                    return GameScreenEditor;
+                //case Editors.Editors.GUI:
+                //    return GameScreenEditor;
+                default:
+                    break;
+            }
+
+            return GameScreenEditor;
+        }
     }
     [DataContract]
     public class EditorSettings

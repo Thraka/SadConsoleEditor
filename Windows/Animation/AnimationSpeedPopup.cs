@@ -7,25 +7,27 @@ using System.Threading.Tasks;
 
 namespace SadConsoleEditor.Windows
 {
-    class RenamePopup : SadConsole.Consoles.Window
+    class AnimationSpeedPopup : SadConsole.Consoles.Window
     {
         private Button okButton;
         private Button cancelButton;
         private InputBox textBox;
 
-        public string NewName { get { return textBox.Text; } }
+        public float NewSpeed { get { return float.Parse(textBox.Text); } }
 
-        public RenamePopup(string text, string title = "Rename") : base(22, 7)
+        public AnimationSpeedPopup(float speed) : base(22, 6)
         {
-            Title = title;
+            Title = "Animation Speed";
 
             okButton = new Button(8, 1);
             cancelButton = new Button(8, 1);
             textBox = new InputBox(textSurface.Width - 4);
-            textBox.Text = text;
+            textBox.IsNumeric = true;
+            textBox.AllowDecimal = true;
+            textBox.Text = speed.ToString();
 
-            okButton.Position = new Microsoft.Xna.Framework.Point(textSurface.Width - okButton.Width - 2, textSurface.Height - 3);
-            cancelButton.Position = new Microsoft.Xna.Framework.Point(2, textSurface.Height - 3);
+            okButton.Position = new Microsoft.Xna.Framework.Point(textSurface.Width - okButton.Width - 2, textSurface.Height - 2);
+            cancelButton.Position = new Microsoft.Xna.Framework.Point(2, textSurface.Height - 2);
             textBox.Position = new Microsoft.Xna.Framework.Point(2, 2);
 
             okButton.ButtonClicked += (o, e) => { DialogResult = true; Hide(); };
@@ -37,8 +39,6 @@ namespace SadConsoleEditor.Windows
             Add(okButton);
             Add(cancelButton);
             Add(textBox);
-
-            FocusedControl = textBox;
         }
     }
 }

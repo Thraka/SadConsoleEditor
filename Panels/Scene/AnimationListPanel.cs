@@ -28,7 +28,7 @@ namespace SadConsoleEditor.Panels.Scene
             if (AnimationList.SelectedItem != null)
             {
                 var animation = (AnimatedTextSurface)AnimationList.SelectedItem;
-                var editor = (Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor;
+                var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
                 
                 editor.SelectedEntity.Animation = animation;
             }
@@ -52,16 +52,16 @@ namespace SadConsoleEditor.Panels.Scene
         {
             AnimationList.Items.Clear();
 
-            if (((Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor).SelectedEntity != null)
+            if (((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).SelectedEntity != null)
             {
-                var animations = ((Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor).SelectedEntity.Animations;
+                var animations = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).SelectedEntity.Animations;
 
                 if (animations.Count != 0)
                 {
                     foreach (var item in animations.Values)
                         AnimationList.Items.Add(item);
 
-                    AnimationList.SelectedItem = ((Editors.SceneEditor)EditorConsoleManager.Instance.SelectedEditor).SelectedEntity.Animation;
+                    AnimationList.SelectedItem = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).SelectedEntity.Animation;
                 }
             }
         }

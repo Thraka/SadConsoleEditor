@@ -16,164 +16,165 @@ namespace SadConsoleEditor.Editors
 {
     class SceneEditor : IEditor
     {
-        private int _width;
-        private int _height;
-        public GameObject _selectedEntity;
-        private Console _consoleLayers;
+        private LayeredTextSurface textSurface;
+        private Console consoleWrapper;
+        private CustomPanel[] panels;
+        private LayersPanel layerManagementPanel;
+        private ToolsPanel toolsPanel;
+        private Dictionary<string, Tools.ITool> tools;
+        private Tools.ITool selectedTool;
 
-        public Dictionary<GameObject, GameObject> LinkedGameObjects = new Dictionary<GameObject, GameObject>();
-        public SadConsole.Game.GameObjectCollection Entities;
-
-        public event EventHandler<MouseEventArgs> MouseEnter;
-        public event EventHandler<MouseEventArgs> MouseExit;
-        public event EventHandler<MouseEventArgs> MouseMove;
-
-        public int Width { get { return _width; } }
-        public int Height { get { return _height; } }
-
-        public EditorSettings Settings { get { return SadConsoleEditor.Settings.Config.ConsoleEditor; } }
-
-        public ITextSurface Surface { get { return _consoleLayers.TextSurface; } }
-
-        public const string ID = "SCENE";
-
-        public string ShortName { get { return "Scene"; } }
-
-        public string Id { get { return ID; } }
-
-        public string Title { get { return "Scene Maker"; } }
-
-        public string FileExtensionsLoad { get { return "*.scene"; } }
-
-        public string FileExtensionsSave { get { return "*.scene"; } }
-
-        public CustomPanel[] ControlPanels { get; private set; }
-
-        public Panels.EntityManagementPanel EntityPanel;
+        public Panels.EntityManagementPanel GameObjectPanel;
         public Panels.Scene.AnimationListPanel AnimationsPanel;
+
+
+        private GameObject _selectedGameObject;
+        public Dictionary<GameObject, GameObject> LinkedGameObjects = new Dictionary<GameObject, GameObject>();
+        public GameObjectCollection GameObjects;
 
         public GameObject SelectedEntity
         {
-            get { return _selectedEntity; }
-            set { _selectedEntity = value; AnimationsPanel.RebuildListBox(); }
+            get { return _selectedGameObject; }
+            set { _selectedGameObject = value; AnimationsPanel.RebuildListBox(); }
         }
 
-        public string[] Tools
+
+        public string DocumentTitle { get; set; }
+
+        public Editors EditorType { get { return Editors.Console; } }
+
+        public string EditorTypeName { get { return "Scene"; } }
+
+        public string Title { get; set; }
+
+        public int Height { get { return textSurface.Height; } }
+
+        public Point Position { get { return consoleWrapper.Position; } }
+
+        public int Width { get { return textSurface.Width; } }
+
+        public CustomPanel[] Panels { get { return panels; } }
+
+        public Console RenderedConsole { get { return consoleWrapper; } }
+
+        private Tools.ITool SelectedTool
         {
-            get
+            get { return selectedTool; }
+            set
             {
-                return new string[] { SceneEntityMoveTool.ID, PaintTool.ID, RecolorTool.ID, FillTool.ID, TextTool.ID, SelectionTool.ID, LineTool.ID, BoxTool.ID, CircleTool.ID };
+                toolsPanel.ToolsListBox.SelectedItem = value;
             }
         }
-
-        private EventHandler<MouseEventArgs> _mouseMoveHandler;
-        private EventHandler<MouseEventArgs> _mouseEnterHandler;
-        private EventHandler<MouseEventArgs> _mouseExitHandler;
-
 
         public SceneEditor()
         {
-            _consoleLayers = new Console(new LayeredTextSurface(10, 10, 2));
-            _consoleLayers.Renderer = new LayeredTextRenderer();
-            EntityPanel = new Panels.EntityManagementPanel();
-            AnimationsPanel = new Panels.Scene.AnimationListPanel();
-            Reset();
-        }
+            consoleWrapper = new Console(1, 1);
+            consoleWrapper.Renderer = new LayeredTextRenderer();
+            consoleWrapper.MouseHandler = ProcessMouse;
+            consoleWrapper.CanUseKeyboard = false;
 
+            consoleWrapper.MouseMove += (o, e) => { toolsPanel.SelectedTool?.MouseMoveSurface(e.OriginalMouseInfo, textSurface); };
+            consoleWrapper.MouseEnter += (o, e) => { toolsPanel.SelectedTool?.MouseEnterSurface(e.OriginalMouseInfo, textSurface); };
+            consoleWrapper.MouseExit += (o, e) => { toolsPanel.SelectedTool?.MouseExitSurface(e.OriginalMouseInfo, textSurface); };
 
-        public void Reset()
-        {
-            Entities = new SadConsole.Game.GameObjectCollection();
-            //Entities = new List<SadConsole.Game.GameObject>();
-            ControlPanels = new CustomPanel[] { EditorConsoleManager.Instance.ToolPane.FilesPanel, EditorConsoleManager.Instance.ToolPane.LayersPanel, EntityPanel, AnimationsPanel, EditorConsoleManager.Instance.ToolPane.ToolsPanel };
+            layerManagementPanel = new LayersPanel();
+            toolsPanel = new ToolsPanel();
 
-            if (_consoleLayers != null)
-            {
-                _consoleLayers.MouseMove -= _mouseMoveHandler;
-                _consoleLayers.MouseEnter -= _mouseEnterHandler;
-                _consoleLayers.MouseExit -= _mouseExitHandler;
-            }
-
-            _consoleLayers.TextSurface = new LayeredTextSurface(25, 25, 1);
-            _consoleLayers.TextSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
-            LayerMetadata.Create("Root", false, false, false, ((LayeredTextSurface)_consoleLayers.TextSurface).GetLayer(0));
-            _consoleLayers.CanUseMouse = true;
-            _consoleLayers.CanUseKeyboard = true;
+            // Fill tools
+            tools = new Dictionary<string, Tools.ITool>();
+            tools.Add(Tools.PaintTool.ID, new Tools.PaintTool());
+            tools.Add(Tools.LineTool.ID, new Tools.LineTool());
+            tools.Add(Tools.CircleTool.ID, new Tools.CircleTool());
+            tools.Add(Tools.RecolorTool.ID, new Tools.RecolorTool());
+            tools.Add(Tools.FillTool.ID, new Tools.FillTool());
+            tools.Add(Tools.BoxTool.ID, new Tools.BoxTool());
+            tools.Add(Tools.SelectionTool.ID, new Tools.SelectionTool());
+            tools.Add(Tools.SceneEntityMoveTool.ID, new Tools.SceneEntityMoveTool());
             
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.SceneEntityMoveTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.PaintTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.LineTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.CircleTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.RecolorTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.FillTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.BoxTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.SelectionTool.ID]);
 
-            _width = 25;
-            _height = 10;
+            toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
 
-            _mouseMoveHandler = (o, e) => { MouseMove?.Invoke(_consoleLayers.TextSurface, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseMoveSurface(e.OriginalMouseInfo, _consoleLayers.TextSurface); };
-            _mouseEnterHandler = (o, e) => { MouseEnter?.Invoke(_consoleLayers.TextSurface, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseEnterSurface(e.OriginalMouseInfo, _consoleLayers.TextSurface); };
-            _mouseExitHandler = (o, e) => { MouseExit?.Invoke(_consoleLayers.TextSurface, e); EditorConsoleManager.Instance.ToolPane.SelectedTool.MouseExitSurface(e.OriginalMouseInfo, _consoleLayers.TextSurface); };
+            GameObjectPanel = new Panels.EntityManagementPanel();
+            AnimationsPanel = new Panels.Scene.AnimationListPanel();
+            GameObjects = new GameObjectCollection();
+            LinkedGameObjects = new Dictionary<GameObject, GameObject>();
 
-            _consoleLayers.MouseMove += _mouseMoveHandler;
-            _consoleLayers.MouseEnter += _mouseEnterHandler;
-            _consoleLayers.MouseExit += _mouseExitHandler;
-
+            panels = new CustomPanel[] { layerManagementPanel, GameObjectPanel, AnimationsPanel, toolsPanel };
         }
 
-        internal bool LoadEntity(string selectedFile)
+        private void ToolsListBox_SelectedItemChanged(object sender, SadConsole.Controls.ListBox<SadConsole.Controls.ListBoxItem>.SelectedItemEventArgs e)
         {
-            var entity = SadConsole.Game.GameObject.Load(selectedFile);
+            Tools.ITool tool = e.Item as Tools.ITool;
 
-            return LoadEntity(entity);
+            if (e.Item != null)
+            {
+
+                List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, GameObjectPanel, AnimationsPanel, toolsPanel };
+
+                if (tool.ControlPanels != null && tool.ControlPanels.Length != 0)
+                    newPanels.AddRange(tool.ControlPanels);
+
+                panels = newPanels.ToArray();
+                EditorConsoleManager.ToolsPane.RedrawPanels();
+            }
         }
 
-        internal bool LoadEntity(GameObject entity)
+        public void New(Color foreground, Color background, int width, int height)
         {
-            var editor = new Editors.EntityEditor();
-            editor.SetEntity(entity);
-            editor.LinkedEditor = this;
-            EditorConsoleManager.Instance.AddDocument(editor, false);
+            // Create the new text surface
+            textSurface = new LayeredTextSurface(width, height, 1);
 
-            var localEntity = new GameObject(entity.Font);
+            // Update metadata
+            LayerMetadata.Create("main", false, false, true, textSurface.GetLayer(0));
+            textSurface.SetActiveLayer(0);
+            textSurface.Font = Settings.Config.ScreenFont;
 
-            foreach (var item in entity.Animations.Values)
-                localEntity.Animations.Add(item.Name, item);
+            // Update the layer management panel
+            layerManagementPanel.SetLayeredTextSurface(textSurface);
 
-            localEntity.Animation = localEntity.Animations[entity.Animation.Name];
+            // Set the text surface as the one we're displaying
+            consoleWrapper.TextSurface = textSurface;
 
-            localEntity.RenderOffset = _consoleLayers.Position;
-            Entities.Add(localEntity);
-            EntityPanel.RebuildListBox();
-
-            localEntity.Position = entity.Position;
-
-            LinkedGameObjects.Add(localEntity, entity);
-
-            return true;
+            // Update the border
+            if (EditorConsoleManager.ActiveEditor == this)
+                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
         }
-
-        public override string ToString()
+        
+        public void Save()
         {
-            return Title;
-        }
+            var popup = new Windows.SelectFilePopup();
+            popup.Center();
+            popup.SkipFileExistCheck = true;
+            popup.Closed += (s, e) =>
+            {
+                if (popup.DialogResult)
+                {
+                    SadConsole.Game.Scene scene = new Scene(textSurface);
+                    scene.Objects = this.GameObjects;
 
-        public void ProcessKeyboard(KeyboardInfo info)
-        {
-            EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.TextSurface);
-        }
+                    popup.SelectedLoader.Save(scene, popup.SelectedFile);
 
-        public void ProcessMouse(MouseInfo info)
-        {
-            _consoleLayers.ProcessMouse(info);
+                    //GameObject[] objects = Entities.ToArray();
 
-            EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessMouse(info, _consoleLayers.TextSurface);
-
-            if (_consoleLayers.IsMouseOver)
-                EditorConsoleManager.Instance.SurfaceMouseLocation = info.ConsoleLocation;
-            else
-                EditorConsoleManager.Instance.SurfaceMouseLocation = Point.Zero;
-
+                    //SadConsole.Serializer.Save(objects, popup.SelectedFile + ".objects");
+                }
+            };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.Scene() };
+            popup.SelectButtonText = "Save";
+            popup.Show(true);
         }
 
         public void Render()
         {
-            _consoleLayers.Render();
-
-            foreach (var entity in Entities)
+            foreach (var entity in GameObjects)
             {
                 entity.Render();
             }
@@ -181,9 +182,7 @@ namespace SadConsoleEditor.Editors
 
         public void Update()
         {
-            _consoleLayers.Update();
-
-            foreach (var entity in Entities)
+            foreach (var entity in GameObjects)
             {
                 entity.Update();
             }
@@ -191,60 +190,65 @@ namespace SadConsoleEditor.Editors
 
         public void Resize(int width, int height)
         {
-            _width = width;
-            _height = height;
+            //_width = width;
+            //_height = height;
 
-            var oldSurface = (LayeredTextSurface)_consoleLayers.TextSurface;
-            var newSurface = new LayeredTextSurface(width, height, oldSurface.LayerCount);
+            //var oldSurface = (LayeredTextSurface)_consoleLayers.TextSurface;
+            //var newSurface = new LayeredTextSurface(width, height, oldSurface.LayerCount);
 
-            for (int i = 0; i < oldSurface.LayerCount; i++)
-            {
-                var oldLayer = oldSurface.GetLayer(i);
-                var newLayer = newSurface.GetLayer(i);
-                oldSurface.SetActiveLayer(i);
-                newSurface.SetActiveLayer(i);
-                oldSurface.Copy(newSurface);
-                newLayer.Metadata = oldLayer.Metadata;
-                newLayer.IsVisible = oldLayer.IsVisible;
-            }
+            //for (int i = 0; i < oldSurface.LayerCount; i++)
+            //{
+            //    var oldLayer = oldSurface.GetLayer(i);
+            //    var newLayer = newSurface.GetLayer(i);
+            //    oldSurface.SetActiveLayer(i);
+            //    newSurface.SetActiveLayer(i);
+            //    oldSurface.Copy(newSurface);
+            //    newLayer.Metadata = oldLayer.Metadata;
+            //    newLayer.IsVisible = oldLayer.IsVisible;
+            //}
 
-            _consoleLayers.TextSurface = newSurface;
-            _consoleLayers.TextSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
+            //_consoleLayers.TextSurface = newSurface;
+            //_consoleLayers.TextSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
 
-            // inform the outer box we've changed size
-            EditorConsoleManager.Instance.UpdateBox();
+            //// inform the outer box we've changed size
+            //EditorConsoleManager.Instance.UpdateBox();
         }
 
-        public void Position(int x, int y)
+        public void Reset()
         {
-            Position(new Point(x, y));
+            
         }
 
-        public void Position(Point newPosition)
-        {
-            _consoleLayers.Position = newPosition;
+        
 
-            foreach (var entity in Entities)
-            {
-                entity.RenderOffset = newPosition;
-            }
-        }
-
-        public Point GetPosition()
+        public void Move(int x, int y)
         {
-            return _consoleLayers.Position;
+            consoleWrapper.Position = new Point(x, y);
+
+            if (EditorConsoleManager.ActiveEditor == this)
+                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+
+            EditorConsoleManager.UpdateBrush();
+
+            foreach (var entity in GameObjects)
+                entity.RenderOffset = consoleWrapper.Position;
         }
 
         public void OnSelected()
         {
-            foreach (var item in EditorConsoleManager.Instance.Documents)
+            if (selectedTool == null)
+                SelectedTool = tools.First().Value;
+            else
+                SelectedTool = selectedTool;
+
+            foreach (var item in EditorConsoleManager.OpenEditors)
             {
-                var editor = item as EntityEditor;
+                var editor = item as GameObjectEditor;
 
                 if (editor != null && editor.LinkedEditor == this)
                 {
                     // sync back up any entities.
-                    foreach (var gameObject in Entities)
+                    foreach (var gameObject in GameObjects)
                     {
                         var animationName = gameObject.Animation.Name;
                         gameObject.Animations.Clear();
@@ -262,8 +266,9 @@ namespace SadConsoleEditor.Editors
                 }
             }
 
+            
             AnimationsPanel.RebuildListBox();
-            EntityPanel.RebuildListBox();
+            GameObjectPanel.RebuildListBox();
         }
 
         public void OnDeselected()
@@ -273,141 +278,183 @@ namespace SadConsoleEditor.Editors
 
         public void OnClosed()
         {
-            foreach (var item in EditorConsoleManager.Instance.Editors.Values)
+            foreach (var item in EditorConsoleManager.OpenEditors)
             {
-                var editor = item as EntityEditor;
+                var editor = item as GameObjectEditor;
 
                 if (editor != null && editor.LinkedEditor == this)
                     editor.LinkedEditor = null;
             }
         }
-
-        public void Save(string file)
+        
+        public void Load(string file, FileLoaders.IFileLoader loader)
         {
-            ((LayeredTextSurface)_consoleLayers.TextSurface).Save(file, typeof(LayerMetadata));
+            ClearEntities();
 
-            GameObject[] objects = Entities.ToArray();
+            //if (loader is FileLoaders.TextSurface)
+            //{
+            //    // Load the plain surface
+            //    TextSurface surface = (TextSurface)loader.Load(file);
 
-            SadConsole.Serializer.Save(objects, file + ".objects");
-        }
+            //    // Load up a new layered text surface
+            //    textSurface = new LayeredTextSurface(surface.Width, surface.Height, 1);
 
-        public void Load(string file)
-        {
-            if (System.IO.File.Exists(file))
+            //    // Setup metadata
+            //    LayerMetadata.Create("main", false, false, true, textSurface.GetLayer(0));
+
+            //    // Use the loaded surface
+            //    textSurface.ActiveLayer.Cells = surface.Cells;
+            //    textSurface.SetActiveLayer(0);
+
+            //    // Set the text surface as the one we're displaying
+            //    consoleWrapper.TextSurface = textSurface;
+
+            //    // Update the border
+            //    if (EditorConsoleManager.ActiveEditor == this)
+            //        EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            //}
+            //else if (loader is FileLoaders.LayeredTextSurface)
+            //{
+            //    textSurface = (LayeredTextSurface)loader.Load(file);
+            //    consoleWrapper.TextSurface = textSurface;
+
+            //    if (EditorConsoleManager.ActiveEditor == this)
+            //        EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            //}
+            if (loader is FileLoaders.Scene)
             {
-                if (_consoleLayers != null)
-                {
-                    _consoleLayers.MouseMove -= _mouseMoveHandler;
-                    _consoleLayers.MouseEnter -= _mouseEnterHandler;
-                    _consoleLayers.MouseExit -= _mouseExitHandler;
-                }
+                var scene = (SadConsole.Game.Scene)loader.Load(file);
+                textSurface = scene.BackgroundSurface;
+                consoleWrapper.TextSurface = textSurface;
 
-                // Support REXPaint
-                if (file.EndsWith(".xp"))
-                {
-                    using (var filestream = new FileStream(file, FileMode.Open))
-                        _consoleLayers.TextSurface = SadConsole.Readers.REXPaint.Image.Load(filestream).ToTextSurface();
-                }
-                else
-                {
-                    // TODO: Is there an API to load the JSON and examine it? Do that and see what the root type is
-                    // then deserialize it into the appropriate type.
+                foreach (var item in scene.Objects)
+                    LoadEntity(item);
 
-                    _consoleLayers.TextSurface = LayeredTextSurface.Load(file, typeof(LayerMetadata));
-                }
-
-                _consoleLayers.TextSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
-
-                EditorConsoleManager.Instance.ToolPane.LayersPanel.RebuildListBox();
-
-                _consoleLayers.MouseMove += _mouseMoveHandler;
-                _consoleLayers.MouseEnter += _mouseEnterHandler;
-                _consoleLayers.MouseExit += _mouseExitHandler;
-
-                _width = _consoleLayers.Width;
-                _height = _consoleLayers.Height;
-
-                EditorConsoleManager.Instance.UpdateBox();
-                
-
-                // Load game objects
-                file += ".objects";
-
-                if (System.IO.File.Exists(file))
-                {
-                    GameObject[] objects = SadConsole.Serializer.Load<GameObject[]>(file);
-
-                    foreach (var item in objects)
-                    {
-                        LoadEntity(item);
-                    }
-                }
+                if (EditorConsoleManager.ActiveEditor == this)
+                    EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
             }
+
+            textSurface.Font = Settings.Config.ScreenFont;
+            Title = Path.GetFileName(file);
+            // Update the layer management panel
+            layerManagementPanel.SetLayeredTextSurface(textSurface);
+
+            // Load game objects
+            //file += ".objects";
+
+            //if (System.IO.File.Exists(file))
+            //{
+            //    GameObject[] objects = SadConsole.Serializer.Load<GameObject[]>(file);
+
+            //    foreach (var item in objects)
+            //    {
+            //        LoadEntity(item);
+            //    }
+            //}
+
+            
+        }
+        
+        
+        public bool ProcessKeyboard(IConsole console, SadConsole.Input.KeyboardInfo info)
+        {
+            //EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.TextSurface);
+            return false;
         }
 
-        public void RemoveLayer(int index)
+        public bool ProcessMouse(IConsole console, SadConsole.Input.MouseInfo info)
         {
-            ((LayeredTextSurface)_consoleLayers.TextSurface).Remove(index);
-        }
+            consoleWrapper.MouseHandler = null;
+            consoleWrapper.CanUseMouse = true;
+            consoleWrapper.ProcessMouse(info);
+            consoleWrapper.MouseHandler = ProcessMouse;
 
-        public void MoveLayerUp(int index)
-        {
-            var layer = ((LayeredTextSurface)_consoleLayers.TextSurface).GetLayer(index);
-            ((LayeredTextSurface)_consoleLayers.TextSurface).Move(layer, index + 1);
-        }
+            toolsPanel.SelectedTool?.ProcessMouse(info, textSurface);
 
-        public void MoveLayerDown(int index)
-        {
-            var layer = ((LayeredTextSurface)_consoleLayers.TextSurface).GetLayer(index);
-            ((LayeredTextSurface)_consoleLayers.TextSurface).Move(layer, index - 1);
-        }
-
-        public void AddNewLayer(string name)
-        {
-            LayerMetadata.Create(name, true, true, true, ((LayeredTextSurface)_consoleLayers.TextSurface).Add());
-        }
-
-        public bool LoadLayer(string file)
-        {
-            if (System.IO.File.Exists(file))
+            if (consoleWrapper.IsMouseOver)
             {
-                //TODO: Load layer types.. XP, TextSurface, Layer
-
-
-                //typeof(LayerMetadata)
-                var surface = SadConsole.Consoles.TextSurface.Load(file);
-
-                if (surface.Width != EditorConsoleManager.Instance.SelectedEditor.Surface.Width || surface.Height != EditorConsoleManager.Instance.SelectedEditor.Height)
-                {
-                    var newLayer = ((LayeredTextSurface)_consoleLayers.TextSurface).Add();
-                    LayerMetadata.Create("Loaded", true, true, true, newLayer);
-                    var tempSurface = new TextSurface(_consoleLayers.Width, _consoleLayers.Height,
-                                                      newLayer.Cells, _consoleLayers.TextSurface.Font);
-                    surface.Copy(tempSurface);
-                    newLayer.Cells = tempSurface.Cells;
-                }
-                else
-                {
-                    var layer = ((LayeredTextSurface)_consoleLayers.TextSurface).Add();
-                    LayerMetadata.Create("Loaded", true, true, true, layer);
-                    layer.Cells = surface.Cells;
-
-                }
-
+                EditorConsoleManager.SurfaceMouseLocation = info.ConsoleLocation;
                 return true;
             }
             else
-                return false;
+                EditorConsoleManager.SurfaceMouseLocation = Point.Zero;
+
+            consoleWrapper.CanUseMouse = false;
+            return false;
         }
 
-        public void SaveLayer(int index, string file)
+
+        public override string ToString()
         {
-            SadConsole.Serializer.Save(((LayeredTextSurface)_consoleLayers.TextSurface).GetLayer(index), file, new Type[] { typeof(LayerMetadata) });
+            return this.ToString();
         }
 
-        public void SetActiveLayer(int index)
+        public bool LoadEntity(GameObject entity)
         {
-            ((LayeredTextSurface)_consoleLayers.TextSurface).SetActiveLayer(index);
+            var editor = new GameObjectEditor();
+            editor.SetEntity(entity);
+            editor.LinkedEditor = this;
+            EditorConsoleManager.AddEditor(editor, false);
+
+            var localEntity = new GameObject(entity.Font);
+
+            foreach (var item in entity.Animations.Values)
+                localEntity.Animations.Add(item.Name, item);
+
+            localEntity.Animation = localEntity.Animations[entity.Animation.Name];
+
+            localEntity.RenderOffset = consoleWrapper.Position;
+            GameObjects.Add(localEntity);
+            GameObjectPanel.RebuildListBox();
+
+            localEntity.Position = entity.Position;
+
+            LinkedGameObjects.Add(localEntity, entity);
+
+            FixLinkedObjectTitles();
+            return true;
+        }
+
+        private void ClearEntities()
+        {
+            GameObjects.Clear();
+
+            List<IEditor> docs = new List<IEditor>();
+
+            foreach (var doc in EditorConsoleManager.OpenEditors)
+                if (doc is GameObjectEditor)
+                    if (((GameObjectEditor)doc).LinkedEditor == this)
+                        docs.Add(doc);
+
+            LinkedGameObjects.Clear();
+
+            foreach (var doc in docs)
+                EditorConsoleManager.RemoveEditor(doc);
+        }
+
+        private void FixLinkedObjectTitles()
+        {
+            for (int i = 0; i < GameObjects.Count; i++)
+            {
+                var linkedEntity = LinkedGameObjects[GameObjects[i]];
+                IEditor linkedEditor = EditorConsoleManager.OpenEditors.Where(e => e.EditorType == Editors.GameObject && ((GameObjectEditor)e).GameObject == linkedEntity).FirstOrDefault();
+
+                if (linkedEditor != null)
+                {
+                    // last one
+                    if (i == GameObjects.Count - 1)
+                    {
+                        linkedEditor.Title = (char)192 + " " + linkedEntity.Name;
+                    }
+                    else
+                    {
+                        linkedEditor.Title = (char)195 + " " + linkedEntity.Name;
+
+                    }
+                }
+
+                EditorConsoleManager.ToolsPane.PanelFiles.DocumentsListbox.IsDirty = true;
+            }
         }
     }
     

@@ -7,7 +7,7 @@ using SadConsole;
 using Microsoft.Xna.Framework;
 using SadConsole.Consoles;
 
-namespace SadEditor.Controls
+namespace SadConsoleEditor.Controls
 {
     internal class FileDirectoryListbox : ListBox<FileDirectoryListboxItem>
     {
@@ -145,18 +145,18 @@ namespace SadEditor.Controls
     internal class FileDirectoryListboxItem : ListBoxItem
     {
         private string _displayString;
-        private CellAppearance _directoryAppNormal = new CellAppearance(Color.Purple, Color.Transparent);
-        private CellAppearance _directoryAppMouseOver = new CellAppearance(Color.Purple, new Color(30, 30, 30));
-        private CellAppearance _directoryAppSelected = new CellAppearance(new Color(255, 0, 255), Color.Transparent);
-        private CellAppearance _directoryAppSelectedOver = new CellAppearance(new Color(255, 0, 255), new Color(30, 30, 30));
-        private CellAppearance _fileAppNormal = new CellAppearance(Color.Gray, Color.Transparent);
-        private CellAppearance _fileAppMouseOver = new CellAppearance(Color.Gray, new Color(30, 30, 30));
-        private CellAppearance _fileAppSelected = new CellAppearance(Color.White, Color.Transparent);
-        private CellAppearance _fileAppSelectedOver = new CellAppearance(Color.White, new Color(30, 30, 30));
-        private CellAppearance _highExtAppNormal = new CellAppearance(ColorAnsi.Yellow, Color.Transparent);
-        private CellAppearance _highExtAppMouseOver = new CellAppearance(ColorAnsi.Yellow, new Color(30, 30, 30));
-        private CellAppearance _highExtAppSelected = new CellAppearance(Color.Yellow, Color.Transparent);
-        private CellAppearance _highExtAppSelectedOver = new CellAppearance(Color.Yellow, new Color(30, 30, 30));
+        private CellAppearance _directoryAppNormal = new CellAppearance(Color.Purple, Settings.Color_ControlBack);
+        private CellAppearance _directoryAppMouseOver = new CellAppearance(Color.Purple, Settings.Color_ControlBackDim);
+        private CellAppearance _directoryAppSelected = new CellAppearance(new Color(255, 0, 255), Settings.Color_ControlBack);
+        private CellAppearance _directoryAppSelectedOver = new CellAppearance(new Color(255, 0, 255), Settings.Color_ControlBackDim);
+        private CellAppearance _fileAppNormal = new CellAppearance(Color.Gray, Settings.Color_ControlBack);
+        private CellAppearance _fileAppMouseOver = new CellAppearance(Color.Gray, Settings.Color_ControlBackDim);
+        private CellAppearance _fileAppSelected = new CellAppearance(Color.White, Settings.Color_ControlBack);
+        private CellAppearance _fileAppSelectedOver = new CellAppearance(Color.White, Settings.Color_ControlBackDim);
+        private CellAppearance _highExtAppNormal = new CellAppearance(ColorAnsi.Yellow, Settings.Color_ControlBack);
+        private CellAppearance _highExtAppMouseOver = new CellAppearance(ColorAnsi.Yellow, Settings.Color_ControlBackDim);
+        private CellAppearance _highExtAppSelected = new CellAppearance(Color.Yellow, Settings.Color_ControlBack);
+        private CellAppearance _highExtAppSelectedOver = new CellAppearance(Color.Yellow, Settings.Color_ControlBackDim);
 
         protected override void DetermineAppearance()
         {

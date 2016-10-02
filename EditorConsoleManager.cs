@@ -1,70 +1,83 @@
 ﻿using SadConsole.Consoles;
+using Console = SadConsole.Consoles.Console;
+using System.Linq;
 using System;
 using Microsoft.Xna.Framework;
-using SadConsoleEditor.Windows;
-using SadConsole.Input;
 using System.Collections.Generic;
-using SadConsoleEditor.Editors;
-using System.Linq;
 
 namespace SadConsoleEditor
 {
-    class EditorConsoleManager: ConsoleList
+    class CustomConsoleList : ConsoleList
     {
-        private static EditorConsoleManager _instance;
-
-        public static EditorConsoleManager Instance
+        public override void Render()
         {
-            get
+            if (IsVisible)
             {
-                if (_instance == null)
+                var copyList = new List<IConsole>(_consoles);
+
+                for (int i = 0; i < copyList.Count; i++)
                 {
-                    _instance = new EditorConsoleManager();
-                    _instance.FinishCreating();
+                    copyList[i].Render();
+
+                    if (EditorConsoleManager.ActiveEditor != null && copyList[i] == EditorConsoleManager.ActiveEditor.RenderedConsole)
+                    {
+                        EditorConsoleManager.ActiveEditor.Render();
+
+                        if (EditorConsoleManager.Brush != null && EditorConsoleManager.Brush.IsVisible)
+                            EditorConsoleManager.Brush.Render();
+                    }
                 }
-
-                return _instance;
             }
         }
 
-        private Consoles.BorderRenderer _borderRenderer;
-        private Editors.IEditor _oldEditor;
-        private SelectFilePopup _fileDialogPopup;
-        public Dictionary<string, Editors.IEditor> Editors;
-        public IEditor SelectedEditor { get; private set; }
-        private Action<object, EventArgs> _popupCallback;
-        private SadConsole.Controls.ScrollBar _toolsPaneScroller;
-        private Dictionary<SadConsole.Controls.RadioButton, IEditor> _documentButtons = new Dictionary<SadConsole.Controls.RadioButton, IEditor>();
-        private Dictionary<IEditor, string> _editorsLastSelectedTool = new Dictionary<IEditor, string>();
-
-        
-        public int EditingSurfaceWidth { get { return SelectedEditor.Width; } }
-        public int EditingSurfaceHeight { get { return SelectedEditor.Height; } }
-
-
-        public IEntityBrush Brush { get; private set; }
-        public Consoles.ToolPane ToolPane { get; private set; }
-
-		public Consoles.QuickSelectPane QuickSelectPane { get; private set; }
-
-		public bool AllowKeyboardToMoveConsole { get; set; }
-
-        public IEnumerable<IEditor> Documents { get { return Instance.ToolPane.FilesPanel.DocumentsListbox.Items.Cast<IEditor>(); } }
-
-        private Point topBarMousePosition;
-        private string topBarLayerName = "None";
-        private string topBarToolName = "None";
-
-        public Point SurfaceMouseLocation
+        public override void Update()
         {
-            set
+            if (DoUpdate)
             {
-                topBarMousePosition = value;
-                RefreshBackingPanel();
+                var copyList = new List<IConsole>(_consoles);
+
+                for (int i = copyList.Count - 1; i >= 0; i--)
+                {
+                    copyList[i].Update();
+
+                    if (EditorConsoleManager.ActiveEditor != null && copyList[i] == EditorConsoleManager.ActiveEditor.RenderedConsole)
+                    {
+                        EditorConsoleManager.ActiveEditor.Update();
+
+                        if (EditorConsoleManager.Brush != null && EditorConsoleManager.Brush.IsVisible)
+                            EditorConsoleManager.Brush.Update();
+                    }
+                }
             }
         }
+    }
 
-        public string LayerName
+
+    static class EditorConsoleManager
+    {
+        private static CustomConsoleList Consoles;
+        public static Consoles.QuickSelectPane QuickSelectPane;
+        private static Console topBarPane;
+        private static Consoles.BorderConsole borderConsole;
+        private static ControlsConsole scrollerContainer;
+
+        public static Dictionary<Type, FileLoaders.IFileLoader[]> EditorFileTypes;
+        public static Dictionary<string, Editors.Editors> Editors;
+
+        public static List<Editors.IEditor> OpenEditors;
+        private static string topBarLayerName = "None";
+        private static string topBarToolName = "None";
+        private static Point topBarMousePosition;
+
+        public static SadConsole.Game.GameObject Brush;
+
+        public static Editors.IEditor ActiveEditor { get; private set; }
+
+        public static Consoles.ToolPane ToolsPane { get; private set; }
+
+        public static SadConsole.Controls.ScrollBar ToolsPaneScroller { get; private set; }
+
+        public static string LayerName
         {
             set
             {
@@ -73,7 +86,7 @@ namespace SadConsoleEditor
             }
         }
 
-        public string ToolName
+        public static string ToolName
         {
             set
             {
@@ -82,455 +95,293 @@ namespace SadConsoleEditor
             }
         }
 
-        private ControlsConsole _backingPanel;
-
-        private void RefreshBackingPanel()
+        public static Point SurfaceMouseLocation
         {
-            _backingPanel.Clear();
+            set
+            {
+                topBarMousePosition = value;
+                RefreshBackingPanel();
+            }
+        }
+
+        public static void Initialize()
+        {
+            Consoles = new CustomConsoleList();
+
+            // Hook the update event that happens each frame so we can trap keys and respond.
+            SadConsole.Engine.ConsoleRenderStack = Consoles;
+            SadConsole.Engine.ActiveConsole = Consoles;
+
+            // Create the basic consoles
+            QuickSelectPane = new SadConsoleEditor.Consoles.QuickSelectPane();
+            QuickSelectPane.Position = new Point(0, Settings.Config.WindowHeight - QuickSelectPane.TextSurface.Height);
+            QuickSelectPane.Redraw();
+            QuickSelectPane.IsVisible = false;
+
+            topBarPane = new SadConsole.Consoles.Console(Settings.Config.WindowWidth, 1);
+            topBarPane.TextSurface.DefaultBackground = Settings.Color_MenuBack;
+            topBarPane.Clear();
+            topBarPane.MouseCanFocus = false;
+            topBarPane.IsVisible = false;
+
+            borderConsole = new SadConsoleEditor.Consoles.BorderConsole(10, 10);
+            borderConsole.IsVisible = false;
+
+            ToolsPane = new Consoles.ToolPane();
+            ToolsPane.Position = new Point(Settings.Config.WindowWidth - ToolsPane.Width - 1, 1);
+            ToolsPane.IsVisible = false;
+
+            // Scroll bar for toolpane
+            // Create scrollbar
+            ToolsPaneScroller = SadConsole.Controls.ScrollBar.Create(System.Windows.Controls.Orientation.Vertical, Settings.Config.WindowHeight - 1);
+            ToolsPaneScroller.Maximum = ToolsPane.TextSurface.Height - Settings.Config.WindowHeight;
+            ToolsPaneScroller.ValueChanged += (o, e) =>
+            {
+                ToolsPane.TextSurface.RenderArea = new Rectangle(0, ToolsPaneScroller.Value, ToolsPane.Width, Settings.Config.WindowHeight);
+            };
+            scrollerContainer = new ControlsConsole(1, ToolsPaneScroller.Height);
+            scrollerContainer.Add(ToolsPaneScroller);
+            scrollerContainer.Position = new Point(Settings.Config.WindowWidth - 1, 1);
+            scrollerContainer.IsVisible = false;
+            scrollerContainer.MouseCanFocus = false;
+            scrollerContainer.ProcessMouseWithoutFocus = true;
+
+            // Add the consoles to the main console list
+            Consoles.Add(topBarPane);
+            Consoles.Add(QuickSelectPane);
+            Consoles.Add(ToolsPane);
+            Consoles.Add(scrollerContainer);
+            Consoles.Add(borderConsole);
+
+            // Setup the file types for base editors.
+            EditorFileTypes = new Dictionary<Type, FileLoaders.IFileLoader[]>(3);
+            OpenEditors = new List<SadConsoleEditor.Editors.IEditor>();
+            //EditorFileTypes.Add(typeof(Editors.DrawingEditor), new FileLoaders.IFileLoader[] { new FileLoaders.TextSurface() });
+
+            // Add valid editors
+            Editors = new Dictionary<string, SadConsoleEditor.Editors.Editors>();
+            Editors.Add("Console Draw", SadConsoleEditor.Editors.Editors.Console);
+            Editors.Add("Animated Game Object", SadConsoleEditor.Editors.Editors.GameObject);
+            Editors.Add("Game Scene", SadConsoleEditor.Editors.Editors.Scene);
+            Editors.Add("User Interface Console", SadConsoleEditor.Editors.Editors.GUI);
+
+            // Show new window
+            ShowStartup();
+        }
+
+        private static void ShowStartup()
+        {
+            Window.Prompt("Create new or open existing?", "New", "Open",
+            (b) =>
+            {
+                if (b)
+                {
+                    Windows.NewConsolePopup popup = new Windows.NewConsolePopup();
+                    popup.Center();
+                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else CreateNewEditor(popup.Editor, popup.SettingWidth, popup.SettingHeight, popup.SettingForeground, popup.SettingBackground); };
+                    popup.Show(true);
+                }
+                else
+                {
+                    Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
+                    popup.Center();
+                    popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else LoadEditor(popup.SelectedFile, popup.SelectedLoader); };
+                    popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface(), new FileLoaders.TextSurface(), new FileLoaders.Scene(), new FileLoaders.GameObject() };
+                    popup.Show(true);
+                }
+
+            });
+        }
+
+
+        private static void CreateNewEditor(Editors.Editors editorType, int width, int height, Color defaultForeground, Color defaultBackground)
+        {
+            Editors.IEditor editor = null;
+
+            switch (editorType)
+            {
+                case SadConsoleEditor.Editors.Editors.Console:
+                    editor = new Editors.LayeredConsoleEditor();
+                    editor.New(defaultForeground, defaultBackground, width, height);
+                    break;
+                case SadConsoleEditor.Editors.Editors.GameObject:
+                    editor = new Editors.GameObjectEditor();
+                    editor.New(defaultForeground, defaultBackground, width, height);
+                    break;
+                case SadConsoleEditor.Editors.Editors.Scene:
+                    editor = new Editors.SceneEditor();
+                    editor.New(defaultForeground, defaultBackground, width, height);
+                    break;
+                case SadConsoleEditor.Editors.Editors.GUI:
+                    break;
+                default:
+                    break;
+            }
+
+            if (editor != null)
+            {
+                AddEditor(editor, true);
+            }
+
+            topBarPane.IsVisible = true;
+            ToolsPane.IsVisible = true;
+            scrollerContainer.IsVisible = true;
+        }
+
+        private static void LoadEditor(string file, FileLoaders.IFileLoader loader)
+        {
+            Editors.IEditor editor = null;
+
+            if (loader is FileLoaders.LayeredTextSurface || loader is FileLoaders.TextSurface)
+            {
+                editor = new Editors.LayeredConsoleEditor();
+                AddEditor(editor, false);
+                editor.Load(file, loader);
+            }
+            else if (loader is FileLoaders.GameObject)
+            {
+                editor = new Editors.GameObjectEditor();
+                AddEditor(editor, false);
+                editor.Load(file, loader);
+            }
+            else if (loader is FileLoaders.Scene)
+            {
+                editor = new Editors.SceneEditor();
+                AddEditor(editor, false);
+                editor.Load(file, loader);
+            }
+            if (editor != null)
+                ChangeActiveEditor(editor);
+
+            topBarPane.IsVisible = true;
+            ToolsPane.IsVisible = true;
+            scrollerContainer.IsVisible = true;
+        }
+
+        public static void ShowCloseConsolePopup()
+        {
+            Window.Prompt(new SadConsole.ColoredString("Are you sure? You will lose any unsaved changes."), "Yes", "No", (r) =>
+            {
+                if (r)
+                    RemoveEditor(ActiveEditor);
+            });
+        }
+
+        public static void ShowNewEditorPopup()
+        {
+            Windows.NewConsolePopup popup = new Windows.NewConsolePopup();
+            popup.Center();
+            popup.Closed += (s, e) => { if (popup.DialogResult) CreateNewEditor(popup.Editor, popup.SettingWidth, popup.SettingHeight, popup.SettingForeground, popup.SettingBackground); };
+            popup.Show(true);
+        }
+
+        public static void ShowLoadEditorPopup()
+        {
+            Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
+            popup.Center();
+            popup.Closed += (s, e) => { if (popup.DialogResult) LoadEditor(popup.SelectedFile, popup.SelectedLoader); };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface(), new FileLoaders.Scene(), new FileLoaders.GameObject() };
+            popup.Show(true);
+        }
+
+        public static void AddEditor(Editors.IEditor editor, bool show)
+        {
+            OpenEditors.Add(editor);
+            ToolsPane.PanelFiles.DocumentsListbox.Items.Add(editor);
+
+            if (show)
+                ChangeActiveEditor(editor);
+        }
+
+        public static void RemoveEditor(Editors.IEditor editor)
+        {
+            ToolsPane.PanelFiles.DocumentsListbox.Items.Remove(editor);
+            OpenEditors.Remove(editor);
+            editor.OnClosed();
+
+            if (OpenEditors.Count == 0)
+                ShowStartup();
+            else
+                ChangeActiveEditor(OpenEditors[0]);
+        }
+
+        public static void ChangeActiveEditor(Editors.IEditor editor)
+        {
+            if (ActiveEditor != null)
+            {
+                ActiveEditor.OnDeselected();
+                Consoles.Remove(ActiveEditor.RenderedConsole);
+            }
+
+            if (OpenEditors.Contains(editor))
+            {
+                ActiveEditor = editor;
+                CenterEditor();
+                UpdateBorder(editor.Position);
+                ToolsPane.RedrawPanels();
+                ActiveEditor.OnSelected();
+                Consoles.Add(ActiveEditor.RenderedConsole);
+
+                if (ToolsPane.PanelFiles.DocumentsListbox.SelectedItem != editor)
+                    ToolsPane.PanelFiles.DocumentsListbox.SelectedItem = editor;
+            }
+        }
+
+        public static void SaveEditor()
+        {
+            if (ActiveEditor != null)
+                ActiveEditor.Save();
+        }
+
+        public static void UpdateBorder(Point position)
+        {
+            if (borderConsole.Width != ActiveEditor.Width + 2 || borderConsole.Height != ActiveEditor.Height + 2)
+            {
+                Consoles.Remove(borderConsole);
+                borderConsole = new Consoles.BorderConsole(ActiveEditor.Width + 2, ActiveEditor.Height + 2);
+                Consoles.Add(borderConsole);
+            }
+            borderConsole.Position = position - new Point(1, 1);
+            borderConsole.IsVisible = true;
+        }
+
+        public static void CenterEditor()
+        {
+            Point position = new Point();
+
+            var screenSize = SadConsole.Engine.GetScreenSizeInCells(Settings.Config.ScreenFont);
+
+            if (ActiveEditor.Width < screenSize.X)
+                position.X = ((screenSize.X - 20) / 2) - (ActiveEditor.Width / 2);
+            else
+                position.X = ((screenSize.X - 20) - ActiveEditor.Width) / 2;
+
+            if (ActiveEditor.Height < screenSize.Y)
+                position.Y = (screenSize.Y / 2) - (ActiveEditor.Height / 2);
+            else
+                position.Y = (screenSize.Y - ActiveEditor.Height) / 2;
+
+            ActiveEditor.Move(position.X, position.Y);
+        }
+
+        private static void RefreshBackingPanel()
+        {
+            topBarPane.Clear();
 
             var text = new SadConsole.ColoredString("   X: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarMousePosition.X.ToString(), Settings.Appearance_TextValue) +
                        new SadConsole.ColoredString(" Y: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarMousePosition.Y.ToString(), Settings.Appearance_TextValue) +
                        new SadConsole.ColoredString("   Layer: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarLayerName, Settings.Appearance_TextValue) +
                        new SadConsole.ColoredString("   Tool: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarToolName, Settings.Appearance_TextValue);
 
-            _backingPanel.Print(0, 0, text);
+            topBarPane.Print(0, 0, text);
         }
 
-        private EditorConsoleManager()
+        public static void UpdateBrush()
         {
-            _backingPanel = new ControlsConsole(Settings.Config.WindowWidth, 1);
-
-            _backingPanel.TextSurface.DefaultBackground = Settings.Color_MenuBack;
-            _backingPanel.Clear();
-            _backingPanel.ProcessMouseWithoutFocus = true;
-
-            _backingPanel.IsVisible = true;
-            SurfaceMouseLocation = new Point(0, 0);
-            Color Green = new Color(165, 224, 45);
-            Color Red = new Color(246, 38, 108);
-            Color Blue = new Color(100, 217, 234);
-            Color Grey = new Color(117, 111, 81);
-            Color Yellow = new Color(226, 218, 110);
-            Color Orange = new Color(251, 149, 31);
-
-            //_backingPanel.TextSurface.Print(0, 0, "Test", Green);
-            //_backingPanel.TextSurface.Print(5, 0, "Test", Red);
-            //_backingPanel.TextSurface.Print(10, 0, "Test", Blue);
-            //_backingPanel.TextSurface.Print(15, 0, "Test", Grey);
-            //_backingPanel.TextSurface.Print(20, 0, "Test", Yellow);
-            //_backingPanel.TextSurface.Print(25, 0, "Test", Orange);
-
-            this.Add(_backingPanel);
-
-            _fileDialogPopup = new SelectFilePopup();
-            _fileDialogPopup.Closed += (o, e) =>
+            if (Brush != null)
             {
-                if (_popupCallback != null)
-                    _popupCallback(o, e);
-            };
-            _fileDialogPopup.CurrentFolder = Environment.CurrentDirectory;
-        }
-
-        private void FinishCreating()
-        {
-            ToolPane = new Consoles.ToolPane();
-            ToolPane.Position = new Point(_backingPanel.TextSurface.Width - ToolPane.TextSurface.Width - 1, 1);
-            //ToolPane.TextSurface.Resize(ToolPane.TextSurface.Width, ToolPane.TextSurface.Height * 2);
-            ToolPane.TextSurface.RenderArea = new Rectangle(0, 0, ToolPane.TextSurface.Width, Settings.Config.WindowHeight - 2);
-            this.Add(ToolPane);
-
-            _toolsPaneScroller = SadConsole.Controls.ScrollBar.Create(System.Windows.Controls.Orientation.Vertical, Settings.Config.WindowHeight - 1);
-            _toolsPaneScroller.Maximum = ToolPane.TextSurface.Height - Settings.Config.WindowHeight;
-            _toolsPaneScroller.ValueChanged += (o, e) =>
-                {
-                    ToolPane.TextSurface.RenderArea = new Rectangle(0, _toolsPaneScroller.Value, ToolPane.TextSurface.Width, Settings.Config.WindowHeight);
-                };
-            var scrollerContainer = new ControlsConsole(1, _toolsPaneScroller.Height);
-            scrollerContainer.Add(_toolsPaneScroller);
-            scrollerContainer.Position = new Point(_backingPanel.TextSurface.Width - 1, 1);
-            scrollerContainer.IsVisible = true;
-            scrollerContainer.MouseCanFocus = false;
-            scrollerContainer.ProcessMouseWithoutFocus = true;
-            this.Add(scrollerContainer);
-
-			QuickSelectPane = new Consoles.QuickSelectPane();
-			QuickSelectPane.Position = new Point(0, Settings.Config.WindowHeight - QuickSelectPane.TextSurface.Height);
-			QuickSelectPane.Redraw();
-			QuickSelectPane.IsVisible = true;
-			this.Add(QuickSelectPane);
-
-			ToolPane.FinishCreating();
-
-            Editors = new Dictionary<string, SadConsoleEditor.Editors.IEditor>();
-            
-            ChangeEditor(new DrawingEditor());
-            //_borderRenderer = new Consoles.BorderRenderer(1, 1);
-
-            Editors.Add(DrawingEditor.ID, new DrawingEditor());
-            //Editors.Add(GameScreenEditor.ID, new GameScreenEditor());
-            Editors.Add(EntityEditor.ID, new EntityEditor());
-            Editors.Add(SceneEditor.ID, new SceneEditor());
-
-        }
-
-        public void ChangeEditor(IEditor editor)
-        {
-            if (SelectedEditor != null)
-            {
-                if (_editorsLastSelectedTool.ContainsKey(SelectedEditor))
-                    _editorsLastSelectedTool.Remove(SelectedEditor);
-
-                _editorsLastSelectedTool.Add(SelectedEditor, ToolPane.SelectedTool.Id);
-
-                SelectedEditor.OnDeselected();
+                Brush.RenderOffset = ActiveEditor.Position;
             }
-
-            SelectedEditor = editor;
-            ToolPane.SetupEditor();
-            UpdateBox();
-
-            SelectedEditor.OnSelected();
-
-            if (_editorsLastSelectedTool.ContainsKey(SelectedEditor))
-            {
-                string id = _editorsLastSelectedTool[SelectedEditor];
-
-                foreach (var tool in ToolPane.ToolsPanel.ToolsListBox.Items.Cast<Tools.ITool>())
-                {
-                    if (tool.Id == id)
-                    {
-                        ToolPane.SelectedTool = tool;
-                        break;
-                    }
-                }
-            }
-        }
-
-        public void ScrollToolbox(int scrollValueChanged)
-        {
-            _toolsPaneScroller.Value += scrollValueChanged / 20;
-        }
-
-        public void UpdateBrush(IEntityBrush newBrushEntity)
-        {
-            Brush = newBrushEntity;
-            Brush.RenderOffset = SelectedEditor.GetPosition();
-        }
-
-        public void UpdateBox()
-        {
-            //if (_borderRenderer != null)
-                _borderRenderer = new Consoles.BorderRenderer(EditingSurfaceWidth + 2, EditingSurfaceHeight + 2);
-
-            CenterEditor();
-        }
-
-        private void CenterEditor()
-        {
-            // Was in the middle of moving EditingContainer to this. Got to finish this. This should happen anytime the editing surface resizes.
-
-            Point position = new Point();
-
-            var screenSize = SadConsole.Engine.GetScreenSizeInCells(Settings.Config.ScreenFont);
-
-            if (EditingSurfaceWidth < screenSize.X)
-                position.X = ((screenSize.X - 20) / 2) - (EditingSurfaceWidth / 2);
-            else
-                position.X = ((screenSize.X - 20) - EditingSurfaceWidth) / 2;
-
-            if (EditingSurfaceHeight < screenSize.Y)
-                position.Y = (screenSize.Y / 2) - (EditingSurfaceHeight / 2);
-            else
-                position.Y = (screenSize.Y - EditingSurfaceHeight) / 2;
-
-            SelectedEditor.Position(position.X, position.Y);
-            _borderRenderer.Position = new Point(position.X - 1, position.Y - 1);
-            Brush.RenderOffset = position;
-        }
-
-        public override void Update()
-        {
-            base.Update();
-
-            SelectedEditor.Update();
-            Brush.Update();
-
-            //ProcessKeyboard(SadConsole.Engine.Keyboard);
-        }
-
-        public override void Render()
-        {
-            
-            SelectedEditor.Render();
-
-            if (_borderRenderer != null)
-                _borderRenderer.Render();
-
-            Brush.Render();
-
-            // Draw the border for the console around it.
-            base.Render();
-        }
-
-        public override bool ProcessMouse(SadConsole.Input.MouseInfo info)
-        {
-            var result = base.ProcessMouse(info);
-
-            if (!ToolPane.IsMouseOver && !_backingPanel.IsMouseOver)
-                SelectedEditor.ProcessMouse(info);
-            
-            return result;
-        }
-
-        public override bool ProcessKeyboard(KeyboardInfo info)
-        {
-            //var result = base.ProcessKeyboard(info);
-            if (AllowKeyboardToMoveConsole)
-            {
-				bool shifted = info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
-
-				var position = new Point(_borderRenderer.Position.X + 1, _borderRenderer.Position.Y + 1);
-                bool movekeyPressed = false;
-                if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
-                {
-                    if (_borderRenderer.Position.X + _borderRenderer.TextSurface.Width - 1 != 0)
-                    {
-                        position.X -= 1;
-                        movekeyPressed = true;
-                    }
-                }
-                else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
-                {
-                    if (_borderRenderer.Position.X != ToolPane.Position.X - 1)
-                    {
-                        position.X += 1;
-                        movekeyPressed = true;
-                    }
-                }
-
-                if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
-                {
-                    if (_borderRenderer.Position.Y + _borderRenderer.TextSurface.Height - 2 != 0)
-                    {
-                        position.Y -= 1;
-                        movekeyPressed = true;
-                    }
-
-                }
-                else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
-                {
-                    if (_borderRenderer.Position.Y != Settings.Config.WindowHeight - 1)
-                    {
-                        position.Y += 1;
-                        movekeyPressed = true;
-                    }
-                }
-                
-                if (movekeyPressed)
-                {
-                    SelectedEditor.Position(position.X, position.Y);
-                    _borderRenderer.Position = new Microsoft.Xna.Framework.Point(position.X - 1, position.Y - 1);
-                    Brush.RenderOffset = position;
-                }
-                else
-                {
-					//if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Subtract))
-					//{
-					//	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X / 2, SelectedEditor.Surface.CellSize.Y / 2);
-					//}
-					//else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Add))
-					//{
-					//	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X * 2, SelectedEditor.Surface.CellSize.Y * 2);
-					//}
-					//else
-					{
-						// Look for tool hotkeys
-						ToolPane.ProcessKeyboard(info);
-
-						// Look for quick select F* keys
-						QuickSelectPane.ProcessKeyboard(info);
-					}
-                }
-
-            }
-
-            SelectedEditor.ProcessKeyboard(info);
-
-            return true;
-        }
-
-        public void ShowResizeConsolePopup()
-        {
-            var popup = new ResizeSurfacePopup(EditingSurfaceWidth, EditingSurfaceHeight);
-            popup.Closed += (o, e) =>
-            {
-                if (popup.DialogResult)
-                {
-                    ResizeEditingSurface(popup.SettingWidth, popup.SettingHeight);
-                }
-            };
-
-            popup.Show(true);
-            popup.Center();
-        }
-
-        public void ShowCloseConsolePopup()
-        {
-            Window.Prompt(new SadConsole.ColoredString("Are you sure? You will lose any unsaved changes."), "Yes", "No", (r) =>
-            {
-                if (r)
-                    CloseDocument(SelectedEditor);
-            });
-        }
-
-        public void ShowNewConsolePopup(bool allowCancel)
-        {
-            var popup = new NewConsolePopup();
-            popup.AllowCancel = allowCancel;
-            popup.Closed += (o, e) =>
-            {
-                if (popup.DialogResult)
-                {
-                    IEditor editor;
-
-                    if (popup.Editor.Id == EntityEditor.ID)
-                        editor = new EntityEditor();
-                    //else if (popup.Editor.Id == DrawingEditor.ID)
-                    
-                    else if (popup.Editor.Id == SceneEditor.ID)
-                        editor = new SceneEditor();
-
-                    else
-                        editor = new DrawingEditor();
-                    //else
-                    //    editor = new GameScreenEditor();
-
-
-
-                    editor.Resize(popup.SettingWidth, popup.SettingHeight);
-                    Settings.QuickEditor.TextSurface = editor.Surface;
-                    Settings.QuickEditor.Fill(popup.SettingForeground, popup.SettingBackground, 0, null);
-                    AddDocument(editor, true);
-                    //switch
-                }
-            };
-
-            popup.Show(true);
-            popup.Center();
-        }
-
-        public void ResizeEditingSurface(int width, int height)
-        {
-            SelectedEditor.Resize(width, height);
-        }
-
-        private void LoadSurfaceAction(object sender, EventArgs e)
-        {
-            if (_fileDialogPopup.DialogResult)
-            {
-                SelectedEditor.Load(_fileDialogPopup.SelectedFile);
-                //ToolPane.LayersPanel.RebuildListBox();
-            }
-        }
-
-        private void SaveSurfaceAction(object sender, EventArgs e)
-        {
-            if (_fileDialogPopup.DialogResult)
-            {
-                SelectedEditor.Save(_fileDialogPopup.SelectedFile);
-            }
-        }
-
-        public void LoadSurface()
-        {
-            _popupCallback = LoadSurfaceAction;
-            _fileDialogPopup.FileFilter = SelectedEditor.FileExtensionsLoad;
-            _fileDialogPopup.SelectButtonText = "Open";
-            _fileDialogPopup.Show(true);
-            _fileDialogPopup.Center();
-        }
-
-        public void SaveSurface()
-        {
-            _popupCallback = SaveSurfaceAction;
-            _fileDialogPopup.SelectButtonText = "Save";
-            _fileDialogPopup.FileFilter = SelectedEditor.FileExtensionsSave;
-            _fileDialogPopup.SkipFileExistCheck = true;
-            _fileDialogPopup.Show(true);
-            _fileDialogPopup.Center();
-        }
-
-
-        public void AddDocument(IEditor editor, bool selectEditor)
-        {
-            Instance.ToolPane.FilesPanel.DocumentsListbox.Items.Add(editor);
-
-            //var button = new SadConsole.Controls.RadioButton(editor.ShortName.Length + 6, 1) { Text = editor.ShortName };
-            //button.IsSelectedChanged += DocumentButtonClick;
-            //_documentButtons.Add(button, editor);
-            //_backingPanel.Add(button);
-            //ArrangeDocumentButtons();
-
-            if (selectEditor)
-                Instance.ToolPane.FilesPanel.DocumentsListbox.SelectedItem = editor;
-        }
-
-        public void CloseDocument(IEditor editor)
-        {
-            //SadConsole.Controls.RadioButton button = null;
-
-            Instance.ToolPane.FilesPanel.DocumentsListbox.Items.Remove(editor);
-
-            //foreach (var item in _documentButtons.Keys)
-            //{
-            //    if (_documentButtons[item] == editor)
-            //    {
-            //        button = item;
-            //        break;
-            //    }
-            //}
-
-            //if (button != null)
-            //{
-            //    _backingPanel.Remove(button);
-            //    _documentButtons.Remove(button);
-
-            //    if (_documentButtons.Count == 0)
-            //        ShowNewConsolePopup(false);
-            //    else
-            //    {
-            //        ArrangeDocumentButtons();
-
-            //        foreach (var item in _documentButtons.Keys)
-            //        {
-            //            item.IsSelected = true;
-            //            break;
-            //        }
-            //    }
-            //}
-
-            if (Instance.ToolPane.FilesPanel.DocumentsListbox.Items.Count == 0)
-                ShowNewConsolePopup(false);
-
-            editor.OnClosed();
-        }
-
-        private void DocumentButtonClick(object sender, EventArgs e)
-        {
-            var button = (SadConsole.Controls.RadioButton)sender;
-            if (button.IsSelected)
-                ChangeEditor(_documentButtons[button]);
-        }
-
-        private void ArrangeDocumentButtons()
-        {
-            int positionx = 0;
-            foreach (var item in _documentButtons.Keys)
-            {
-                item.Position = new Point(positionx, 1);
-                positionx += item.Width + 2;
-            }
-
         }
     }
 }
