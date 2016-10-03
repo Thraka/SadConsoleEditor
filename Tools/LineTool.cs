@@ -60,7 +60,7 @@
             AnimatedTextSurface animation = new AnimatedTextSurface("single", 1, 1, Settings.Config.ScreenFont);
             animation.CreateFrame()[0].GlyphIndex = 42;
             Brush.Animations.Add(animation.Name, animation);
-            SetAnimationSingle();
+            ResetLine();
         }
 
         private void SetAnimationLine(Point mousePosition)
@@ -126,14 +126,21 @@
             Brush.Animation = animation;
         }
 
-        private void SetAnimationSingle()
+        void ResetLine()
         {
+            firstPoint = null;
+            secondPoint = null;
+            lineShape = null;
+
             Brush.Animation = Brush.Animations["single"];
+
+            settingsPanel.LineLength = 0;
         }
 
         public void OnSelected()
         {
             RefreshTool();
+            ResetLine();
             EditorConsoleManager.Brush = Brush;
             EditorConsoleManager.UpdateBrush();
 
@@ -168,6 +175,10 @@
                                               CharacterPickPanel.SharedInstance.SettingMirrorEffect);
 
             lineStyle.CopyAppearanceTo(lineCell);
+        }
+
+        public void Update()
+        {
         }
 
         public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
@@ -234,16 +245,12 @@
             {
                 if (firstPoint.HasValue && !secondPoint.HasValue)
                 {
-                    firstPoint = null;
-                    secondPoint = null;
-                    lineShape = null;
-
-                    Brush.Animation = Brush.Animations["single"];
-
-                    settingsPanel.LineLength = 0;
+                    ResetLine();
                 }
             }
 
         }
+
+        
     }
 }

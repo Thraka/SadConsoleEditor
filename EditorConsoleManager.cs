@@ -404,13 +404,13 @@ namespace SadConsoleEditor
 
         public static bool ProcessKeyboard(KeyboardInfo info)
         {
+            bool movekeyPressed = false;
+            var position = new Point(borderConsole.Position.X + 1, borderConsole.Position.Y + 1);
             //var result = base.ProcessKeyboard(info);
             if (AllowKeyboardToMoveConsole)
             {
                 bool shifted = info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
 
-                var position = new Point(borderConsole.Position.X + 1, borderConsole.Position.Y + 1);
-                bool movekeyPressed = false;
                 if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
                 {
                     if (borderConsole.Position.X + borderConsole.Width - 1 != 0)
@@ -456,43 +456,41 @@ namespace SadConsoleEditor
                         movekeyPressed = true;
                     }
                 }
+            }
 
-                if (movekeyPressed)
+            if (movekeyPressed)
+            {
+                ActiveEditor.Move(position.X, position.Y);
+            }
+            else
+            {
+                //if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Subtract))
+                //{
+                //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X / 2, SelectedEditor.Surface.CellSize.Y / 2);
+                //}
+                //else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Add))
+                //{
+                //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X * 2, SelectedEditor.Surface.CellSize.Y * 2);
+                //}
+                //else
                 {
-                    ActiveEditor.Move(position.X, position.Y);
-                }
-                else
-                {
-                    //if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Subtract))
-                    //{
-                    //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X / 2, SelectedEditor.Surface.CellSize.Y / 2);
-                    //}
-                    //else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Add))
-                    //{
-                    //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X * 2, SelectedEditor.Surface.CellSize.Y * 2);
-                    //}
-                    //else
+                    // Look for tool hotkeys
+                    if (ToolsPane.ProcessKeyboard(info))
                     {
-
-                        // Look for tool hotkeys
-                        if (ToolsPane.ProcessKeyboard(info))
-                        {
-                            return true;
-                        }
-                        // Look for quick select F* keys
-                        else if (QuickSelectPane.ProcessKeyboard(info))
-                        {
-                            return true;
-                        }
-                        else if (ActiveEditor != null)
-                        {
-                            return ActiveEditor.ProcessKeyboard(info);
-                        }
+                        return true;
+                    }
+                    // Look for quick select F* keys
+                    else if (QuickSelectPane.ProcessKeyboard(info))
+                    {
+                        return true;
+                    }
+                    else if (ActiveEditor != null)
+                    {
+                        return ActiveEditor.ProcessKeyboard(info);
                     }
                 }
-
             }
-            
+
             return false;
         }
 

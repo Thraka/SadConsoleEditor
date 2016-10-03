@@ -116,6 +116,7 @@ namespace SadConsoleEditor.Editors
 
             if (e.Item != null)
             {
+                selectedTool = tool;
 
                 List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, GameObjectPanel, AnimationsPanel, toolsPanel };
 
@@ -182,6 +183,8 @@ namespace SadConsoleEditor.Editors
 
         public void Update()
         {
+            selectedTool.Update();
+
             foreach (var entity in GameObjects)
             {
                 entity.Update();
@@ -355,16 +358,25 @@ namespace SadConsoleEditor.Editors
             
         }
         
-        
-        public bool ProcessKeyboard(IConsole console, SadConsole.Input.KeyboardInfo info)
-        {
-            //EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.TextSurface);
-            return false;
-        }
-
         public bool ProcessKeyboard(KeyboardInfo info)
         {
-            return false;
+            if (!toolsPanel.SelectedTool.ProcessKeyboard(info, textSurface))
+            {
+                var keys = info.KeysReleased.Select(k => k.Character).ToList();
+
+                foreach (var item in tools.Values)
+                {
+                    if (keys.Contains(item.Hotkey))
+                    {
+                        SelectedTool = item;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         public bool ProcessMouse(IConsole console, SadConsole.Input.MouseInfo info)

@@ -72,6 +72,10 @@
                                       CharacterPickPanel.SharedInstance.SettingMirrorEffect);
         }
 
+        public void Update()
+        {
+        }
+
         public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
         {
             return false;

@@ -34,6 +34,8 @@ namespace SadConsoleEditor.Tools
 
         void RefreshTool();
 
+        void Update();
+
         CustomPanel[] ControlPanels { get; }
     }
 }

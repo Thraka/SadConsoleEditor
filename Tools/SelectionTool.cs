@@ -163,6 +163,11 @@
             }
         }
 
+        void ResetSelection()
+        {
+            _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
+        }
+
         private TextSurface SaveBrush()
         {
             TextSurface newSurface = new TextSurface(Brush.SelectedSurface.Animation.CurrentFrame.Width,
@@ -226,13 +231,12 @@
         public void OnSelected()
         {
             Brush.IsVisible = true;
-            Brush.Animation = Brush.Animations["single"];
+
+            ResetSelection();
 
             EditorConsoleManager.Brush = Brush;
             EditorConsoleManager.UpdateBrush();
-
-            _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
-
+            
 
             //if (_panel.State != SelectionToolPanel.CloneState.Clone && _panel.State != SelectionToolPanel.CloneState.Move)
             //{
@@ -259,6 +263,10 @@
         public void RefreshTool()
         {
 
+        }
+
+        public void Update()
+        {
         }
 
         public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)

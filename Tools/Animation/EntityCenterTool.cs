@@ -68,6 +68,10 @@ namespace SadConsoleEditor.Tools
             //_brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
         }
 
+        public void Update()
+        {
+        }
+
         public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
         {
             return false;

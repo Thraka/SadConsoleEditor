@@ -90,7 +90,6 @@ namespace SadConsoleEditor.Editors
             consoleWrapper = new Console(1, 1);
             consoleWrapper.Renderer = new LayeredTextRenderer();
             consoleWrapper.MouseHandler = ProcessMouse;
-            consoleWrapper.KeyboardHandler = ProcessKeyboard;
             consoleWrapper.CanUseKeyboard = false;
 
             consoleWrapper.MouseMove += (o, e) => { toolsPanel.SelectedTool?.MouseMoveSurface(e.OriginalMouseInfo, textSurface); };
@@ -133,6 +132,8 @@ namespace SadConsoleEditor.Editors
 
             if (e.Item != null)
             {
+                selectedTool = tool;
+
                 List<CustomPanel> newPanels = new List<CustomPanel>() { gameObjectNamePanel, animationPanel, framesPanel, toolsPanel };
 
                 if (tool.ControlPanels != null && tool.ControlPanels.Length != 0)
@@ -141,19 +142,19 @@ namespace SadConsoleEditor.Editors
                 panels = newPanels.ToArray();
                 EditorConsoleManager.ToolsPane.RedrawPanels();
 
-                if (tool is Tools.EntityCenterTool)
-                {
-                    textSurface.GetLayer(LayerAnimCenter).IsVisible = true;
-                    textSurface.GetLayer(LayerBackground).IsVisible = true;
+                //if (tool is Tools.EntityCenterTool)
+                //{
+                //    textSurface.GetLayer(LayerAnimCenter).IsVisible = true;
+                //    textSurface.GetLayer(LayerBackground).IsVisible = true;
                     
-                    //textSurface.Tint = new Color(0f, 0f, 0f, 0.2f);
-                }
-                else
-                {
-                    textSurface.GetLayer(LayerAnimCenter).IsVisible = false;
-                    textSurface.GetLayer(LayerBackground).IsVisible = false;
-                    //textSurface.Tint = new Color(0f, 0f, 0f, 1f);
-                }
+                //    //textSurface.Tint = new Color(0f, 0f, 0f, 0.2f);
+                //}
+                //else
+                //{
+                //    textSurface.GetLayer(LayerAnimCenter).IsVisible = false;
+                //    textSurface.GetLayer(LayerBackground).IsVisible = false;
+                //    //textSurface.Tint = new Color(0f, 0f, 0f, 1f);
+                //}
             }
         }
         
@@ -375,26 +376,42 @@ namespace SadConsoleEditor.Editors
 
         public void Update()
         {
+            selectedTool.Update();
         }
 
-        public bool ProcessKeyboard(IConsole console, SadConsole.Input.KeyboardInfo info)
-        {
-            //EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.TextSurface);
-
-            if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.OemOpenBrackets))
-                framesPanel.TryPreviousFrame();
-
-            else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.OemCloseBrackets))
-                framesPanel.TryNextFrame();
-
-            if (toolsPanel.SelectedTool != null)
-                toolsPanel.SelectedTool.ProcessKeyboard(info, textSurface);
-
-            return false;
-        }
 
         public bool ProcessKeyboard(KeyboardInfo info)
         {
+            bool toolHandled = toolsPanel.SelectedTool.ProcessKeyboard(info, textSurface);
+
+            if (!toolHandled)
+            {
+                if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.OemOpenBrackets))
+                {
+                    framesPanel.TryPreviousFrame();
+                    return true;
+                }
+
+                else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.OemCloseBrackets))
+                {
+                    framesPanel.TryNextFrame();
+                    return true;
+                }
+                else
+                {
+                    var keys = info.KeysReleased.Select(k => k.Character).ToList();
+
+                    foreach (var item in tools.Values)
+                    {
+                        if (keys.Contains(item.Hotkey))
+                        {
+                            SelectedTool = item;
+                            return true;
+                        }
+                    }
+                }
+            }
+            
             return false;
         }
 

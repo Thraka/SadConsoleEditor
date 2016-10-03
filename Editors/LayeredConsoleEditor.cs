@@ -65,6 +65,7 @@ namespace SadConsoleEditor.Editors
             tools = new Dictionary<string, Tools.ITool>();
             tools.Add(Tools.PaintTool.ID, new Tools.PaintTool());
             tools.Add(Tools.LineTool.ID, new Tools.LineTool());
+            tools.Add(Tools.TextTool.ID, new Tools.TextTool());
             tools.Add(Tools.CircleTool.ID, new Tools.CircleTool());
             tools.Add(Tools.RecolorTool.ID, new Tools.RecolorTool());
             tools.Add(Tools.FillTool.ID, new Tools.FillTool());
@@ -73,6 +74,7 @@ namespace SadConsoleEditor.Editors
 
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.PaintTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.LineTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.TextTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.CircleTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.RecolorTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.FillTool.ID]);
@@ -90,7 +92,7 @@ namespace SadConsoleEditor.Editors
 
             if (e.Item != null)
             {
-
+                selectedTool = tool;
                 List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, toolsPanel };
 
                 if (tool.ControlPanels != null && tool.ControlPanels.Length != 0)
@@ -217,17 +219,35 @@ namespace SadConsoleEditor.Editors
 
         public void Update()
         {
+            selectedTool.Update();
         }
 
-        public bool ProcessKeyboard(IConsole console, SadConsole.Input.KeyboardInfo info)
-        {
-            //EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.TextSurface);
-            return false;
-        }
+        //public bool ProcessKeyboard(IConsole console, SadConsole.Input.KeyboardInfo info)
+        //{
+            
+        //    //EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.TextSurface);
+        //    return false;
+        //}
 
         public bool ProcessKeyboard(KeyboardInfo info)
         {
-            return false;
+            if (!toolsPanel.SelectedTool.ProcessKeyboard(info, textSurface))
+            {
+                var keys = info.KeysReleased.Select(k => k.Character).ToList();
+
+                foreach (var item in tools.Values)
+                {
+                    if (keys.Contains(item.Hotkey))
+                    {
+                        SelectedTool = item;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         public bool ProcessMouse(IConsole console, SadConsole.Input.MouseInfo info)

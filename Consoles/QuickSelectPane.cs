@@ -119,7 +119,7 @@ namespace SadConsoleEditor.Consoles
 				{
 					if (key == keys[i])
 					{
-						//EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter = Characters[i];
+						Panels.CharacterPickPanel.SharedInstance.SettingCharacter = Characters[i];
                         return true;
 					}
 				}

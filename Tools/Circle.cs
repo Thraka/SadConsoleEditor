@@ -55,20 +55,28 @@
             AnimatedTextSurface animation = new AnimatedTextSurface("single", 1, 1, Settings.Config.ScreenFont);
             animation.CreateFrame()[0].GlyphIndex = 42;
             Brush.Animations.Add(animation.Name, animation);
-            SetAnimationSingle();
 
             settingsPanel = new CircleToolPanel();
             ControlPanels = new CustomPanel[] { settingsPanel, CharacterPickPanel.SharedInstance };
+            ResetCircle();
         }
 
-        private void SetAnimationSingle()
+
+        void ResetCircle()
         {
+            firstPoint = null;
+            secondPoint = null;
+
+            settingsPanel.CircleWidth = 0;
+            settingsPanel.CircleHeight = 0;
+
             Brush.Animation = Brush.Animations["single"];
         }
 
         public void OnSelected()
         {
             RefreshTool();
+            ResetCircle();
             EditorConsoleManager.Brush = Brush;
             EditorConsoleManager.UpdateBrush();
 
@@ -103,6 +111,10 @@
                                    CharacterPickPanel.SharedInstance.SettingBackground,
                                    CharacterPickPanel.SharedInstance.SettingCharacter,
                                    CharacterPickPanel.SharedInstance.SettingMirrorEffect);
+        }
+
+        public void Update()
+        {
         }
 
         public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)

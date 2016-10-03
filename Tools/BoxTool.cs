@@ -69,9 +69,19 @@
             Brush.Animation = animation;
         }
 
+        void ResetBox()
+        {
+            firstPoint = null;
+            secondPoint = null;
+
+            Brush.Animation = Brush.Animations["single"];
+        }
+
+
         public void OnSelected()
         {
             RefreshTool();
+            ResetBox();
             EditorConsoleManager.Brush = Brush;
             EditorConsoleManager.UpdateBrush();
 
@@ -96,6 +106,10 @@
         }
 
         public void RefreshTool()
+        {
+        }
+
+        public void Update()
         {
         }
 
