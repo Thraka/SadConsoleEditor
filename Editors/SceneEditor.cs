@@ -77,7 +77,7 @@ namespace SadConsoleEditor.Editors
             consoleWrapper.MouseEnter += (o, e) => { toolsPanel.SelectedTool?.MouseEnterSurface(e.OriginalMouseInfo, textSurface); };
             consoleWrapper.MouseExit += (o, e) => { toolsPanel.SelectedTool?.MouseExitSurface(e.OriginalMouseInfo, textSurface); };
 
-            layerManagementPanel = new LayersPanel();
+            layerManagementPanel = new LayersPanel() { IsCollapsed = true };
             toolsPanel = new ToolsPanel();
 
             // Fill tools
@@ -90,7 +90,9 @@ namespace SadConsoleEditor.Editors
             tools.Add(Tools.BoxTool.ID, new Tools.BoxTool());
             tools.Add(Tools.SelectionTool.ID, new Tools.SelectionTool());
             tools.Add(Tools.SceneEntityMoveTool.ID, new Tools.SceneEntityMoveTool());
-            
+            tools.Add(Tools.ResizeObjectTool.ID, new Tools.ResizeObjectTool());
+
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.ResizeObjectTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.SceneEntityMoveTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.PaintTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.LineTool.ID]);
@@ -173,12 +175,44 @@ namespace SadConsoleEditor.Editors
             popup.Show(true);
         }
 
+        internal ResizableObject object1;
+        bool temp = true;
+
+        private void setup()
+        {
+            if (temp)
+            {
+                temp = false;
+                var gameObject = GameObject.Load("test.entity");
+                gameObject.UsePixelPositioning = false;
+                gameObject.RepositionRects = false;
+                gameObject.Position = new Point(10);
+                gameObject.RenderOffset = consoleWrapper.Position;
+                gameObject.Animation.RenderCells[0].Background = Color.AliceBlue;
+                gameObject.Animation.CurrentFrame[0].Background = Color.AliceBlue;
+
+                gameObject = new GameObject(Settings.Config.ScreenFont);
+                var animation = new AnimatedTextSurface("default", 10, 10);
+                animation.CreateFrame()[0].Background = Color.AliceBlue;
+                gameObject.Animation = animation;
+                gameObject.Position = new Point(10);
+                gameObject.RenderOffset = consoleWrapper.Position;
+                gameObject.Update();
+
+                object1 = new ResizableObject(ResizableObject.ObjectType.GameObject, gameObject);
+                object1.IsSelected = true;
+            }
+        }
+
         public void Render()
         {
             foreach (var entity in GameObjects)
             {
                 entity.Render();
             }
+
+            setup();
+            object1.Render();
         }
 
         public void Update()
@@ -386,8 +420,9 @@ namespace SadConsoleEditor.Editors
             consoleWrapper.ProcessMouse(info);
             consoleWrapper.MouseHandler = ProcessMouse;
 
+            // Check if tool is our special tool...
             toolsPanel.SelectedTool?.ProcessMouse(info, textSurface);
-
+            
             if (consoleWrapper.IsMouseOver)
             {
                 EditorConsoleManager.SurfaceMouseLocation = info.ConsoleLocation;

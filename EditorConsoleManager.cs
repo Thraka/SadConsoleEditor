@@ -325,6 +325,7 @@ namespace SadConsoleEditor
             {
                 ActiveEditor.OnDeselected();
                 Consoles.Remove(ActiveEditor.RenderedConsole);
+                Consoles.Remove(borderConsole);
             }
 
             if (OpenEditors.Contains(editor))

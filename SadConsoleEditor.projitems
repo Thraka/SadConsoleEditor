@@ -47,6 +47,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\RecolorTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\SelectionTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ResizableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\Animation\EntityCenterTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\BoxTool.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tools\ITool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\LineTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\RecolorTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\Scene\ResizeObjectTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\Scene\SceneEntityMoveTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\SelectionTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\TextTool.cs" />

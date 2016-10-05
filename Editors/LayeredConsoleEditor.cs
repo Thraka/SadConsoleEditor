@@ -58,7 +58,7 @@ namespace SadConsoleEditor.Editors
             consoleWrapper.MouseEnter += (o, e) => { toolsPanel.SelectedTool?.MouseEnterSurface(e.OriginalMouseInfo, textSurface); };
             consoleWrapper.MouseExit += (o, e) => { toolsPanel.SelectedTool?.MouseExitSurface(e.OriginalMouseInfo, textSurface); };
 
-            layerManagementPanel = new LayersPanel();
+            layerManagementPanel = new LayersPanel() { IsCollapsed = true };
             toolsPanel = new ToolsPanel();
 
             // Fill tools
