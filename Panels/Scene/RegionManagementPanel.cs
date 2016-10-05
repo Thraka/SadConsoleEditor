@@ -8,10 +8,11 @@ using SadConsoleEditor.Windows;
 using SadConsole;
 using SadConsole.Consoles;
 using SadConsole.Game;
+using Microsoft.Xna.Framework;
 
 namespace SadConsoleEditor.Panels
 {
-    class EntityManagementPanel : CustomPanel
+    class RegionManagementPanel : CustomPanel
     {
         private ListBox<EntityListBoxItem> GameObjectList;
         private Button removeSelected;
@@ -26,9 +27,9 @@ namespace SadConsoleEditor.Panels
             set { GameObjectList.SelectedItem = value; }
         }
 
-        public EntityManagementPanel()
+        public RegionManagementPanel()
         {
-            Title = "Entities";
+            Title = "Zones";
             GameObjectList = new ListBox<EntityListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 4);
             GameObjectList.HideBorder = true;
             GameObjectList.SelectedItemChanged += GameObject_SelectedItemChanged;
@@ -51,7 +52,7 @@ namespace SadConsoleEditor.Panels
             renameLayer.ButtonClicked += RenameEntity_ButtonClicked;
 
             importGameObject = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
-            importGameObject.Text = "Import File";
+            importGameObject.Text = "Add New";
             importGameObject.ButtonClicked += ImportEntity_ButtonClicked;
 
             Controls = new ControlBase[] { GameObjectList, removeSelected, moveSelectedUp, moveSelectedDown, renameLayer, importGameObject };
@@ -61,21 +62,7 @@ namespace SadConsoleEditor.Panels
 
         void ImportEntity_ButtonClicked(object sender, EventArgs e)
         {
-            SelectFilePopup popup = new SelectFilePopup();
-            popup.Closed += (o2, e2) =>
-            {
-                if (popup.DialogResult)
-                {
-                    var entity = (GameObject)popup.SelectedLoader.Load(popup.SelectedFile);
-                    entity.Position = new Microsoft.Xna.Framework.Point(0, 0);
-                    //entity.RenderOffset = (EditorConsoleManager.ActiveEditor as Editors.SceneEditor).Position;
-                    (EditorConsoleManager.ActiveEditor as Editors.SceneEditor)?.LoadEntity(entity);
-                }
-            };
-            popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.GameObject() };
-            popup.Show(true);
-            popup.Center();
+            (EditorConsoleManager.ActiveEditor as Editors.SceneEditor)?.LoadZone(new Zone() { Area = new Rectangle(1, 1, 10, 10), DebugColor = Color.Aqua, Title = "Zone" });
         }
 
         void RenameEntity_ButtonClicked(object sender, EventArgs e)
@@ -92,9 +79,9 @@ namespace SadConsoleEditor.Panels
             var entity = (ResizableObject)GameObjectList.SelectedItem;
             var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
-            int index = editor.Objects.IndexOf(entity);
-            editor.Objects.Remove(entity);
-            editor.Objects.Insert(index + 1, entity);
+            int index = editor.Zones.IndexOf(entity);
+            editor.Zones.Remove(entity);
+            editor.Zones.Insert(index + 1, entity);
             RebuildListBox();
             GameObjectList.SelectedItem = entity;
         }
@@ -104,9 +91,9 @@ namespace SadConsoleEditor.Panels
             var entity = (ResizableObject)GameObjectList.SelectedItem;
             var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
-            int index = editor.Objects.IndexOf(entity);
-            editor.Objects.Remove(entity);
-            editor.Objects.Insert(index - 1, entity);
+            int index = editor.Zones.IndexOf(entity);
+            editor.Zones.Remove(entity);
+            editor.Zones.Insert(index - 1, entity);
             RebuildListBox();
             GameObjectList.SelectedItem = entity;
         }
@@ -116,7 +103,7 @@ namespace SadConsoleEditor.Panels
             var entity = (ResizableObject)GameObjectList.SelectedItem;
             var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
-            editor.Objects.Remove(entity);
+            editor.Zones.Remove(entity);
 
             RebuildListBox();
             GameObjectList.SelectedItem = GameObjectList.Items[0];
@@ -131,8 +118,8 @@ namespace SadConsoleEditor.Panels
 
                 removeSelected.IsEnabled = GameObjectList.Items.Count != 1;
 
-                moveSelectedUp.IsEnabled = editor.Objects.IndexOf(entity) != 0;
-                moveSelectedDown.IsEnabled = editor.Objects.IndexOf(entity) != editor.Objects.Count - 1;
+                moveSelectedUp.IsEnabled = editor.Zones.IndexOf(entity) != 0;
+                moveSelectedDown.IsEnabled = editor.Zones.IndexOf(entity) != editor.Zones.Count - 1;
                 renameLayer.IsEnabled = true;
              
                 editor.SelectedEntity = entity.GameObject;
@@ -152,7 +139,7 @@ namespace SadConsoleEditor.Panels
 
             if (EditorConsoleManager.ActiveEditor is Editors.SceneEditor)
             {
-                var entities = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Objects;
+                var entities = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Zones;
 
                 if (entities.Count != 0)
                 {

@@ -38,7 +38,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Panels\FilesPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\LayersPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\AnimationListPanel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\GameObjectImport.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\RegionManagementPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\GameObjectManagementPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolsPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\BoxTool.Panel.cs" />
@@ -57,8 +57,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tools\ITool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\LineTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\RecolorTool.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Tools\Scene\ResizeObjectTool.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Tools\Scene\SceneEntityMoveTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\Scene\SceneObjectMoveResizeTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\SelectionTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\TextTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\Animation\AnimationPreviewPopup.cs" />

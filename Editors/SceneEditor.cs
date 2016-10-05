@@ -25,12 +25,14 @@ namespace SadConsoleEditor.Editors
         private Tools.ITool selectedTool;
 
         public Panels.EntityManagementPanel GameObjectPanel;
+        public Panels.RegionManagementPanel ZonesPanel;
         public Panels.Scene.AnimationListPanel AnimationsPanel;
 
 
         private GameObject _selectedGameObject;
         public Dictionary<GameObject, GameObject> LinkedGameObjects = new Dictionary<GameObject, GameObject>();
-        public GameObjectCollection GameObjects;
+        public List<ResizableObject> Objects;
+        public List<ResizableObject> Zones;
 
         public GameObject SelectedEntity
         {
@@ -89,11 +91,9 @@ namespace SadConsoleEditor.Editors
             tools.Add(Tools.FillTool.ID, new Tools.FillTool());
             tools.Add(Tools.BoxTool.ID, new Tools.BoxTool());
             tools.Add(Tools.SelectionTool.ID, new Tools.SelectionTool());
-            tools.Add(Tools.SceneEntityMoveTool.ID, new Tools.SceneEntityMoveTool());
-            tools.Add(Tools.ResizeObjectTool.ID, new Tools.ResizeObjectTool());
+            tools.Add(Tools.SceneObjectMoveResizeTool.ID, new Tools.SceneObjectMoveResizeTool());
 
-            toolsPanel.ToolsListBox.Items.Add(tools[Tools.ResizeObjectTool.ID]);
-            toolsPanel.ToolsListBox.Items.Add(tools[Tools.SceneEntityMoveTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.SceneObjectMoveResizeTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.PaintTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.LineTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.CircleTool.ID]);
@@ -105,11 +105,13 @@ namespace SadConsoleEditor.Editors
             toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
 
             GameObjectPanel = new Panels.EntityManagementPanel();
+            ZonesPanel = new RegionManagementPanel() { IsCollapsed = true };
             AnimationsPanel = new Panels.Scene.AnimationListPanel();
-            GameObjects = new GameObjectCollection();
+            Objects = new List<ResizableObject>();
+            Zones = new List<ResizableObject>();
             LinkedGameObjects = new Dictionary<GameObject, GameObject>();
 
-            panels = new CustomPanel[] { layerManagementPanel, GameObjectPanel, AnimationsPanel, toolsPanel };
+            panels = new CustomPanel[] { layerManagementPanel, GameObjectPanel, AnimationsPanel, ZonesPanel, toolsPanel };
         }
 
         private void ToolsListBox_SelectedItemChanged(object sender, SadConsole.Controls.ListBox<SadConsole.Controls.ListBoxItem>.SelectedItemEventArgs e)
@@ -120,7 +122,7 @@ namespace SadConsoleEditor.Editors
             {
                 selectedTool = tool;
 
-                List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, GameObjectPanel, AnimationsPanel, toolsPanel };
+                List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, GameObjectPanel, AnimationsPanel, ZonesPanel, toolsPanel };
 
                 if (tool.ControlPanels != null && tool.ControlPanels.Length != 0)
                     newPanels.AddRange(tool.ControlPanels);
@@ -161,7 +163,13 @@ namespace SadConsoleEditor.Editors
                 if (popup.DialogResult)
                 {
                     SadConsole.Game.Scene scene = new Scene(textSurface);
-                    scene.Objects = this.GameObjects;
+                    scene.Objects = new GameObjectCollection(this.Objects.Select(g => g.GameObject).ToArray());
+                    scene.Zones = new List<Zone>(
+                                                 this.Zones.Select(
+                                                     z => new Zone()
+                                                                    { Area = new Rectangle(z.GameObject.Position.X, z.GameObject.Position.Y, z.GameObject.Width, z.GameObject.Height),
+                                                                      DebugColor = z.GameObject.RenderCells[0].Background,
+                                                                      Title = z.GameObject.Name }));
 
                     popup.SelectedLoader.Save(scene, popup.SelectedFile);
 
@@ -175,53 +183,25 @@ namespace SadConsoleEditor.Editors
             popup.Show(true);
         }
 
-        internal ResizableObject object1;
-        bool temp = true;
-
-        private void setup()
-        {
-            if (temp)
-            {
-                temp = false;
-                var gameObject = GameObject.Load("test.entity");
-                gameObject.UsePixelPositioning = false;
-                gameObject.RepositionRects = false;
-                gameObject.Position = new Point(10);
-                gameObject.RenderOffset = consoleWrapper.Position;
-                gameObject.Animation.RenderCells[0].Background = Color.AliceBlue;
-                gameObject.Animation.CurrentFrame[0].Background = Color.AliceBlue;
-
-                gameObject = new GameObject(Settings.Config.ScreenFont);
-                var animation = new AnimatedTextSurface("default", 10, 10);
-                animation.CreateFrame()[0].Background = Color.AliceBlue;
-                gameObject.Animation = animation;
-                gameObject.Position = new Point(10);
-                gameObject.RenderOffset = consoleWrapper.Position;
-                gameObject.Update();
-
-                object1 = new ResizableObject(ResizableObject.ObjectType.GameObject, gameObject);
-                object1.IsSelected = true;
-            }
-        }
-
         public void Render()
         {
-            foreach (var entity in GameObjects)
+            foreach (var zone in Zones)
+            {
+                zone.Render();
+            }
+            foreach (var entity in Objects)
             {
                 entity.Render();
             }
-
-            setup();
-            object1.Render();
         }
 
         public void Update()
         {
             selectedTool.Update();
 
-            foreach (var entity in GameObjects)
+            foreach (var entity in Objects)
             {
-                entity.Update();
+                entity.GameObject.Update();
             }
         }
 
@@ -267,8 +247,11 @@ namespace SadConsoleEditor.Editors
 
             EditorConsoleManager.UpdateBrush();
 
-            foreach (var entity in GameObjects)
+            foreach (var entity in Objects)
                 entity.RenderOffset = consoleWrapper.Position;
+
+            foreach (var zone in Zones)
+                zone.RenderOffset = consoleWrapper.Position;
         }
 
         public void OnSelected()
@@ -285,8 +268,9 @@ namespace SadConsoleEditor.Editors
                 if (editor != null && editor.LinkedEditor == this)
                 {
                     // sync back up any entities.
-                    foreach (var gameObject in GameObjects)
+                    foreach (var resizeObject in Objects)
                     {
+                        var gameObject = resizeObject.GameObject;
                         var animationName = gameObject.Animation.Name;
                         gameObject.Animations.Clear();
 
@@ -327,6 +311,7 @@ namespace SadConsoleEditor.Editors
         public void Load(string file, FileLoaders.IFileLoader loader)
         {
             ClearEntities();
+            ClearZones();
 
             //if (loader is FileLoaders.TextSurface)
             //{
@@ -366,6 +351,9 @@ namespace SadConsoleEditor.Editors
 
                 foreach (var item in scene.Objects)
                     LoadEntity(item);
+
+                foreach (var zone in scene.Zones)
+                    LoadZone(zone);
 
                 if (EditorConsoleManager.ActiveEditor == this)
                     EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
@@ -456,10 +444,11 @@ namespace SadConsoleEditor.Editors
             localEntity.Animation = localEntity.Animations[entity.Animation.Name];
 
             localEntity.RenderOffset = consoleWrapper.Position;
-            GameObjects.Add(localEntity);
+            Objects.Add(new ResizableObject(ResizableObject.ObjectType.GameObject, localEntity));
             GameObjectPanel.RebuildListBox();
 
             localEntity.Position = entity.Position;
+            localEntity.RenderOffset = consoleWrapper.Position;
 
             LinkedGameObjects.Add(localEntity, entity);
 
@@ -467,9 +456,33 @@ namespace SadConsoleEditor.Editors
             return true;
         }
 
+        public bool LoadZone(Zone zone)
+        {
+            var gameObject = new GameObject(Settings.Config.ScreenFont);
+            var animation = new AnimatedTextSurface("default", 10, 10);
+            var frame = animation.CreateFrame();
+            frame.DefaultBackground = zone.DebugColor;
+
+            gameObject.Name = zone.Title;
+
+            Settings.QuickEditor.TextSurface = frame;
+            Settings.QuickEditor.Clear();
+            Settings.QuickEditor.Print(0, 0, zone.Title, Color.DarkGray);
+
+            gameObject.Animation = animation;
+            gameObject.Position = new Point(1, 1);
+            gameObject.Update();
+
+            var resizable = new ResizableObject(ResizableObject.ObjectType.Zone, gameObject);
+            resizable.RenderOffset = consoleWrapper.Position;
+            Zones.Add(resizable);
+
+            return true;
+        }
+
         private void ClearEntities()
         {
-            GameObjects.Clear();
+            Objects.Clear();
 
             List<IEditor> docs = new List<IEditor>();
 
@@ -484,17 +497,22 @@ namespace SadConsoleEditor.Editors
                 EditorConsoleManager.RemoveEditor(doc);
         }
 
+        private void ClearZones()
+        {
+            Zones.Clear();
+        }
+
         private void FixLinkedObjectTitles()
         {
-            for (int i = 0; i < GameObjects.Count; i++)
+            for (int i = 0; i < Objects.Count; i++)
             {
-                var linkedEntity = LinkedGameObjects[GameObjects[i]];
+                var linkedEntity = LinkedGameObjects[Objects[i].GameObject];
                 IEditor linkedEditor = EditorConsoleManager.OpenEditors.Where(e => e.EditorType == Editors.GameObject && ((GameObjectEditor)e).GameObject == linkedEntity).FirstOrDefault();
 
                 if (linkedEditor != null)
                 {
                     // last one
-                    if (i == GameObjects.Count - 1)
+                    if (i == Objects.Count - 1)
                     {
                         linkedEditor.Title = (char)192 + " " + linkedEntity.Name;
                     }
