@@ -185,14 +185,17 @@ namespace SadConsoleEditor.Editors
 
         public void Render()
         {
-            foreach (var zone in Zones)
-            {
-                zone.Render();
-            }
-            foreach (var entity in Objects)
-            {
-                entity.Render();
-            }
+            if (ZonesPanel.DrawZones)
+                foreach (var zone in Zones)
+                {
+                    zone.Render();
+                }
+
+            if (GameObjectPanel.DrawObjects)
+                foreach (var entity in Objects)
+                {
+                    entity.Render();
+                }
         }
 
         public void Update()
@@ -470,12 +473,14 @@ namespace SadConsoleEditor.Editors
             Settings.QuickEditor.Print(0, 0, zone.Title, Color.DarkGray);
 
             gameObject.Animation = animation;
-            gameObject.Position = new Point(1, 1);
+            gameObject.Position = new Point(zone.Area.Left, zone.Area.Top);
             gameObject.Update();
 
             var resizable = new ResizableObject(ResizableObject.ObjectType.Zone, gameObject);
             resizable.RenderOffset = consoleWrapper.Position;
             Zones.Add(resizable);
+
+            ZonesPanel.RebuildListBox();
 
             return true;
         }

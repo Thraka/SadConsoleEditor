@@ -52,7 +52,7 @@ namespace SadConsoleEditor
         public string Name
         {
             get { return gameObject.Name; }
-            set { gameObject.Name = value; }
+            set { gameObject.Name = value; if (objectType == ObjectType.Zone) DrawZone(); }
         }
         
 
@@ -78,6 +78,20 @@ namespace SadConsoleEditor
                     ProcessOverlay();
                 }
             }
+        }
+
+        public void Recolor(Color color)
+        {
+            Settings.QuickEditor.TextSurface = gameObject.Animation.CurrentFrame;
+            Settings.QuickEditor.Fill(Color.White, color, 0);
+            Settings.QuickEditor.Print(0, 0, Name, Color.DarkGray);
+        }
+
+        public void DrawZone()
+        {
+            Settings.QuickEditor.TextSurface = gameObject.Animation.CurrentFrame;
+            Settings.QuickEditor.Fill(Color.White, gameObject.Animation.CurrentFrame[0].Background, 0);
+            Settings.QuickEditor.Print(0, 0, Name, Color.DarkGray);
         }
 
         public void Render()

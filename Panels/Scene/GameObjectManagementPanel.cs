@@ -19,6 +19,14 @@ namespace SadConsoleEditor.Panels
         private Button moveSelectedDown;
         private Button renameLayer;
         private Button importGameObject;
+        private CheckBox drawGameObjectsCheckbox;
+
+        public bool DrawObjects
+        {
+            get { return drawGameObjectsCheckbox.IsSelected; }
+            set { drawGameObjectsCheckbox.IsSelected = value; }
+        }
+
 
         public ResizableObject SelectedGameObject
         {
@@ -54,7 +62,11 @@ namespace SadConsoleEditor.Panels
             importGameObject.Text = "Import File";
             importGameObject.ButtonClicked += ImportEntity_ButtonClicked;
 
-            Controls = new ControlBase[] { GameObjectList, removeSelected, moveSelectedUp, moveSelectedDown, renameLayer, importGameObject };
+            drawGameObjectsCheckbox = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            drawGameObjectsCheckbox.IsSelected = true;
+            drawGameObjectsCheckbox.Text = "Draw Objects";
+
+            Controls = new ControlBase[] { GameObjectList, removeSelected, moveSelectedUp, moveSelectedDown, renameLayer, importGameObject, null, drawGameObjectsCheckbox };
 
             GameObject_SelectedItemChanged(null, null);
         }

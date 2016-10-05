@@ -20,6 +20,14 @@ namespace SadConsoleEditor.Panels
         private Button moveSelectedDown;
         private Button renameLayer;
         private Button importGameObject;
+        private Controls.ColorPresenter zoneColorPresenter;
+        private CheckBox drawZonesCheckbox;
+
+        public bool DrawZones
+        {
+            get { return drawZonesCheckbox.IsSelected; }
+            set { drawZonesCheckbox.IsSelected = value; }
+        }
 
         public ResizableObject SelectedGameObject
         {
@@ -55,9 +63,28 @@ namespace SadConsoleEditor.Panels
             importGameObject.Text = "Add New";
             importGameObject.ButtonClicked += ImportEntity_ButtonClicked;
 
-            Controls = new ControlBase[] { GameObjectList, removeSelected, moveSelectedUp, moveSelectedDown, renameLayer, importGameObject };
+            zoneColorPresenter = new SadConsoleEditor.Controls.ColorPresenter("Selected Zone Color", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2);
+            zoneColorPresenter.SelectedColor = Color.Aqua;
+            zoneColorPresenter.IsEnabled = false;
+            zoneColorPresenter.ColorChanged += ZoneColorPresenter_ColorChanged;
+
+            drawZonesCheckbox = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            drawZonesCheckbox.IsSelected = true;
+            drawZonesCheckbox.Text = "Draw zones";
+
+            Controls = new ControlBase[] { GameObjectList, removeSelected, moveSelectedUp, moveSelectedDown, renameLayer, importGameObject, null, zoneColorPresenter, null, drawZonesCheckbox };
 
             GameObject_SelectedItemChanged(null, null);
+        }
+
+        private void ZoneColorPresenter_ColorChanged(object sender, EventArgs e)
+        {
+            var entity = GameObjectList.SelectedItem as ResizableObject;
+
+            if (entity != null)
+            {
+                entity.Recolor(zoneColorPresenter.SelectedColor);
+            }
         }
 
         void ImportEntity_ButtonClicked(object sender, EventArgs e)
@@ -123,9 +150,12 @@ namespace SadConsoleEditor.Panels
                 renameLayer.IsEnabled = true;
              
                 editor.SelectedEntity = entity.GameObject;
+                zoneColorPresenter.IsEnabled = true;
+                zoneColorPresenter.SelectedColor = entity.GameObject.Animation.CurrentFrame[0].Background;
             }
             else
             {
+                zoneColorPresenter.IsEnabled = false;
                 removeSelected.IsEnabled = false;
                 moveSelectedDown.IsEnabled = false;
                 moveSelectedUp.IsEnabled = false;
