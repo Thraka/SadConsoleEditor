@@ -133,7 +133,9 @@ namespace SadConsoleEditor.Panels
             editor.Zones.Remove(entity);
 
             RebuildListBox();
-            GameObjectList.SelectedItem = GameObjectList.Items[0];
+
+            if (GameObjectList.Items.Count != 0)
+                GameObjectList.SelectedItem = GameObjectList.Items[0];
         }
 
         void GameObject_SelectedItemChanged(object sender, ListBox<EntityListBoxItem>.SelectedItemEventArgs e)
@@ -142,8 +144,6 @@ namespace SadConsoleEditor.Panels
             {
                 var entity = (ResizableObject)GameObjectList.SelectedItem;
                 var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
-
-                removeSelected.IsEnabled = GameObjectList.Items.Count != 1;
 
                 moveSelectedUp.IsEnabled = editor.Zones.IndexOf(entity) != 0;
                 moveSelectedDown.IsEnabled = editor.Zones.IndexOf(entity) != editor.Zones.Count - 1;
@@ -156,11 +156,12 @@ namespace SadConsoleEditor.Panels
             else
             {
                 zoneColorPresenter.IsEnabled = false;
-                removeSelected.IsEnabled = false;
                 moveSelectedDown.IsEnabled = false;
                 moveSelectedUp.IsEnabled = false;
                 renameLayer.IsEnabled = false;
             }
+
+            removeSelected.IsEnabled = GameObjectList.Items.Count != 0;
         }
 
         public void RebuildListBox()

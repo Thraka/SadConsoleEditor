@@ -400,6 +400,12 @@ namespace SadConsoleEditor
                 position = new Point((InnerEmptyBounds.Width + InnerEmptyBounds.X - ActiveEditor.Width) / 2, (InnerEmptyBounds.Height + InnerEmptyBounds.Y - ActiveEditor.Height) / 2);
             }
 
+            if (position.X < InnerEmptyBounds.Left)
+                position.X = InnerEmptyBounds.Left;
+
+            if (position.Y < InnerEmptyBounds.Top)
+                position.Y = InnerEmptyBounds.Top;
+
             ActiveEditor.Move(position.X, position.Y);
         }
 

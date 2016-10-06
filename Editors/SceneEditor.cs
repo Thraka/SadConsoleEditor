@@ -456,6 +456,24 @@ namespace SadConsoleEditor.Editors
             return true;
         }
 
+        public void RemoveGameObject(ResizableObject gameObject)
+        {
+            var otherObject = LinkedGameObjects[gameObject.GameObject];
+            GameObjectEditor foundDoc = null;
+
+            foreach (var doc in EditorConsoleManager.OpenEditors)
+                if (doc is GameObjectEditor)
+                    if (((GameObjectEditor)doc).GameObject == otherObject)
+                        foundDoc = (GameObjectEditor)doc;
+
+            if (foundDoc != null)
+            {
+                EditorConsoleManager.RemoveEditor(foundDoc);
+                LinkedGameObjects.Remove(gameObject.GameObject);
+                Objects.Remove(gameObject);
+            }
+        }
+
         private void ClearEntities()
         {
             Objects.Clear();
