@@ -11,16 +11,22 @@ namespace SadConsoleEditor.Panels.Scene
     class AnimationListPanel : CustomPanel
     {
         ListBox<AnimationListBoxItem> AnimationList;
+        Button playAnimationButton;
+        
 
         public AnimationListPanel()
         {
             Title = "Animations";
-            AnimationList = new ListBox<AnimationListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidth, 4);
+            AnimationList = new ListBox<AnimationListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 4);
             AnimationList.SelectedItemChanged += AnimationList_SelectedItemChanged;
             AnimationList.HideBorder = true;
             AnimationList.CompareByReference = true;
 
-            Controls = new ControlBase[] { AnimationList };
+            playAnimationButton = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            playAnimationButton.Text = "Play Animation";
+            playAnimationButton.ButtonClicked += (o, e) => { if (AnimationList.SelectedItem != null) ((AnimatedTextSurface)AnimationList.SelectedItem).Restart(); };
+
+            Controls = new ControlBase[] { AnimationList, null, playAnimationButton };
         }
 
         private void AnimationList_SelectedItemChanged(object sender, ListBox<AnimationListBoxItem>.SelectedItemEventArgs e)
@@ -29,8 +35,9 @@ namespace SadConsoleEditor.Panels.Scene
             {
                 var animation = (AnimatedTextSurface)AnimationList.SelectedItem;
                 var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
-                
+                animation.CurrentFrameIndex = 0;
                 editor.SelectedEntity.Animation = animation;
+                
             }
         }
 

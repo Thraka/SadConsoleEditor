@@ -96,7 +96,7 @@
         {
             var editor = EditorConsoleManager.ActiveEditor as Editors.SceneEditor;
 
-            if(!isResizing && !isMoving)
+            if(editor != null && !isResizing && !isMoving)
             {
                 var allObjects = editor.Objects.Union(editor.Zones).ToList();
 
