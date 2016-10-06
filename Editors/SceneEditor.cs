@@ -114,6 +114,8 @@ namespace SadConsoleEditor.Editors
             panels = new CustomPanel[] { layerManagementPanel, GameObjectPanel, AnimationsPanel, ZonesPanel, toolsPanel };
         }
 
+        
+
         private void ToolsListBox_SelectedItemChanged(object sender, SadConsole.Controls.ListBox<SadConsole.Controls.ListBoxItem>.SelectedItemEventArgs e)
         {
             Tools.ITool tool = e.Item as Tools.ITool;
@@ -239,7 +241,12 @@ namespace SadConsoleEditor.Editors
             
         }
 
-        
+        public void RenameGameObject(ResizableObject gameObject, string newName)
+        {
+            gameObject.Name = newName;
+            LinkedGameObjects[gameObject.GameObject].Name = newName;
+            FixLinkedObjectTitles();
+        }
 
         public void Move(int x, int y)
         {
@@ -251,10 +258,10 @@ namespace SadConsoleEditor.Editors
             EditorConsoleManager.UpdateBrush();
 
             foreach (var entity in Objects)
-                entity.RenderOffset = consoleWrapper.Position;
+                entity.RenderOffset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
 
             foreach (var zone in Zones)
-                zone.RenderOffset = consoleWrapper.Position;
+                zone.RenderOffset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
         }
 
         public void OnSelected()
@@ -262,7 +269,11 @@ namespace SadConsoleEditor.Editors
             if (selectedTool == null)
                 SelectedTool = tools.First().Value;
             else
+            {
+                var oldTool = selectedTool;
+                SelectedTool = null;
                 SelectedTool = selectedTool;
+            }
 
             foreach (var item in EditorConsoleManager.OpenEditors)
             {
@@ -290,7 +301,8 @@ namespace SadConsoleEditor.Editors
                 }
             }
 
-            
+            EditorConsoleManager.ToolsPane.PanelFiles.DocumentsListbox.IsDirty = true;
+
             AnimationsPanel.RebuildListBox();
             GameObjectPanel.RebuildListBox();
         }
@@ -302,12 +314,15 @@ namespace SadConsoleEditor.Editors
 
         public void OnClosed()
         {
-            foreach (var item in EditorConsoleManager.OpenEditors)
+            var editors = EditorConsoleManager.OpenEditors.ToList();
+            foreach (var item in editors)
             {
                 var editor = item as GameObjectEditor;
 
                 if (editor != null && editor.LinkedEditor == this)
-                    editor.LinkedEditor = null;
+                {
+                    EditorConsoleManager.RemoveEditor(editor);
+                }
             }
         }
         
@@ -315,37 +330,7 @@ namespace SadConsoleEditor.Editors
         {
             ClearEntities();
             ClearZones();
-
-            //if (loader is FileLoaders.TextSurface)
-            //{
-            //    // Load the plain surface
-            //    TextSurface surface = (TextSurface)loader.Load(file);
-
-            //    // Load up a new layered text surface
-            //    textSurface = new LayeredTextSurface(surface.Width, surface.Height, 1);
-
-            //    // Setup metadata
-            //    LayerMetadata.Create("main", false, false, true, textSurface.GetLayer(0));
-
-            //    // Use the loaded surface
-            //    textSurface.ActiveLayer.Cells = surface.Cells;
-            //    textSurface.SetActiveLayer(0);
-
-            //    // Set the text surface as the one we're displaying
-            //    consoleWrapper.TextSurface = textSurface;
-
-            //    // Update the border
-            //    if (EditorConsoleManager.ActiveEditor == this)
-            //        EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
-            //}
-            //else if (loader is FileLoaders.LayeredTextSurface)
-            //{
-            //    textSurface = (LayeredTextSurface)loader.Load(file);
-            //    consoleWrapper.TextSurface = textSurface;
-
-            //    if (EditorConsoleManager.ActiveEditor == this)
-            //        EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
-            //}
+            
             if (loader is FileLoaders.Scene)
             {
                 var scene = (SadConsole.Game.Scene)loader.Load(file);
@@ -364,23 +349,9 @@ namespace SadConsoleEditor.Editors
 
             textSurface.Font = Settings.Config.ScreenFont;
             Title = Path.GetFileName(file);
+
             // Update the layer management panel
             layerManagementPanel.SetLayeredTextSurface(textSurface);
-
-            // Load game objects
-            //file += ".objects";
-
-            //if (System.IO.File.Exists(file))
-            //{
-            //    GameObject[] objects = SadConsole.Serializer.Load<GameObject[]>(file);
-
-            //    foreach (var item in objects)
-            //    {
-            //        LoadEntity(item);
-            //    }
-            //}
-
-            
         }
         
         public bool ProcessKeyboard(KeyboardInfo info)
@@ -451,7 +422,7 @@ namespace SadConsoleEditor.Editors
             GameObjectPanel.RebuildListBox();
 
             localEntity.Position = entity.Position;
-            localEntity.RenderOffset = consoleWrapper.Position;
+            localEntity.RenderOffset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
 
             LinkedGameObjects.Add(localEntity, entity);
 
@@ -477,7 +448,7 @@ namespace SadConsoleEditor.Editors
             gameObject.Update();
 
             var resizable = new ResizableObject(ResizableObject.ObjectType.Zone, gameObject);
-            resizable.RenderOffset = consoleWrapper.Position;
+            resizable.RenderOffset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
             Zones.Add(resizable);
 
             ZonesPanel.RebuildListBox();

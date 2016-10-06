@@ -94,7 +94,16 @@ namespace SadConsoleEditor.Panels
         {
             var entity = (ResizableObject)GameObjectList.SelectedItem;
             RenamePopup popup = new RenamePopup(entity.Name);
-            popup.Closed += (o, e2) => { if (popup.DialogResult) entity.Name = popup.NewName; GameObjectList.IsDirty = true; };
+            popup.Closed += (o, e2) =>
+            {
+                if (popup.DialogResult)
+                {
+                    var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+                    editor.RenameGameObject(entity, popup.NewName);
+                }
+
+                GameObjectList.IsDirty = true;
+            };
             popup.Show(true);
             popup.Center();
         }

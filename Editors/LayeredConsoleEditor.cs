@@ -210,7 +210,11 @@ namespace SadConsoleEditor.Editors
             if (selectedTool == null)
                 SelectedTool = tools.First().Value;
             else
+            {
+                var oldTool = selectedTool;
+                SelectedTool = null;
                 SelectedTool = selectedTool;
+            }
         }
 
         public void Render()

@@ -77,6 +77,9 @@ namespace SadConsoleEditor
         public static Dictionary<string, Editors.Editors> Editors;
 
         public static List<Editors.IEditor> OpenEditors;
+
+        public static Rectangle InnerEmptyBounds;
+
         private static string topBarLayerName = "None";
         private static string topBarToolName = "None";
         private static Point topBarMousePosition;
@@ -159,12 +162,16 @@ namespace SadConsoleEditor
             scrollerContainer.MouseCanFocus = false;
             scrollerContainer.ProcessMouseWithoutFocus = true;
 
+            var boundsLocation = new Point(0, topBarPane.TextSurface.Height).TranslateFont(topBarPane.TextSurface.Font, Settings.Config.ScreenFont) + new Point(1);
+            InnerEmptyBounds = new Rectangle(boundsLocation, new Point(0, QuickSelectPane.Position.Y).WorldLocationToConsole(QuickSelectPane.TextSurface.Font.Size.X, QuickSelectPane.TextSurface.Font.Size.Y)  - boundsLocation);
+            InnerEmptyBounds.Width = new Point(ToolsPane.Position.X, 0).TranslateFont(ToolsPane.TextSurface.Font, Settings.Config.ScreenFont).X - 1;
+
             // Add the consoles to the main console list
             Consoles.Add(QuickSelectPane);
             Consoles.Add(topBarPane);
             Consoles.Add(ToolsPane);
             Consoles.Add(scrollerContainer);
-
+            
             // Setup the file types for base editors.
             EditorFileTypes = new Dictionary<Type, FileLoaders.IFileLoader[]>(3);
             OpenEditors = new List<SadConsoleEditor.Editors.IEditor>();
@@ -175,7 +182,7 @@ namespace SadConsoleEditor
             Editors.Add("Console Draw", SadConsoleEditor.Editors.Editors.Console);
             Editors.Add("Animated Game Object", SadConsoleEditor.Editors.Editors.GameObject);
             Editors.Add("Game Scene", SadConsoleEditor.Editors.Editors.Scene);
-            Editors.Add("User Interface Console", SadConsoleEditor.Editors.Editors.GUI);
+            //Editors.Add("User Interface Console", SadConsoleEditor.Editors.Editors.GUI);
 
             // Show new window
             ShowStartup();
@@ -308,8 +315,8 @@ namespace SadConsoleEditor
         public static void RemoveEditor(Editors.IEditor editor)
         {
             ToolsPane.PanelFiles.DocumentsListbox.Items.Remove(editor);
-            OpenEditors.Remove(editor);
             editor.OnClosed();
+            OpenEditors.Remove(editor);
 
             if (OpenEditors.Count == 0)
                 ShowStartup();
@@ -351,10 +358,10 @@ namespace SadConsoleEditor
 
         public static void UpdateBorder(Point position)
         {
-            if (borderConsole.Width != ActiveEditor.Width + 2 || borderConsole.Height != ActiveEditor.Height + 2)
+            if (borderConsole.Width != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Width + 2 || borderConsole.Height != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Height + 2)
             {
                 Consoles.Remove(borderConsole);
-                borderConsole = new Consoles.BorderConsole(ActiveEditor.Width + 2, ActiveEditor.Height + 2);
+                borderConsole = new Consoles.BorderConsole(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Width + 2, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Height + 2);
             }
 
             if (!Consoles.Contains(borderConsole) && Consoles.Contains(ActiveEditor.RenderedConsole))
@@ -367,18 +374,31 @@ namespace SadConsoleEditor
         public static void CenterEditor()
         {
             Point position = new Point();
-
-            var screenSize = SadConsole.Engine.GetScreenSizeInCells(Settings.Config.ScreenFont);
-
-            if (ActiveEditor.Width < screenSize.X)
-                position.X = ((screenSize.X - 20) / 2) - (ActiveEditor.Width / 2);
+            
+            if (ActiveEditor.Width > InnerEmptyBounds.Width || ActiveEditor.Height > InnerEmptyBounds.Height)
+            {
+                // Need scrolling console
+                if (ActiveEditor.Width > InnerEmptyBounds.Width && ActiveEditor.Height > InnerEmptyBounds.Height)
+                {
+                    position = InnerEmptyBounds.Location;
+                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(0, 0, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+                }
+                else if (ActiveEditor.Width > InnerEmptyBounds.Width)
+                {
+                    position = new Point(InnerEmptyBounds.Location.X, (InnerEmptyBounds.Height + InnerEmptyBounds.Y - ActiveEditor.Height) / 2);
+                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(0, 0, InnerEmptyBounds.Width, ActiveEditor.Height);
+                }
+                else if (ActiveEditor.Height > InnerEmptyBounds.Height)
+                {
+                    position = new Point((InnerEmptyBounds.Width + InnerEmptyBounds.X - ActiveEditor.Width) / 2, InnerEmptyBounds.Location.Y);
+                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(0, 0, ActiveEditor.Width, InnerEmptyBounds.Height);
+                }
+            }
             else
-                position.X = ((screenSize.X - 20) - ActiveEditor.Width) / 2;
-
-            if (ActiveEditor.Height < screenSize.Y)
-                position.Y = (screenSize.Y / 2) - (ActiveEditor.Height / 2);
-            else
-                position.Y = (screenSize.Y - ActiveEditor.Height) / 2;
+            {
+                // Center normal
+                position = new Point((InnerEmptyBounds.Width + InnerEmptyBounds.X - ActiveEditor.Width) / 2, (InnerEmptyBounds.Height + InnerEmptyBounds.Y - ActiveEditor.Height) / 2);
+            }
 
             ActiveEditor.Move(position.X, position.Y);
         }
@@ -399,7 +419,7 @@ namespace SadConsoleEditor
         {
             if (Brush != null)
             {
-                Brush.RenderOffset = ActiveEditor.Position;
+                Brush.RenderOffset = ActiveEditor.Position - ActiveEditor.RenderedConsole.TextSurface.RenderArea.Location;
             }
         }
 
@@ -408,60 +428,29 @@ namespace SadConsoleEditor
             bool movekeyPressed = false;
             var position = new Point(borderConsole.Position.X + 1, borderConsole.Position.Y + 1);
             //var result = base.ProcessKeyboard(info);
-            if (AllowKeyboardToMoveConsole)
+            if (AllowKeyboardToMoveConsole && ActiveEditor != null && ActiveEditor.RenderedConsole != null)
             {
                 bool shifted = info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
+                var oldRenderArea = ActiveEditor.RenderedConsole.TextSurface.RenderArea;
 
                 if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
-                {
-                    if (borderConsole.Position.X + borderConsole.Width - 1 != 0)
-                    {
-                        position.X -= 1;
-                        movekeyPressed = true;
-                    }
-                }
+                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left - 1, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+
                 else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
-                {
-                    var max = ToolsPane.Position.TranslateFont(ToolsPane.TextSurface.Font, borderConsole.TextSurface.Font);
-                    
-                    
-                    if (borderConsole.Position.X != max.X - 1)
-                    {
-                        position.X += 1;
-                        movekeyPressed = true;
-                    }
-                }
+                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left + 1, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
 
                 if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
-                {
-                    if (borderConsole.Position.Y + borderConsole.Height - 2 != 0)
-                    {
-                        position.Y -= 1;
-                        movekeyPressed = true;
-                    }
+                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top - 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
 
-                }
                 else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
-                {
-                    if (QuickSelectPane.IsVisible)
-                    {
-                        if (borderConsole.Position.Y * borderConsole.TextSurface.Font.Size.Y + borderConsole.TextSurface.Font.Size.Y < QuickSelectPane.Position.Y)
-                        {
-                            position.Y += 1;
-                            movekeyPressed = true;
-                        }
-                    }
-                    else if (borderConsole.Position.Y != Settings.Config.WindowHeightAsScreenFont - 1)
-                    {
-                        position.Y += 1;
-                        movekeyPressed = true;
-                    }
-                }
+                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top + 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+
+                movekeyPressed = oldRenderArea != ActiveEditor.RenderedConsole.TextSurface.RenderArea;
             }
 
             if (movekeyPressed)
             {
-                ActiveEditor.Move(position.X, position.Y);
+                ActiveEditor.Move(ActiveEditor.Position.X, ActiveEditor.Position.Y);
             }
             else
             {
