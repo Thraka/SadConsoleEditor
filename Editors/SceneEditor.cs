@@ -170,7 +170,7 @@ namespace SadConsoleEditor.Editors
                                                  this.Zones.Select(
                                                      z => new Zone()
                                                                     { Area = new Rectangle(z.GameObject.Position.X, z.GameObject.Position.Y, z.GameObject.Width, z.GameObject.Height),
-                                                                      DebugColor = z.GameObject.RenderCells[0].Background,
+                                                                      DebugAppearance = new CellAppearance(Color.White, z.GameObject.RenderCells[0].Background, 0),
                                                                       Title = z.GameObject.Name }));
 
                     popup.SelectedLoader.Save(scene, popup.SelectedFile);
@@ -435,7 +435,7 @@ namespace SadConsoleEditor.Editors
             var gameObject = new GameObject(Settings.Config.ScreenFont);
             var animation = new AnimatedTextSurface("default", 10, 10);
             var frame = animation.CreateFrame();
-            frame.DefaultBackground = zone.DebugColor;
+            frame.DefaultBackground = zone.DebugAppearance.Background;
 
             gameObject.Name = zone.Title;
 

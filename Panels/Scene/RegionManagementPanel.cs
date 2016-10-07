@@ -89,7 +89,10 @@ namespace SadConsoleEditor.Panels
 
         void ImportEntity_ButtonClicked(object sender, EventArgs e)
         {
-            (EditorConsoleManager.ActiveEditor as Editors.SceneEditor)?.LoadZone(new Zone() { Area = new Rectangle(1, 1, 10, 10), DebugColor = Color.Aqua, Title = "Zone" });
+            (EditorConsoleManager.ActiveEditor as Editors.SceneEditor)?.LoadZone(new Zone() {
+                                                                                    Area = new Rectangle(1, 1, 10, 10),
+                                                                                    DebugAppearance = new CellAppearance(Color.White, Color.White.GetRandomColor(SadConsole.Engine.Random), 0),
+                                                                                    Title = "Zone" });
         }
 
         void RenameEntity_ButtonClicked(object sender, EventArgs e)

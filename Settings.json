@@ -55,7 +55,7 @@
   },
   "ProgramFontFile": "Editor.font",
   "ScreenFontFile": "Cheepicus12.font",
-  "WindowHeight": 60,
+  "WindowHeight": 50,
   "WindowWidth": 170,
   "ColorPickerSettings": {
     "WindowWidth": 100,
