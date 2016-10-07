@@ -161,6 +161,7 @@ namespace SadConsoleEditor
         {
             Zone,
             GameObject,
+            SelectionBox,
             ControlText
         }
 
@@ -192,6 +193,8 @@ namespace SadConsoleEditor
                         return new ResizeRules(true, true, true);
                     case ObjectType.GameObject:
                         return new ResizeRules(false, false, true);
+                    case ObjectType.SelectionBox:
+                        return new ResizeRules(true, true, true);
                 }
 
                 return new ResizeRules(false, false, false);
