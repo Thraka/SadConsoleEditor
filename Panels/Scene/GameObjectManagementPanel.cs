@@ -11,7 +11,7 @@ using SadConsole.Game;
 
 namespace SadConsoleEditor.Panels
 {
-    class EntityManagementPanel : CustomPanel
+    class GameObjectManagementPanel : CustomPanel
     {
         private ListBox<EntityListBoxItem> GameObjectList;
         private Button removeSelected;
@@ -34,7 +34,7 @@ namespace SadConsoleEditor.Panels
             set { GameObjectList.SelectedItem = value; }
         }
 
-        public EntityManagementPanel()
+        public GameObjectManagementPanel()
         {
             Title = "Entities";
             GameObjectList = new ListBox<EntityListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 4);

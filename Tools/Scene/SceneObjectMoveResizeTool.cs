@@ -98,7 +98,8 @@
 
             if(editor != null && !isResizing && !isMoving)
             {
-                var allObjects = editor.Objects.Union(editor.Zones).ToList();
+                var zones = editor.Zones.ToList(); zones.Reverse();
+                var allObjects = editor.Objects.Union(zones).ToList();
 
                 for (int i = 0; i < allObjects.Count; i++)
                 {

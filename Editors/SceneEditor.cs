@@ -24,7 +24,7 @@ namespace SadConsoleEditor.Editors
         private Dictionary<string, Tools.ITool> tools;
         private Tools.ITool selectedTool;
 
-        public Panels.EntityManagementPanel GameObjectPanel;
+        public Panels.GameObjectManagementPanel GameObjectPanel;
         public Panels.RegionManagementPanel ZonesPanel;
         public Panels.Scene.AnimationListPanel AnimationsPanel;
 
@@ -104,7 +104,7 @@ namespace SadConsoleEditor.Editors
 
             toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
 
-            GameObjectPanel = new Panels.EntityManagementPanel();
+            GameObjectPanel = new Panels.GameObjectManagementPanel();
             ZonesPanel = new RegionManagementPanel() { IsCollapsed = true };
             AnimationsPanel = new Panels.Scene.AnimationListPanel();
             Objects = new List<ResizableObject>();
