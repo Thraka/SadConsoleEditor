@@ -70,8 +70,9 @@ namespace SadConsoleEditor.Consoles
             List<CustomPanel> allPanels = new List<CustomPanel>() { PanelFiles };
 
             // Custom panels from the selected editor
-            if (EditorConsoleManager.ActiveEditor.Panels != null && EditorConsoleManager.ActiveEditor.Panels.Length != 0)
-                allPanels.AddRange(EditorConsoleManager.ActiveEditor.Panels);
+            if (EditorConsoleManager.ActiveEditor != null)
+                if (EditorConsoleManager.ActiveEditor.Panels != null && EditorConsoleManager.ActiveEditor.Panels.Length != 0)
+                    allPanels.AddRange(EditorConsoleManager.ActiveEditor.Panels);
 
             // Custom panels from the selected tool
             //if (SelectedTool.ControlPanels != null && SelectedTool.ControlPanels.Length != 0)

@@ -64,6 +64,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Windows\Animation\AnimationSpeedPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\CharacterQuickSelectPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\ColorPickerPopup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\KeyValueEditPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\NewConsolePopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\OtherColorsPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\RenamePopup.cs" />

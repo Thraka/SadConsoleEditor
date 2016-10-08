@@ -8,6 +8,16 @@ using System.Text;
 
 namespace SadConsoleEditor
 {
+    class ResizableObject<TData>: ResizableObject
+    {
+        public TData Data;
+
+        public ResizableObject(ObjectType objectType, GameObject gameObject, TData data): base(objectType, gameObject)
+        {
+            Data = data;
+        }
+    }
+
     class ResizableObject
     {
         private GameObject overlay;
@@ -80,7 +90,7 @@ namespace SadConsoleEditor
             }
         }
 
-        public void Recolor(Color color)
+        public virtual void Recolor(Color color)
         {
             Settings.QuickEditor.TextSurface = gameObject.Animation.CurrentFrame;
             Settings.QuickEditor.Fill(Color.White, color, 0);

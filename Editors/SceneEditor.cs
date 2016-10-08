@@ -32,7 +32,7 @@ namespace SadConsoleEditor.Editors
         private GameObject _selectedGameObject;
         public Dictionary<GameObject, GameObject> LinkedGameObjects = new Dictionary<GameObject, GameObject>();
         public List<ResizableObject> Objects;
-        public List<ResizableObject> Zones;
+        public List<ResizableObject<Zone>> Zones;
 
         public GameObject SelectedEntity
         {
@@ -108,7 +108,7 @@ namespace SadConsoleEditor.Editors
             ZonesPanel = new RegionManagementPanel() { IsCollapsed = true };
             AnimationsPanel = new Panels.Scene.AnimationListPanel();
             Objects = new List<ResizableObject>();
-            Zones = new List<ResizableObject>();
+            Zones = new List<ResizableObject<Zone>>();
             LinkedGameObjects = new Dictionary<GameObject, GameObject>();
 
             panels = new CustomPanel[] { layerManagementPanel, GameObjectPanel, AnimationsPanel, ZonesPanel, toolsPanel };
@@ -447,7 +447,7 @@ namespace SadConsoleEditor.Editors
             gameObject.Position = new Point(zone.Area.Left, zone.Area.Top);
             gameObject.Update();
 
-            var resizable = new ResizableObject(ResizableObject.ObjectType.Zone, gameObject);
+            var resizable = new ResizableObject<Zone>(ResizableObject.ObjectType.Zone, gameObject, zone);
             resizable.RenderOffset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
             Zones.Add(resizable);
 
