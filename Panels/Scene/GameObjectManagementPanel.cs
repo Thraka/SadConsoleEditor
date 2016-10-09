@@ -21,6 +21,10 @@ namespace SadConsoleEditor.Panels
         private Button importGameObject;
         private CheckBox drawGameObjectsCheckbox;
 
+        private DrawingSurface animationListTitle;
+        ListBox<AnimationListBoxItem> animationsListBox;
+        Button playAnimationButton;
+
         public bool DrawObjects
         {
             get { return drawGameObjectsCheckbox.IsSelected; }
@@ -66,7 +70,20 @@ namespace SadConsoleEditor.Panels
             drawGameObjectsCheckbox.IsSelected = true;
             drawGameObjectsCheckbox.Text = "Draw Objects";
 
-            Controls = new ControlBase[] { GameObjectList, removeSelected, moveSelectedUp, moveSelectedDown, renameLayer, importGameObject, null, drawGameObjectsCheckbox };
+            animationListTitle = new DrawingSurface(Consoles.ToolPane.PanelWidthControls, 2);
+            animationListTitle.Print(0, 0, "Animations", Settings.Green);
+
+            animationsListBox = new ListBox<AnimationListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 4);
+            animationsListBox.SelectedItemChanged += AnimationList_SelectedItemChanged;
+            animationsListBox.HideBorder = true;
+            animationsListBox.CompareByReference = true;
+
+            playAnimationButton = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            playAnimationButton.Text = "Play Animation";
+            playAnimationButton.ButtonClicked += (o, e) => { if (animationsListBox.SelectedItem != null) ((AnimatedTextSurface)animationsListBox.SelectedItem).Restart(); };
+
+
+            Controls = new ControlBase[] { GameObjectList, removeSelected, moveSelectedUp, moveSelectedDown, renameLayer, importGameObject, null, drawGameObjectsCheckbox, null, animationListTitle,animationsListBox, null, playAnimationButton };
 
             GameObject_SelectedItemChanged(null, null);
         }
@@ -166,6 +183,19 @@ namespace SadConsoleEditor.Panels
             }
 
             removeSelected.IsEnabled = GameObjectList.Items.Count != 0;
+            RebuildAnimationListBox();
+        }
+
+        private void AnimationList_SelectedItemChanged(object sender, ListBox<AnimationListBoxItem>.SelectedItemEventArgs e)
+        {
+            if (animationsListBox.SelectedItem != null)
+            {
+                var animation = (AnimatedTextSurface)animationsListBox.SelectedItem;
+                var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+                animation.CurrentFrameIndex = 0;
+                editor.SelectedEntity.Animation = animation;
+
+            }
         }
 
         public void RebuildListBox()
@@ -183,6 +213,24 @@ namespace SadConsoleEditor.Panels
 
 
                     GameObjectList.SelectedItem = GameObjectList.Items[0];
+                }
+            }
+        }
+
+        public void RebuildAnimationListBox()
+        {
+            animationsListBox.Items.Clear();
+
+            if (GameObjectList.SelectedItem != null)
+            {
+                var animations = ((ResizableObject)GameObjectList.SelectedItem).GameObject.Animations;
+
+                if (animations.Count != 0)
+                {
+                    foreach (var item in animations.Values)
+                        animationsListBox.Items.Add(item);
+
+                    animationsListBox.SelectedItem = ((ResizableObject)GameObjectList.SelectedItem).GameObject.Animation;
                 }
             }
         }
@@ -214,6 +262,25 @@ namespace SadConsoleEditor.Panels
             public override void Draw(ITextSurface surface, Microsoft.Xna.Framework.Rectangle area)
             {
                 string value = ((ResizableObject)Item).Name;
+
+                if (string.IsNullOrEmpty(value))
+                    value = "<no name>";
+
+                if (value.Length < area.Width)
+                    value += new string(' ', area.Width - value.Length);
+                else if (value.Length > area.Width)
+                    value = value.Substring(0, area.Width);
+                var editor = new SurfaceEditor(surface);
+                editor.Print(area.X, area.Y, value, _currentAppearance);
+                _isDirty = false;
+            }
+        }
+
+        private class AnimationListBoxItem : ListBoxItem
+        {
+            public override void Draw(ITextSurface surface, Microsoft.Xna.Framework.Rectangle area)
+            {
+                string value = ((AnimatedTextSurface)Item).Name;
 
                 if (string.IsNullOrEmpty(value))
                     value = "<no name>";

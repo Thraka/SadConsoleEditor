@@ -26,7 +26,6 @@ namespace SadConsoleEditor.Editors
 
         public Panels.GameObjectManagementPanel GameObjectPanel;
         public Panels.RegionManagementPanel ZonesPanel;
-        public Panels.Scene.AnimationListPanel AnimationsPanel;
 
 
         private GameObject _selectedGameObject;
@@ -37,7 +36,7 @@ namespace SadConsoleEditor.Editors
         public GameObject SelectedEntity
         {
             get { return _selectedGameObject; }
-            set { _selectedGameObject = value; AnimationsPanel.RebuildListBox(); }
+            set { _selectedGameObject = value; }
         }
 
 
@@ -106,12 +105,11 @@ namespace SadConsoleEditor.Editors
 
             GameObjectPanel = new Panels.GameObjectManagementPanel();
             ZonesPanel = new RegionManagementPanel() { IsCollapsed = true };
-            AnimationsPanel = new Panels.Scene.AnimationListPanel();
             Objects = new List<ResizableObject>();
             Zones = new List<ResizableObject<Zone>>();
             LinkedGameObjects = new Dictionary<GameObject, GameObject>();
 
-            panels = new CustomPanel[] { layerManagementPanel, GameObjectPanel, AnimationsPanel, ZonesPanel, toolsPanel };
+            panels = new CustomPanel[] { layerManagementPanel, GameObjectPanel, ZonesPanel, toolsPanel };
         }
 
         
@@ -124,7 +122,7 @@ namespace SadConsoleEditor.Editors
             {
                 selectedTool = tool;
 
-                List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, GameObjectPanel, AnimationsPanel, ZonesPanel, toolsPanel };
+                List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, GameObjectPanel, ZonesPanel, toolsPanel };
 
                 if (tool.ControlPanels != null && tool.ControlPanels.Length != 0)
                     newPanels.AddRange(tool.ControlPanels);
@@ -303,7 +301,6 @@ namespace SadConsoleEditor.Editors
 
             EditorConsoleManager.ToolsPane.PanelFiles.DocumentsListbox.IsDirty = true;
 
-            AnimationsPanel.RebuildListBox();
             GameObjectPanel.RebuildListBox();
         }
 
@@ -500,14 +497,15 @@ namespace SadConsoleEditor.Editors
 
                 if (linkedEditor != null)
                 {
+                    var name = string.IsNullOrWhiteSpace(linkedEntity.Name) ? "<no name>" : linkedEntity.Name;
                     // last one
                     if (i == Objects.Count - 1)
                     {
-                        linkedEditor.Title = (char)192 + " " + linkedEntity.Name;
+                        linkedEditor.Title = (char)192 + " " + name;
                     }
                     else
                     {
-                        linkedEditor.Title = (char)195 + " " + linkedEntity.Name;
+                        linkedEditor.Title = (char)195 + " " + name;
 
                     }
                 }
