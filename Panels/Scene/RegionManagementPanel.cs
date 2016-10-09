@@ -18,12 +18,12 @@ namespace SadConsoleEditor.Panels
         private Button removeSelected;
         private Button moveSelectedUp;
         private Button moveSelectedDown;
-        private Button renameLayer;
-        private Button importGameObject;
+        private Button renameZoneButton;
+        private Button addZoneButton;
         private Button editSettings;
         private Controls.ColorPresenter zoneColorPresenter;
         private CheckBox drawZonesCheckbox;
-        private DrawingSurface _propertySurface;
+        private DrawingSurface propertySurface;
 
         private Dictionary<string, string> previousProperties = new Dictionary<string, string>();
 
@@ -61,19 +61,19 @@ namespace SadConsoleEditor.Panels
             moveSelectedDown.Text = "Move Down";
             moveSelectedDown.ButtonClicked += MoveSelectedDown_ButtonClicked;
             
-            renameLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
-            renameLayer.Text = "Rename";
-            renameLayer.ButtonClicked += RenameEntity_ButtonClicked;
+            renameZoneButton = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            renameZoneButton.Text = "Rename";
+            renameZoneButton.ButtonClicked += RenameZone_ButtonClicked;
 
-            importGameObject = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
-            importGameObject.Text = "Add New";
-            importGameObject.ButtonClicked += ImportEntity_ButtonClicked;
+            addZoneButton = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            addZoneButton.Text = "Add New";
+            addZoneButton.ButtonClicked += AddZone_ButtonClicked;
 
             editSettings = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             editSettings.Text = "Edit Settings";
             editSettings.ButtonClicked += EditSettings_ButtonClicked;
 
-            zoneColorPresenter = new SadConsoleEditor.Controls.ColorPresenter("Selected Zone Color", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
+            zoneColorPresenter = new SadConsoleEditor.Controls.ColorPresenter("Zone Color", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             zoneColorPresenter.SelectedColor = Color.Aqua;
             zoneColorPresenter.IsEnabled = false;
             zoneColorPresenter.ColorChanged += ZoneColorPresenter_ColorChanged;
@@ -82,9 +82,9 @@ namespace SadConsoleEditor.Panels
             drawZonesCheckbox.IsSelected = true;
             drawZonesCheckbox.Text = "Draw zones";
 
-            _propertySurface = new DrawingSurface(Consoles.ToolPane.PanelWidthControls, 2);
+            propertySurface = new DrawingSurface(Consoles.ToolPane.PanelWidthControls, 2);
 
-            Controls = new ControlBase[] { GameObjectList, removeSelected, moveSelectedUp, moveSelectedDown, renameLayer, editSettings, null, importGameObject, null, zoneColorPresenter, null, drawZonesCheckbox, null, _propertySurface };
+            Controls = new ControlBase[] { addZoneButton, null, GameObjectList, removeSelected, moveSelectedUp, moveSelectedDown, renameZoneButton, editSettings, null, drawZonesCheckbox, null, zoneColorPresenter, propertySurface };
 
             GameObject_SelectedItemChanged(null, null);
         }
@@ -106,14 +106,6 @@ namespace SadConsoleEditor.Panels
             popup.Show(true);
         }
 
-        private void RebuildControls()
-        {
-            rebuilding = true;
-            //Controls = new ControlBase[] { GameObjectList, removeSelected, moveSelectedUp, moveSelectedDown, renameLayer, editSettings, null, importGameObject, null, zoneColorPresenter, null, drawZonesCheckbox, null, _propertySurface };
-            //EditorConsoleManager.ToolsPane.RedrawPanels();
-            rebuilding = false;
-        }
-
         private void ZoneColorPresenter_ColorChanged(object sender, EventArgs e)
         {
             var entity = GameObjectList.SelectedItem as ResizableObject<Zone>;
@@ -125,7 +117,7 @@ namespace SadConsoleEditor.Panels
             }
         }
 
-        void ImportEntity_ButtonClicked(object sender, EventArgs e)
+        void AddZone_ButtonClicked(object sender, EventArgs e)
         {
             (EditorConsoleManager.ActiveEditor as Editors.SceneEditor)?.LoadZone(new Zone() {
                                                                                     Area = new Rectangle(1, 1, 10, 10),
@@ -133,7 +125,7 @@ namespace SadConsoleEditor.Panels
                                                                                     Title = "Zone" });
         }
 
-        void RenameEntity_ButtonClicked(object sender, EventArgs e)
+        void RenameZone_ButtonClicked(object sender, EventArgs e)
         {
             var entity = (ResizableObject)GameObjectList.SelectedItem;
             RenamePopup popup = new RenamePopup(entity.Name);
@@ -183,20 +175,21 @@ namespace SadConsoleEditor.Panels
         {
             if (zone.Settings.Count == 0)
             {
-                _propertySurface.IsVisible = false;
+                propertySurface.IsVisible = false;
             }
             else
             {
-                _propertySurface.IsVisible = true;
+                propertySurface.IsVisible = true;
             }
 
             
-            if (_propertySurface.IsVisible)
+            if (propertySurface.IsVisible)
             {
-                var drawing = new DrawingSurface(Consoles.ToolPane.PanelWidthControls, zone.Settings.Count * 2);
+                var drawing = new DrawingSurface(Consoles.ToolPane.PanelWidthControls, (zone.Settings.Count * 2) + 1);
 
                 previousProperties = new Dictionary<string, string>();
-                int y = 0;
+                int y = 1;
+                drawing.Print(0, 0, "Zone Settings", Settings.Green);
                 foreach (var setting in zone.Settings)
                 {
                     drawing.Print(0, y, setting.Key.Length > Consoles.ToolPane.PanelWidthControls ? setting.Key.Substring(0, Consoles.ToolPane.PanelWidthControls) : setting.Key, Settings.Yellow);
@@ -205,7 +198,7 @@ namespace SadConsoleEditor.Panels
                     y += 2;
                 }
 
-                _propertySurface.TextSurface = drawing.TextSurface;
+                propertySurface.TextSurface = drawing.TextSurface;
             }
         }
 
@@ -218,7 +211,7 @@ namespace SadConsoleEditor.Panels
 
                 moveSelectedUp.IsEnabled = editor.Zones.IndexOf(entity) != 0;
                 moveSelectedDown.IsEnabled = editor.Zones.IndexOf(entity) != editor.Zones.Count - 1;
-                renameLayer.IsEnabled = true;
+                renameZoneButton.IsEnabled = true;
                 editSettings.IsEnabled = true;
 
                 editor.SelectedEntity = entity.GameObject;
@@ -236,8 +229,8 @@ namespace SadConsoleEditor.Panels
                 zoneColorPresenter.IsEnabled = false;
                 moveSelectedDown.IsEnabled = false;
                 moveSelectedUp.IsEnabled = false;
-                renameLayer.IsEnabled = false;
-                _propertySurface.IsVisible = false;
+                renameZoneButton.IsEnabled = false;
+                propertySurface.IsVisible = false;
             }
 
             removeSelected.IsEnabled = GameObjectList.Items.Count != 0;

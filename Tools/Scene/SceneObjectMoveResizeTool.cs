@@ -121,10 +121,16 @@
                     if (!info.LeftButtonDown)
                         return;
 
+                    // Select the zone in the list box
+                    if (movingEntity.Type == ResizableObject.ObjectType.Zone && editor.ZonesPanel.SelectedGameObject != movingEntity)
+                        editor.ZonesPanel.SelectedGameObject = movingEntity;
+                    else if (movingEntity.Type == ResizableObject.ObjectType.GameObject && editor.GameObjectPanel.SelectedGameObject != movingEntity)
+                        editor.GameObjectPanel.SelectedGameObject = movingEntity;
+
                     var gameObject = movingEntity.GameObject;
                     var overlay = movingEntity.Overlay;
                     var rules = movingEntity.Rules;
-
+                    
                     lastLeftMouseDown = true;
 
                     moveRight = false;
