@@ -397,12 +397,7 @@ namespace SadConsoleEditor.Editors
             return false;
         }
 
-
-        public override string ToString()
-        {
-            return this.ToString();
-        }
-
+        
         public bool LoadEntity(GameObject entity)
         {
             var editor = new GameObjectEditor();

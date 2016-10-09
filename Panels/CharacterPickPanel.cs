@@ -57,11 +57,11 @@ namespace SadConsoleEditor.Panels
         {
             Title = title;
 
-            _foreColor = new ColorPresenter("Foreground", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2);
-            _backColor = new ColorPresenter("Background", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2);
-            _charPreview = new ColorPresenter("Character", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2);
-            _mirrorLR = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
-            _mirrorTB = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            _foreColor = new ColorPresenter("Foreground", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
+            _backColor = new ColorPresenter("Background", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
+            _charPreview = new ColorPresenter("Character", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
+            _mirrorLR = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            _mirrorTB = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             _characterPicker = new CharacterPicker(Settings.Red, Settings.Color_ControlBack, Settings.Green);
             _popupCharacterWindow = new Windows.CharacterQuickSelectPopup(0);
 

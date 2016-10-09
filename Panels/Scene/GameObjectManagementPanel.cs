@@ -37,32 +37,32 @@ namespace SadConsoleEditor.Panels
         public GameObjectManagementPanel()
         {
             Title = "Entities";
-            GameObjectList = new ListBox<EntityListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 4);
+            GameObjectList = new ListBox<EntityListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 4);
             GameObjectList.HideBorder = true;
             GameObjectList.SelectedItemChanged += GameObject_SelectedItemChanged;
             GameObjectList.CompareByReference = true;
 
-            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             removeSelected.Text = "Remove";
             removeSelected.ButtonClicked += RemoveSelected_ButtonClicked;
 
-            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             moveSelectedUp.Text = "Move Up";
             moveSelectedUp.ButtonClicked += MoveSelectedUp_ButtonClicked;
 
-            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             moveSelectedDown.Text = "Move Down";
             moveSelectedDown.ButtonClicked += MoveSelectedDown_ButtonClicked;
             
-            renameLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            renameLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             renameLayer.Text = "Rename";
             renameLayer.ButtonClicked += RenameEntity_ButtonClicked;
 
-            importGameObject = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            importGameObject = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             importGameObject.Text = "Import File";
             importGameObject.ButtonClicked += ImportEntity_ButtonClicked;
 
-            drawGameObjectsCheckbox = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            drawGameObjectsCheckbox = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             drawGameObjectsCheckbox.IsSelected = true;
             drawGameObjectsCheckbox.Text = "Draw Objects";
 

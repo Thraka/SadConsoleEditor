@@ -27,10 +27,10 @@ namespace SadConsoleEditor.Panels
         {
             Title = "Sel.Rect Options";
 
-            skipEmptyColor = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            skipEmptyColor = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             skipEmptyColor.Text = "Skip Empty";
 
-            altEmptyColorCheck = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            altEmptyColorCheck = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             altEmptyColorCheck.Text = "Use Alt. Empty";
 
             altEmptyColor = new Controls.ColorPresenter("Alt. Empty Clr", Settings.Green, 18);
@@ -107,27 +107,27 @@ namespace SadConsoleEditor.Panels
 
         public SelectionToolPanel(Action<TextSurface> loadBrushHandler, Func<TextSurface> saveBrushHandler)
         {
-            reset = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            reset = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             reset.Text = "Reset Steps";
             reset.ButtonClicked += (o, e) => State = CloneState.SelectingPoint1;
 
-            loadBrush = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            loadBrush = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             loadBrush.Text = "Import Brush";
             loadBrush.ButtonClicked += _loadBrush_ButtonClicked;
 
-            saveBrush = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            saveBrush = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             saveBrush.Text = "Export Brush";
             saveBrush.ButtonClicked += _saveBrush_ButtonClicked;
 
-            clone = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            clone = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             clone.Text = "Clone";
             clone.ButtonClicked += clone_ButtonClicked;
 
-            clear = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            clear = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             clear.Text = "Clear";
             clear.ButtonClicked += clear_ButtonClicked;
 
-            move = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            move = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             move.Text = "Move";
             move.ButtonClicked += move_ButtonClicked;
 

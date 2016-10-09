@@ -20,6 +20,7 @@ namespace SadConsoleEditor.Consoles
     class ToolPane : ControlsConsole
     {
         public static int PanelWidth;
+        public static int PanelWidthControls;
 
         private List<Tuple<CustomPanel, int>> _hotSpots;
         private Dictionary<string, ITool> _tools;
@@ -30,6 +31,7 @@ namespace SadConsoleEditor.Consoles
         public ToolPane() : base(Settings.Config.ToolPaneWidth - 1, Settings.Config.WindowHeight * 2)
         {
             PanelWidth = Settings.Config.ToolPaneWidth - 1;
+            PanelWidthControls = PanelWidth - 2;
 
             _tools = new Dictionary<string, ITool>();
 
@@ -50,12 +52,7 @@ namespace SadConsoleEditor.Consoles
             PanelFiles = new FilesPanel();
             //PanelTools = new ToolsPanel();
         }
-
-        public void ResetPanels()
-        {
-
-        }
-        
+                
 
         public void RedrawPanels()
         {
@@ -96,9 +93,12 @@ namespace SadConsoleEditor.Consoles
                             {
                                 if (control != null)
                                 {
-                                    Add(control);
-                                    control.Position = new Point(1, activeRow);
-                                    activeRow += pane.Redraw(control) + control.Height;
+                                    if (control.IsVisible)
+                                    {
+                                        Add(control);
+                                        control.Position = new Point(1, activeRow);
+                                        activeRow += pane.Redraw(control) + control.Height;
+                                    }
                                 }
                                 else
                                     activeRow++;

@@ -274,12 +274,5 @@ namespace SadConsoleEditor.Editors
             consoleWrapper.CanUseMouse = false;
             return false;
         }
-
-
-        public override string ToString()
-        {
-            return this.ToString();
-        }
-        
     }
 }

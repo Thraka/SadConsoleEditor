@@ -29,7 +29,7 @@ namespace SadConsoleEditor.Panels
         {
             Title = "Tools";
 
-            ToolsListBox = new ListBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 7);
+            ToolsListBox = new ListBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 7);
             ToolsListBox.HideBorder = true;
             ToolsListBox.CanUseKeyboard = false;
 

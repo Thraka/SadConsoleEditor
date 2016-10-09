@@ -12,93 +12,83 @@ namespace SadConsoleEditor.Windows
 {
     class KeyValueEditPopup : SadConsole.Consoles.Window
     {
-        private struct SettingKeyValue
+        private class SettingKeyValue
         {
             public string Key;
             public string Value;
+
+            public override string ToString()
+            {
+                return Key;
+            }
         }
 
-        private Button _saveButton;
-        private Button _cancelButton;
-        private Button _addFieldButton;
-        private Button _removeFieldButton;
-        private Button _updateFieldButton;
-        private ListBox _objectSettingsListbox;
-        private InputBox _settingNameInput;
-        private InputBox _settingValueInput;
+        private Button saveButton;
+        private Button cancelButton;
+        private Button addFieldButton;
+        private Button removeFieldButton;
+        private ListBox objectSettingsListbox;
+        private InputBox settingNameInput;
+        private InputBox settingValueInput;
 
         private SpriteEffects _settingMirrorEffect;
 
         public Dictionary<string, string> SettingsDictionary;
         
         public KeyValueEditPopup(Dictionary<string, string> settings)
-            : base(39, 29)
+            : base(55, 18)
         {
             Title = "Settings";
-
-            // Settings of the appearance fields
-            Print(2, 2, "Name", Settings.Green);
-
+            
             // Setting controls of the game object
-            _objectSettingsListbox = new ListBox(18, 7);
-            _settingNameInput = new InputBox(18);
-            _settingValueInput = new InputBox(18);
-            _objectSettingsListbox.HideBorder = true;
+            objectSettingsListbox = new ListBox(25, 10);
+            settingNameInput = new InputBox(25);
+            settingValueInput = new InputBox(25);
+            objectSettingsListbox.HideBorder = true;
 
 
-            Print(2, 10, "Settings/Flags", Settings.Green);
-            _objectSettingsListbox.Position = new Point(2, 11);
+            objectSettingsListbox.Position = new Point(2, 3);
+            settingNameInput.Position = new Point(objectSettingsListbox.Bounds.Right + 1, objectSettingsListbox.Bounds.Top);
+            settingValueInput.Position = new Point(objectSettingsListbox.Bounds.Right + 1, settingNameInput.Bounds.Bottom + 2);
 
-            Print(2, 19, "Setting Name", Settings.Green);
-            Print(2, 22, "Setting Value", Settings.Green);
-            _settingNameInput.Position = new Point(2, 20);
-            _settingValueInput.Position = new Point(2, 23);
+            addFieldButton = new Button(14, 1);
+            addFieldButton.Text = "Add/Update";
+            addFieldButton.Position = new Point(settingValueInput.Bounds.Left, settingValueInput.Bounds.Bottom + 1);
 
-            _addFieldButton = new Button(16, 1);
-            _addFieldButton.Text = "Save New Setting";
-            _addFieldButton.Position = new Point(textSurface.Width - 18, 20);
+            removeFieldButton = new Button(14, 1);
+            removeFieldButton.Text = "Remove";
+            removeFieldButton.Position = new Point(objectSettingsListbox.Bounds.Left, objectSettingsListbox.Bounds.Bottom + 1);
+            removeFieldButton.IsEnabled = false;
 
-            _removeFieldButton = new Button(16, 1);
-            _removeFieldButton.Text = "Remove Setting";
-            _removeFieldButton.Position = new Point(textSurface.Width - 18, 21);
-            _removeFieldButton.IsEnabled = false;
+            objectSettingsListbox.SelectedItemChanged += _objectSettingsListbox_SelectedItemChanged;
+            addFieldButton.ButtonClicked += _addFieldButton_ButtonClicked;
+            removeFieldButton.ButtonClicked += _removeFieldButton_ButtonClicked;
 
-            _updateFieldButton = new Button(16, 1);
-            _updateFieldButton.Text = "Update Setting";
-            _updateFieldButton.Position = new Point(textSurface.Width - 18, 22);
-            _updateFieldButton.IsEnabled = false;
-
-            _objectSettingsListbox.SelectedItemChanged += _objectSettingsListbox_SelectedItemChanged;
-            _addFieldButton.ButtonClicked += _addFieldButton_ButtonClicked;
-            _removeFieldButton.ButtonClicked += _removeFieldButton_ButtonClicked;
-            _updateFieldButton.ButtonClicked += _updateFieldButton_ButtonClicked;
-
-            Add(_objectSettingsListbox);
-            Add(_settingNameInput);
-            Add(_settingValueInput);
-            Add(_addFieldButton);
-            Add(_removeFieldButton);
-            Add(_updateFieldButton);
+            Add(objectSettingsListbox);
+            Add(settingNameInput);
+            Add(settingValueInput);
+            Add(addFieldButton);
+            Add(removeFieldButton);
 
             // Save/close buttons
-            _saveButton = new Button(10, 1);
-            _cancelButton = new Button(10, 1);
+            saveButton = new Button(10, 1);
+            cancelButton = new Button(10, 1);
 
-            _saveButton.Text = "Save";
-            _cancelButton.Text = "Cancel";
+            saveButton.Text = "Save";
+            cancelButton.Text = "Cancel";
 
-            _saveButton.ButtonClicked += _saveButton_ButtonClicked;
-            _cancelButton.ButtonClicked += (o, e) => { DialogResult = false; Hide(); };
+            saveButton.ButtonClicked += _saveButton_ButtonClicked;
+            cancelButton.ButtonClicked += (o, e) => { DialogResult = false; Hide(); };
 
-            _saveButton.Position = new Point(textSurface.Width - 12, 26);
-            _cancelButton.Position = new Point(2, 26);
+            saveButton.Position = new Point(textSurface.Width - 12, 16);
+            cancelButton.Position = new Point(2, 16);
 
-            Add(_saveButton);
-            Add(_cancelButton);
+            Add(saveButton);
+            Add(cancelButton);
 
             // Read the settings
             foreach (var item in settings)
-                _objectSettingsListbox.Items.Add(new SettingKeyValue() { Key = item.Key, Value = item.Value });
+                objectSettingsListbox.Items.Add(new SettingKeyValue() { Key = item.Key, Value = item.Value });
 
             SettingsDictionary = settings;
 
@@ -113,46 +103,58 @@ namespace SadConsoleEditor.Windows
 
         void _objectSettingsListbox_SelectedItemChanged(object sender, ListBox<ListBoxItem>.SelectedItemEventArgs e)
         {
-            if (_objectSettingsListbox.SelectedItem != null)
+            if (objectSettingsListbox.SelectedItem != null)
             {
-                _updateFieldButton.IsEnabled = true;
-                _removeFieldButton.IsEnabled = true;
+                removeFieldButton.IsEnabled = true;
 
-                var objectSetting = (KeyValuePair<string, string>)_objectSettingsListbox.SelectedItem;
+                var objectSetting = (SettingKeyValue)objectSettingsListbox.SelectedItem;
 
-                _settingNameInput.Text = objectSetting.Key;
-                _settingValueInput.Text = objectSetting.Value;
+                settingNameInput.Text = objectSetting.Key;
+                settingValueInput.Text = objectSetting.Value;
             }
             else
             {
-                _updateFieldButton.IsEnabled = false;
-                _removeFieldButton.IsEnabled = false;
+                removeFieldButton.IsEnabled = false;
 
-                _settingNameInput.Text = "";
-                _settingValueInput.Text = "";
+                settingNameInput.Text = "";
+                settingValueInput.Text = "";
             }
         }
 
         void _updateFieldButton_ButtonClicked(object sender, EventArgs e)
         {
-            var objectSetting = (SettingKeyValue)_objectSettingsListbox.SelectedItem;
+            var objectSetting = (SettingKeyValue)objectSettingsListbox.SelectedItem;
 
-            objectSetting.Key = _settingNameInput.Text;
-            objectSetting.Value = _settingValueInput.Text;
+            objectSetting.Key = settingNameInput.Text;
+            objectSetting.Value = settingValueInput.Text;
         }
 
         void _removeFieldButton_ButtonClicked(object sender, EventArgs e)
         {
-            if (_objectSettingsListbox.SelectedItem != null)
-                _objectSettingsListbox.Items.Remove(_objectSettingsListbox.SelectedItem);
+            if (objectSettingsListbox.SelectedItem != null)
+                objectSettingsListbox.Items.Remove(objectSettingsListbox.SelectedItem);
         }
 
         void _addFieldButton_ButtonClicked(object sender, EventArgs e)
         {
-            SettingKeyValue objectSetting = new SettingKeyValue();
-            objectSetting.Key = _settingNameInput.Text;
-            objectSetting.Value = _settingValueInput.Text;
-            _objectSettingsListbox.Items.Add(objectSetting);
+            if (!string.IsNullOrWhiteSpace(settingNameInput.Text))
+            {
+                foreach (var item in objectSettingsListbox.Items.Cast<SettingKeyValue>())
+                {
+                    if (item.Key == settingNameInput.Text)
+                    {
+                        var updated = item;
+                        updated.Value = settingValueInput.Text;
+                        SettingsDictionary[item.Key] = item.Value;
+                        return;
+                    }
+                }
+
+                SettingKeyValue objectSetting = new SettingKeyValue();
+                objectSetting.Key = settingNameInput.Text;
+                objectSetting.Value = settingValueInput.Text;
+                objectSettingsListbox.Items.Add(objectSetting);
+            }
         }
 
         public override void Show(bool modal)
@@ -169,7 +171,7 @@ namespace SadConsoleEditor.Windows
                 // Fill in the game object with all the new values
                 SettingsDictionary = new Dictionary<string, string>();
 
-                foreach (var item in _objectSettingsListbox.Items.Cast<SettingKeyValue>())
+                foreach (var item in objectSettingsListbox.Items.Cast<SettingKeyValue>())
                     SettingsDictionary.Add(item.Key, item.Value);
             }
 
@@ -180,32 +182,35 @@ namespace SadConsoleEditor.Windows
         {
             base.Redraw();
 
-            Print(2, 2, "Name", Settings.Green);
-            Print(2, 10, "Settings/Flags", Settings.Green);
-            Print(2, 19, "Setting Name", Settings.Green);
-            Print(2, 22, "Setting Value", Settings.Green);
+            if (objectSettingsListbox != null)
+            {
+                Print(objectSettingsListbox.Position.X, objectSettingsListbox.Position.Y - 1, "Settings/Flags", Settings.Green);
+                Print(settingNameInput.Position.X, settingNameInput.Position.Y - 1, "Setting Name", Settings.Green);
+                Print(settingValueInput.Position.X, settingValueInput.Position.Y - 1, "Setting Value", Settings.Green);
 
-            SetGlyph(0, 9, 199);
-            for (int i = 1; i < 20; i++)
-                SetGlyph(i, 9, 196);
+                //SetGlyph(0, 9, 199);
+                //for (int i = 1; i < 20; i++)
+                //    SetGlyph(i, 9, 196);
 
-            SetGlyph(20, 9, 191);
+                //SetGlyph(20, 9, 191);
 
-            for (int i = 10; i < 18; i++)
-                SetGlyph(20, i, 179);
+                //for (int i = 10; i < 18; i++)
+                //    SetGlyph(20, i, 179);
 
-            SetGlyph(20, 18, 192);
+                //SetGlyph(20, 18, 192);
 
-            for (int i = 21; i < textSurface.Width; i++)
-                SetGlyph(i, 18, 196);
+                //for (int i = 21; i < textSurface.Width; i++)
+                //    SetGlyph(i, 18, 196);
 
-            SetGlyph(textSurface.Width - 1, 18, 182);
+                //SetGlyph(textSurface.Width - 1, 18, 182);
 
-            // Long line under field
-            SetGlyph(0, 24, 199);
-            for (int i = 1; i < textSurface.Width; i++)
-                SetGlyph(i, 24, 196);
-            SetGlyph(textSurface.Width - 1, 24, 182);
+                //// Long line under field
+                SetGlyph(0, cancelButton.Bounds.Top - 1, 199);
+                for (int i = 1; i < textSurface.Width; i++)
+                    SetGlyph(i, cancelButton.Bounds.Top - 1, 196);
+                SetGlyph(textSurface.Width - 1, cancelButton.Bounds.Top - 1, 182);
+            }
         }
+            
     }
 }

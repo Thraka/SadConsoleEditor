@@ -43,28 +43,28 @@ namespace SadConsoleEditor.Panels
         public AnimationsPanel(Action<AnimatedTextSurface> animationChangeCallback)
         {
             Title = "Animations";
-            animations = new ListBox(Consoles.ToolPane.PanelWidth - 2, 4);
+            animations = new ListBox(Consoles.ToolPane.PanelWidthControls, 4);
             animations.HideBorder = true;
             animations.SelectedItemChanged += animations_SelectedItemChanged;
             animations.CompareByReference = true;
 
-            removeSelected = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            removeSelected = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             removeSelected.Text = "Remove";
             removeSelected.ButtonClicked += removeAnimation_ButtonClicked;
 
-            addNewAnimation = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            addNewAnimation = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             addNewAnimation.Text = "Add New";
             addNewAnimation.ButtonClicked += addNewAnimation_ButtonClicked;
 
-            renameAnimation = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            renameAnimation = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             renameAnimation.Text = "Rename";
             renameAnimation.ButtonClicked += renameAnimation_ButtonClicked;
 
-            addNewAnimationFromFile = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            addNewAnimationFromFile = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             addNewAnimationFromFile.Text = "Import Anim.";
             addNewAnimationFromFile.ButtonClicked += addNewAnimationFromFile_ButtonClicked;
 
-            saveAnimationToFile = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            saveAnimationToFile = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             saveAnimationToFile.Text = "Export Anim.";
             saveAnimationToFile.ButtonClicked += saveAnimationToFile_ButtonClicked;
 
@@ -73,29 +73,29 @@ namespace SadConsoleEditor.Panels
             changeSpeedButton.Text = "Set";
             changeSpeedButton.ButtonClicked += changeSpeedButton_ButtonClicked;
 
-            cloneSelectedAnimationButton = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            cloneSelectedAnimationButton = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             cloneSelectedAnimationButton.Text = "Clone Sel. Anim";
             cloneSelectedAnimationButton.ButtonClicked += cloneSelectedAnimation_ButtonClicked;
 
-            reverseAnimationButton = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            reverseAnimationButton = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             reverseAnimationButton.Text = "Reverse Animation";
             reverseAnimationButton.ButtonClicked += reverseAnimation_ButtonClicked; ;
 
-            setCenterButton = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            setCenterButton = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             setCenterButton.Text = "Set Center";
             setCenterButton.ButtonClicked += (s, e) => invokeCustomToolCallback(CustomTool.Center);
 
-            setBoundingBoxButton = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            setBoundingBoxButton = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             setBoundingBoxButton.Text = "Set Collision";
             setBoundingBoxButton.ButtonClicked += (s, e) => invokeCustomToolCallback(CustomTool.CollisionBox);
 
-            animationSpeedLabel = new DrawingSurface(Consoles.ToolPane.PanelWidth - 2 - changeSpeedButton.Width, 1);
+            animationSpeedLabel = new DrawingSurface(Consoles.ToolPane.PanelWidthControls - changeSpeedButton.Width, 1);
 
-            repeatCheck = new CheckBox(Consoles.ToolPane.PanelWidth - 2, 1);
+            repeatCheck = new CheckBox(Consoles.ToolPane.PanelWidthControls, 1);
             repeatCheck.Text = "Repeat";
             repeatCheck.IsSelectedChanged += repeatCheck_IsSelectedChanged;
 
-            playPreview = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            playPreview = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             playPreview.Text = "Play Preview";
             playPreview.ButtonClicked += playPreview_ButtonClicked; ;
 

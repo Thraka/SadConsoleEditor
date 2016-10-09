@@ -17,12 +17,12 @@ namespace SadConsoleEditor.Panels.Scene
         public AnimationListPanel()
         {
             Title = "Animations";
-            AnimationList = new ListBox<AnimationListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 4);
+            AnimationList = new ListBox<AnimationListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 4);
             AnimationList.SelectedItemChanged += AnimationList_SelectedItemChanged;
             AnimationList.HideBorder = true;
             AnimationList.CompareByReference = true;
 
-            playAnimationButton = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            playAnimationButton = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             playAnimationButton.Text = "Play Animation";
             playAnimationButton.ButtonClicked += (o, e) => { if (AnimationList.SelectedItem != null) ((AnimatedTextSurface)AnimationList.SelectedItem).Restart(); };
 
