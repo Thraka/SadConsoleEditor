@@ -108,26 +108,22 @@ namespace SadConsoleEditor.Panels
 
                     if (newSurface.Width != surface.Width || newSurface.Height != surface.Height)
                     {
-                        var newLayer = surface.Add();
-                        LayerMetadata.Create("Loaded", true, true, true, newLayer);
-                        var tempSurface = new TextSurface(surface.Width, surface.Height,
-                                                          newLayer.Cells, surface.Font);
+                        var tempSurface = new TextSurface(surface.Width, surface.Height, surface.Font);
                         newSurface.Copy(tempSurface);
-                        newLayer.Cells = tempSurface.Cells;
+                        var newLayer = surface.Add(tempSurface);
+                        LayerMetadata.Create("Loaded", true, true, true, newLayer);
                     }
                     else
                     {
-                        var layer = surface.Add();
+                        var layer = surface.Add(newSurface);
                         LayerMetadata.Create("Loaded", true, true, true, layer);
-                        layer.Cells = newSurface.Cells;
-
                     }
 
                     RebuildListBox();
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
-            //popup.FileFilter = "*.con;*.console;*.brush";
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.TextSurface() };
             popup.Show(true);
             popup.Center();
         }
