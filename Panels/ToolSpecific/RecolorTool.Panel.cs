@@ -18,10 +18,10 @@ namespace SadConsoleEditor.Panels
 
         public RecolorToolPanel()
         {
-            ignoreBackCheck = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            ignoreBackCheck = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             ignoreBackCheck.Text = "Ignore Back";
 
-            ignoreForeCheck = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            ignoreForeCheck = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             ignoreForeCheck.Text = "Ignore Fore";
 
             Title = "Recolor Options";

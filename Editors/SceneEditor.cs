@@ -11,11 +11,13 @@ using System.IO;
 using System.Collections.Generic;
 using SadConsole.Game;
 using System.Linq;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace SadConsoleEditor.Editors
 {
     class SceneEditor : IEditor
     {
+
         private LayeredTextSurface textSurface;
         private Console consoleWrapper;
         private CustomPanel[] panels;
@@ -24,20 +26,20 @@ namespace SadConsoleEditor.Editors
         private Dictionary<string, Tools.ITool> tools;
         private Tools.ITool selectedTool;
 
-        public Panels.EntityManagementPanel GameObjectPanel;
+        public Panels.GameObjectManagementPanel GameObjectPanel;
         public Panels.RegionManagementPanel ZonesPanel;
-        public Panels.Scene.AnimationListPanel AnimationsPanel;
-
+        public Panels.HotspotToolPanel HotspotPanel;
 
         private GameObject _selectedGameObject;
         public Dictionary<GameObject, GameObject> LinkedGameObjects = new Dictionary<GameObject, GameObject>();
         public List<ResizableObject> Objects;
-        public List<ResizableObject> Zones;
+        public List<ResizableObject<Zone>> Zones;
+        public List<Hotspot> Hotspots;
 
         public GameObject SelectedEntity
         {
             get { return _selectedGameObject; }
-            set { _selectedGameObject = value; AnimationsPanel.RebuildListBox(); }
+            set { _selectedGameObject = value; }
         }
 
 
@@ -92,8 +94,10 @@ namespace SadConsoleEditor.Editors
             tools.Add(Tools.BoxTool.ID, new Tools.BoxTool());
             tools.Add(Tools.SelectionTool.ID, new Tools.SelectionTool());
             tools.Add(Tools.SceneObjectMoveResizeTool.ID, new Tools.SceneObjectMoveResizeTool());
+            tools.Add(Tools.HotspotTool.ID, new Tools.HotspotTool());
 
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.SceneObjectMoveResizeTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.HotspotTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.PaintTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.LineTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.CircleTool.ID]);
@@ -104,18 +108,18 @@ namespace SadConsoleEditor.Editors
 
             toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
 
-            GameObjectPanel = new Panels.EntityManagementPanel();
+            GameObjectPanel = new Panels.GameObjectManagementPanel();
             ZonesPanel = new RegionManagementPanel() { IsCollapsed = true };
-            AnimationsPanel = new Panels.Scene.AnimationListPanel();
-            Objects = new List<ResizableObject>();
-            Zones = new List<ResizableObject>();
+            HotspotPanel = new HotspotToolPanel() { IsCollapsed = true };
+
             LinkedGameObjects = new Dictionary<GameObject, GameObject>();
+            Objects = new List<ResizableObject>();
+            Zones = new List<ResizableObject<Zone>>();
+            Hotspots = new List<Hotspot>();
 
-            panels = new CustomPanel[] { layerManagementPanel, GameObjectPanel, AnimationsPanel, ZonesPanel, toolsPanel };
+            panels = new CustomPanel[] { layerManagementPanel, GameObjectPanel, ZonesPanel, HotspotPanel, toolsPanel };
         }
-
         
-
         private void ToolsListBox_SelectedItemChanged(object sender, SadConsole.Controls.ListBox<SadConsole.Controls.ListBoxItem>.SelectedItemEventArgs e)
         {
             Tools.ITool tool = e.Item as Tools.ITool;
@@ -124,7 +128,7 @@ namespace SadConsoleEditor.Editors
             {
                 selectedTool = tool;
 
-                List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, GameObjectPanel, AnimationsPanel, ZonesPanel, toolsPanel };
+                List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, GameObjectPanel, ZonesPanel, HotspotPanel, toolsPanel };
 
                 if (tool.ControlPanels != null && tool.ControlPanels.Length != 0)
                     newPanels.AddRange(tool.ControlPanels);
@@ -149,7 +153,7 @@ namespace SadConsoleEditor.Editors
 
             // Set the text surface as the one we're displaying
             consoleWrapper.TextSurface = textSurface;
-
+            
             // Update the border
             if (EditorConsoleManager.ActiveEditor == this)
                 EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
@@ -170,14 +174,10 @@ namespace SadConsoleEditor.Editors
                                                  this.Zones.Select(
                                                      z => new Zone()
                                                                     { Area = new Rectangle(z.GameObject.Position.X, z.GameObject.Position.Y, z.GameObject.Width, z.GameObject.Height),
-                                                                      DebugColor = z.GameObject.RenderCells[0].Background,
+                                                                      DebugAppearance = new CellAppearance(Color.White, z.GameObject.RenderCells[0].Background, 0),
                                                                       Title = z.GameObject.Name }));
-
+                    scene.Hotspots = this.Hotspots;
                     popup.SelectedLoader.Save(scene, popup.SelectedFile);
-
-                    //GameObject[] objects = Entities.ToArray();
-
-                    //SadConsole.Serializer.Save(objects, popup.SelectedFile + ".objects");
                 }
             };
             popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.Scene() };
@@ -187,6 +187,30 @@ namespace SadConsoleEditor.Editors
 
         public void Render()
         {
+            if (HotspotPanel.DrawHotspots && Hotspots.Count != 0)
+            {
+                SpriteBatch batch = new SpriteBatch(Engine.Device);
+                batch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone);
+
+                foreach (var spot in Hotspots)
+                {
+                    Cell cell = new Cell();
+                    spot.DebugAppearance.CopyAppearanceTo(cell);
+                    Point offset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
+                    foreach (var position in spot.Positions)
+                    {
+                        Point adjustedPosition = position + offset;
+                        if (consoleWrapper.TextSurface.RenderArea.Contains(position))
+                            cell.Render(batch, 
+                                        new Rectangle(adjustedPosition.ConsoleLocationToWorld(Settings.Config.ScreenFont.Size.X, Settings.Config.ScreenFont.Size.Y), Settings.Config.ScreenFont.Size), 
+                                        Settings.Config.ScreenFont);
+
+                    }
+
+                }
+
+                batch.End();
+            }
             if (ZonesPanel.DrawZones)
                 foreach (var zone in Zones)
                 {
@@ -303,7 +327,6 @@ namespace SadConsoleEditor.Editors
 
             EditorConsoleManager.ToolsPane.PanelFiles.DocumentsListbox.IsDirty = true;
 
-            AnimationsPanel.RebuildListBox();
             GameObjectPanel.RebuildListBox();
         }
 
@@ -330,6 +353,7 @@ namespace SadConsoleEditor.Editors
         {
             ClearEntities();
             ClearZones();
+            ClearHotspots();
             
             if (loader is FileLoaders.Scene)
             {
@@ -342,6 +366,9 @@ namespace SadConsoleEditor.Editors
 
                 foreach (var zone in scene.Zones)
                     LoadZone(zone);
+
+                foreach (var spot in scene.Hotspots)
+                    LoadHotspot(spot);
 
                 if (EditorConsoleManager.ActiveEditor == this)
                     EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
@@ -397,12 +424,7 @@ namespace SadConsoleEditor.Editors
             return false;
         }
 
-
-        public override string ToString()
-        {
-            return this.ToString();
-        }
-
+        
         public bool LoadEntity(GameObject entity)
         {
             var editor = new GameObjectEditor();
@@ -435,7 +457,7 @@ namespace SadConsoleEditor.Editors
             var gameObject = new GameObject(Settings.Config.ScreenFont);
             var animation = new AnimatedTextSurface("default", 10, 10);
             var frame = animation.CreateFrame();
-            frame.DefaultBackground = zone.DebugColor;
+            frame.DefaultBackground = zone.DebugAppearance.Background;
 
             gameObject.Name = zone.Title;
 
@@ -447,11 +469,19 @@ namespace SadConsoleEditor.Editors
             gameObject.Position = new Point(zone.Area.Left, zone.Area.Top);
             gameObject.Update();
 
-            var resizable = new ResizableObject(ResizableObject.ObjectType.Zone, gameObject);
+            var resizable = new ResizableObject<Zone>(ResizableObject.ObjectType.Zone, gameObject, zone);
             resizable.RenderOffset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
             Zones.Add(resizable);
 
             ZonesPanel.RebuildListBox();
+
+            return true;
+        }
+
+        public bool LoadHotspot(Hotspot spot)
+        {
+            Hotspots.Add(spot);
+            HotspotPanel.RebuildListBox();
 
             return true;
         }
@@ -496,6 +526,11 @@ namespace SadConsoleEditor.Editors
             Zones.Clear();
         }
 
+        public void ClearHotspots()
+        {
+            Hotspots.Clear();
+        }
+
         private void FixLinkedObjectTitles()
         {
             for (int i = 0; i < Objects.Count; i++)
@@ -505,14 +540,15 @@ namespace SadConsoleEditor.Editors
 
                 if (linkedEditor != null)
                 {
+                    var name = string.IsNullOrWhiteSpace(linkedEntity.Name) ? "<no name>" : linkedEntity.Name;
                     // last one
                     if (i == Objects.Count - 1)
                     {
-                        linkedEditor.Title = (char)192 + " " + linkedEntity.Name;
+                        linkedEditor.Title = (char)192 + " " + name;
                     }
                     else
                     {
-                        linkedEditor.Title = (char)195 + " " + linkedEntity.Name;
+                        linkedEditor.Title = (char)195 + " " + name;
 
                     }
                 }

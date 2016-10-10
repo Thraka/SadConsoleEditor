@@ -56,7 +56,7 @@ namespace SadConsoleEditor.Panels
             };
             CloseButton.ButtonClicked += (o, e) => EditorConsoleManager.ShowCloseConsolePopup();
 
-            DocumentsListbox = new ListBox<EditorListBoxItem>(Consoles.ToolPane.PanelWidth - 2, 6);
+            DocumentsListbox = new ListBox<EditorListBoxItem>(Consoles.ToolPane.PanelWidthControls, 6);
             DocumentsListbox.HideBorder = true;
             DocumentsListbox.CompareByReference = true;
 

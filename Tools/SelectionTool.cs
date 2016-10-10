@@ -56,6 +56,7 @@
         private const string AnimationSelection = "selection";
 
         public LayeredGameObject Brush;
+        public ResizableObject SelectionBox;
 
         private SadConsole.Effects.Fade _frameEffect;
         private Point? _firstPoint;
@@ -137,6 +138,7 @@
                 Brush.ShowSelectedSurface = false;
                 Brush.IsVisible = false;
                 Brush.Animation = Brush.Animations[AnimationSingle];
+
             }
             else if (state == SelectionToolPanel.CloneState.Move)
             {

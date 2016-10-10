@@ -270,7 +270,10 @@ namespace SadConsoleEditor
                 editor.Load(file, loader);
             }
             if (editor != null)
+            {
+                editor.RenderedConsole.TextSurface.RenderArea = new Rectangle(0, 0, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
                 ChangeActiveEditor(editor);
+            }
 
             topBarPane.IsVisible = true;
             ToolsPane.IsVisible = true;

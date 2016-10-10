@@ -27,41 +27,41 @@ namespace SadConsoleEditor.Panels
         public LayersPanel()
         {
             Title = "Layers";
-            layers = new ListBox<LayerListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 4);
+            layers = new ListBox<LayerListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 4);
             layers.HideBorder = true;
             layers.SelectedItemChanged += layers_SelectedItemChanged;
             layers.CompareByReference = true;
 
-            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             removeSelected.Text = "Remove";
             removeSelected.ButtonClicked += removeSelected_ButtonClicked;
 
-            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             moveSelectedUp.Text = "Move Up";
             moveSelectedUp.ButtonClicked += moveSelectedUp_ButtonClicked;
 
-            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             moveSelectedDown.Text = "Move Down";
             moveSelectedDown.ButtonClicked += moveSelectedDown_ButtonClicked;
 
-            toggleHideShow = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            toggleHideShow = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             toggleHideShow.Text = "Show/Hide";
             toggleHideShow.TextAlignment = System.Windows.HorizontalAlignment.Center;
             toggleHideShow.IsSelectedChanged += toggleHideShow_IsSelectedChanged;
 
-            addNewLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            addNewLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             addNewLayer.Text = "Add New";
             addNewLayer.ButtonClicked += addNewLayer_ButtonClicked;
 
-            renameLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            renameLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             renameLayer.Text = "Rename";
             renameLayer.ButtonClicked += renameLayer_ButtonClicked;
 
-            addNewLayerFromFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            addNewLayerFromFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             addNewLayerFromFile.Text = "Load From File";
             addNewLayerFromFile.ButtonClicked += addNewLayerFromFile_ButtonClicked;
 
-            saveLayerToFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 1);
+            saveLayerToFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             saveLayerToFile.Text = "Save Layer to File";
             saveLayerToFile.ButtonClicked += saveLayerToFile_ButtonClicked;
 
@@ -210,6 +210,7 @@ namespace SadConsoleEditor.Panels
 
         public void RebuildListBox()
         {
+            layers.SelectedItem = null;
             layers.Items.Clear();
 
             for (int i = surface.LayerCount - 1; i >= 0; i--)

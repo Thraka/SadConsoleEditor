@@ -33,36 +33,36 @@ namespace SadConsoleEditor.Panels
         {
             Title = "Frames";
 
-            removeSelected = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            removeSelected = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             removeSelected.Text = "Remove";
             removeSelected.ButtonClicked += removeSelected_ButtonClicked;
 
-            moveSelectedUp = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            moveSelectedUp = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             moveSelectedUp.Text = "Move Up";
             moveSelectedUp.ButtonClicked += moveSelectedUp_ButtonClicked;
 
-            moveSelectedDown = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            moveSelectedDown = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             moveSelectedDown.Text = "Move Down";
             moveSelectedDown.ButtonClicked += moveSelectedDown_ButtonClicked;
 
-            addNewFrame = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            addNewFrame = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             addNewFrame.Text = "Add New";
             addNewFrame.ButtonClicked += addNewFrame_ButtonClicked;
 
-            addNewFrameFromFile = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            addNewFrameFromFile = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             addNewFrameFromFile.Text = "Load From File";
             addNewFrameFromFile.ButtonClicked += addNewFrameFromFile_ButtonClicked;
 
-            saveFrameToFile = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            saveFrameToFile = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             saveFrameToFile.Text = "Save Frame to File";
             saveFrameToFile.ButtonClicked += saveFrameToFile_ButtonClicked;
 
-            clonePreviousFrame = new Button(Consoles.ToolPane.PanelWidth - 2, 1);
+            clonePreviousFrame = new Button(Consoles.ToolPane.PanelWidthControls, 1);
             clonePreviousFrame.Text = "Copy prev. frame";
             clonePreviousFrame.ButtonClicked += clonePreviousFrame_ButtonClicked;
 
             // Frames area
-            framesCounterBox = new DrawingSurface(Consoles.ToolPane.PanelWidth - 2, 1);
+            framesCounterBox = new DrawingSurface(Consoles.ToolPane.PanelWidthControls, 1);
 
             nextFrame = new Button(4, 1);
             nextFrame.Text = ">>";

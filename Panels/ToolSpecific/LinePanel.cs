@@ -21,7 +21,7 @@ namespace SadConsoleEditor.Panels
         {
             Title = "Line Status";
 
-            statusBox = new DrawingSurface(SadConsoleEditor.Consoles.ToolPane.PanelWidth - 2, 2);
+            statusBox = new DrawingSurface(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 2);
             RedrawBox();
             Controls = new ControlBase[] { statusBox };
         }
