@@ -48,7 +48,7 @@ namespace SadConsoleEditor.Panels
             {
                 Text = "Resize",
             };
-            //ResizeButton.ButtonClicked += (o, e) => EditorConsoleManager.ShowResizeConsolePopup();
+            ResizeButton.ButtonClicked += (o, e) => EditorConsoleManager.ShowResizeEditorPopup();
 
             CloseButton = new Button(9, 1)
             {

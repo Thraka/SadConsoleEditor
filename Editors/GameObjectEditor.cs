@@ -256,54 +256,58 @@ namespace SadConsoleEditor.Editors
 
         public void Resize(int width, int height)
         {
-            //this.width = width;
-            //this.height = height;
+            //var oldSurface = (LayeredTextSurface)_consoleLayers.TextSurface;
+            //var newSurface = new LayeredTextSurface(width, height, oldSurface.LayerCount);
 
-            ////var oldSurface = (LayeredTextSurface)_consoleLayers.TextSurface;
-            ////var newSurface = new LayeredTextSurface(width, height, oldSurface.LayerCount);
-
-            ////for (int i = 0; i < oldSurface.LayerCount; i++)
-            ////{
-            ////    var oldLayer = oldSurface.GetLayer(i);
-            ////    var newLayer = newSurface.GetLayer(i);
-            ////    oldSurface.SetActiveLayer(i);
-            ////    newSurface.SetActiveLayer(i);
-            ////    oldSurface.Copy(newSurface);
-            ////    newLayer.Metadata = oldLayer.Metadata;
-            ////    newLayer.IsVisible = oldLayer.IsVisible;
-            ////}
-
-            //List<AnimatedTextSurface> newAnimations = new List<AnimatedTextSurface>(_entity.Animations.Count);
-
-            //foreach (var oldAnimation in _entity.Animations.Values)
+            //for (int i = 0; i < oldSurface.LayerCount; i++)
             //{
-            //    var newAnimation = new AnimatedTextSurface(oldAnimation.Name, width, height, SadConsoleEditor.Settings.Config.ScreenFont);
-
-            //    for (int i = 0; i < oldAnimation.Frames.Count; i++)
-            //    {
-            //        oldAnimation.Frames[i].Copy(newAnimation.CreateFrame());
-            //    }
-
-            //    newAnimation.CurrentFrameIndex = 0;
-            //    newAnimations.Add(newAnimation);
+            //    var oldLayer = oldSurface.GetLayer(i);
+            //    var newLayer = newSurface.GetLayer(i);
+            //    oldSurface.SetActiveLayer(i);
+            //    newSurface.SetActiveLayer(i);
+            //    oldSurface.Copy(newSurface);
+            //    newLayer.Metadata = oldLayer.Metadata;
+            //    newLayer.IsVisible = oldLayer.IsVisible;
             //}
 
-            //foreach (var animation in newAnimations)
-            //{
-            //    _entity.Animations[animation.Name] = animation;
+            List<AnimatedTextSurface> newAnimations = new List<AnimatedTextSurface>(gameObject.Animations.Count);
 
-            //    if (_entity.Animation.Name == animation.Name)
-            //        _entity.Animation = animation;
+            foreach (var oldAnimation in gameObject.Animations.Values)
+            {
+                var newAnimation = new AnimatedTextSurface(oldAnimation.Name, width, height, SadConsoleEditor.Settings.Config.ScreenFont);
 
-            //    if (_selectedAnimation.Name == animation.Name)
-            //        _selectedAnimation = animation;
-            //}
+                for (int i = 0; i < oldAnimation.Frames.Count; i++)
+                {
+                    oldAnimation.Frames[i].Copy(newAnimation.CreateFrame());
+                }
 
-            //// inform the outer box we've changed size
-            ////EditorConsoleManager.Instance.UpdateBox();
+                newAnimation.CurrentFrameIndex = 0;
+                newAnimations.Add(newAnimation);
+                newAnimation.AnimationDuration = oldAnimation.AnimationDuration;
+                newAnimation.Center = oldAnimation.Center;
+            }
 
-            //animationPanel.SetEntity(_entity);
-            //entityNamePanel.SetEntity(_entity);
+            foreach (var animation in newAnimations)
+            {
+                gameObject.Animations[animation.Name] = animation;
+
+                if (gameObject.Animation.Name == animation.Name)
+                    gameObject.Animation = animation;
+
+                if (selectedAnimation.Name == animation.Name)
+                    selectedAnimation = animation;
+            }
+
+            // inform the outer box we've changed size
+            //EditorConsoleManager.Instance.UpdateBox();
+
+            SetEntity(gameObject);
+
+            if (EditorConsoleManager.ActiveEditor == this)
+            {
+                EditorConsoleManager.CenterEditor();
+                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            }
         }
 
         public void Load(string file, FileLoaders.IFileLoader loader)

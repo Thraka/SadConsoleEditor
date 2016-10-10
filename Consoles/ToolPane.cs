@@ -28,7 +28,7 @@ namespace SadConsoleEditor.Consoles
         public FilesPanel PanelFiles;
         //public ToolsPanel PanelTools;
         
-        public ToolPane() : base(Settings.Config.ToolPaneWidth - 1, Settings.Config.WindowHeight * 2)
+        public ToolPane() : base(Settings.Config.ToolPaneWidth - 1, Settings.Config.WindowHeight * 3)
         {
             PanelWidth = Settings.Config.ToolPaneWidth - 1;
             PanelWidthControls = PanelWidth - 2;
@@ -111,6 +111,19 @@ namespace SadConsoleEditor.Consoles
                     }
                 }
             }
+
+            int scrollAbility = activeRow + 1 - Settings.Config.WindowHeight;
+
+            if (scrollAbility <= 0)
+            {
+                EditorConsoleManager.ToolsPaneScroller.IsEnabled = false;
+                EditorConsoleManager.ToolsPaneScroller.Maximum = 0;
+            }
+            else
+            {
+                EditorConsoleManager.ToolsPaneScroller.Maximum = scrollAbility;
+                EditorConsoleManager.ToolsPaneScroller.IsEnabled = true;
+            }
         }
 
         public override bool ProcessMouse(SadConsole.Input.MouseInfo info)
@@ -121,7 +134,8 @@ namespace SadConsoleEditor.Consoles
             {
                 if (info.ScrollWheelValueChange != 0)
                 {
-                    EditorConsoleManager.ToolsPaneScroller.Value += info.ScrollWheelValueChange / 20;
+                    if (EditorConsoleManager.ToolsPaneScroller.IsEnabled)
+                        EditorConsoleManager.ToolsPaneScroller.Value += info.ScrollWheelValueChange / 20;
                     return true;
                 }
 

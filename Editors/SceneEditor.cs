@@ -236,28 +236,29 @@ namespace SadConsoleEditor.Editors
 
         public void Resize(int width, int height)
         {
-            //_width = width;
-            //_height = height;
+            var oldSurface = textSurface;
+            var newSurface = new LayeredTextSurface(width, height, Settings.Config.ScreenFont, oldSurface.LayerCount);
 
-            //var oldSurface = (LayeredTextSurface)_consoleLayers.TextSurface;
-            //var newSurface = new LayeredTextSurface(width, height, oldSurface.LayerCount);
+            for (int i = 0; i < oldSurface.LayerCount; i++)
+            {
+                var oldLayer = oldSurface.GetLayer(i);
+                var newLayer = newSurface.GetLayer(i);
+                oldSurface.SetActiveLayer(i);
+                newSurface.SetActiveLayer(i);
+                oldSurface.Copy(newSurface);
+                newLayer.Metadata = oldLayer.Metadata;
+                newLayer.IsVisible = oldLayer.IsVisible;
+            }
 
-            //for (int i = 0; i < oldSurface.LayerCount; i++)
-            //{
-            //    var oldLayer = oldSurface.GetLayer(i);
-            //    var newLayer = newSurface.GetLayer(i);
-            //    oldSurface.SetActiveLayer(i);
-            //    newSurface.SetActiveLayer(i);
-            //    oldSurface.Copy(newSurface);
-            //    newLayer.Metadata = oldLayer.Metadata;
-            //    newLayer.IsVisible = oldLayer.IsVisible;
-            //}
+            consoleWrapper.TextSurface = textSurface = newSurface;
+            layerManagementPanel.SetLayeredTextSurface(textSurface);
+            toolsPanel.SelectedTool = toolsPanel.SelectedTool;
 
-            //_consoleLayers.TextSurface = newSurface;
-            //_consoleLayers.TextSurface.Font = SadConsoleEditor.Settings.Config.ScreenFont;
-
-            //// inform the outer box we've changed size
-            //EditorConsoleManager.Instance.UpdateBox();
+            if (EditorConsoleManager.ActiveEditor == this)
+            {
+                EditorConsoleManager.CenterEditor();
+                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            }
         }
 
         public void Reset()

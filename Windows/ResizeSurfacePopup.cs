@@ -10,11 +10,11 @@ namespace SadConsoleEditor.Windows
     public class ResizeSurfacePopup: SadConsole.Consoles.Window
     {
         #region Fields
-        private Button _okButton;
-        private Button _cancelButton;
+        private Button okButton;
+        private Button cancelButton;
 
-        private InputBox _widthBox;
-        private InputBox _heightBox;
+        private InputBox widthBox;
+        private InputBox heightBox;
         //private InputBox _name;
         #endregion
 
@@ -32,25 +32,25 @@ namespace SadConsoleEditor.Windows
             textSurface.DefaultBackground = Settings.Color_MenuBack;
             textSurface.DefaultForeground = Settings.Color_TitleText;
 
-            _okButton = new Button(8, 1)
+            okButton = new Button(8, 1)
             {
                 Text = "Accept",
                 Position = new Microsoft.Xna.Framework.Point(base.TextSurface.Width - 10, 5)
             };
-            _okButton.ButtonClicked += new EventHandler(_okButton_Action);
+            okButton.ButtonClicked += new EventHandler(_okButton_Action);
 
-            _cancelButton = new Button(8, 1)
+            cancelButton = new Button(8, 1)
             {
                 Text = "Cancel",
                 Position = new Microsoft.Xna.Framework.Point(2, 5)
             };
-            _cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
+            cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
 
             //Print(2, 3, "Name");
             Print(2, 2, "Width");
             Print(2, 3, "Height");
 
-            _widthBox = new InputBox(3)
+            widthBox = new InputBox(3)
             {
                 Text = width.ToString(),
                 MaxLength = 3,
@@ -58,7 +58,7 @@ namespace SadConsoleEditor.Windows
                 Position = new Microsoft.Xna.Framework.Point(base.TextSurface.Width - 5, 2)
             };
 
-            _heightBox = new InputBox(3)
+            heightBox = new InputBox(3)
             {
                 Text = height.ToString(),
                 MaxLength = 3,
@@ -72,10 +72,10 @@ namespace SadConsoleEditor.Windows
             //    Position = new Microsoft.Xna.Framework.Point(9, 3)
             //};
 
-            Add(_widthBox);
-            Add(_heightBox);
-            Add(_cancelButton);
-            Add(_okButton);
+            Add(widthBox);
+            Add(heightBox);
+            Add(cancelButton);
+            Add(okButton);
             //Add(_name);
         }
 
@@ -89,8 +89,8 @@ namespace SadConsoleEditor.Windows
         {
             DialogResult = true;
 
-            int width = int.Parse(_widthBox.Text);
-            int height = int.Parse(_heightBox.Text);
+            int width = int.Parse(widthBox.Text);
+            int height = int.Parse(heightBox.Text);
 
             SettingWidth = width < 1 ? 1 : width;
             SettingHeight = height < 1 ? 1 : height;

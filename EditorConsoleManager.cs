@@ -306,6 +306,23 @@ namespace SadConsoleEditor
             popup.Show(true);
         }
 
+        public static void ShowResizeEditorPopup()
+        {
+            if (ActiveEditor != null)
+            {
+                Windows.ResizeSurfacePopup popup = new Windows.ResizeSurfacePopup(ActiveEditor.Width, ActiveEditor.Height);
+                popup.Center();
+                popup.Closed += (s, e) =>
+                {
+                    if (popup.DialogResult)
+                    {
+                        ActiveEditor.Resize(popup.SettingWidth, popup.SettingHeight);
+                    }
+                };
+                popup.Show(true);
+            }
+        }
+
         public static void AddEditor(Editors.IEditor editor, bool show)
         {
             OpenEditors.Add(editor);
@@ -358,7 +375,7 @@ namespace SadConsoleEditor
             if (ActiveEditor != null)
                 ActiveEditor.Save();
         }
-
+        
         public static void UpdateBorder(Point position)
         {
             if (borderConsole.Width != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Width + 2 || borderConsole.Height != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Height + 2)

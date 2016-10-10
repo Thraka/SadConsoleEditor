@@ -72,6 +72,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Windows\NewConsolePopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\OtherColorsPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\RenamePopup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\ResizeSurfacePopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\SelectFilePopup.cs" />
   </ItemGroup>
   <ItemGroup>
