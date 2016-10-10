@@ -24,10 +24,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Editors\SceneEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Animation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\GameObject.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Zones.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\IFileLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Scene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\TextFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\LayeredTextSurface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Hotspots.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\TextSurface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HSLColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\Animation\AnimationFramesPanel.cs" />
@@ -37,6 +39,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Panels\CustomPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\FilesPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\LayersPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\HotspotTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\RegionManagementPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\GameObjectManagementPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolsPanel.cs" />
@@ -56,6 +59,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tools\ITool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\LineTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\RecolorTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\Scene\HotspotTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\Scene\SceneObjectMoveResizeTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\SelectionTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\TextTool.cs" />
@@ -63,6 +67,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Windows\Animation\AnimationSpeedPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\CharacterQuickSelectPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\ColorPickerPopup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\EditHotspotPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\KeyValueEditPopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\NewConsolePopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\OtherColorsPopup.cs" />

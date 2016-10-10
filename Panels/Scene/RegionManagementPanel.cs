@@ -171,6 +171,92 @@ namespace SadConsoleEditor.Panels
                 GameObjectList.SelectedItem = GameObjectList.Items[0];
         }
 
+        #region TODO Import/Export
+        //void _exportListButton_ButtonClicked(object sender, EventArgs e)
+        //{
+        //    var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+
+        //    if (editor.Hotspots.Count == 0)
+        //        return;
+
+        //    Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
+        //    popup.Center();
+        //    popup.Closed += (s, e2) =>
+        //    {
+        //        if (popup.DialogResult)
+        //        {
+        //            List<Hotspot> clonedSpots = new List<Hotspot>(editor.Hotspots.Count);
+
+        //            foreach (var spot in editor.Hotspots)
+        //            {
+        //                Hotspot newSpot = new Hotspot();
+        //                newSpot.Title = spot.Title;
+        //                spot.DebugAppearance.CopyAppearanceTo(newSpot.DebugAppearance);
+        //                newSpot.Settings = new Dictionary<string, string>(spot.Settings);
+        //                clonedSpots.Add(newSpot);
+        //            }
+
+        //            popup.SelectedLoader.Save(clonedSpots, popup.SelectedFile);
+        //        }
+        //    };
+        //    popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.Hotspots() };
+        //    popup.SkipFileExistCheck = true;
+        //    popup.SelectButtonText = "Save";
+        //    popup.Show(true);
+        //}
+
+        //private void ImportListButton_ButtonClicked(object sender, EventArgs e)
+        //{
+        //    Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
+        //    popup.Center();
+        //    popup.Closed += (s, e2) =>
+        //    {
+        //        if (popup.DialogResult)
+        //        {
+        //            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+        //            Dictionary<string, Hotspot> titleKeys = new Dictionary<string, Hotspot>();
+        //            List<Hotspot> loadedSpots = (List<Hotspot>)popup.SelectedLoader.Load(popup.SelectedFile);
+
+        //            var titleCount = loadedSpots.Select(h => h.Title).Intersect(editor.Hotspots.Select(h => h.Title)).Count();
+
+        //            if (titleCount != 0)
+        //            {
+        //                titleKeys = editor.Hotspots.ToDictionary((h) => h.Title, (h) => h);
+        //                Window.Prompt(new ColoredString($"{titleCount} will be overwritten, continue?"), "Yes", "No", (result) =>
+        //                {
+        //                    if (result)
+        //                        RunImportLogic(loadedSpots, titleKeys);
+        //                });
+        //            }
+        //            else
+        //                RunImportLogic(loadedSpots, titleKeys);
+
+        //        }
+        //    };
+        //    popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.Hotspots() };
+        //    popup.Show(true);
+        //}
+
+        //void RunImportLogic(List<Hotspot> importedSpots, Dictionary<string, Hotspot> titleKeys)
+        //{
+        //    var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+
+        //    foreach (var spot in importedSpots)
+        //    {
+        //        if (titleKeys.ContainsKey(spot.Title))
+        //        {
+        //            var oldSpot = titleKeys[spot.Title];
+        //            spot.DebugAppearance.CopyAppearanceTo(oldSpot.DebugAppearance);
+        //            spot.Settings = oldSpot.Settings;
+        //        }
+        //        else
+        //            editor.Hotspots.Add(spot);
+        //    }
+
+        //    RebuildListBox();
+        //}
+        #endregion
+
         void RebuildProperties(Zone zone)
         {
             if (zone.Settings.Count == 0)
