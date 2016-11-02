@@ -143,7 +143,7 @@
             else if (state == SelectionToolPanel.CloneState.Move)
             {
                 var animation = Brush.Animation;
-                Brush.ShowSelectedSurface = false;
+                Brush.ShowSelectedSurface = true;
                 ClearBrush(Brush.Position.X, Brush.Position.Y, _previousSurface);
                 animation.Center = new Point(animation.Width / 2, animation.Height / 2);
                 Brush.Position += animation.Center;
@@ -278,12 +278,12 @@
 
         public void ProcessMouse(MouseInfo info, ITextSurface surface)
         {
-            if (EditorConsoleManager.ToolsPane.IsMouseOver)
+            if (EditorConsoleManager.ToolsPane.IsMouseOver && _panel.State != SelectionToolPanel.CloneState.Clone && _panel.State != SelectionToolPanel.CloneState.Selected)
             {
                 Brush.IsVisible = false;
                 return;
             }
-            else
+            else if (!EditorConsoleManager.ToolsPane.IsMouseOver && (_panel.State == SelectionToolPanel.CloneState.Clone || _panel.State == SelectionToolPanel.CloneState.Selected))
                 Brush.IsVisible = true;
 
 
