@@ -102,7 +102,7 @@ namespace SadConsoleEditor.Panels
                     hotspot.Title = popup.NewName;
                     SelectedObject.DebugAppearance.CopyAppearanceTo(hotspot.DebugAppearance);
                     hotspot.Settings = new Dictionary<string, string>(SelectedObject.Settings);
-                    ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Hotspots.Add(hotspot);
+                    ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).LoadHotspot(hotspot);
                 }
             };
             popup.Show(true);

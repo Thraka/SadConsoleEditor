@@ -53,11 +53,15 @@
             RefreshTool();
             EditorConsoleManager.Brush = Brush;
             EditorConsoleManager.UpdateBrush();
+
+            ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).ShowDarkLayer = true;
+            ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).HighlightType = Editors.SceneEditor.HighlightTypes.HotSpot;
         }
 
 
         public void OnDeselected()
         {
+            ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).ShowDarkLayer = false;
         }
 
         public void RefreshTool()

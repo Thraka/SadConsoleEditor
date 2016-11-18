@@ -73,10 +73,13 @@
 
         public void OnSelected()
         {
+            ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).ShowDarkLayer = true;
+            ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).HighlightType = Editors.SceneEditor.HighlightTypes.GameObject;
         }
 
         public void OnDeselected()
         {
+            ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).ShowDarkLayer = false;
         }
 
         public void RefreshTool()

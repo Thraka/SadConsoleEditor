@@ -17,7 +17,15 @@ namespace SadConsoleEditor.Editors
 {
     class SceneEditor : IEditor
     {
+        public enum HighlightTypes
+        {
+            GameObject,
+            HotSpot,
+            Zone
+        }
 
+        private TextSurface darkenSurface;
+        private TextSurfaceRenderer darkenSurfaceRenderer;
         private LayeredTextSurface textSurface;
         private Console consoleWrapper;
         private CustomPanel[] panels;
@@ -25,6 +33,8 @@ namespace SadConsoleEditor.Editors
         private ToolsPanel toolsPanel;
         private Dictionary<string, Tools.ITool> tools;
         private Tools.ITool selectedTool;
+
+        private bool showDarkLayer;
 
         public Panels.GameObjectManagementPanel GameObjectPanel;
         public Panels.RegionManagementPanel ZonesPanel;
@@ -36,12 +46,25 @@ namespace SadConsoleEditor.Editors
         public List<ResizableObject<Zone>> Zones;
         public List<Hotspot> Hotspots;
 
+        public HighlightTypes HighlightType;
+
         public GameObject SelectedEntity
         {
             get { return _selectedGameObject; }
             set { _selectedGameObject = value; }
         }
 
+        public bool ShowDarkLayer
+        {
+            set
+            {
+                showDarkLayer = value;
+                darkenSurface = new TextSurface(textSurface.RenderArea.Width, textSurface.RenderArea.Height);
+                darkenSurface.Tint = Color.Black * 0.6f;
+                darkenSurface.Font = textSurface.Font;
+                darkenSurfaceRenderer = new TextSurfaceRenderer();
+            }
+        }
 
         public string DocumentTitle { get; set; }
 
@@ -187,6 +210,46 @@ namespace SadConsoleEditor.Editors
 
         public void Render()
         {
+            if (showDarkLayer)
+            {
+                switch (HighlightType)
+                {
+                    case HighlightTypes.GameObject:
+                        RenderHotspots();
+                        RenderDark();
+                        RenderZones();
+                        RenderGameObjects();
+                        break;
+                    case HighlightTypes.HotSpot:
+                        RenderZones();
+                        RenderGameObjects();
+                        RenderDark();
+                        RenderHotspots();
+                        break;
+                    case HighlightTypes.Zone:
+                        RenderHotspots();
+                        RenderDark();
+                        RenderGameObjects();
+                        RenderZones();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                RenderZones();
+                RenderHotspots();
+                RenderGameObjects();
+            }
+        }
+        private void RenderDark()
+        {
+            darkenSurfaceRenderer.Render(darkenSurface, consoleWrapper.Position);
+        }
+
+        private void RenderHotspots()
+        {
             if (HotspotPanel.DrawHotspots && Hotspots.Count != 0)
             {
                 SpriteBatch batch = new SpriteBatch(Engine.Device);
@@ -201,8 +264,8 @@ namespace SadConsoleEditor.Editors
                     {
                         Point adjustedPosition = position + offset;
                         if (consoleWrapper.TextSurface.RenderArea.Contains(position))
-                            cell.Render(batch, 
-                                        new Rectangle(adjustedPosition.ConsoleLocationToWorld(Settings.Config.ScreenFont.Size.X, Settings.Config.ScreenFont.Size.Y), Settings.Config.ScreenFont.Size), 
+                            cell.Render(batch,
+                                        new Rectangle(adjustedPosition.ConsoleLocationToWorld(Settings.Config.ScreenFont.Size.X, Settings.Config.ScreenFont.Size.Y), Settings.Config.ScreenFont.Size),
                                         Settings.Config.ScreenFont);
 
                     }
@@ -211,12 +274,19 @@ namespace SadConsoleEditor.Editors
 
                 batch.End();
             }
+        }
+
+        private void RenderZones()
+        {
             if (ZonesPanel.DrawZones)
                 foreach (var zone in Zones)
                 {
                     zone.Render();
                 }
+        }
 
+        private void RenderGameObjects()
+        {
             if (GameObjectPanel.DrawObjects)
                 foreach (var entity in Objects)
                 {
