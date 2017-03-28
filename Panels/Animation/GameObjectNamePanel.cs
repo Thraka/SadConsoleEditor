@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using SadConsole.Input;
-using SadConsole.Game;
+using SadConsole.GameHelpers;
 
 namespace SadConsoleEditor.Panels
 {
@@ -20,11 +20,11 @@ namespace SadConsoleEditor.Panels
 
             nameTitle = new DrawingSurface(Consoles.ToolPane.PanelWidth - 3, 2);
 
-            setName = new Button(3, 1);
+            setName = new Button(3);
             setName.ShowEnds = false;
             setName.Text = "Set";
 
-            setName.ButtonClicked += (s, e) =>
+            setName.Click += (s, e) =>
             {
                 Windows.RenamePopup rename = new Windows.RenamePopup(entity.Name);
                 rename.Closed += (s2, e2) => { if (rename.DialogResult) entity.Name = rename.NewName; PrintName(); };
@@ -46,7 +46,7 @@ namespace SadConsoleEditor.Panels
         {
         }
 
-        public override void ProcessMouse(MouseInfo info)
+        public override void ProcessMouse(MouseConsoleState info)
         {
         }
 

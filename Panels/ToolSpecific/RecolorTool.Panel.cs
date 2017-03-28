@@ -29,7 +29,7 @@ namespace SadConsoleEditor.Panels
             Controls = new ControlBase[] { ignoreForeCheck, ignoreBackCheck };
         }
 
-        public override void ProcessMouse(SadConsole.Input.MouseInfo info)
+        public override void ProcessMouse(SadConsole.Input.MouseConsoleState info)
         {
         }
 

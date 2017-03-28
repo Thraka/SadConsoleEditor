@@ -1,11 +1,11 @@
 ﻿using System;
 using SadConsole;
-using Console = SadConsole.Consoles.Console;
+using Console = SadConsole.Console;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 using Microsoft.Xna.Framework;
 using SadConsoleEditor.Editors;
 using SadConsoleEditor.Tools;
@@ -35,8 +35,7 @@ namespace SadConsoleEditor.Consoles
 
             _tools = new Dictionary<string, ITool>();
 
-            CanUseKeyboard = false;
-            ProcessMouseWithoutFocus = true;
+            UseKeyboard = false;
 
             textSurface.DefaultBackground = Settings.Color_MenuBack;
             textSurface.DefaultForeground = Settings.Color_TitleText;
@@ -87,7 +86,7 @@ namespace SadConsoleEditor.Consoles
                         if (pane.IsCollapsed == false)
                         {
                             Print(1, activeRow++, open + " " + pane.Title);
-                            Print(0, activeRow++, new string((char)196, textSurface.Width));
+                            Print(0, activeRow++, new string((char)196, TextSurface.Width));
 
                             foreach (var control in pane.Controls)
                             {
@@ -126,24 +125,24 @@ namespace SadConsoleEditor.Consoles
             }
         }
 
-        public override bool ProcessMouse(SadConsole.Input.MouseInfo info)
+        public override bool ProcessMouse(SadConsole.Input.MouseConsoleState info)
         {
             base.ProcessMouse(info);
 
-            if (_isMouseOver)
+            if (isMouseOver)
             {
-                if (info.ScrollWheelValueChange != 0)
+                if (info.Mouse.ScrollWheelValueChange != 0)
                 {
                     if (EditorConsoleManager.ToolsPaneScroller.IsEnabled)
-                        EditorConsoleManager.ToolsPaneScroller.Value += info.ScrollWheelValueChange / 20;
+                        EditorConsoleManager.ToolsPaneScroller.Value += info.Mouse.ScrollWheelValueChange / 20;
                     return true;
                 }
 
                 foreach (var item in _hotSpots)
                 {
-                    if (item.Item2 == info.ConsoleLocation.Y)
+                    if (item.Item2 == info.ConsolePosition.Y)
                     {
-                        if (info.LeftClicked)
+                        if (info.Mouse.LeftClicked)
                         {
                             item.Item1.IsCollapsed = !item.Item1.IsCollapsed;
                             RedrawPanels();

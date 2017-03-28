@@ -5,8 +5,8 @@
     using SadConsole.Input;
     using System;
     using SadConsoleEditor.Panels;
-    using SadConsole.Consoles;
-    using SadConsole.Game;
+    using SadConsole.Surfaces;
+    using SadConsole.GameHelpers;
 
     class FillTool : ITool
     {
@@ -38,8 +38,7 @@
 
         public void OnSelected()
         {
-            Brush = new SadConsole.Game.GameObject(Settings.Config.ScreenFont);
-            Brush.Animation = new AnimatedTextSurface("default", 1, 1);
+            Brush = new SadConsole.GameHelpers.GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
             Brush.Animation.CreateFrame();
             Brush.IsVisible = false;
             RefreshTool();
@@ -65,8 +64,8 @@
 
         public void RefreshTool()
         {
-            Settings.QuickEditor.TextSurface = Brush.Animation.Frames[0];
-            Settings.QuickEditor.Fill(CharacterPickPanel.SharedInstance.SettingForeground,
+            SadConsoleEditor.Settings.QuickEditor.TextSurface = Brush.Animation.Frames[0];
+            SadConsoleEditor.Settings.QuickEditor.Fill(CharacterPickPanel.SharedInstance.SettingForeground,
                                       CharacterPickPanel.SharedInstance.SettingBackground,
                                       CharacterPickPanel.SharedInstance.SettingCharacter,
                                       CharacterPickPanel.SharedInstance.SettingMirrorEffect);
@@ -76,63 +75,56 @@
         {
         }
 
-        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
+        public bool ProcessKeyboard(Keyboard info, ISurface surface)
         {
             return false;
         }
 
-        public void ProcessMouse(MouseInfo info, ITextSurface surface)
+        public void ProcessMouse(MouseConsoleState info, ISurface surface)
         {
         }
 
-        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
+        public void MouseEnterSurface(MouseConsoleState info, ISurface surface)
         {
             Brush.IsVisible = true;
         }
 
-        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
+        public void MouseExitSurface(MouseConsoleState info, ISurface surface)
         {
             Brush.IsVisible = false;
         }
 
-        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
+        public void MouseMoveSurface(MouseConsoleState info, ISurface surface)
         {
-            Brush.Position = info.ConsoleLocation;
+            Brush.Position = info.ConsolePosition;
             Brush.IsVisible = true;
 
-            if (info.LeftClicked)
+            if (info.Mouse.LeftClicked)
             {
                 Cell cellToMatch = new Cell();
                 Cell currentFillCell = new Cell();
 
-                surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y).Copy(cellToMatch);
-                cellToMatch.Effect = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y).Effect;
+                surface.GetCell(info.CellPosition.X, info.CellPosition.Y).CopyAppearanceTo(cellToMatch);
 
-                currentFillCell.GlyphIndex = CharacterPickPanel.SharedInstance.SettingCharacter;
+                currentFillCell.Glyph = CharacterPickPanel.SharedInstance.SettingCharacter;
                 currentFillCell.Foreground = CharacterPickPanel.SharedInstance.SettingForeground;
                 currentFillCell.Background = CharacterPickPanel.SharedInstance.SettingBackground;
-                currentFillCell.SpriteEffect = CharacterPickPanel.SharedInstance.SettingMirrorEffect;
+                currentFillCell.Mirror = CharacterPickPanel.SharedInstance.SettingMirrorEffect;
                 
                 Func<Cell, bool> isTargetCell = (c) =>
                 {
-                    bool effect = c.Effect == null && cellToMatch.Effect == null;
-
-                    if (c.Effect != null && cellToMatch.Effect != null)
-                        effect = c.Effect == cellToMatch.Effect;
-
-                    if (c.GlyphIndex == 0 && cellToMatch.GlyphIndex == 0)
+                    if (c.Glyph == 0 && cellToMatch.Glyph == 0)
                         return c.Background == cellToMatch.Background;
 
                     return c.Foreground == cellToMatch.Foreground &&
                            c.Background == cellToMatch.Background &&
-                           c.GlyphIndex == cellToMatch.GlyphIndex &&
-                           c.SpriteEffect == cellToMatch.SpriteEffect &&
-                           effect;
+                           c.Glyph == cellToMatch.Glyph &&
+                           c.Mirror == cellToMatch.Mirror;
                 };
 
                 Action<Cell> fillCell = (c) =>
                 {
-                    currentFillCell.Copy(c);
+                    currentFillCell.CopyAppearanceTo(c);
                     //console.TextSurface.SetEffect(c, _currentFillCell.Effect);
                 };
 
@@ -142,7 +134,7 @@
                 {
                     Algorithms.NodeConnections<Cell> connections = new Algorithms.NodeConnections<Cell>();
 
-                    Point position = TextSurface.GetPointFromIndex(cells.IndexOf(c), surface.Width);
+                    Point position = BasicSurface.GetPointFromIndex(cells.IndexOf(c), surface.Width);
 
                     connections.West = surface.IsValidCell(position.X - 1, position.Y) ? surface.GetCell(position.X - 1, position.Y) : null;
                     connections.East = surface.IsValidCell(position.X + 1, position.Y) ? surface.GetCell(position.X + 1, position.Y) : null;
@@ -153,17 +145,17 @@
                 };
 
                 if (!isTargetCell(currentFillCell))
-                    SadConsole.Algorithms.FloodFill<Cell>(surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y), isTargetCell, fillCell, getConnectedCells);
+                    SadConsole.Algorithms.FloodFill<Cell>(surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y), isTargetCell, fillCell, getConnectedCells);
             }
 
-            if (info.RightButtonDown)
+            if (info.Mouse.RightButtonDown)
             {
-                var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
+                var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
 
-                CharacterPickPanel.SharedInstance.SettingCharacter = cell.GlyphIndex;
+                CharacterPickPanel.SharedInstance.SettingCharacter = cell.Glyph;
                 CharacterPickPanel.SharedInstance.SettingForeground = cell.Foreground;
                 CharacterPickPanel.SharedInstance.SettingBackground = cell.Background;
-                CharacterPickPanel.SharedInstance.SettingMirrorEffect = cell.SpriteEffect;
+                CharacterPickPanel.SharedInstance.SettingMirrorEffect = cell.Mirror;
             }
         }
 

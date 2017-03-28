@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SadConsoleEditor.Panels;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 
 namespace SadConsoleEditor.Tools
 {
@@ -22,15 +22,15 @@ namespace SadConsoleEditor.Tools
 
         void OnDeselected();
 
-        bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface);
+        bool ProcessKeyboard(Keyboard info, ISurface surface);
 
-        void ProcessMouse(MouseInfo info, ITextSurface surface);
+        void ProcessMouse(MouseConsoleState info, ISurface surface);
 
-        void MouseEnterSurface(MouseInfo info, ITextSurface surface);
+        void MouseEnterSurface(MouseConsoleState info, ISurface surface);
 
-        void MouseExitSurface(MouseInfo info, ITextSurface surface);
+        void MouseExitSurface(MouseConsoleState info, ISurface surface);
 
-        void MouseMoveSurface(MouseInfo info, ITextSurface surface);
+        void MouseMoveSurface(MouseConsoleState info, ISurface surface);
 
         void RefreshTool();
 

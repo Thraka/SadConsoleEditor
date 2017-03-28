@@ -1,5 +1,5 @@
 ﻿using System;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 using System.Linq;
 
 namespace SadConsoleEditor.FileLoaders
@@ -28,12 +28,12 @@ namespace SadConsoleEditor.FileLoaders
 
         public object Load(string file)
         {
-            return SadConsole.Game.GameObject.Load(file);
+            return SadConsole.GameHelpers.GameObject.Load(file);
         }
 
         public void Save(object surface, string file)
         {
-            ((SadConsole.Game.GameObject)surface).Save(file);
+            ((SadConsole.GameHelpers.GameObject)surface).Save(file);
         }
     }
 }

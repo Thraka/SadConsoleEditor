@@ -1,5 +1,5 @@
 ﻿using System;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -29,12 +29,12 @@ namespace SadConsoleEditor.FileLoaders
 
         public object Load(string file)
         {
-            return SadConsole.Serializer.Load<List<SadConsole.Game.Hotspot>>(file);
+            return SadConsole.Serializer.Load<List<SadConsole.GameHelpers.Hotspot>>(file);
         }
 
         public void Save(object spots, string file)
         {
-            SadConsole.Serializer.Save((List<SadConsole.Game.Hotspot>)spots, file);
+            SadConsole.Serializer.Save((List<SadConsole.GameHelpers.Hotspot>)spots, file);
         }
     }
 }

@@ -7,11 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SadConsole.Game;
+using SadConsole.GameHelpers;
 
 namespace SadConsoleEditor.Windows
 {
-    class EditHotspotPopup : SadConsole.Consoles.Window
+    class EditHotspotPopup : SadConsole.Window
     {
         private Button saveButton;
         private Button cancelButton;
@@ -32,16 +32,16 @@ namespace SadConsoleEditor.Windows
 
         public Hotspot CreatedHotspot;
 
-        public CellAppearance SettingAppearance
+        public Cell SettingAppearance
         {
-            get { return new CellAppearance(foregroundPresenter.SelectedColor, backgroundPresenter.SelectedColor, characterPresenter.Character); }
+            get { return new Cell(foregroundPresenter.SelectedColor, backgroundPresenter.SelectedColor, characterPresenter.Character); }
             set
             {
                 foregroundPresenter.SelectedColor = value.Foreground;
                 backgroundPresenter.SelectedColor = value.Background;
                 characterPresenter.SelectedColor = value.Background;
                 characterPresenter.CharacterColor = value.Foreground;
-                characterPresenter.Character = value.GlyphIndex;
+                characterPresenter.Character = value.Glyph;
             }
         }
         
@@ -121,16 +121,16 @@ namespace SadConsoleEditor.Windows
 
             addFieldButton = new Button(16, 1);
             addFieldButton.Text = "Save/Update";
-            addFieldButton.Position = new Point(textSurface.Width - 18, 20);
+            addFieldButton.Position = new Point(TextSurface.Width - 18, 20);
 
             removeFieldButton = new Button(16, 1);
             removeFieldButton.Text = "Remove";
-            removeFieldButton.Position = new Point(textSurface.Width - 18, 21);
+            removeFieldButton.Position = new Point(TextSurface.Width - 18, 21);
             removeFieldButton.IsEnabled = false;
 
             objectSettingsListbox.SelectedItemChanged += _objectSettingsListbox_SelectedItemChanged;
-            addFieldButton.ButtonClicked += _addFieldButton_ButtonClicked;
-            removeFieldButton.ButtonClicked += _removeFieldButton_ButtonClicked;
+            addFieldButton.Click += _addFieldButton_Click;
+            removeFieldButton.Click += _removeFieldButton_Click;
 
             Add(objectSettingsListbox);
             Add(settingNameInput);
@@ -145,10 +145,10 @@ namespace SadConsoleEditor.Windows
             saveButton.Text = "Save";
             cancelButton.Text = "Cancel";
 
-            saveButton.ButtonClicked += _saveButton_ButtonClicked;
-            cancelButton.ButtonClicked += (o, e) => { DialogResult = false; Hide(); };
+            saveButton.Click += _saveButton_Click;
+            cancelButton.Click += (o, e) => { DialogResult = false; Hide(); };
 
-            saveButton.Position = new Point(textSurface.Width - 12, 26);
+            saveButton.Position = new Point(TextSurface.Width - 12, 26);
             cancelButton.Position = new Point(2, 26);
 
             Add(saveButton);
@@ -156,9 +156,9 @@ namespace SadConsoleEditor.Windows
 
             // Read the gameobject
             nameInput.Text = CreatedHotspot.Title;
-            mirrorHorizCheck.IsSelected = (CreatedHotspot.DebugAppearance.SpriteEffect & Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally) == Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally;
-            mirrorVertCheck.IsSelected = (CreatedHotspot.DebugAppearance.SpriteEffect & Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically) == Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically;
-            characterPicker.SelectedCharacter = CreatedHotspot.DebugAppearance.GlyphIndex;
+            mirrorHorizCheck.IsSelected = (CreatedHotspot.DebugAppearance.Mirror & Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally) == Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally;
+            mirrorVertCheck.IsSelected = (CreatedHotspot.DebugAppearance.Mirror & Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically) == Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically;
+            characterPicker.SelectedCharacter = CreatedHotspot.DebugAppearance.Glyph;
             foregroundPresenter.SelectedColor = CreatedHotspot.DebugAppearance.Foreground;
             backgroundPresenter.SelectedColor = CreatedHotspot.DebugAppearance.Background;
 
@@ -171,7 +171,7 @@ namespace SadConsoleEditor.Windows
             Redraw();
         }
 
-        void _saveButton_ButtonClicked(object sender, EventArgs e)
+        void _saveButton_Click(object sender, EventArgs e)
         {
             DialogResult = true;
             Hide();
@@ -197,13 +197,13 @@ namespace SadConsoleEditor.Windows
             }
         }
         
-        void _removeFieldButton_ButtonClicked(object sender, EventArgs e)
+        void _removeFieldButton_Click(object sender, EventArgs e)
         {
             if (objectSettingsListbox.SelectedItem != null)
                 objectSettingsListbox.Items.Remove(objectSettingsListbox.SelectedItem);
         }
 
-        void _addFieldButton_ButtonClicked(object sender, EventArgs e)
+        void _addFieldButton_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(settingNameInput.Text))
             {
@@ -234,15 +234,15 @@ namespace SadConsoleEditor.Windows
         void Mirror_IsSelectedChanged(object sender, EventArgs e)
         {
             if (mirrorHorizCheck.IsSelected && mirrorVertCheck.IsSelected)
-                characterPresenter[characterPresenter.Width - 2, 0].SpriteEffect = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically | Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally;
+                characterPresenter[characterPresenter.Width - 2, 0].Mirror = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically | Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally;
             else if (mirrorHorizCheck.IsSelected)
-                characterPresenter[characterPresenter.Width - 2, 0].SpriteEffect = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally;
+                characterPresenter[characterPresenter.Width - 2, 0].Mirror = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally;
             else if (mirrorVertCheck.IsSelected)
-                characterPresenter[characterPresenter.Width - 2, 0].SpriteEffect = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically;
+                characterPresenter[characterPresenter.Width - 2, 0].Mirror = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically;
             else
-                characterPresenter[characterPresenter.Width - 2, 0].SpriteEffect = Microsoft.Xna.Framework.Graphics.SpriteEffects.None;
+                characterPresenter[characterPresenter.Width - 2, 0].Mirror = Microsoft.Xna.Framework.Graphics.SpriteEffects.None;
 
-            characterPicker.MirrorEffect = characterPicker.MirrorEffect = settingMirrorEffect = characterPresenter[characterPresenter.Width - 2, 0].SpriteEffect;
+            characterPicker.MirrorEffect = characterPicker.MirrorEffect = settingMirrorEffect = characterPresenter[characterPresenter.Width - 2, 0].Mirror;
         }
 
         public override void Hide()
@@ -251,7 +251,7 @@ namespace SadConsoleEditor.Windows
             {
                 // Fill in the game object with all the new values
                 CreatedHotspot.Title = nameInput.Text;
-                CreatedHotspot.DebugAppearance = new CellAppearance(foregroundPresenter.SelectedColor, backgroundPresenter.SelectedColor, characterPicker.SelectedCharacter, settingMirrorEffect);
+                CreatedHotspot.DebugAppearance = new Cell(foregroundPresenter.SelectedColor, backgroundPresenter.SelectedColor, characterPicker.SelectedCharacter, settingMirrorEffect);
                 CreatedHotspot.Settings.Clear();
 
                 foreach (var item in objectSettingsListbox.Items.Cast<SettingKeyValue>())
@@ -281,16 +281,16 @@ namespace SadConsoleEditor.Windows
 
             SetGlyph(20, 18, 192);
 
-            for (int i = 21; i < textSurface.Width; i++)
+            for (int i = 21; i < TextSurface.Width; i++)
                 SetGlyph(i, 18, 196);
 
-            SetGlyph(textSurface.Width - 1, 18, 182);
+            SetGlyph(TextSurface.Width - 1, 18, 182);
 
             // Long line under field
             SetGlyph(0, 24, 199);
-            for (int i = 1; i < textSurface.Width; i++)
+            for (int i = 1; i < TextSurface.Width; i++)
                 SetGlyph(i, 24, 196);
-            SetGlyph(textSurface.Width - 1, 24, 182);
+            SetGlyph(TextSurface.Width - 1, 24, 182);
         }
 
         private class SettingKeyValue

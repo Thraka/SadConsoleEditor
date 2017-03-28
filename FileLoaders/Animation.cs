@@ -1,5 +1,5 @@
 ﻿using System;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 using System.Linq;
 
 namespace SadConsoleEditor.FileLoaders
@@ -28,12 +28,12 @@ namespace SadConsoleEditor.FileLoaders
 
         public object Load(string file)
         {
-            return SadConsole.Consoles.AnimatedTextSurface.Load(file);
+            return AnimatedSurface.Load(file);
         }
 
         public void Save(object surface, string file)
         {
-            ((SadConsole.Consoles.AnimatedTextSurface)surface).Save(file);
+            ((AnimatedSurface)surface).Save(file);
         }
     }
 }

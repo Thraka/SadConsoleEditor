@@ -1,5 +1,5 @@
 ﻿using System;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 using System.Linq;
 
 namespace SadConsoleEditor.FileLoaders
@@ -31,7 +31,7 @@ namespace SadConsoleEditor.FileLoaders
             string[] text = System.IO.File.ReadAllLines(file);
             int maxLineWidth = text.Max(s => s.Length);
             
-            SadConsole.Consoles.Console importConsole = new SadConsole.Consoles.Console(maxLineWidth, text.Length);
+            SadConsole.Console importConsole = new SadConsole.Console(maxLineWidth, text.Length);
             importConsole.VirtualCursor.AutomaticallyShiftRowsUp = false;
 
             foreach (var line in text)
@@ -42,7 +42,7 @@ namespace SadConsoleEditor.FileLoaders
 
         public void Save(object surface, string file)
         {
-            ITextSurface textSurface = (ITextSurface)surface;
+            ISurface textSurface = (ISurface)surface;
             SurfaceEditor editor = new SurfaceEditor(textSurface);
             string[] lines = new string[textSurface.Height];
 

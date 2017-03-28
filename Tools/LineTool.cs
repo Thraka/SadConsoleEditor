@@ -2,7 +2,7 @@
 {
     using Microsoft.Xna.Framework;
     using SadConsole;
-    using SadConsole.Consoles;
+    using SadConsole.Surfaces;
     using SadConsole.Controls;
     using SadConsole.Input;
     using System;
@@ -10,14 +10,14 @@
 
     class LineTool : ITool
     {
-        public SadConsole.Game.GameObject Brush;
+        public SadConsole.GameHelpers.GameObject Brush;
 
         private SadConsole.Effects.Fade frameEffect;
         private Point? firstPoint;
         private Point? secondPoint;
         private SadConsole.Shapes.Line lineShape;
         private Cell lineCell;
-        private CellAppearance lineStyle;
+        private Cell lineStyle;
         private LineToolPanel settingsPanel;
         
         public const string ID = "LINE";
@@ -55,10 +55,9 @@
             ControlPanels = new CustomPanel[] { settingsPanel, CharacterPickPanel.SharedInstance };
 
             // Configure the animations
-            Brush = new SadConsole.Game.GameObject();
-            Brush.Font = Settings.Config.ScreenFont;
-            AnimatedTextSurface animation = new AnimatedTextSurface("single", 1, 1, Settings.Config.ScreenFont);
-            animation.CreateFrame()[0].GlyphIndex = 42;
+            Brush = new SadConsole.GameHelpers.GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
+            AnimatedSurface animation = new AnimatedSurface("single", 1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
+            animation.CreateFrame()[0].Glyph = 42;
             Brush.Animations.Add(animation.Name, animation);
             ResetLine();
         }
@@ -67,9 +66,9 @@
         {
             // Draw the line (erase old) to where the mouse is
             // create the animation frame
-            AnimatedTextSurface animation = new AnimatedTextSurface("line", Math.Max(firstPoint.Value.X, mousePosition.X) - Math.Min(firstPoint.Value.X, mousePosition.X) + 1,
+            AnimatedSurface animation = new AnimatedSurface("line", Math.Max(firstPoint.Value.X, mousePosition.X) - Math.Min(firstPoint.Value.X, mousePosition.X) + 1,
                                                                             Math.Max(firstPoint.Value.Y, mousePosition.Y) - Math.Min(firstPoint.Value.Y, mousePosition.Y) + 1,
-                                                                            Settings.Config.ScreenFont);
+                                                                            SadConsoleEditor.Settings.Config.ScreenFont);
 
 
             var frame = animation.CreateFrame();
@@ -106,7 +105,7 @@
 
             animation.Center = p1;
 
-            //_lineStyle = new CellAppearance(
+            //_lineStyle = new Cell(
             //                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
             //                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
             //                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
@@ -114,7 +113,7 @@
             //_lineStyle.CopyAppearanceTo(_lineCell);
 
             lineShape = new SadConsole.Shapes.Line();
-            lineShape.CellAppearance = lineCell;
+            lineShape.Cell = lineCell;
             lineShape.UseEndingCell = false;
             lineShape.UseStartingCell = false;
             lineShape.StartingLocation = p1;
@@ -169,7 +168,7 @@
 
         public void RefreshTool()
         {
-            lineStyle = new CellAppearance(CharacterPickPanel.SharedInstance.SettingForeground,
+            lineStyle = new Cell(CharacterPickPanel.SharedInstance.SettingForeground,
                                               CharacterPickPanel.SharedInstance.SettingBackground,
                                               CharacterPickPanel.SharedInstance.SettingCharacter,
                                               CharacterPickPanel.SharedInstance.SettingMirrorEffect);
@@ -181,51 +180,51 @@
         {
         }
 
-        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
+        public bool ProcessKeyboard(Keyboard info, ISurface surface)
         {
             return false;
         }
 
-        public void ProcessMouse(MouseInfo info, ITextSurface surface)
+        public void ProcessMouse(MouseConsoleState info, ISurface surface)
         {
         }
 
-        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
+        public void MouseEnterSurface(MouseConsoleState info, ISurface surface)
         {
             Brush.IsVisible = true;
         }
 
-        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
+        public void MouseExitSurface(MouseConsoleState info, ISurface surface)
         {
             Brush.IsVisible = false;
         }
 
-        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
+        public void MouseMoveSurface(MouseConsoleState info, ISurface surface)
         {
             Brush.IsVisible = true;
 
             if (!firstPoint.HasValue)
             {
-                Brush.Position = info.ConsoleLocation;
+                Brush.Position = info.ConsolePosition;
             }
             else
             {
-                SetAnimationLine(info.ConsoleLocation);
+                SetAnimationLine(info.ConsolePosition);
                 
             }
 
 
             // TODO: Make this work. They push DOWN on the mouse, start the line from there, if they "Click" then go to mode where they click a second time
             // If they don't click and hold it down longer than click, pretend a second click happened and draw the line.
-            if (info.LeftClicked)
+            if (info.Mouse.LeftClicked)
             {
                 if (!firstPoint.HasValue)
                 {
-                    firstPoint = new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y);
+                    firstPoint = new Point(info.ConsolePosition.X, info.ConsolePosition.Y);
                 }
                 else
                 {
-                    secondPoint = new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y);
+                    secondPoint = new Point(info.ConsolePosition.X, info.ConsolePosition.Y);
 
                     lineShape.StartingLocation = firstPoint.Value;
                     lineShape.EndingLocation = secondPoint.Value;
@@ -241,7 +240,7 @@
                     settingsPanel.LineLength = 0;
                 }
             }
-            else if (info.RightClicked)
+            else if (info.Mouse.RightClicked)
             {
                 if (firstPoint.HasValue && !secondPoint.HasValue)
                 {

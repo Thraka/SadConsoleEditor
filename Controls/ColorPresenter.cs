@@ -71,11 +71,11 @@
 
         }
 
-        protected override void OnLeftMouseClicked(MouseInfo info)
+        protected override void OnLeftMouseClicked(MouseConsoleState info)
         {
             if (!DisableColorPicker)
             {
-                var location = this.TransformConsolePositionByControlPosition(info);
+                var location = this.TransformConsolePositionByControlPosition(info.ConsolePosition);
                 if (location.X >= Width - 3)
                 {
                     _popup.SelectedColor = _selectedColor;
@@ -85,7 +85,7 @@
             }
             else if (EnableCharacterPicker)
             {
-                var location = this.TransformConsolePositionByControlPosition(info);
+                var location = this.TransformConsolePositionByControlPosition(info.ConsolePosition);
                 if (location.X >= Width - 3)
                 {
                     base.OnLeftMouseClicked(info);
@@ -93,9 +93,9 @@
             }
         }
 
-        protected override void OnRightMouseClicked(MouseInfo info)
+        protected override void OnRightMouseClicked(MouseConsoleState info)
         {
-            var location = this.TransformConsolePositionByControlPosition(info);
+            var location = this.TransformConsolePositionByControlPosition(info.ConsolePosition);
             if (location.X >= Width - 3)
             {
                 RightClickedColor?.Invoke(this, EventArgs.Empty);

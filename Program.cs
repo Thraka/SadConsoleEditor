@@ -27,13 +27,13 @@ namespace SadConsoleEditor
 
 
             // Setup the engine and creat the main window.
-            SadConsole.Engine.Initialize(Settings.Config.ProgramFontFile, Settings.Config.WindowWidth, Settings.Config.WindowHeight);
+            SadConsole.Game.Create(Settings.Config.ProgramFontFile, Settings.Config.WindowWidth, Settings.Config.WindowHeight);
 
             // Hook the start event so we can add consoles to the system.
-            SadConsole.Engine.EngineStart += Engine_EngineStart;
-            
+            SadConsole.Game.OnInitialize = Init;
+
             // Start the game.
-            SadConsole.Engine.Run();
+            SadConsole.Game.Instance.Run();
         }
 
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -41,23 +41,20 @@ namespace SadConsoleEditor
             throw new NotImplementedException();
         }
 
-        private static void Engine_EngineStart(object sender, EventArgs e)
+        private static void Init()
         {
-            SadConsole.Engine.MonoGameInstance.Window.Title = "SadConsole Editor - v" + System.Reflection.Assembly.GetCallingAssembly().GetName().Version.ToString();
+            SadConsole.Game.Instance.Window.Title = "SadConsole Editor - v" + System.Reflection.Assembly.GetCallingAssembly().GetName().Version.ToString();
 
             
             // Load screen font
-            var font = SadConsole.Engine.LoadFont(Settings.Config.ScreenFontFile);
+            var font = SadConsole.Global.LoadFont(Settings.Config.ScreenFontFile);
             Settings.Config.ScreenFont = font.GetFont(SadConsole.Font.FontSizes.One);
 
             // Setup GUI themes
             Settings.SetupThemes();
 
             // Helper editor for any text surface
-            Settings.QuickEditor = new SadConsole.Consoles.SurfaceEditor(new SadConsole.Consoles.TextSurface(10, 10, SadConsole.Engine.DefaultFont));
-
-            // Start
-            SadConsole.Libraries.GameHelpers.Initialize();
+            SadConsoleEditor.Settings.QuickEditor = new SadConsole.Surfaces.SurfaceEditor(new SadConsole.Surfaces.BasicSurface(10, 10, SadConsole.Global.FontDefault));
 
             // Setup system to run
             EditorConsoleManager.Initialize();

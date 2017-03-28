@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using SadConsole.Controls;
 using SadConsoleEditor.Windows;
 using SadConsole;
-using SadConsole.Consoles;
-using SadConsole.Game;
+using SadConsole.Surfaces;
+using SadConsole.GameHelpers;
 
 namespace SadConsoleEditor.Panels
 {
@@ -46,25 +46,25 @@ namespace SadConsoleEditor.Panels
             GameObjectList.SelectedItemChanged += GameObject_SelectedItemChanged;
             GameObjectList.CompareByReference = true;
 
-            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             removeSelected.Text = "Remove";
-            removeSelected.ButtonClicked += RemoveSelected_ButtonClicked;
+            removeSelected.Click += RemoveSelected_Click;
 
-            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             moveSelectedUp.Text = "Move Up";
-            moveSelectedUp.ButtonClicked += MoveSelectedUp_ButtonClicked;
+            moveSelectedUp.Click += MoveSelectedUp_Click;
 
-            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             moveSelectedDown.Text = "Move Down";
-            moveSelectedDown.ButtonClicked += MoveSelectedDown_ButtonClicked;
+            moveSelectedDown.Click += MoveSelectedDown_Click;
             
-            renameLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            renameLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             renameLayer.Text = "Rename";
-            renameLayer.ButtonClicked += RenameEntity_ButtonClicked;
+            renameLayer.Click += RenameEntity_Click;
 
-            importGameObject = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            importGameObject = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             importGameObject.Text = "Import File";
-            importGameObject.ButtonClicked += ImportEntity_ButtonClicked;
+            importGameObject.Click += ImportEntity_Click;
 
             drawGameObjectsCheckbox = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             drawGameObjectsCheckbox.IsSelected = true;
@@ -78,9 +78,9 @@ namespace SadConsoleEditor.Panels
             animationsListBox.HideBorder = true;
             animationsListBox.CompareByReference = true;
 
-            playAnimationButton = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            playAnimationButton = new Button(Consoles.ToolPane.PanelWidthControls);
             playAnimationButton.Text = "Play Animation";
-            playAnimationButton.ButtonClicked += (o, e) => { if (animationsListBox.SelectedItem != null) ((AnimatedTextSurface)animationsListBox.SelectedItem).Restart(); };
+            playAnimationButton.Click += (o, e) => { if (animationsListBox.SelectedItem != null) ((AnimatedSurface)animationsListBox.SelectedItem).Restart(); };
 
 
             Controls = new ControlBase[] { GameObjectList, removeSelected, moveSelectedUp, moveSelectedDown, renameLayer, importGameObject, null, drawGameObjectsCheckbox, null, animationListTitle,animationsListBox, null, playAnimationButton };
@@ -88,7 +88,7 @@ namespace SadConsoleEditor.Panels
             GameObject_SelectedItemChanged(null, null);
         }
 
-        void ImportEntity_ButtonClicked(object sender, EventArgs e)
+        void ImportEntity_Click(object sender, EventArgs e)
         {
             SelectFilePopup popup = new SelectFilePopup();
             popup.Closed += (o2, e2) =>
@@ -107,7 +107,7 @@ namespace SadConsoleEditor.Panels
             popup.Center();
         }
 
-        void RenameEntity_ButtonClicked(object sender, EventArgs e)
+        void RenameEntity_Click(object sender, EventArgs e)
         {
             var entity = (ResizableObject)GameObjectList.SelectedItem;
             RenamePopup popup = new RenamePopup(entity.Name);
@@ -125,7 +125,7 @@ namespace SadConsoleEditor.Panels
             popup.Center();
         }
 
-        void MoveSelectedDown_ButtonClicked(object sender, EventArgs e)
+        void MoveSelectedDown_Click(object sender, EventArgs e)
         {
             var entity = (ResizableObject)GameObjectList.SelectedItem;
             var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
@@ -137,7 +137,7 @@ namespace SadConsoleEditor.Panels
             GameObjectList.SelectedItem = entity;
         }
 
-        void MoveSelectedUp_ButtonClicked(object sender, EventArgs e)
+        void MoveSelectedUp_Click(object sender, EventArgs e)
         {
             var entity = (ResizableObject)GameObjectList.SelectedItem;
             var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
@@ -149,7 +149,7 @@ namespace SadConsoleEditor.Panels
             GameObjectList.SelectedItem = entity;
         }
 
-        void RemoveSelected_ButtonClicked(object sender, EventArgs e)
+        void RemoveSelected_Click(object sender, EventArgs e)
         {
             var entity = (ResizableObject)GameObjectList.SelectedItem;
             var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
@@ -190,7 +190,7 @@ namespace SadConsoleEditor.Panels
         {
             if (animationsListBox.SelectedItem != null)
             {
-                var animation = (AnimatedTextSurface)animationsListBox.SelectedItem;
+                var animation = (AnimatedSurface)animationsListBox.SelectedItem;
                 var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
                 animation.CurrentFrameIndex = 0;
                 editor.SelectedEntity.Animation = animation;
@@ -235,7 +235,7 @@ namespace SadConsoleEditor.Panels
             }
         }
 
-        public override void ProcessMouse(SadConsole.Input.MouseInfo info)
+        public override void ProcessMouse(SadConsole.Input.MouseConsoleState info)
         {
         }
 
@@ -259,7 +259,7 @@ namespace SadConsoleEditor.Panels
 
         private class EntityListBoxItem : ListBoxItem
         {
-            public override void Draw(ITextSurface surface, Microsoft.Xna.Framework.Rectangle area)
+            public override void Draw(ISurface surface, Microsoft.Xna.Framework.Rectangle area)
             {
                 string value = ((ResizableObject)Item).Name;
 
@@ -278,9 +278,9 @@ namespace SadConsoleEditor.Panels
 
         private class AnimationListBoxItem : ListBoxItem
         {
-            public override void Draw(ITextSurface surface, Microsoft.Xna.Framework.Rectangle area)
+            public override void Draw(ISurface surface, Microsoft.Xna.Framework.Rectangle area)
             {
-                string value = ((AnimatedTextSurface)Item).Name;
+                string value = ((AnimatedSurface)Item).Name;
 
                 if (string.IsNullOrEmpty(value))
                     value = "<no name>";

@@ -90,7 +90,7 @@ namespace SadConsoleEditor.Panels
             _characterPicker.SelectedCharacterChanged += (sender, e) => { _charPreview.Character = e.NewCharacter; _charPreview.Title = "Character (" + e.NewCharacter.ToString() + ")"; OnChanged(); };
             _characterPicker.SelectedCharacter = 1;
             _charPreview.MouseButtonClicked += (o, e) => { 
-                if (e.LeftButtonClicked)
+                if (e.MouseState.Mouse.LeftClicked)
                 {
                     _popupCharacterWindow.Center();
                     _popupCharacterWindow.Show(true);
@@ -110,15 +110,15 @@ namespace SadConsoleEditor.Panels
         void Mirror_IsSelectedChanged(object sender, EventArgs e)
         {
             if (_mirrorLR.IsSelected && _mirrorTB.IsSelected)
-                _charPreview[_charPreview.Width - 2, 0].SpriteEffect = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically | Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally;
+                _charPreview[_charPreview.Width - 2, 0].Mirror = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically | Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally;
             else if (_mirrorLR.IsSelected)
-                _charPreview[_charPreview.Width - 2, 0].SpriteEffect = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally;
+                _charPreview[_charPreview.Width - 2, 0].Mirror = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally;
             else if (_mirrorTB.IsSelected)
-                _charPreview[_charPreview.Width - 2, 0].SpriteEffect = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically;
+                _charPreview[_charPreview.Width - 2, 0].Mirror = Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipVertically;
             else
-                _charPreview[_charPreview.Width - 2, 0].SpriteEffect = Microsoft.Xna.Framework.Graphics.SpriteEffects.None;
+                _charPreview[_charPreview.Width - 2, 0].Mirror = Microsoft.Xna.Framework.Graphics.SpriteEffects.None;
 
-            _popupCharacterWindow.MirrorEffect = _characterPicker.MirrorEffect = _settingMirrorEffect = _charPreview[_charPreview.Width - 2, 0].SpriteEffect;
+            _popupCharacterWindow.MirrorEffect = _characterPicker.MirrorEffect = _settingMirrorEffect = _charPreview[_charPreview.Width - 2, 0].Mirror;
 
             if (!_skipChanged)
                 OnChanged();
@@ -147,7 +147,7 @@ namespace SadConsoleEditor.Panels
                 //EditorConsoleManager.ToolsPane.SelectedTool.RefreshTool();
         }
 
-        public override void ProcessMouse(SadConsole.Input.MouseInfo info)
+        public override void ProcessMouse(SadConsole.Input.MouseConsoleState info)
         {
         }
 

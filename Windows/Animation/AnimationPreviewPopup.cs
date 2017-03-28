@@ -1,5 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 using SadConsole.Controls;
 using SadConsoleEditor.Controls;
 using System;
@@ -10,23 +10,24 @@ using System.Text;
 using System.Threading.Tasks;
 using SadConsole.Input;
 using Microsoft.Xna.Framework.Graphics;
-using SadConsole.Game;
+using SadConsole.GameHelpers;
+using SadConsole;
 
 namespace SadConsoleEditor.Windows
 {
     public class PreviewAnimationPopup : Window
     {
         private GameObject entity;
-        private AnimatedTextSurface animation;
+        private AnimatedSurface animation;
         private Button restartAnimation;
 
-        public PreviewAnimationPopup(AnimatedTextSurface animation) : base(animation.Width + 2, animation.Height + 4)
+        public PreviewAnimationPopup(AnimatedSurface animation) : base(animation.Width + 2, animation.Height + 4)
         {
             textSurface.Font = Settings.Config.ScreenFont;
             this.animation = animation;
 
             CloseOnESC = true;
-            entity = new GameObject(Settings.Config.ScreenFont);
+            entity = new GameObject(1, 1, Settings.Config.ScreenFont);
             entity.Position = new Point(1, 1);
             entity.Animation = animation;
             animation.Restart();
@@ -34,8 +35,8 @@ namespace SadConsoleEditor.Windows
 
             restartAnimation = new Button(animation.Width, 1);
             restartAnimation.Text = "Restart";
-            restartAnimation.Position = new Point(1, textSurface.Height - 2);
-            restartAnimation.ButtonClicked += (s, e) => this.animation.Restart();
+            restartAnimation.Position = new Point(1, TextSurface.Height - 2);
+            restartAnimation.Click += (s, e) => this.animation.Restart();
             Add(restartAnimation);
         }
 
@@ -46,20 +47,20 @@ namespace SadConsoleEditor.Windows
             entity.Animation.CurrentFrame.Copy(textSurface, entity.Position.X, entity.Position.Y);
 
             // Draw bar
-            for (int i = 1; i < textSurface.Width - 1; i++)
+            for (int i = 1; i < TextSurface.Width - 1; i++)
             {
-                SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(i, textSurface.Height - 3));
-                textSurface.GetCell(i, textSurface.Height - 3).GlyphIndex = 205;
+                SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(i, TextSurface.Height - 3));
+                textSurface.GetCell(i, TextSurface.Height - 3).Glyph = 205;
             }
 
-            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(0, textSurface.Height - 3));
-            textSurface.GetCell(0, textSurface.Height - 3).GlyphIndex = 204;
+            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(0, TextSurface.Height - 3));
+            textSurface.GetCell(0, TextSurface.Height - 3).Glyph = 204;
 
-            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(textSurface.Width - 1, textSurface.Height - 3));
-            textSurface.GetCell(textSurface.Width - 1, textSurface.Height - 3).GlyphIndex = 185;
+            SadConsole.Themes.Library.Default.WindowTheme.BorderStyle.CopyAppearanceTo(textSurface.GetCell(TextSurface.Width - 1, TextSurface.Height - 3));
+            textSurface.GetCell(TextSurface.Width - 1, TextSurface.Height - 3).Glyph = 185;
         }
 
-        public override bool ProcessKeyboard(KeyboardInfo info)
+        public override bool ProcessKeyboard(Keyboard info)
         {
             if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Space))
                 animation.Restart();
@@ -67,11 +68,11 @@ namespace SadConsoleEditor.Windows
             return base.ProcessKeyboard(info);
         }
 
-        public override bool ProcessMouse(MouseInfo info)
+        public override bool ProcessMouse(MouseConsoleState info)
         {
             base.ProcessMouse(info);
 
-            if (info.RightClicked)
+            if (info.Mouse.RightClicked)
                 Hide();
 
             return true;
@@ -83,11 +84,11 @@ namespace SadConsoleEditor.Windows
             base.Show(modal);
         }
 
-        public override void Update()
+        public override void Update(TimeSpan delta)
         {
-            base.Update();
+            base.Update(delta);
 
-            entity.Update();
+            entity.Update(delta);
         }
     }
 }

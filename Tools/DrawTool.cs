@@ -3,7 +3,7 @@
     using SadConsole;
     using SadConsole.Input;
     using Panels;
-    using SadConsole.Consoles;
+    using SadConsole.Surfaces;
     class PaintTool: ITool
     {
         public const string ID = "PENCIL";
@@ -21,7 +21,7 @@
         public CustomPanel[] ControlPanels { get; private set; }
 
         //private EntityBrush _brush;
-        public SadConsole.Game.GameObject Brush;
+        public SadConsole.GameHelpers.GameObject Brush;
 
         public PaintTool()
         {
@@ -35,8 +35,7 @@
 
         public void OnSelected()
         {
-            Brush = new SadConsole.Game.GameObject(Settings.Config.ScreenFont);
-            Brush.Animation = new AnimatedTextSurface("default", 1, 1);
+            Brush = new SadConsole.GameHelpers.GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
             Brush.Animation.CreateFrame();
             Brush.IsVisible = false;
             RefreshTool();
@@ -62,8 +61,8 @@
 
         public void RefreshTool()
         {
-            Settings.QuickEditor.TextSurface = Brush.Animation.Frames[0];
-            Settings.QuickEditor.Fill(CharacterPickPanel.SharedInstance.SettingForeground,
+            SadConsoleEditor.Settings.QuickEditor.TextSurface = Brush.Animation.Frames[0];
+            SadConsoleEditor.Settings.QuickEditor.Fill(CharacterPickPanel.SharedInstance.SettingForeground,
                                       CharacterPickPanel.SharedInstance.SettingBackground,
                                       CharacterPickPanel.SharedInstance.SettingCharacter,
                                       CharacterPickPanel.SharedInstance.SettingMirrorEffect);
@@ -73,47 +72,47 @@
         {
         }
 
-        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
+        public bool ProcessKeyboard(Keyboard info, ISurface surface)
         {
             return false;
         }
 
-        public void ProcessMouse(MouseInfo info, ITextSurface surface)
+        public void ProcessMouse(MouseConsoleState info, ISurface surface)
         {
         }
 
-        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
+        public void MouseEnterSurface(MouseConsoleState info, ISurface surface)
         {
             Brush.IsVisible = true;
         }
 
-        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
+        public void MouseExitSurface(MouseConsoleState info, ISurface surface)
         {
             Brush.IsVisible = false;
         }
 
-        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
+        public void MouseMoveSurface(MouseConsoleState info, ISurface surface)
         {
             Brush.IsVisible = true;
-            Brush.Position = info.ConsoleLocation;
+            Brush.Position = info.ConsolePosition;
 
-            if (info.LeftButtonDown)
+            if (info.Mouse.LeftButtonDown)
             {
-                var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
-                cell.GlyphIndex = CharacterPickPanel.SharedInstance.SettingCharacter;
+                var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
+                cell.Glyph = CharacterPickPanel.SharedInstance.SettingCharacter;
                 cell.Foreground = CharacterPickPanel.SharedInstance.SettingForeground;
                 cell.Background = CharacterPickPanel.SharedInstance.SettingBackground;
-                cell.SpriteEffect = CharacterPickPanel.SharedInstance.SettingMirrorEffect;
+                cell.Mirror = CharacterPickPanel.SharedInstance.SettingMirrorEffect;
             }
 
-            if (info.RightButtonDown)
+            if (info.Mouse.RightButtonDown)
             {
-                var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
+                var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
 
-                CharacterPickPanel.SharedInstance.SettingCharacter = cell.GlyphIndex;
+                CharacterPickPanel.SharedInstance.SettingCharacter = cell.Glyph;
                 CharacterPickPanel.SharedInstance.SettingForeground = cell.Foreground;
                 CharacterPickPanel.SharedInstance.SettingBackground = cell.Background;
-                CharacterPickPanel.SharedInstance.SettingMirrorEffect = cell.SpriteEffect;
+                CharacterPickPanel.SharedInstance.SettingMirrorEffect = cell.Mirror;
             }
         }
     }

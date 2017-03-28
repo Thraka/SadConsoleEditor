@@ -1,15 +1,16 @@
 ﻿using System;
 using SadConsoleEditor.Tools;
 using SadConsole.Input;
-using Console = SadConsole.Consoles.Console;
+using Console = SadConsole.Console;
 using Microsoft.Xna.Framework;
 using SadConsoleEditor.Consoles;
 using SadConsoleEditor.Panels;
-using SadConsole.Consoles;
+using SadConsole;
+using SadConsole.Surfaces;
 using SadConsole;
 using System.IO;
 using System.Collections.Generic;
-using SadConsole.Game;
+using SadConsole.GameHelpers;
 using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -24,9 +25,9 @@ namespace SadConsoleEditor.Editors
             Zone
         }
 
-        private TextSurface darkenSurface;
-        private TextSurfaceRenderer darkenSurfaceRenderer;
-        private LayeredTextSurface textSurface;
+        private BasicSurface darkenSurface;
+        private SadConsole.Renderers.SurfaceRenderer darkenSurfaceRenderer;
+        private LayeredSurface textSurface;
         private Console consoleWrapper;
         private CustomPanel[] panels;
         private LayersPanel layerManagementPanel;
@@ -59,10 +60,10 @@ namespace SadConsoleEditor.Editors
             set
             {
                 showDarkLayer = value;
-                darkenSurface = new TextSurface(textSurface.RenderArea.Width, textSurface.RenderArea.Height);
+                darkenSurface = new BasicSurface(textSurface.RenderArea.Width, textSurface.RenderArea.Height);
                 darkenSurface.Tint = Color.Black * 0.6f;
                 darkenSurface.Font = textSurface.Font;
-                darkenSurfaceRenderer = new TextSurfaceRenderer();
+                darkenSurfaceRenderer = new SadConsole.Renderers.SurfaceRenderer();
             }
         }
 
@@ -96,13 +97,13 @@ namespace SadConsoleEditor.Editors
         public SceneEditor()
         {
             consoleWrapper = new Console(1, 1);
-            consoleWrapper.Renderer = new LayeredTextRenderer();
+            consoleWrapper.Renderer = new SadConsole.Renderers.LayeredSurfaceRenderer();
             consoleWrapper.MouseHandler = ProcessMouse;
-            consoleWrapper.CanUseKeyboard = false;
+            consoleWrapper.UseKeyboard = false;
 
-            consoleWrapper.MouseMove += (o, e) => { toolsPanel.SelectedTool?.MouseMoveSurface(e.OriginalMouseInfo, textSurface); };
-            consoleWrapper.MouseEnter += (o, e) => { toolsPanel.SelectedTool?.MouseEnterSurface(e.OriginalMouseInfo, textSurface); };
-            consoleWrapper.MouseExit += (o, e) => { toolsPanel.SelectedTool?.MouseExitSurface(e.OriginalMouseInfo, textSurface); };
+            consoleWrapper.MouseMove += (o, e) => { toolsPanel.SelectedTool?.MouseMoveSurface(e.MouseState, textSurface); };
+            consoleWrapper.MouseEnter += (o, e) => { toolsPanel.SelectedTool?.MouseEnterSurface(e.MouseState, textSurface); };
+            consoleWrapper.MouseExit += (o, e) => { toolsPanel.SelectedTool?.MouseExitSurface(e.MouseState, textSurface); };
 
             layerManagementPanel = new LayersPanel() { IsCollapsed = true };
             toolsPanel = new ToolsPanel();
@@ -164,7 +165,7 @@ namespace SadConsoleEditor.Editors
         public void New(Color foreground, Color background, int width, int height)
         {
             // Create the new text surface
-            textSurface = new LayeredTextSurface(width, height, 1);
+            textSurface = new LayeredSurface(width, height, 1);
 
             // Update metadata
             LayerMetadata.Create("main", false, false, true, textSurface.GetLayer(0));
@@ -172,7 +173,7 @@ namespace SadConsoleEditor.Editors
             textSurface.Font = Settings.Config.ScreenFont;
 
             // Update the layer management panel
-            layerManagementPanel.SetLayeredTextSurface(textSurface);
+            layerManagementPanel.SetLayeredSurface(textSurface);
 
             // Set the text surface as the one we're displaying
             consoleWrapper.TextSurface = textSurface;
@@ -307,7 +308,7 @@ namespace SadConsoleEditor.Editors
         public void Resize(int width, int height)
         {
             var oldSurface = textSurface;
-            var newSurface = new LayeredTextSurface(width, height, Settings.Config.ScreenFont, oldSurface.LayerCount);
+            var newSurface = new LayeredSurface(width, height, Settings.Config.ScreenFont, oldSurface.LayerCount);
 
             for (int i = 0; i < oldSurface.LayerCount; i++)
             {
@@ -321,7 +322,7 @@ namespace SadConsoleEditor.Editors
             }
 
             consoleWrapper.TextSurface = textSurface = newSurface;
-            layerManagementPanel.SetLayeredTextSurface(textSurface);
+            layerManagementPanel.SetLayeredSurface(textSurface);
             toolsPanel.SelectedTool = toolsPanel.SelectedTool;
 
             if (EditorConsoleManager.ActiveEditor == this)
@@ -449,10 +450,10 @@ namespace SadConsoleEditor.Editors
             Title = Path.GetFileName(file);
 
             // Update the layer management panel
-            layerManagementPanel.SetLayeredTextSurface(textSurface);
+            layerManagementPanel.SetLayeredSurface(textSurface);
         }
         
-        public bool ProcessKeyboard(KeyboardInfo info)
+        public bool ProcessKeyboard(Keyboard info)
         {
             if (!toolsPanel.SelectedTool.ProcessKeyboard(info, textSurface))
             {
@@ -473,10 +474,10 @@ namespace SadConsoleEditor.Editors
             return true;
         }
 
-        public bool ProcessMouse(IConsole console, SadConsole.Input.MouseInfo info)
+        public bool ProcessMouse(IConsole console, SadConsole.Input.MouseConsoleState info)
         {
             consoleWrapper.MouseHandler = null;
-            consoleWrapper.CanUseMouse = true;
+            consoleWrapper.UseMouse = true;
             consoleWrapper.ProcessMouse(info);
             consoleWrapper.MouseHandler = ProcessMouse;
 
@@ -485,13 +486,13 @@ namespace SadConsoleEditor.Editors
             
             if (consoleWrapper.IsMouseOver)
             {
-                EditorConsoleManager.SurfaceMouseLocation = info.ConsoleLocation;
+                EditorConsoleManager.SurfaceMouseLocation = info.ConsolePosition;
                 return true;
             }
             else
                 EditorConsoleManager.SurfaceMouseLocation = Point.Zero;
 
-            consoleWrapper.CanUseMouse = false;
+            consoleWrapper.UseMouse = false;
             return false;
         }
 
@@ -510,7 +511,7 @@ namespace SadConsoleEditor.Editors
 
             localEntity.Animation = localEntity.Animations[entity.Animation.Name];
 
-            localEntity.RenderOffset = consoleWrapper.Position;
+            localEntity..RenderOffset = consoleWrapper.Position;
             Objects.Add(new ResizableObject(ResizableObject.ObjectType.GameObject, localEntity));
             GameObjectPanel.RebuildListBox();
 
@@ -526,7 +527,7 @@ namespace SadConsoleEditor.Editors
         public bool LoadZone(Zone zone)
         {
             var gameObject = new GameObject(Settings.Config.ScreenFont);
-            var animation = new AnimatedTextSurface("default", 10, 10);
+            var animation = new AnimatedSurface("default", 10, 10);
             var frame = animation.CreateFrame();
             frame.DefaultBackground = zone.DebugAppearance.Background;
 

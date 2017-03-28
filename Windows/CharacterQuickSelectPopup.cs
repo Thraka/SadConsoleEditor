@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SadConsoleEditor.Windows
 {
-    class CharacterQuickSelectPopup : SadConsole.Consoles.Window
+    class CharacterQuickSelectPopup : SadConsole.Window
     {
         private Controls.CharacterPicker _picker;
 

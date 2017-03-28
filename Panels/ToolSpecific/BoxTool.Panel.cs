@@ -52,7 +52,7 @@ namespace SadConsoleEditor.Panels
             Controls = new ControlBase[] { lineForeColor, lineBackColor, fillColor, fillBoxOption, useCharBorder, characterPicker };
         }
 
-        public override void ProcessMouse(SadConsole.Input.MouseInfo info)
+        public override void ProcessMouse(SadConsole.Input.MouseConsoleState info)
         {
             
         }

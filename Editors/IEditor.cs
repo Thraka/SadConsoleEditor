@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using SadConsole;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 using SadConsole.Input;
 using System;
 using System.Collections.Generic;
@@ -39,13 +39,13 @@ namespace SadConsoleEditor.Editors
 
         Point Position { get; }
 
-        SadConsole.Consoles.Console RenderedConsole { get; }
+        SadConsole.Console RenderedConsole { get; }
 
         void Render();
 
         void Update();
 
-        bool ProcessKeyboard(KeyboardInfo info);
+        bool ProcessKeyboard(Keyboard info);
 
         void Move(int x, int y);
 

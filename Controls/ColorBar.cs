@@ -5,7 +5,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Console = SadConsole.Consoles.Console;
+    using Console = SadConsole.Console;
 
     class ColorBar : SadConsole.Controls.ControlBase
     {
@@ -93,11 +93,11 @@
 
             for (int x = 0; x < Width; x++)
             {
-                this[x, 0].GlyphIndex = 219;
+                this[x, 0].Glyph = 219;
                 this[x, 0].Foreground = _colorSteps[x];
             }
 
-            this[_selectedPosition, 1].GlyphIndex = 30;
+            this[_selectedPosition, 1].Glyph = 30;
             this[_selectedPosition, 1].Foreground = Color.LightGray;//this[_selectedPosition, 0].Foreground;
         }
 
@@ -106,15 +106,15 @@
 
         }
 
-        protected override void OnMouseIn(SadConsole.Input.MouseInfo info)
+        protected override void OnMouseIn(SadConsole.Input.MouseConsoleState info)
         {
             base.OnMouseIn(info);
 
             if (Parent.CapturedControl == null)
             {
-                if (info.LeftButtonDown)
+                if (info.Mouse.LeftButtonDown)
                 {
-                    var location = this.TransformConsolePositionByControlPosition(info);
+                    var location = this.TransformConsolePositionByControlPosition(info.ConsolePosition);
                     _selectedPosition = location.X;
                     SelectedColorSafe = this[_selectedPosition, 0].Foreground;
                     IsDirty = true;
@@ -124,17 +124,17 @@
             }
         }
 
-        public override bool ProcessMouse(SadConsole.Input.MouseInfo info)
+        public override bool ProcessMouse(SadConsole.Input.MouseConsoleState info)
         {
             if (Parent.CapturedControl == this)
             {
-                if (info.LeftButtonDown == false)
+                if (info.Mouse.LeftButtonDown == false)
                     Parent.ReleaseControl();
                 else
                 {
-                    var location = this.TransformConsolePositionByControlPosition(info);
+                    var location = this.TransformConsolePositionByControlPosition(info.ConsolePosition);
 
-                    //if (info.ConsoleLocation.X >= Position.X && info.ConsoleLocation.X < Position.X + Width)
+                    //if (info.ConsolePosition.X >= Position.X && info.ConsolePosition.X < Position.X + Width)
                     if (location.X >= 0 && location.X <= base.Width - 1 && location.Y > -4 && location.Y < Height + 3)
                     {
                         _selectedPosition = location.X;
@@ -228,11 +228,11 @@
 
                 for (int x = 0; x < Width; x++)
                 {
-                    this[x, 0].GlyphIndex = 219;
+                    this[x, 0].Glyph = 219;
                     this[x, 0].Foreground = gradient.Lerp((float)x / (float)(Width - 1));
                 }
 
-                this[_selectedPosition, 1].GlyphIndex = 30;
+                this[_selectedPosition, 1].Glyph = 30;
                 this[_selectedPosition, 1].Foreground = Color.LightGray;//this[_selectedPosition, 0].Foreground;
 
                 // Build an array of all the colors
@@ -276,15 +276,15 @@
 
         }
 
-        protected override void OnMouseIn(SadConsole.Input.MouseInfo info)
+        protected override void OnMouseIn(SadConsole.Input.MouseConsoleState info)
         {
             base.OnMouseIn(info);
 
             if (Parent.CapturedControl == null)
             {
-                if (info.LeftButtonDown)
+                if (info.Mouse.LeftButtonDown)
                 {
-                    var location = this.TransformConsolePositionByControlPosition(info);
+                    var location = this.TransformConsolePositionByControlPosition(info.CellPosition);
                     _selectedPosition = location.X;
                     SelectedColorSafe = this[_selectedPosition, 0].Foreground;
                     IsDirty = true;
@@ -294,17 +294,17 @@
             }
         }
 
-        public override bool ProcessMouse(SadConsole.Input.MouseInfo info)
+        public override bool ProcessMouse(SadConsole.Input.MouseConsoleState info)
         {
             if (Parent.CapturedControl == this)
             {
-                if (info.LeftButtonDown == false)
+                if (info.Mouse.LeftButtonDown == false)
                     Parent.ReleaseControl();
                 else
                 {
-                    var location = this.TransformConsolePositionByControlPosition(info);
+                    var location = this.TransformConsolePositionByControlPosition(info.ConsolePosition);
 
-                    //if (info.ConsoleLocation.X >= Position.X && info.ConsoleLocation.X < Position.X + Width)
+                    //if (info.ConsolePosition.X >= Position.X && info.ConsolePosition.X < Position.X + Width)
                     if (location.X >= 0 && location.X <= Width - 1 && location.Y > -4 && location.Y < Height + 3 )
                     {
                         _selectedPosition = location.X;

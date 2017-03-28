@@ -1,10 +1,10 @@
 ﻿using System;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 using System.Linq;
 
 namespace SadConsoleEditor.FileLoaders
 {
-    class LayeredTextSurface : IFileLoader
+    class LayeredSurface : IFileLoader
     {
         public bool SupportsLoad { get { return true; } }
 
@@ -28,12 +28,12 @@ namespace SadConsoleEditor.FileLoaders
 
         public object Load(string file)
         {
-            return SadConsole.Consoles.LayeredTextSurface.Load(file, typeof(LayerMetadata));
+            return SadConsole.Surfaces.LayeredSurface.Load(file);
         }
 
         public void Save(object surface, string file)
         {
-            ((SadConsole.Consoles.LayeredTextSurface)surface).Save(file, typeof(LayerMetadata));
+            ((SadConsole.Surfaces.LayeredSurface)surface).Save(file);
         }
     }
 }

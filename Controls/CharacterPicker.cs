@@ -2,9 +2,9 @@
 {
     using Microsoft.Xna.Framework;
     using SadConsole;
-    using SadConsole.Consoles;
+    using SadConsole.Surfaces;
     using System;
-    using Console = SadConsole.Consoles.Console;
+    using Console = SadConsole.Console;
 
     class CharacterPicker: SadConsole.Controls.ControlBase
     {
@@ -39,8 +39,8 @@
                 int old = _selectedChar;
                 _selectedChar = value;
 
-                var oldLocation = SadConsole.Consoles.TextSurface.GetPointFromIndex(old, 16);
-                var newLocation = SadConsole.Consoles.TextSurface.GetPointFromIndex(value, 16);
+                var oldLocation = SadConsole.Surfaces.BasicSurface.GetPointFromIndex(old, 16);
+                var newLocation = SadConsole.Surfaces.BasicSurface.GetPointFromIndex(value, 16);
 
                 this.SetForeground(oldLocation.X, oldLocation.Y, _charForeground);
                 this.SetForeground(newLocation.X, newLocation.Y, _selectedCharColor);
@@ -66,7 +66,7 @@
             Clear();
             
 
-            this.CanUseMouse = true;
+            this.UseMouse = true;
 
             _selectedCharColor = selectedCharacterColor;
 
@@ -98,32 +98,32 @@
                 for (int x = 0; x < 16; x++)
                 {
                     this.SetGlyph(x, y, i);
-                    this.SetSpriteEffect(x, y, _mirrorEffect);
+                    this.SetMirror(x, y, _mirrorEffect);
                     i++;
                 }
             }
         }
 
-        protected override void OnMouseIn(SadConsole.Input.MouseInfo info)
+        protected override void OnMouseIn(SadConsole.Input.MouseConsoleState info)
         {
-            var mousePosition = TransformConsolePositionByControlPosition(info);
+            var mousePosition = TransformConsolePositionByControlPosition(info.ConsolePosition);
 
-            if (new Rectangle(0, 0, 16, 16).Contains(mousePosition) && info.LeftButtonDown)
+            if (new Rectangle(0, 0, 16, 16).Contains(mousePosition) && info.Mouse.LeftButtonDown)
             {
                 if (!UseFullClick)
-                    SelectedCharacter = this[mousePosition.ToIndex(16)].GlyphIndex;
+                    SelectedCharacter = this[mousePosition.ToIndex(16)].Glyph;
             }
 
             base.OnMouseIn(info);
         }
 
-        protected override void OnLeftMouseClicked(SadConsole.Input.MouseInfo info)
+        protected override void OnLeftMouseClicked(SadConsole.Input.MouseConsoleState info)
         {
-            var mousePosition = TransformConsolePositionByControlPosition(info);
+            var mousePosition = TransformConsolePositionByControlPosition(info.ConsolePosition);
 
             if (new Rectangle(0, 0, 16, 16).Contains(mousePosition))
             {
-                SelectedCharacter = this[mousePosition.ToIndex(16)].GlyphIndex;
+                SelectedCharacter = this[mousePosition.ToIndex(16)].Glyph;
             }
             
             base.OnLeftMouseClicked(info);

@@ -1,8 +1,8 @@
 ﻿namespace SadConsoleEditor.Tools
 {
     using SadConsole;
-    using SadConsole.Consoles;
-    using SadConsole.Game;
+    using SadConsole.Surfaces;
+    using SadConsole.GameHelpers;
     using SadConsole.Input;
     using SadConsoleEditor.Panels;
 
@@ -46,8 +46,7 @@
 
         public void OnSelected()
         {
-            Brush = new SadConsole.Game.GameObject(Settings.Config.ScreenFont);
-            Brush.Animation = new AnimatedTextSurface("default", 1, 1);
+            Brush = new SadConsole.GameHelpers.GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
             Brush.Animation.CreateFrame();
             Brush.IsVisible = false;
 
@@ -77,8 +76,8 @@
 
         public void RefreshTool()
         {
-            Settings.QuickEditor.TextSurface = Brush.Animation.Frames[0];
-            Settings.QuickEditor.Fill(CharacterPickPanel.SharedInstance.SettingForeground,
+            SadConsoleEditor.Settings.QuickEditor.TextSurface = Brush.Animation.Frames[0];
+            SadConsoleEditor.Settings.QuickEditor.Fill(CharacterPickPanel.SharedInstance.SettingForeground,
                                       CharacterPickPanel.SharedInstance.SettingBackground, 95);
 
             SadConsole.Effects.Blink blinkEffect = new SadConsole.Effects.Blink();
@@ -88,10 +87,10 @@
 
         public void Update()
         {
-            blinkManager.UpdateEffects(SadConsole.Engine.GameTimeElapsedUpdate);
+            blinkManager.UpdateEffects(SadConsole.Global.GameTimeElapsedUpdate);
         }
 
-        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
+        public bool ProcessKeyboard(Keyboard info, ISurface surface)
         {
             if (writing)
             {
@@ -103,8 +102,8 @@
                 }
                 else
                 {
-                    //tempConsole.TextSurface = (ITextSurfaceRendered)surface;
-                    tempConsole.VirtualCursor.PrintAppearance = new CellAppearance(CharacterPickPanel.SharedInstance.SettingForeground, CharacterPickPanel.SharedInstance.SettingBackground);
+                    //tempConsole.BasicSurface = (ISurfaceRendered)surface;
+                    tempConsole.VirtualCursor.PrintAppearance = new Cell(CharacterPickPanel.SharedInstance.SettingForeground, CharacterPickPanel.SharedInstance.SettingBackground);
                     tempConsole.ProcessKeyboard(info);
                     Brush.Position = tempConsole.VirtualCursor.Position;
                 }
@@ -115,31 +114,31 @@
             return false;
         }
 
-        public void ProcessMouse(MouseInfo info, ITextSurface surface)
+        public void ProcessMouse(MouseConsoleState info, ISurface surface)
         {
         }
 
-        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
+        public void MouseEnterSurface(MouseConsoleState info, ISurface surface)
         {
             //Brush.IsVisible = true;
         }
 
-        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
+        public void MouseExitSurface(MouseConsoleState info, ISurface surface)
         {
             //Brush.IsVisible = false;
         }
 
-        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
+        public void MouseMoveSurface(MouseConsoleState info, ISurface surface)
         {
             
 
-            if (info.LeftClicked)
+            if (info.Mouse.LeftClicked)
             {
                 EditorConsoleManager.AllowKeyboardToMoveConsole = false;
                 writing = true;
 
-                tempConsole.TextSurface = (ITextSurfaceRendered)surface;
-                tempConsole.VirtualCursor.Position = Brush.Position = info.ConsoleLocation;
+                tempConsole.TextSurface = (ISurface)surface;
+                tempConsole.VirtualCursor.Position = Brush.Position = info.ConsolePosition;
 
                 Brush.IsVisible = true;
             }

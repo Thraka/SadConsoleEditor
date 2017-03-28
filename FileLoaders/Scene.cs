@@ -1,6 +1,7 @@
 ﻿using System;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 using System.Linq;
+using System.IO;
 
 namespace SadConsoleEditor.FileLoaders
 {
@@ -28,17 +29,21 @@ namespace SadConsoleEditor.FileLoaders
 
         public object Load(string file)
         {
-            if (System.IO.Path.GetExtension(file) == ".scene")
+            var surfaceFile = Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + ".surface");
+
+            if (File.Exists(surfaceFile))
             {
+                var surface = SadConsole.Surfaces.LayeredSurface.Load(surfaceFile);
 
+                return SadConsole.GameHelpers.Scene.Load(file, surface, new SadConsole.Renderers.LayeredSurfaceRenderer());
             }
-
-            return SadConsole.Game.Scene.Load(file, null, typeof(LayerMetadata));
+            else
+                throw new Exception("A .surface file is missing. It should be the same name as the scene.");
         }
 
         public void Save(object surface, string file)
         {
-            ((SadConsole.Game.Scene)surface).Save(file, typeof(LayerMetadata));
+            ((SadConsole.GameHelpers.Scene)surface).Save(file);
         }
     }
 }

@@ -5,12 +5,12 @@ using System.Text;
 using SadConsole;
 using Microsoft.Xna.Framework;
 using SadConsole.Controls;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 namespace SadConsoleEditor.Windows
 {
     class FileLoaderListBoxItem: ListBoxItem
     {
-        public override void Draw(ITextSurface surface, Rectangle area)
+        public override void Draw(ISurface surface, Rectangle area)
         {
             string value = ((FileLoaders.IFileLoader)Item).FileTypeName;
             if (value.Length < area.Width)
@@ -108,20 +108,20 @@ namespace SadConsoleEditor.Windows
             fileName.TextChanged += _fileName_TextChanged;
             Print(fileName.Bounds.Left, fileName.Bounds.Top - 1, "Selected file", Settings.Color_TitleText);
 
-            selectButton = new Button(8, 1)
+            selectButton = new Button(8)
             {
                 Text = "Open",
                 Position = new Point(Width - 10, this.TextSurface.Height - 2),
                 IsEnabled = false
             };
-            selectButton.ButtonClicked += new EventHandler(_selectButton_Action);
+            selectButton.Click += new EventHandler(_selectButton_Action);
 
-            cancelButton = new Button(8, 1)
+            cancelButton = new Button(8)
             {
                 Text = "Cancel",
                 Position = new Point(2, this.TextSurface.Height - 2)
             };
-            cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
+            cancelButton.Click += new EventHandler(_cancelButton_Action);
 
             Add(directoryListBox);
             Add(fileName);

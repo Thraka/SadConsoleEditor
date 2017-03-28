@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using SadConsole.Consoles;
-using SadConsole.Game;
+using SadConsole.Surfaces;
+using SadConsole.GameHelpers;
 using SadConsole.Input;
 using System;
 using System.Collections.Generic;
@@ -47,7 +47,7 @@ namespace SadConsoleEditor
             this.objectType = objectType;
             this.gameObject = gameObject;
             
-            renderOffset = gameObject.RenderOffset;
+            renderOffset = gameObject.PositionOffset;
 
             Rules = ResizeRules.Get(objectType);
             ProcessOverlay();
@@ -70,18 +70,18 @@ namespace SadConsoleEditor
         {
             if (objectType == ObjectType.Zone)
             {
-                if (gameObject.Width != width || gameObject.Height != height)
+                if (gameObject.Animation.Width != width || gameObject.Animation.Height != height)
                 {
                     var animation = gameObject.Animation;
                     var backColor = animation.CurrentFrame[0].Background;
 
-                    var newAnimation = new AnimatedTextSurface(gameObject.Animation.Name, width, height);
-                    Settings.QuickEditor.TextSurface = newAnimation.CreateFrame();
-                    Settings.QuickEditor.Fill(Color.White, backColor, 0);
-                    Settings.QuickEditor.Print(0, 0, Name, Color.DarkGray);
+                    var newAnimation = new AnimatedSurface(gameObject.Animation.Name, width, height);
+                    SadConsoleEditor.Settings.QuickEditor.TextSurface = newAnimation.CreateFrame();
+                    SadConsoleEditor.Settings.QuickEditor.Fill(Color.White, backColor, 0);
+                    SadConsoleEditor.Settings.QuickEditor.Print(0, 0, Name, Color.DarkGray);
 
                     gameObject.Animation = newAnimation;
-                    gameObject.Update();
+                    gameObject.Update(SadConsole.Global.GameTimeUpdate.ElapsedGameTime);
 
                     gameObject.Position = new Point(positionX ?? gameObject.Position.X, positionY ?? gameObject.Position.Y);
 
@@ -92,33 +92,33 @@ namespace SadConsoleEditor
 
         public virtual void Recolor(Color color)
         {
-            Settings.QuickEditor.TextSurface = gameObject.Animation.CurrentFrame;
-            Settings.QuickEditor.Fill(Color.White, color, 0);
-            Settings.QuickEditor.Print(0, 0, Name, Color.DarkGray);
+            SadConsoleEditor.Settings.QuickEditor.TextSurface = gameObject.Animation.CurrentFrame;
+            SadConsoleEditor.Settings.QuickEditor.Fill(Color.White, color, 0);
+            SadConsoleEditor.Settings.QuickEditor.Print(0, 0, Name, Color.DarkGray);
         }
 
         public void DrawZone()
         {
-            Settings.QuickEditor.TextSurface = gameObject.Animation.CurrentFrame;
-            Settings.QuickEditor.Fill(Color.White, gameObject.Animation.CurrentFrame[0].Background, 0);
-            Settings.QuickEditor.Print(0, 0, Name, Color.DarkGray);
+            SadConsoleEditor.Settings.QuickEditor.TextSurface = gameObject.Animation.CurrentFrame;
+            SadConsoleEditor.Settings.QuickEditor.Fill(Color.White, gameObject.Animation.CurrentFrame[0].Background, 0);
+            SadConsoleEditor.Settings.QuickEditor.Print(0, 0, Name, Color.DarkGray);
         }
 
-        public void Render()
+        public void Draw(TimeSpan delta)
         {
-            gameObject.Render();
+            gameObject.Draw(delta);
 
             if (isSelected)
-                overlay.Render();
+                overlay.Draw(delta);
         }
 
         public void ProcessOverlay()
         {
-            overlay = new GameObject(Settings.Config.ScreenFont);
-            overlay.RenderOffset = gameObject.RenderOffset = renderOffset;
+            overlay = new GameObject(1, 1, Settings.Config.ScreenFont);
+            overlay.PositionOffset = gameObject.PositionOffset = renderOffset;
             overlay.Position = gameObject.Position - gameObject.Animation.Center - new Point(1);
 
-            overlay.Animation = new AnimatedTextSurface("default", gameObject.Animation.Width + 2, gameObject.Animation.Height + 2, Settings.Config.ScreenFont);
+            overlay.Animation = new AnimatedSurface("default", gameObject.Animation.Width + 2, gameObject.Animation.Height + 2, Settings.Config.ScreenFont);
             var frame = overlay.Animation.CreateFrame();
 
             var box = SadConsole.Shapes.Box.GetDefaultBox();
@@ -129,34 +129,34 @@ namespace SadConsoleEditor
 
             var centers = new Point(box.Width / 2, box.Height / 2);
             
-            Settings.QuickEditor.TextSurface = frame;
+            SadConsoleEditor.Settings.QuickEditor.TextSurface = frame;
 
-            box.Draw(Settings.QuickEditor);
+            box.Draw(SadConsoleEditor.Settings.QuickEditor);
 
             if (Rules.AllowLeftRight && Rules.AllowTopBottom)
             {
-                Settings.QuickEditor.SetGlyph(0, 0, 254);
-                Settings.QuickEditor.SetGlyph(Settings.QuickEditor.Width - 1, 0, 254);
-                Settings.QuickEditor.SetGlyph(Settings.QuickEditor.Width - 1, Settings.QuickEditor.Height - 1, 254);
-                Settings.QuickEditor.SetGlyph(0, Settings.QuickEditor.Height - 1, 254);
+                SadConsoleEditor.Settings.QuickEditor.SetGlyph(0, 0, 254);
+                SadConsoleEditor.Settings.QuickEditor.SetGlyph(SadConsoleEditor.Settings.QuickEditor.Width - 1, 0, 254);
+                SadConsoleEditor.Settings.QuickEditor.SetGlyph(SadConsoleEditor.Settings.QuickEditor.Width - 1, SadConsoleEditor.Settings.QuickEditor.Height - 1, 254);
+                SadConsoleEditor.Settings.QuickEditor.SetGlyph(0, SadConsoleEditor.Settings.QuickEditor.Height - 1, 254);
             }
 
             if (Rules.AllowLeftRight)
             {
-                Settings.QuickEditor.SetGlyph(0, centers.Y, 254);
-                Settings.QuickEditor.SetGlyph(Settings.QuickEditor.Width - 1, centers.Y, 254);
+                SadConsoleEditor.Settings.QuickEditor.SetGlyph(0, centers.Y, 254);
+                SadConsoleEditor.Settings.QuickEditor.SetGlyph(SadConsoleEditor.Settings.QuickEditor.Width - 1, centers.Y, 254);
             }
 
             if (Rules.AllowTopBottom)
             {
-                Settings.QuickEditor.SetGlyph(centers.X, 0, 254);
-                Settings.QuickEditor.SetGlyph(centers.X, Settings.QuickEditor.Height - 1, 254);
+                SadConsoleEditor.Settings.QuickEditor.SetGlyph(centers.X, 0, 254);
+                SadConsoleEditor.Settings.QuickEditor.SetGlyph(centers.X, SadConsoleEditor.Settings.QuickEditor.Height - 1, 254);
             }
 
             if (objectType == ObjectType.GameObject)
             {
-                Settings.QuickEditor.SetGlyph(gameObject.Animation.Center.X + 1, gameObject.Animation.Center.Y + 1, '*');
-                Settings.QuickEditor.SetBackground(gameObject.Animation.Center.X + 1, gameObject.Animation.Center.Y + 1, Color.Black);
+                SadConsoleEditor.Settings.QuickEditor.SetGlyph(gameObject.Animation.Center.X + 1, gameObject.Animation.Center.Y + 1, '*');
+                SadConsoleEditor.Settings.QuickEditor.SetBackground(gameObject.Animation.Center.X + 1, gameObject.Animation.Center.Y + 1, Color.Black);
                 overlay.Animation.Tint = Color.Black * 0.3f;
 
                 //EditorConsoleManager.Brush = overlay;

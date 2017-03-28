@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using SadConsole.Consoles;
-using SadConsole.Game;
+using SadConsole.Surfaces;
+using SadConsole.GameHelpers;
 using SadConsole.Input;
 using SadConsoleEditor.Consoles;
 using SadConsoleEditor.Panels;
@@ -10,7 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Console = SadConsole.Consoles.Console;
+using Console = SadConsole.Console;
+using SadConsole;
 
 namespace SadConsoleEditor.Editors
 {
@@ -21,7 +22,7 @@ namespace SadConsoleEditor.Editors
         private const int LayerAnimCenter = 2;
         private const int LayerAnimBox = 3;
 
-        private LayeredTextSurface textSurface;
+        private LayeredSurface BasicSurface;
         private Console consoleWrapper;
         private CustomPanel[] panels;
         private ToolsPanel toolsPanel;
@@ -33,9 +34,9 @@ namespace SadConsoleEditor.Editors
         private AnimationFramesPanel framesPanel;
 
         private GameObject gameObject;
-        private AnimatedTextSurface selectedAnimation;
+        private AnimatedSurface selectedAnimation;
 
-        public SceneEditor LinkedEditor;
+        //public SceneEditor LinkedEditor;
 
         public GameObject GameObject { get { return gameObject; } }
 
@@ -47,11 +48,11 @@ namespace SadConsoleEditor.Editors
 
         public string EditorTypeName { get { return "Animated Game Object"; } }
 
-        public int Height { get { return textSurface.Height; } }
+        public int Height { get { return BasicSurface.Height; } }
 
         public Point Position { get { return consoleWrapper.Position; } }
 
-        public int Width { get { return textSurface.Width; } }
+        public int Width { get { return BasicSurface.Width; } }
 
         public CustomPanel[] Panels { get { return panels; } }
 
@@ -66,7 +67,7 @@ namespace SadConsoleEditor.Editors
             }
         }
 
-        public bool IsLinked { get { return LinkedEditor != null; } }
+        public bool IsLinked { get { return false; } } // LinkedEditor != null; } }
 
         private bool showCenterLayer;
 
@@ -88,13 +89,13 @@ namespace SadConsoleEditor.Editors
         public GameObjectEditor()
         {
             consoleWrapper = new Console(1, 1);
-            consoleWrapper.Renderer = new LayeredTextRenderer();
+            consoleWrapper.Renderer = new SadConsole.Renderers.LayeredSurfaceRenderer();
             consoleWrapper.MouseHandler = ProcessMouse;
-            consoleWrapper.CanUseKeyboard = false;
+            consoleWrapper.UseKeyboard = false;
 
-            consoleWrapper.MouseMove += (o, e) => { toolsPanel.SelectedTool?.MouseMoveSurface(e.OriginalMouseInfo, textSurface); };
-            consoleWrapper.MouseEnter += (o, e) => { toolsPanel.SelectedTool?.MouseEnterSurface(e.OriginalMouseInfo, textSurface); };
-            consoleWrapper.MouseExit += (o, e) => { toolsPanel.SelectedTool?.MouseExitSurface(e.OriginalMouseInfo, textSurface); };
+            consoleWrapper.MouseMove += (o, e) => { toolsPanel.SelectedTool?.MouseMoveSurface(e.MouseState, BasicSurface); };
+            consoleWrapper.MouseEnter += (o, e) => { toolsPanel.SelectedTool?.MouseEnterSurface(e.MouseState, BasicSurface); };
+            consoleWrapper.MouseExit += (o, e) => { toolsPanel.SelectedTool?.MouseExitSurface(e.MouseState, BasicSurface); };
 
             toolsPanel = new ToolsPanel();
             animationPanel = new AnimationsPanel(SelectedAnimationChanged);
@@ -144,30 +145,30 @@ namespace SadConsoleEditor.Editors
 
                 //if (tool is Tools.EntityCenterTool)
                 //{
-                //    textSurface.GetLayer(LayerAnimCenter).IsVisible = true;
-                //    textSurface.GetLayer(LayerBackground).IsVisible = true;
+                //    BasicSurface.GetLayer(LayerAnimCenter).IsVisible = true;
+                //    BasicSurface.GetLayer(LayerBackground).IsVisible = true;
                     
-                //    //textSurface.Tint = new Color(0f, 0f, 0f, 0.2f);
+                //    //BasicSurface.Tint = new Color(0f, 0f, 0f, 0.2f);
                 //}
                 //else
                 //{
-                //    textSurface.GetLayer(LayerAnimCenter).IsVisible = false;
-                //    textSurface.GetLayer(LayerBackground).IsVisible = false;
-                //    //textSurface.Tint = new Color(0f, 0f, 0f, 1f);
+                //    BasicSurface.GetLayer(LayerAnimCenter).IsVisible = false;
+                //    BasicSurface.GetLayer(LayerBackground).IsVisible = false;
+                //    //BasicSurface.Tint = new Color(0f, 0f, 0f, 1f);
                 //}
             }
         }
         
 
-        private void SelectedAnimationChanged(AnimatedTextSurface animation)
+        private void SelectedAnimationChanged(AnimatedSurface animation)
         {
             selectedAnimation = animation;
 
-            consoleWrapper.TextSurface = textSurface = new LayeredTextSurface(animation.Width, animation.Height, Settings.Config.ScreenFont, 4);
+            consoleWrapper.TextSurface = BasicSurface = new LayeredSurface(animation.Width, animation.Height, Settings.Config.ScreenFont, 4);
 
             SyncSpecialLayerToAnimation();
 
-            ((LayeredTextSurface)consoleWrapper.TextSurface).SetActiveLayer(0);
+            ((LayeredSurface)consoleWrapper.TextSurface).SetActiveLayer(0);
 
             // inform the outer box we've changed size
             if (EditorConsoleManager.ActiveEditor == this)
@@ -177,47 +178,47 @@ namespace SadConsoleEditor.Editors
             SelectedTool = selectedTool;
         }
 
-        private void SelectedFrameChanged(TextSurfaceBasic frame)
+        private void SelectedFrameChanged(BasicSurface frame)
         {
-            //if (((LayeredTextSurface)_consoleLayers.TextSurface).LayerCount != 0)
-            //    ((LayeredTextSurface)_consoleLayers.TextSurface).Remove(0);
-            //var layer = ((LayeredTextSurface)_consoleLayers.TextSurface).Add();
-            //((LayeredTextSurface)_consoleLayers.TextSurface).SetActiveLayer(layer.Index);
-            //TextSurface tempSurface = new TextSurface(_consoleLayers.Width, _consoleLayers.Height, ((LayeredTextSurface)_consoleLayers.TextSurface).Font);
+            //if (((LayeredSurface)_consoleLayers.BasicSurface).LayerCount != 0)
+            //    ((LayeredSurface)_consoleLayers.BasicSurface).Remove(0);
+            //var layer = ((LayeredSurface)_consoleLayers.BasicSurface).Add();
+            //((LayeredSurface)_consoleLayers.BasicSurface).SetActiveLayer(layer.Index);
+            //BasicSurface tempSurface = new BasicSurface(_consoleLayers.Width, _consoleLayers.Height, ((LayeredSurface)_consoleLayers.BasicSurface).Font);
             //frame.Copy(tempSurface);
             //var meta = LayerMetadata.Create("Root", false, false, true, layer);
-            //((LayeredTextSurface)_consoleLayers.TextSurface).SetActiveLayer(0);
+            //((LayeredSurface)_consoleLayers.BasicSurface).SetActiveLayer(0);
 
-            var meta = ((LayeredTextSurface)consoleWrapper.TextSurface).GetLayer(LayerDrawing);
+            var meta = ((LayeredSurface)consoleWrapper.TextSurface).GetLayer(LayerDrawing);
             meta.Cells = meta.RenderCells = frame.Cells;
-            ((LayeredTextSurface)consoleWrapper.TextSurface).SetActiveLayer(LayerDrawing);
+            ((LayeredSurface)consoleWrapper.TextSurface).SetActiveLayer(LayerDrawing);
         }
 
         private void SyncSpecialLayerToAnimation()
         {
-            int previousSelectedLayer = textSurface.ActiveLayerIndex;
+            int previousSelectedLayer = BasicSurface.ActiveLayerIndex;
 
-            textSurface.SetActiveLayer(LayerAnimCenter);
+            BasicSurface.SetActiveLayer(LayerAnimCenter);
             consoleWrapper.Fill(Color.White, Color.Transparent, 0);
-            textSurface.GetCell(selectedAnimation.Center.X, selectedAnimation.Center.Y).GlyphIndex = 42;
-            textSurface.GetCell(selectedAnimation.Center.X, selectedAnimation.Center.Y).Background = Color.Black;
+            BasicSurface.GetCell(selectedAnimation.Center.X, selectedAnimation.Center.Y).Glyph = 42;
+            BasicSurface.GetCell(selectedAnimation.Center.X, selectedAnimation.Center.Y).Background = Color.Black;
 
-            textSurface.SetActiveLayer(LayerBackground);
+            BasicSurface.SetActiveLayer(LayerBackground);
             consoleWrapper.Fill(Color.White, Color.White * 0.6f, 0);
 
             // Change this to a prop (SHOWCENTER LAYER) and have tool on selected
-            textSurface.GetLayer(LayerAnimCenter).IsVisible = ShowCenterLayer;
-            textSurface.GetLayer(LayerAnimBox).IsVisible = false;
-            textSurface.GetLayer(LayerBackground).IsVisible = ShowCenterLayer;
+            BasicSurface.GetLayer(LayerAnimCenter).IsVisible = ShowCenterLayer;
+            BasicSurface.GetLayer(LayerAnimBox).IsVisible = false;
+            BasicSurface.GetLayer(LayerBackground).IsVisible = ShowCenterLayer;
 
-            textSurface.SetActiveLayer(previousSelectedLayer);
+            BasicSurface.SetActiveLayer(previousSelectedLayer);
             // TODO: Draw box on LayerAnimBox for collision rect
         }
 
         public void SetEntity(GameObject entity)
         {
             gameObject = entity;
-            gameObject.Font = SadConsoleEditor.Settings.Config.ScreenFont;
+            gameObject.Animation.Font = SadConsoleEditor.Settings.Config.ScreenFont;
 
             if (!gameObject.Animations.ContainsValue(gameObject.Animation))
                 gameObject.Animation = gameObject.Animations.First().Value;
@@ -239,9 +240,9 @@ namespace SadConsoleEditor.Editors
         {
             Reset();
             
-            var gameObject = new GameObject(SadConsoleEditor.Settings.Config.ScreenFont);
+            var gameObject = new GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
 
-            AnimatedTextSurface animation = new AnimatedTextSurface("default", width, height, SadConsoleEditor.Settings.Config.ScreenFont);
+            AnimatedSurface animation = new AnimatedSurface("default", width, height, SadConsoleEditor.Settings.Config.ScreenFont);
             animation.DefaultForeground = foreground;
             animation.DefaultBackground = background;
             animation.CreateFrame();
@@ -256,8 +257,8 @@ namespace SadConsoleEditor.Editors
 
         public void Resize(int width, int height)
         {
-            //var oldSurface = (LayeredTextSurface)_consoleLayers.TextSurface;
-            //var newSurface = new LayeredTextSurface(width, height, oldSurface.LayerCount);
+            //var oldSurface = (LayeredSurface)_consoleLayers.BasicSurface;
+            //var newSurface = new LayeredSurface(width, height, oldSurface.LayerCount);
 
             //for (int i = 0; i < oldSurface.LayerCount; i++)
             //{
@@ -270,11 +271,11 @@ namespace SadConsoleEditor.Editors
             //    newLayer.IsVisible = oldLayer.IsVisible;
             //}
 
-            List<AnimatedTextSurface> newAnimations = new List<AnimatedTextSurface>(gameObject.Animations.Count);
+            List<AnimatedSurface> newAnimations = new List<AnimatedSurface>(gameObject.Animations.Count);
 
             foreach (var oldAnimation in gameObject.Animations.Values)
             {
-                var newAnimation = new AnimatedTextSurface(oldAnimation.Name, width, height, SadConsoleEditor.Settings.Config.ScreenFont);
+                var newAnimation = new AnimatedSurface(oldAnimation.Name, width, height, SadConsoleEditor.Settings.Config.ScreenFont);
 
                 for (int i = 0; i < oldAnimation.Frames.Count; i++)
                 {
@@ -388,9 +389,9 @@ namespace SadConsoleEditor.Editors
         }
 
 
-        public bool ProcessKeyboard(KeyboardInfo info)
+        public bool ProcessKeyboard(Keyboard info)
         {
-            bool toolHandled = toolsPanel.SelectedTool.ProcessKeyboard(info, textSurface);
+            bool toolHandled = toolsPanel.SelectedTool.ProcessKeyboard(info, BasicSurface);
 
             if (!toolHandled)
             {
@@ -423,24 +424,24 @@ namespace SadConsoleEditor.Editors
             return false;
         }
 
-        public bool ProcessMouse(IConsole console, SadConsole.Input.MouseInfo info)
+        public bool ProcessMouse(IConsole console, SadConsole.Input.MouseConsoleState info)
         {
             consoleWrapper.MouseHandler = null;
-            consoleWrapper.CanUseMouse = true;
+            consoleWrapper.UseMouse = true;
             consoleWrapper.ProcessMouse(info);
             consoleWrapper.MouseHandler = ProcessMouse;
 
-            toolsPanel.SelectedTool?.ProcessMouse(info, textSurface);
+            toolsPanel.SelectedTool?.ProcessMouse(info, BasicSurface);
 
             if (consoleWrapper.IsMouseOver)
             {
-                EditorConsoleManager.SurfaceMouseLocation = info.ConsoleLocation;
+                EditorConsoleManager.SurfaceMouseLocation = info.ConsolePosition;
                 return true;
             }
             else
                 EditorConsoleManager.SurfaceMouseLocation = Point.Zero;
 
-            consoleWrapper.CanUseMouse = false;
+            consoleWrapper.UseMouse = false;
             return false;
         }
     }

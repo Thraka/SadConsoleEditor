@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 using SadConsole.Controls;
 using SadConsole.Input;
 using Microsoft.Xna.Framework;
@@ -39,7 +39,7 @@ namespace SadConsoleEditor.Panels
             Controls = new ControlBase[] { skipEmptyColor, altEmptyColorCheck, altEmptyColor };
         }
 
-        public override void ProcessMouse(MouseInfo info)
+        public override void ProcessMouse(MouseConsoleState info)
         {
         }
 
@@ -68,8 +68,8 @@ namespace SadConsoleEditor.Panels
 
         private string lastFolder = null;
 
-        private Func<TextSurface> saveBrushHandler;
-        private Action<TextSurface> loadBrushHandler;
+        private Func<BasicSurface> saveBrushHandler;
+        private Action<BasicSurface> loadBrushHandler;
 
         private int _currentStepChar = 175;
 
@@ -105,31 +105,31 @@ namespace SadConsoleEditor.Panels
 
         
 
-        public SelectionToolPanel(Action<TextSurface> loadBrushHandler, Func<TextSurface> saveBrushHandler)
+        public SelectionToolPanel(Action<BasicSurface> loadBrushHandler, Func<BasicSurface> saveBrushHandler)
         {
-            reset = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            reset = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             reset.Text = "Reset Steps";
-            reset.ButtonClicked += (o, e) => State = CloneState.SelectingPoint1;
+            reset.Click += (o, e) => State = CloneState.SelectingPoint1;
 
-            loadBrush = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            loadBrush = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             loadBrush.Text = "Import Brush";
-            loadBrush.ButtonClicked += _loadBrush_ButtonClicked;
+            loadBrush.Click += _loadBrush_Click;
 
-            saveBrush = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            saveBrush = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             saveBrush.Text = "Export Brush";
-            saveBrush.ButtonClicked += _saveBrush_ButtonClicked;
+            saveBrush.Click += _saveBrush_Click;
 
-            clone = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            clone = new Button(Consoles.ToolPane.PanelWidthControls);
             clone.Text = "Clone";
-            clone.ButtonClicked += clone_ButtonClicked;
+            clone.Click += clone_Click;
 
-            clear = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            clear = new Button(Consoles.ToolPane.PanelWidthControls);
             clear.Text = "Clear";
-            clear.ButtonClicked += clear_ButtonClicked;
+            clear.Click += clear_Click;
 
-            move = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            move = new Button(Consoles.ToolPane.PanelWidthControls);
             move.Text = "Move";
-            move.ButtonClicked += move_ButtonClicked;
+            move.Click += move_Click;
 
             
 
@@ -142,22 +142,22 @@ namespace SadConsoleEditor.Panels
             State = CloneState.SelectingPoint1;
         }
 
-        private void move_ButtonClicked(object sender, EventArgs e)
+        private void move_Click(object sender, EventArgs e)
         {
             State = CloneState.Move;
         }
 
-        private void clear_ButtonClicked(object sender, EventArgs e)
+        private void clear_Click(object sender, EventArgs e)
         {
             State = CloneState.Clear;
         }
 
-        private void clone_ButtonClicked(object sender, EventArgs e)
+        private void clone_Click(object sender, EventArgs e)
         {
             State = CloneState.Clone;
         }
 
-        private void _saveBrush_ButtonClicked(object sender, EventArgs e)
+        private void _saveBrush_Click(object sender, EventArgs e)
         {
             SelectFilePopup popup = new SelectFilePopup();
             popup.Closed += (o2, e2) =>
@@ -168,14 +168,14 @@ namespace SadConsoleEditor.Panels
                 }
             };
             popup.CurrentFolder = lastFolder ?? Environment.CurrentDirectory;
-            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.TextSurface(), new FileLoaders.TextFile() };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.BasicSurface(), new FileLoaders.TextFile() };
             popup.SelectButtonText = "Save";
             popup.SkipFileExistCheck = true;
             popup.Show(true);
             popup.Center();
         }
 
-        private void _loadBrush_ButtonClicked(object sender, EventArgs e)
+        private void _loadBrush_Click(object sender, EventArgs e)
         {
             SelectFilePopup popup = new SelectFilePopup();
             popup.Closed += (o2, e2) =>
@@ -190,7 +190,7 @@ namespace SadConsoleEditor.Panels
                         //{
                         //    using (var ansi = new SadConsole.Ansi.Document(popup.SelectedFile))
                         //    {
-                        //        var console = new SadConsole.Consoles.Console(80, 1);
+                        //        var console = new SadConsole.Console(80, 1);
                         //        console.TextSurface.ResizeOnShift = true;
                         //        SadConsole.Ansi.AnsiWriter writer = new SadConsole.Ansi.AnsiWriter(ansi, console);
                         //        writer.ReadEntireDocument();
@@ -199,17 +199,17 @@ namespace SadConsoleEditor.Panels
 
                         //}
                         //else
-                        loadBrushHandler((TextSurface)popup.SelectedLoader.Load(popup.SelectedFile));
+                        loadBrushHandler((BasicSurface)popup.SelectedLoader.Load(popup.SelectedFile));
                     }
                 }
             };
             popup.CurrentFolder = lastFolder ?? Environment.CurrentDirectory;
-            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.TextSurface(), new FileLoaders.TextFile() };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.BasicSurface(), new FileLoaders.TextFile() };
             popup.Show(true);
             popup.Center();
         }
 
-        public override void ProcessMouse(MouseInfo info)
+        public override void ProcessMouse(MouseConsoleState info)
         {
 
         }

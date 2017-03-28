@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Console = SadConsole.Consoles.Console;
+using Console = SadConsole.Console;
 using SadConsole.Input;
 
 namespace SadConsoleEditor.Consoles
@@ -35,8 +35,8 @@ namespace SadConsoleEditor.Consoles
 		public QuickSelectPane() : base(Settings.Config.WindowWidth - Settings.Config.ToolPaneWidth + 1, 3)
 		{
             textSurface.Font = Settings.Config.ScreenFont;
-			textSurface.DefaultBackground = Settings.Color_MenuBack;
-			textSurface.DefaultForeground = Settings.Color_TitleText;
+            textSurface.DefaultBackground = Settings.Color_MenuBack;
+            textSurface.DefaultForeground = Settings.Color_TitleText;
 
             currentCharSet = 0;
 			
@@ -59,12 +59,11 @@ namespace SadConsoleEditor.Consoles
                 CharacterSets[2] = new int[] { (char)201, (char)187, (char)200, (char)188, (char)205, (char)186, (char)204, (char)185, (char)202, (char)203, (char)206, (char)0 };
             }
 
-			CanFocus = false;
-			CanUseMouse = false;
-			CanUseKeyboard = false;
+			UseMouse = false;
+			UseKeyboard = false;
 
             UsePixelPositioning = true;
-            Position = new Point(0, SadConsole.Engine.WindowHeight - textSurface.AbsoluteArea.Height);
+            Position = new Point(0, SadConsole.Global.WindowHeight - TextSurface.AbsoluteArea.Height);
         }
 
         public void Redraw()
@@ -86,7 +85,7 @@ namespace SadConsoleEditor.Consoles
             }
 		}
 
-		public override bool ProcessKeyboard(KeyboardInfo info)
+		public override bool ProcessKeyboard(Keyboard info)
 		{
 			bool shifted = info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
 
