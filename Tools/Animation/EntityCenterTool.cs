@@ -46,10 +46,10 @@ namespace SadConsoleEditor.Tools
             Brush.Animation.CreateFrame()[0].Glyph = 42;
             Brush.IsVisible = false;
             RefreshTool();
-            EditorConsoleManager.Brush = Brush;
-            EditorConsoleManager.UpdateBrush();
+            MainScreen.Instance.Brush = Brush;
+            MainScreen.Instance.UpdateBrush();
 
-            var editor = EditorConsoleManager.ActiveEditor as Editors.GameObjectEditor;
+            var editor = MainScreen.Instance.ActiveEditor as Editors.GameObjectEditor;
 
             if (editor != null)
                 editor.ShowCenterLayer = true;
@@ -57,7 +57,7 @@ namespace SadConsoleEditor.Tools
 
         public void OnDeselected()
         {
-            var editor = EditorConsoleManager.ActiveEditor as Editors.GameObjectEditor;
+            var editor = MainScreen.Instance.ActiveEditor as Editors.GameObjectEditor;
 
             if (editor != null)
                 editor.ShowCenterLayer = false;
@@ -65,7 +65,7 @@ namespace SadConsoleEditor.Tools
 
         public void RefreshTool()
         {
-            //_brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
+            //_brush.CurrentAnimation.Frames[0].Fill(MainScreen.Instance.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, MainScreen.Instance.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
         }
 
         public void Update()
@@ -99,7 +99,7 @@ namespace SadConsoleEditor.Tools
             if (info.Mouse.LeftClicked)
             {
                 var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
-                var editor = EditorConsoleManager.ActiveEditor as Editors.GameObjectEditor;
+                var editor = MainScreen.Instance.ActiveEditor as Editors.GameObjectEditor;
 
                 if (editor != null)
                 {

@@ -235,8 +235,8 @@
 
             ResetSelection();
 
-            EditorConsoleManager.Brush = Brush;
-            EditorConsoleManager.UpdateBrush();
+            MainScreen.Instance.Brush = Brush;
+            MainScreen.Instance.UpdateBrush();
             
 
             //if (_panel.State != SelectionToolPanel.CloneState.Clone && _panel.State != SelectionToolPanel.CloneState.Move)
@@ -244,15 +244,15 @@
             //    Brush.IsVisible = true;
             //    Brush.Animation = Brush.Animations["single"];
 
-            //    EditorConsoleManager.Brush = Brush;
-            //    EditorConsoleManager.UpdateBrush();
+            //    MainScreen.Instance.Brush = Brush;
+            //    MainScreen.Instance.UpdateBrush();
 
             //    _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
             //}
             //else
             //{
-            //    EditorConsoleManager.Brush = Brush;
-            //    EditorConsoleManager.UpdateBrush();
+            //    MainScreen.Instance.Brush = Brush;
+            //    MainScreen.Instance.UpdateBrush();
             //}
         }
 
@@ -277,12 +277,15 @@
 
         public void ProcessMouse(MouseConsoleState info, ISurface surface)
         {
-            if (EditorConsoleManager.ToolsPane.IsMouseOver && _panel.State != SelectionToolPanel.CloneState.Clone && _panel.State != SelectionToolPanel.CloneState.Selected)
+
+            //if (MainScreen.Instance.ToolsPane.IsMouseOver && _panel.State != SelectionToolPanel.CloneState.Clone && _panel.State != SelectionToolPanel.CloneState.Selected)
+            if (!MainScreen.Instance.InnerEmptyBounds.Contains(info.WorldPosition))
             {
                 Brush.IsVisible = false;
                 return;
             }
-            else if (!EditorConsoleManager.ToolsPane.IsMouseOver && (_panel.State == SelectionToolPanel.CloneState.Clone || _panel.State == SelectionToolPanel.CloneState.Selected))
+            //else if (!MainScreen.Instance.ToolsPane.IsMouseOver && (_panel.State == SelectionToolPanel.CloneState.Clone || _panel.State == SelectionToolPanel.CloneState.Selected))
+            else
                 Brush.IsVisible = true;
 
 

@@ -76,18 +76,18 @@
         {
             RefreshTool();
             ResetCircle();
-            EditorConsoleManager.Brush = Brush;
-            EditorConsoleManager.UpdateBrush();
+            MainScreen.Instance.Brush = Brush;
+            MainScreen.Instance.UpdateBrush();
 
-            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
+            MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
             CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
-            EditorConsoleManager.QuickSelectPane.IsVisible = true;
+            MainScreen.Instance.QuickSelectPane.IsVisible = true;
         }
 
         public void OnDeselected()
         {
             CharacterPickPanel.SharedInstance.Changed -= CharPanelChanged;
-            EditorConsoleManager.QuickSelectPane.IsVisible = false;
+            MainScreen.Instance.QuickSelectPane.IsVisible = false;
 
             settingsPanel.CircleHeight = 0;
             settingsPanel.CircleWidth = 0;
@@ -99,7 +99,7 @@
 
         private void CharPanelChanged(object sender, System.EventArgs e)
         {
-            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
+            MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
             RefreshTool();
         }
 

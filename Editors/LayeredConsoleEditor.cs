@@ -100,7 +100,7 @@ namespace SadConsoleEditor.Editors
                     newPanels.AddRange(tool.ControlPanels);
 
                 panels = newPanels.ToArray();
-                EditorConsoleManager.ToolsPane.RedrawPanels();
+                MainScreen.Instance.ToolsPane.RedrawPanels();
             }
         }
 
@@ -123,8 +123,8 @@ namespace SadConsoleEditor.Editors
             consoleWrapper.TextSurface = surface;
 
             // Update the border
-            if (EditorConsoleManager.ActiveEditor == this)
-                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            if (MainScreen.Instance.ActiveEditor == this)
+                MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
         }
 
         public void Load(string file, FileLoaders.IFileLoader loader)
@@ -148,16 +148,16 @@ namespace SadConsoleEditor.Editors
                 consoleWrapper.TextSurface = this.surface;
 
                 // Update the border
-                if (EditorConsoleManager.ActiveEditor == this)
-                    EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+                if (MainScreen.Instance.ActiveEditor == this)
+                    MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
             }
             else if (loader is FileLoaders.LayeredSurface)
             {
                 surface = (LayeredSurface)loader.Load(file);
                 consoleWrapper.TextSurface = surface;
 
-                if (EditorConsoleManager.ActiveEditor == this)
-                    EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+                if (MainScreen.Instance.ActiveEditor == this)
+                    MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
             }
 
             surface.Font = Settings.Config.ScreenFont;
@@ -203,10 +203,10 @@ namespace SadConsoleEditor.Editors
             layerManagementPanel.SetLayeredSurface(surface);
             toolsPanel.SelectedTool = toolsPanel.SelectedTool;
 
-            if (EditorConsoleManager.ActiveEditor == this)
+            if (MainScreen.Instance.ActiveEditor == this)
             {
-                EditorConsoleManager.CenterEditor();
-                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+                MainScreen.Instance.CenterEditor();
+                MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
             }
         }
 
@@ -219,10 +219,10 @@ namespace SadConsoleEditor.Editors
         {
             consoleWrapper.Position = new Point(x, y);
 
-            if (EditorConsoleManager.ActiveEditor == this)
-                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            if (MainScreen.Instance.ActiveEditor == this)
+                MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
 
-            EditorConsoleManager.UpdateBrush();
+            MainScreen.Instance.UpdateBrush();
         }
 
         public void OnClosed()
@@ -257,7 +257,7 @@ namespace SadConsoleEditor.Editors
         //public bool ProcessKeyboard(IConsole console, SadConsole.Input.Keyboard info)
         //{
             
-        //    //EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.BasicSurface);
+        //    //MainScreen.Instance.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.BasicSurface);
         //    return false;
         //}
 
@@ -293,11 +293,11 @@ namespace SadConsoleEditor.Editors
 
             if (consoleWrapper.IsMouseOver)
             {
-                EditorConsoleManager.SurfaceMouseLocation = info.ConsolePosition;
+                MainScreen.Instance.SurfaceMouseLocation = info.ConsolePosition;
                 return true;
             }
             else
-                EditorConsoleManager.SurfaceMouseLocation = Point.Zero;
+                MainScreen.Instance.SurfaceMouseLocation = Point.Zero;
 
             consoleWrapper.UseMouse = false;
             return false;

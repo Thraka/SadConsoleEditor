@@ -53,10 +53,10 @@
             blinkManager = new SadConsole.Effects.EffectsManager(Brush.Animation.Frames[0]);
 
             RefreshTool();
-            EditorConsoleManager.Brush = Brush;
-            EditorConsoleManager.UpdateBrush();
+            MainScreen.Instance.Brush = Brush;
+            MainScreen.Instance.UpdateBrush();
 
-            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
+            MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
             CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
             CharacterPickPanel.SharedInstance.HideCharacter = true;
         }
@@ -70,7 +70,7 @@
 
         private void CharPanelChanged(object sender, System.EventArgs e)
         {
-            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
+            MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
             RefreshTool();
         }
 
@@ -98,7 +98,7 @@
                 {
                     writing = false;
                     Brush.IsVisible = false;
-                    EditorConsoleManager.AllowKeyboardToMoveConsole = true;
+                    MainScreen.Instance.AllowKeyboardToMoveConsole = true;
                 }
                 else
                 {
@@ -134,7 +134,7 @@
 
             if (info.Mouse.LeftClicked)
             {
-                EditorConsoleManager.AllowKeyboardToMoveConsole = false;
+                MainScreen.Instance.AllowKeyboardToMoveConsole = false;
                 writing = true;
 
                 tempConsole.TextSurface = (ISurface)surface;

@@ -143,8 +143,8 @@ namespace SadConsoleEditor.Panels
             if (Changed != null)
                 Changed(this, EventArgs.Empty);
 
-            //if (EditorConsoleManager.ToolsPane != null)
-                //EditorConsoleManager.ToolsPane.SelectedTool.RefreshTool();
+            //if (MainScreen.Instance.ToolsPane != null)
+                //MainScreen.Instance.ToolsPane.SelectedTool.RefreshTool();
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseConsoleState info)

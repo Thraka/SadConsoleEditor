@@ -115,7 +115,7 @@ namespace SadConsoleEditor.Panels
 
             frameChangeCallback(selectedFrame);
 
-            EditorConsoleManager.ToolsPane.RedrawPanels();
+            MainScreen.Instance.ToolsPane.RedrawPanels();
         }
         private void clonePreviousFrame_Click(object sender, EventArgs e)
         {
@@ -136,7 +136,7 @@ namespace SadConsoleEditor.Panels
 
             frameChangeCallback(selectedFrame);
 
-            EditorConsoleManager.ToolsPane.RedrawPanels();
+            MainScreen.Instance.ToolsPane.RedrawPanels();
         }
         private void EnableDisableControls(int currentIndex)
         {

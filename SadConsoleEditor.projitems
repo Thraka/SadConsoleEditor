@@ -17,7 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ColorPicker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ColorPresenter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\FileDirectoryListbox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EditorConsoleManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MainScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\GameObjectEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\IEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\LayeredConsoleEditor.cs" />

@@ -10,93 +10,33 @@ using SadConsole;
 
 namespace SadConsoleEditor
 {
-    //class CustomConsoleList : Screen
-    //{
-    //    public override void Draw(TimeSpan delta)
-    //    {
-    //        if (IsVisible)
-    //        {
-    //            var copyList = new List<IConsole>(_consoles);
-
-    //            for (int i = 0; i < copyList.Count; i++)
-    //            {
-    //                copyList[i].Draw(delta);
-
-    //                if (EditorConsoleManager.ActiveEditor != null && copyList[i] == EditorConsoleManager.ActiveEditor.RenderedConsole)
-    //                {
-    //                    EditorConsoleManager.ActiveEditor.Draw(delta);
-
-    //                    if (EditorConsoleManager.Brush != null && EditorConsoleManager.Brush.IsVisible)
-    //                        EditorConsoleManager.Brush.Draw(delta);
-    //                }
-    //            }
-    //        }
-    //    }
-
-    //    public override void Update(TimeSpan delta)
-    //    {
-    //        if (!IsPaused)
-    //        {
-    //            var copyList = new List<IConsole>(_consoles);
-
-    //            for (int i = copyList.Count - 1; i >= 0; i--)
-    //            {
-    //                copyList[i].Update();
-
-    //                if (EditorConsoleManager.ActiveEditor != null && copyList[i] == EditorConsoleManager.ActiveEditor.RenderedConsole)
-    //                {
-    //                    EditorConsoleManager.ActiveEditor.Update();
-
-    //                    if (EditorConsoleManager.Brush != null && EditorConsoleManager.Brush.IsVisible)
-    //                        EditorConsoleManager.Brush.Update();
-    //                }
-    //            }
-    //        }
-    //    }
-
-    //    public override bool ProcessKeyboard(Keyboard info)
-    //    {
-    //        return EditorConsoleManager.ProcessKeyboard(info);
-    //    }
-
-    //    public override bool ProcessMouse(MouseConsoleState info)
-    //    {
-    //        return base.ProcessMouse(info);
-    //        //return EditorConsoleManager.ProcessMouse(info);
-    //    }
-    //}
-
-
-    static class EditorConsoleManager
+    class MainScreen : Screen
     {
-        //private static CustomConsoleList Consoles;
-        private static Screen Consoles;
-        public static Consoles.QuickSelectPane QuickSelectPane;
-        private static Console topBarPane;
-        private static Consoles.BorderConsole borderConsole;
-        private static ControlsConsole scrollerContainer;
+        public static MainScreen Instance;
 
-        public static Dictionary<Type, FileLoaders.IFileLoader[]> EditorFileTypes;
-        public static Dictionary<string, Editors.Editors> Editors;
+        public Dictionary<Type, FileLoaders.IFileLoader[]> EditorFileTypes;
+        public Dictionary<string, Editors.Editors> Editors;
 
-        public static List<Editors.IEditor> OpenEditors;
+        private Console topBarPane;
+        private Consoles.BorderConsole borderConsole;
+        public Consoles.ToolPane ToolsPane;
+        public Consoles.QuickSelectPane QuickSelectPane;
 
-        public static Rectangle InnerEmptyBounds;
+        public List<Editors.IEditor> OpenEditors;
 
-        private static string topBarLayerName = "None";
-        private static string topBarToolName = "None";
-        private static Point topBarMousePosition;
+        public Rectangle InnerEmptyBounds;
+        public Rectangle InnerEmptyBoundsPixels;
 
-        public static SadConsole.GameHelpers.GameObject Brush;
-        public static bool AllowKeyboardToMoveConsole;
+        private string topBarLayerName = "None";
+        private string topBarToolName = "None";
+        private Point topBarMousePosition;
 
-        public static Editors.IEditor ActiveEditor { get; private set; }
+        public SadConsole.GameHelpers.GameObject Brush;
+        public bool AllowKeyboardToMoveConsole;
 
-        public static Consoles.ToolPane ToolsPane { get; private set; }
+        public Editors.IEditor ActiveEditor { get; private set; }
 
-        public static SadConsole.Controls.ScrollBar ToolsPaneScroller { get; private set; }
-
-        public static string LayerName
+        public string LayerName
         {
             set
             {
@@ -105,7 +45,7 @@ namespace SadConsoleEditor
             }
         }
 
-        public static string ToolName
+        public string ToolName
         {
             set
             {
@@ -114,7 +54,7 @@ namespace SadConsoleEditor
             }
         }
 
-        public static Point SurfaceMouseLocation
+        public  Point SurfaceMouseLocation
         {
             set
             {
@@ -123,12 +63,9 @@ namespace SadConsoleEditor
             }
         }
 
-        public static void Initialize()
+        public MainScreen()
         {
-            Consoles = new Screen();
-
-            // Hook the update event that happens each frame so we can trap keys and respond.
-            Global.CurrentScreen = Consoles;
+            MainScreen.Instance = this;
 
             // Create the basic consoles
             QuickSelectPane = new SadConsoleEditor.Consoles.QuickSelectPane();
@@ -149,29 +86,16 @@ namespace SadConsoleEditor
             ToolsPane.Position = new Point(Settings.Config.WindowWidth - ToolsPane.Width - 1, 1);
             ToolsPane.IsVisible = false;
 
-            // Scroll bar for toolpane
-            // Create scrollbar
-            ToolsPaneScroller = SadConsole.Controls.ScrollBar.Create(System.Windows.Controls.Orientation.Vertical, Settings.Config.WindowHeight - 1);
-            ToolsPaneScroller.Maximum = ToolsPane.TextSurface.Height - Settings.Config.WindowHeight;
-            ToolsPaneScroller.ValueChanged += (o, e) =>
-            {
-                ToolsPane.TextSurface.RenderArea = new Rectangle(0, ToolsPaneScroller.Value, ToolsPane.Width, Settings.Config.WindowHeight);
-            };
-            scrollerContainer = new ControlsConsole(1, ToolsPaneScroller.Height);
-            scrollerContainer.Add(ToolsPaneScroller);
-            scrollerContainer.Position = new Point(Settings.Config.WindowWidth - 1, 1);
-            scrollerContainer.IsVisible = false;
-            scrollerContainer.FocusOnMouseClick = false;
 
             var boundsLocation = new Point(0, topBarPane.TextSurface.Height).TranslateFont(topBarPane.TextSurface.Font, Settings.Config.ScreenFont) + new Point(1);
             InnerEmptyBounds = new Rectangle(boundsLocation, new Point(0, QuickSelectPane.Position.Y).PixelLocationToConsole(QuickSelectPane.TextSurface.Font.Size.X, QuickSelectPane.TextSurface.Font.Size.Y)  - boundsLocation);
-            InnerEmptyBounds.Width = new Point(ToolsPane.Position.X, 0).TranslateFont(ToolsPane.TextSurface.Font, Settings.Config.ScreenFont).X - 1;
+            InnerEmptyBounds.Width = new Point(ToolsPane.Position.X, 0).TranslateFont(SadConsole.Global.FontDefault, Settings.Config.ScreenFont).X - 1;
+            InnerEmptyBoundsPixels = new Rectangle(InnerEmptyBounds.Location.ConsoleLocationToPixel(Settings.Config.ScreenFont), InnerEmptyBounds.Size.ConsoleLocationToPixel(Settings.Config.ScreenFont));
 
             // Add the consoles to the main console list
-            Consoles.Children.Add(QuickSelectPane);
-            Consoles.Children.Add(topBarPane);
-            Consoles.Children.Add(ToolsPane);
-            Consoles.Children.Add(scrollerContainer);
+            Children.Add(QuickSelectPane);
+            Children.Add(topBarPane);
+            Children.Add(ToolsPane);
             
             // Setup the file types for base editors.
             EditorFileTypes = new Dictionary<Type, FileLoaders.IFileLoader[]>(3);
@@ -184,12 +108,10 @@ namespace SadConsoleEditor
             Editors.Add("Animated Game Object", SadConsoleEditor.Editors.Editors.GameObject);
             Editors.Add("Game Scene", SadConsoleEditor.Editors.Editors.Scene);
             //Editors.Add("User Interface Console", SadConsoleEditor.Editors.Editors.GUI);
-
-            // Show new window
-            ShowStartup();
+            
         }
 
-        private static void ShowStartup()
+        public void ShowStartup()
         {
             Window.Prompt("Create new or open existing?", "New", "Open",
             (b) =>
@@ -214,7 +136,7 @@ namespace SadConsoleEditor
         }
 
 
-        private static void CreateNewEditor(Editors.Editors editorType, int width, int height, Color defaultForeground, Color defaultBackground)
+        private void CreateNewEditor(Editors.Editors editorType, int width, int height, Color defaultForeground, Color defaultBackground)
         {
             Editors.IEditor editor = null;
 
@@ -245,10 +167,9 @@ namespace SadConsoleEditor
 
             topBarPane.IsVisible = true;
             ToolsPane.IsVisible = true;
-            scrollerContainer.IsVisible = true;
         }
 
-        private static void LoadEditor(string file, FileLoaders.IFileLoader loader)
+        private void LoadEditor(string file, FileLoaders.IFileLoader loader)
         {
             Editors.IEditor editor = null;
 
@@ -278,10 +199,9 @@ namespace SadConsoleEditor
 
             topBarPane.IsVisible = true;
             ToolsPane.IsVisible = true;
-            scrollerContainer.IsVisible = true;
         }
 
-        public static void ShowCloseConsolePopup()
+        public void ShowCloseConsolePopup()
         {
             Window.Prompt(new SadConsole.ColoredString("Are you sure? You will lose any unsaved changes."), "Yes", "No", (r) =>
             {
@@ -290,7 +210,7 @@ namespace SadConsoleEditor
             });
         }
 
-        public static void ShowNewEditorPopup()
+        public void ShowNewEditorPopup()
         {
             Windows.NewConsolePopup popup = new Windows.NewConsolePopup();
             popup.Center();
@@ -298,7 +218,7 @@ namespace SadConsoleEditor
             popup.Show(true);
         }
 
-        public static void ShowLoadEditorPopup()
+        public void ShowLoadEditorPopup()
         {
             Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
             popup.Center();
@@ -307,7 +227,7 @@ namespace SadConsoleEditor
             popup.Show(true);
         }
 
-        public static void ShowResizeEditorPopup()
+        public void ShowResizeEditorPopup()
         {
             if (ActiveEditor != null)
             {
@@ -324,7 +244,7 @@ namespace SadConsoleEditor
             }
         }
 
-        public static void AddEditor(Editors.IEditor editor, bool show)
+        public void AddEditor(Editors.IEditor editor, bool show)
         {
             OpenEditors.Add(editor);
             ToolsPane.PanelFiles.DocumentsListbox.Items.Add(editor);
@@ -333,7 +253,7 @@ namespace SadConsoleEditor
                 ChangeActiveEditor(editor);
         }
 
-        public static void RemoveEditor(Editors.IEditor editor)
+        public void RemoveEditor(Editors.IEditor editor)
         {
             ToolsPane.PanelFiles.DocumentsListbox.Items.Remove(editor);
             editor.OnClosed();
@@ -345,15 +265,14 @@ namespace SadConsoleEditor
                 ChangeActiveEditor(OpenEditors[0]);
         }
 
-        public static void ChangeActiveEditor(Editors.IEditor editor)
+        public void ChangeActiveEditor(Editors.IEditor editor)
         {
             AllowKeyboardToMoveConsole = true;
 
             if (ActiveEditor != null)
             {
                 ActiveEditor.OnDeselected();
-                Consoles.Children.Remove(ActiveEditor.RenderedConsole);
-                Consoles.Children.Remove(borderConsole);
+                borderConsole.IsVisible = false;
             }
 
             if (OpenEditors.Contains(editor))
@@ -363,7 +282,8 @@ namespace SadConsoleEditor
                 ToolsPane.RedrawPanels();
                 ActiveEditor.OnSelected();
 
-                Consoles.Children.Insert(0, ActiveEditor.RenderedConsole);
+                borderConsole.IsVisible = true;
+                //Consoles.Children.Insert(0, ActiveEditor.RenderedConsole);
                 UpdateBorder(editor.Position);
 
                 if (ToolsPane.PanelFiles.DocumentsListbox.SelectedItem != editor)
@@ -371,28 +291,28 @@ namespace SadConsoleEditor
             }
         }
 
-        public static void SaveEditor()
+        public void SaveEditor()
         {
             if (ActiveEditor != null)
                 ActiveEditor.Save();
         }
         
-        public static void UpdateBorder(Point position)
+        public void UpdateBorder(Point position)
         {
             if (borderConsole.Width != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Width + 2 || borderConsole.Height != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Height + 2)
             {
-                Consoles.Children.Remove(borderConsole);
+                borderConsole.IsVisible = false;
                 borderConsole = new Consoles.BorderConsole(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Width + 2, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Height + 2);
             }
 
-            if (!Consoles.Children.Contains(borderConsole) && Consoles.Children.Contains(ActiveEditor.RenderedConsole))
-                Consoles.Children.Insert(Consoles.Children.IndexOf(ActiveEditor.RenderedConsole), borderConsole);
+            //if (!Consoles.Children.Contains(borderConsole) && Consoles.Children.Contains(ActiveEditor.RenderedConsole))
+            //    Consoles.Children.Insert(Consoles.Children.IndexOf(ActiveEditor.RenderedConsole), borderConsole);
 
             borderConsole.Position = position - new Point(1, 1);
             borderConsole.IsVisible = true;
         }
 
-        public static void CenterEditor()
+        public void CenterEditor()
         {
             Point position = new Point();
             
@@ -430,7 +350,7 @@ namespace SadConsoleEditor
             ActiveEditor.Move(position.X, position.Y);
         }
 
-        private static void RefreshBackingPanel()
+        private void RefreshBackingPanel()
         {
             topBarPane.Clear();
 
@@ -442,7 +362,7 @@ namespace SadConsoleEditor
             topBarPane.Print(0, 0, text);
         }
 
-        public static void UpdateBrush()
+        public void UpdateBrush()
         {
             if (Brush != null)
             {
@@ -450,7 +370,7 @@ namespace SadConsoleEditor
             }
         }
 
-        public static bool ProcessKeyboard(Keyboard info)
+        public bool ProcessKeyboard(Keyboard info)
         {
             bool movekeyPressed = false;
             var position = new Point(borderConsole.Position.X + 1, borderConsole.Position.Y + 1);
@@ -508,15 +428,6 @@ namespace SadConsoleEditor
                 }
             }
 
-            return false;
-        }
-
-        public static bool ProcessMouse(MouseConsoleState info)
-        {
-            //if (ActiveEditor != null && info.Console != ToolsPane && info.Console != ToolsPaneScroller)
-            //{
-            //    ActiveEditor.RenderedConsole.process
-            //}
             return false;
         }
     }

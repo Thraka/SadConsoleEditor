@@ -35,7 +35,7 @@ namespace SadConsoleEditor.Panels
 
             useCharBorder = new CheckBox(18, 1);
             useCharBorder.Text = "Char. Border";
-            useCharBorder.IsSelectedChanged += (s, o) => { characterPicker.IsVisible = useCharBorder.IsSelected; EditorConsoleManager.ToolsPane.RedrawPanels(); };
+            useCharBorder.IsSelectedChanged += (s, o) => { characterPicker.IsVisible = useCharBorder.IsSelected; MainScreen.Instance.ToolsPane.RedrawPanels(); };
 
             lineForeColor = new Controls.ColorPresenter("Border Fore", Settings.Green, 18);
             lineForeColor.SelectedColor = Color.White;

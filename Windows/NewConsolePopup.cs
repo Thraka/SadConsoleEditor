@@ -108,7 +108,7 @@ namespace SadConsoleEditor.Windows
             Add(_backgroundPicker);
             //Add(_name);
 
-            foreach (var editor in EditorConsoleManager.Editors.Keys)
+            foreach (var editor in MainScreen.Instance.Editors.Keys)
                 editorsListBox.Items.Add(editor);
 
             editorsListBox.SelectedItem = editorsListBox.Items[0];
@@ -116,7 +116,7 @@ namespace SadConsoleEditor.Windows
 
         private void editorsListBox_SelectedItemChanged(object sender, ListBox<ListBoxItem>.SelectedItemEventArgs e)
         {
-            Editor = EditorConsoleManager.Editors[(string)editorsListBox.SelectedItem];
+            Editor = MainScreen.Instance.Editors[(string)editorsListBox.SelectedItem];
 
             var settings = Settings.Config.GetSettings(Editor);
 

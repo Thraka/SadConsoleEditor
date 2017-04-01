@@ -32,6 +32,8 @@ namespace SadConsoleEditor
             // Hook the start event so we can add consoles to the system.
             SadConsole.Game.OnInitialize = Init;
 
+            SadConsole.Game.OnUpdate = (t) => { };
+
             // Start the game.
             SadConsole.Game.Instance.Run();
         }
@@ -57,7 +59,9 @@ namespace SadConsoleEditor
             SadConsoleEditor.Settings.QuickEditor = new SadConsole.Surfaces.SurfaceEditor(new SadConsole.Surfaces.BasicSurface(10, 10, SadConsole.Global.FontDefault));
 
             // Setup system to run
-            EditorConsoleManager.Initialize();
+            SadConsole.Global.CurrentScreen.Children.Add(new MainScreen());
+
+            MainScreen.Instance.ShowStartup();
         }
     }
 #endif

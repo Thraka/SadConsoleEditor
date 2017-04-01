@@ -106,10 +106,10 @@
             animation.Center = p1;
 
             //_lineStyle = new Cell(
-            //                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
-            //                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
-            //                    EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
-            //_lineStyle.SpriteEffect = EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect;
+            //                    MainScreen.Instance.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground,
+            //                    MainScreen.Instance.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground,
+            //                    MainScreen.Instance.Instance.ToolPane.CommonCharacterPickerPanel.SettingCharacter);
+            //_lineStyle.SpriteEffect = MainScreen.Instance.Instance.ToolPane.CommonCharacterPickerPanel.SettingMirrorEffect;
             //_lineStyle.CopyAppearanceTo(_lineCell);
 
             lineShape = new SadConsole.Shapes.Line();
@@ -140,18 +140,18 @@
         {
             RefreshTool();
             ResetLine();
-            EditorConsoleManager.Brush = Brush;
-            EditorConsoleManager.UpdateBrush();
+            MainScreen.Instance.Brush = Brush;
+            MainScreen.Instance.UpdateBrush();
 
-            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
+            MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
             CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
-            EditorConsoleManager.QuickSelectPane.IsVisible = true;
+            MainScreen.Instance.QuickSelectPane.IsVisible = true;
 		}
 
         public void OnDeselected()
         {
             CharacterPickPanel.SharedInstance.Changed -= CharPanelChanged;
-            EditorConsoleManager.QuickSelectPane.IsVisible = false;
+            MainScreen.Instance.QuickSelectPane.IsVisible = false;
 
             settingsPanel.LineLength = 0;
             firstPoint = null;
@@ -162,7 +162,7 @@
 
         private void CharPanelChanged(object sender, System.EventArgs e)
         {
-            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
+            MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
             RefreshTool();
         }
 

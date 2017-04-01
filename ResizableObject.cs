@@ -159,8 +159,8 @@ namespace SadConsoleEditor
                 SadConsoleEditor.Settings.QuickEditor.SetBackground(gameObject.Animation.Center.X + 1, gameObject.Animation.Center.Y + 1, Color.Black);
                 overlay.Animation.Tint = Color.Black * 0.3f;
 
-                //EditorConsoleManager.Brush = overlay;
-                //EditorConsoleManager.UpdateBrush();
+                //MainScreen.Instance.Brush = overlay;
+                //MainScreen.Instance.UpdateBrush();
             }
         }
 

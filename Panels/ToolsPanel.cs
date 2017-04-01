@@ -56,9 +56,9 @@ namespace SadConsoleEditor.Panels
             if (e.Item != null)
             {
                 selectedTool = (ITool)e.Item;
-                EditorConsoleManager.ToolName = selectedTool.Title;
+                MainScreen.Instance.ToolName = selectedTool.Title;
 
-                //EditorConsoleManager.AllowKeyboardToMoveConsole = true;
+                //MainScreen.Instance.AllowKeyboardToMoveConsole = true;
 
                 Panels.CharacterPickPanel.SharedInstance.HideCharacter = false;
                 Panels.CharacterPickPanel.SharedInstance.HideForeground = false;

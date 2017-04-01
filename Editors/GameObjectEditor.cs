@@ -141,7 +141,7 @@ namespace SadConsoleEditor.Editors
                     newPanels.AddRange(tool.ControlPanels);
 
                 panels = newPanels.ToArray();
-                EditorConsoleManager.ToolsPane.RedrawPanels();
+                MainScreen.Instance.ToolsPane.RedrawPanels();
 
                 //if (tool is Tools.EntityCenterTool)
                 //{
@@ -171,8 +171,8 @@ namespace SadConsoleEditor.Editors
             ((LayeredSurface)consoleWrapper.TextSurface).SetActiveLayer(0);
 
             // inform the outer box we've changed size
-            if (EditorConsoleManager.ActiveEditor == this)
-                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            if (MainScreen.Instance.ActiveEditor == this)
+                MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
 
             framesPanel.SetAnimation(animation);
             SelectedTool = selectedTool;
@@ -300,14 +300,14 @@ namespace SadConsoleEditor.Editors
             }
 
             // inform the outer box we've changed size
-            //EditorConsoleManager.Instance.UpdateBox();
+            //MainScreen.Instance.Instance.UpdateBox();
 
             SetEntity(gameObject);
 
-            if (EditorConsoleManager.ActiveEditor == this)
+            if (MainScreen.Instance.ActiveEditor == this)
             {
-                EditorConsoleManager.CenterEditor();
-                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+                MainScreen.Instance.CenterEditor();
+                MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
             }
         }
 
@@ -347,10 +347,10 @@ namespace SadConsoleEditor.Editors
         {
             consoleWrapper.Position = new Point(x, y);
 
-            if (EditorConsoleManager.ActiveEditor == this)
-                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            if (MainScreen.Instance.ActiveEditor == this)
+                MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
 
-            EditorConsoleManager.UpdateBrush();
+            MainScreen.Instance.UpdateBrush();
         }
 
         public void OnClosed()
@@ -360,9 +360,9 @@ namespace SadConsoleEditor.Editors
         public void OnSelected()
         {
             if (IsLinked)
-                EditorConsoleManager.ToolsPane.PanelFiles.CloseButton.IsEnabled = false;
+                MainScreen.Instance.ToolsPane.PanelFiles.CloseButton.IsEnabled = false;
             else
-                EditorConsoleManager.ToolsPane.PanelFiles.CloseButton.IsEnabled = true;
+                MainScreen.Instance.ToolsPane.PanelFiles.CloseButton.IsEnabled = true;
 
             if (selectedTool == null)
                 SelectedTool = tools.First().Value;
@@ -376,7 +376,7 @@ namespace SadConsoleEditor.Editors
 
         public void OnDeselected()
         {
-            EditorConsoleManager.ToolsPane.PanelFiles.CloseButton.IsEnabled = true;
+            MainScreen.Instance.ToolsPane.PanelFiles.CloseButton.IsEnabled = true;
         }
 
         public void Render()
@@ -435,11 +435,11 @@ namespace SadConsoleEditor.Editors
 
             if (consoleWrapper.IsMouseOver)
             {
-                EditorConsoleManager.SurfaceMouseLocation = info.ConsolePosition;
+                MainScreen.Instance.SurfaceMouseLocation = info.ConsolePosition;
                 return true;
             }
             else
-                EditorConsoleManager.SurfaceMouseLocation = Point.Zero;
+                MainScreen.Instance.SurfaceMouseLocation = Point.Zero;
 
             consoleWrapper.UseMouse = false;
             return false;
