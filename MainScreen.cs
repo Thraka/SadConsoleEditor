@@ -93,6 +93,7 @@ namespace SadConsoleEditor
             InnerEmptyBoundsPixels = new Rectangle(InnerEmptyBounds.Location.ConsoleLocationToPixel(Settings.Config.ScreenFont), InnerEmptyBounds.Size.ConsoleLocationToPixel(Settings.Config.ScreenFont));
 
             // Add the consoles to the main console list
+            Children.Add(borderConsole);
             Children.Add(QuickSelectPane);
             Children.Add(topBarPane);
             Children.Add(ToolsPane);
@@ -278,13 +279,16 @@ namespace SadConsoleEditor
             if (OpenEditors.Contains(editor))
             {
                 ActiveEditor = editor;
-                CenterEditor();
                 ToolsPane.RedrawPanels();
                 ActiveEditor.OnSelected();
 
                 borderConsole.IsVisible = true;
+                borderConsole.SetContent(ActiveEditor.RenderedConsole.TextSurface);
+
                 //Consoles.Children.Insert(0, ActiveEditor.RenderedConsole);
                 UpdateBorder(editor.Position);
+                CenterEditor();
+
 
                 if (ToolsPane.PanelFiles.DocumentsListbox.SelectedItem != editor)
                     ToolsPane.PanelFiles.DocumentsListbox.SelectedItem = editor;
@@ -299,55 +303,57 @@ namespace SadConsoleEditor
         
         public void UpdateBorder(Point position)
         {
-            if (borderConsole.Width != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Width + 2 || borderConsole.Height != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Height + 2)
-            {
-                borderConsole.IsVisible = false;
-                borderConsole = new Consoles.BorderConsole(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Width + 2, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Height + 2);
-            }
+            //if (borderConsole.Width != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Width + 2 || borderConsole.Height != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Height + 2)
+            //{
+            //    borderConsole.IsVisible = false;
+            //    borderConsole = new Consoles.BorderConsole(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Width + 2, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Height + 2);
+            //}
 
-            //if (!Consoles.Children.Contains(borderConsole) && Consoles.Children.Contains(ActiveEditor.RenderedConsole))
-            //    Consoles.Children.Insert(Consoles.Children.IndexOf(ActiveEditor.RenderedConsole), borderConsole);
+            ////if (!Consoles.Children.Contains(borderConsole) && Consoles.Children.Contains(ActiveEditor.RenderedConsole))
+            ////    Consoles.Children.Insert(Consoles.Children.IndexOf(ActiveEditor.RenderedConsole), borderConsole);
 
-            borderConsole.Position = position - new Point(1, 1);
-            borderConsole.IsVisible = true;
+            //borderConsole.Position = position - new Point(1, 1);
+            //borderConsole.IsVisible = true;
         }
 
         public void CenterEditor()
         {
             Point position = new Point();
-            
-            if (ActiveEditor.Width > InnerEmptyBounds.Width || ActiveEditor.Height > InnerEmptyBounds.Height)
-            {
-                // Need scrolling console
-                if (ActiveEditor.Width > InnerEmptyBounds.Width && ActiveEditor.Height > InnerEmptyBounds.Height)
-                {
-                    position = InnerEmptyBounds.Location;
-                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(0, 0, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
-                }
-                else if (ActiveEditor.Width > InnerEmptyBounds.Width)
-                {
-                    position = new Point(InnerEmptyBounds.Location.X, (InnerEmptyBounds.Height + InnerEmptyBounds.Y - ActiveEditor.Height) / 2);
-                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(0, 0, InnerEmptyBounds.Width, ActiveEditor.Height);
-                }
-                else if (ActiveEditor.Height > InnerEmptyBounds.Height)
-                {
-                    position = new Point((InnerEmptyBounds.Width + InnerEmptyBounds.X - ActiveEditor.Width) / 2, InnerEmptyBounds.Location.Y);
-                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(0, 0, ActiveEditor.Width, InnerEmptyBounds.Height);
-                }
-            }
-            else
-            {
-                // Center normal
-                position = new Point((InnerEmptyBounds.Width + InnerEmptyBounds.X - ActiveEditor.Width) / 2, (InnerEmptyBounds.Height + InnerEmptyBounds.Y - ActiveEditor.Height) / 2);
-            }
 
-            if (position.X < InnerEmptyBounds.Left)
-                position.X = InnerEmptyBounds.Left;
+            //if (ActiveEditor.Width > InnerEmptyBounds.Width || ActiveEditor.Height > InnerEmptyBounds.Height)
+            //{
+            //    // Need scrolling console
+            //    if (ActiveEditor.Width > InnerEmptyBounds.Width && ActiveEditor.Height > InnerEmptyBounds.Height)
+            //    {
+            //        position = InnerEmptyBounds.Location;
+            //        ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(0, 0, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+            //    }
+            //    else if (ActiveEditor.Width > InnerEmptyBounds.Width)
+            //    {
+            //        position = new Point(InnerEmptyBounds.Location.X, (InnerEmptyBounds.Height + InnerEmptyBounds.Y - ActiveEditor.Height) / 2);
+            //        ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(0, 0, InnerEmptyBounds.Width, ActiveEditor.Height);
+            //    }
+            //    else if (ActiveEditor.Height > InnerEmptyBounds.Height)
+            //    {
+            //        position = new Point((InnerEmptyBounds.Width + InnerEmptyBounds.X - ActiveEditor.Width) / 2, InnerEmptyBounds.Location.Y);
+            //        ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(0, 0, ActiveEditor.Width, InnerEmptyBounds.Height);
+            //    }
+            //}
+            //else
+            //{
+            //    // Center normal
+            //    position = new Point((InnerEmptyBounds.Width + InnerEmptyBounds.X - ActiveEditor.Width) / 2, (InnerEmptyBounds.Height + InnerEmptyBounds.Y - ActiveEditor.Height) / 2);
+            //}
 
-            if (position.Y < InnerEmptyBounds.Top)
-                position.Y = InnerEmptyBounds.Top;
+            //if (position.X < InnerEmptyBounds.Left)
+            //    position.X = InnerEmptyBounds.Left;
 
-            ActiveEditor.Move(position.X, position.Y);
+            //if (position.Y < InnerEmptyBounds.Top)
+            //    position.Y = InnerEmptyBounds.Top;
+
+            //ActiveEditor.Move(position.X, position.Y);
+
+            borderConsole.Position = new Point((InnerEmptyBounds.Width / 2) - (borderConsole.Width / 2), (InnerEmptyBounds.Height / 2) - (borderConsole.Height / 2)) + InnerEmptyBounds.Location;
         }
 
         private void RefreshBackingPanel()

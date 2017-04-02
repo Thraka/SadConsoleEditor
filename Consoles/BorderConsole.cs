@@ -12,11 +12,34 @@ namespace SadConsoleEditor.Consoles
 {
     class BorderConsole: SadConsole.Console
     {
-        public BorderConsole(int width, int height): base(width, height)
+        private SurfaceView contentView;
+        private SadConsole.Console contentContainer;
+
+        public void SetContent(ISurface surface)
+        {
+            Rectangle newBounds = MainScreen.Instance.InnerEmptyBounds;
+
+            contentView = new SurfaceView(surface,
+                new Rectangle(0, 0,
+                                   surface.Width >= newBounds.Width - 2 ? newBounds.Width - 2 : surface.Width,
+                                   surface.Height >= newBounds.Height - 2 ? newBounds.Height - 2 : surface.Height));
+
+            
+            contentContainer.TextSurface = contentView;
+            contentContainer.TextSurface.Font = Settings.Config.ScreenFont;
+            TextSurface = new BasicSurface(contentView.Width + 2, contentView.Height + 2, Settings.Config.ScreenFont);
+            PrepBox();
+        }
+
+        public BorderConsole(int width, int height): base(width, height, Settings.Config.ScreenFont)
         {
             textSurface.Font = Settings.Config.ScreenFont;
             
             PrepBox();
+
+            contentContainer = new SadConsole.Console(1, 1);
+            contentContainer.Position = new Point(1, 1);
+            Children.Add(contentContainer);
         }
 
         // Todo: Tint console? Draw yellow dashes (line control?) for the console bounds
