@@ -40,7 +40,6 @@
             Brush.IsVisible = false;
             RefreshTool();
             MainScreen.Instance.Brush = Brush;
-            MainScreen.Instance.UpdateBrush();
 
             MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
             CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
@@ -66,6 +65,7 @@
                                       CharacterPickPanel.SharedInstance.SettingBackground,
                                       CharacterPickPanel.SharedInstance.SettingCharacter,
                                       CharacterPickPanel.SharedInstance.SettingMirrorEffect);
+            Brush.Animation.IsDirty = true;
         }
 
         public void Update()
@@ -83,19 +83,14 @@
 
         public void MouseEnterSurface(MouseConsoleState info, ISurface surface)
         {
-            Brush.IsVisible = true;
         }
 
         public void MouseExitSurface(MouseConsoleState info, ISurface surface)
         {
-            Brush.IsVisible = false;
         }
 
         public void MouseMoveSurface(MouseConsoleState info, ISurface surface)
         {
-            Brush.IsVisible = true;
-            Brush.Position = info.ConsolePosition;
-
             if (info.Mouse.LeftButtonDown)
             {
                 var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);

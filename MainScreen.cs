@@ -6,7 +6,6 @@ using System;
 using Microsoft.Xna.Framework;
 using System.Collections.Generic;
 using SadConsole.Input;
-using SadConsole;
 
 namespace SadConsoleEditor
 {
@@ -19,6 +18,7 @@ namespace SadConsoleEditor
 
         private Console topBarPane;
         private Consoles.BorderConsole borderConsole;
+        private Consoles.BrushConsoleContainer brushScreen;
         public Consoles.ToolPane ToolsPane;
         public Consoles.QuickSelectPane QuickSelectPane;
 
@@ -31,7 +31,7 @@ namespace SadConsoleEditor
         private string topBarToolName = "None";
         private Point topBarMousePosition;
 
-        public SadConsole.GameHelpers.GameObject Brush;
+        public SadConsole.GameHelpers.GameObject Brush { get { return brushScreen.Brush; } set { brushScreen.Brush = value; } }
         public bool AllowKeyboardToMoveConsole;
 
         public Editors.IEditor ActiveEditor { get; private set; }
@@ -86,6 +86,8 @@ namespace SadConsoleEditor
             ToolsPane.Position = new Point(Settings.Config.WindowWidth - ToolsPane.Width - 1, 1);
             ToolsPane.IsVisible = false;
 
+            brushScreen = new Consoles.BrushConsoleContainer();
+            
 
             var boundsLocation = new Point(0, topBarPane.TextSurface.Height).TranslateFont(topBarPane.TextSurface.Font, Settings.Config.ScreenFont) + new Point(1);
             InnerEmptyBounds = new Rectangle(boundsLocation, new Point(0, QuickSelectPane.Position.Y).PixelLocationToConsole(QuickSelectPane.TextSurface.Font.Size.X, QuickSelectPane.TextSurface.Font.Size.Y)  - boundsLocation);
@@ -94,6 +96,7 @@ namespace SadConsoleEditor
 
             // Add the consoles to the main console list
             Children.Add(borderConsole);
+            Children.Add(brushScreen);
             Children.Add(QuickSelectPane);
             Children.Add(topBarPane);
             Children.Add(ToolsPane);
@@ -366,14 +369,6 @@ namespace SadConsoleEditor
                        new SadConsole.ColoredString("   Tool: ", Settings.Appearance_Text) + new SadConsole.ColoredString(topBarToolName, Settings.Appearance_TextValue);
 
             topBarPane.Print(0, 0, text);
-        }
-
-        public void UpdateBrush()
-        {
-            if (Brush != null)
-            {
-                Brush.PositionOffset = ActiveEditor.RenderedConsole.TextSurface.RenderArea.Location;
-            }
         }
 
         public bool ProcessKeyboard(Keyboard info)

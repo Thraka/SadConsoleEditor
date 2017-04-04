@@ -236,7 +236,6 @@
             ResetSelection();
 
             MainScreen.Instance.Brush = Brush;
-            MainScreen.Instance.UpdateBrush();
             
 
             //if (_panel.State != SelectionToolPanel.CloneState.Clone && _panel.State != SelectionToolPanel.CloneState.Move)
@@ -263,7 +262,7 @@
 
         public void RefreshTool()
         {
-
+            Brush.Animation.IsDirty = true;
         }
 
         public void Update()
@@ -277,19 +276,6 @@
 
         public void ProcessMouse(MouseConsoleState info, ISurface surface)
         {
-
-            //if (MainScreen.Instance.ToolsPane.IsMouseOver && _panel.State != SelectionToolPanel.CloneState.Clone && _panel.State != SelectionToolPanel.CloneState.Selected)
-            if (!MainScreen.Instance.InnerEmptyBounds.Contains(info.WorldPosition))
-            {
-                Brush.IsVisible = false;
-                return;
-            }
-            //else if (!MainScreen.Instance.ToolsPane.IsMouseOver && (_panel.State == SelectionToolPanel.CloneState.Clone || _panel.State == SelectionToolPanel.CloneState.Selected))
-            else
-                Brush.IsVisible = true;
-
-
-
             _previousSurface = surface;
             
             if (_panel.State == SelectionToolPanel.CloneState.Clone || _panel.State == SelectionToolPanel.CloneState.Move)

@@ -157,22 +157,26 @@ namespace SadConsoleEditor.Consoles
 
         public bool ProcessMouse(IConsole console, SadConsole.Input.MouseConsoleState info)
         {
-            if (info.Mouse.ScrollWheelValueChange != 0)
+            if (info.IsOnConsole)
             {
-                if (ToolsPaneScroller.IsEnabled)
-                    ToolsPaneScroller.Value += info.Mouse.ScrollWheelValueChange / 20;
-                return true;
-            }
 
-            foreach (var item in _hotSpots)
-            {
-                if (item.Item2 == info.ConsolePosition.Y)
+                if (info.Mouse.ScrollWheelValueChange != 0)
                 {
-                    if (info.Mouse.LeftClicked)
+                    if (ToolsPaneScroller.IsEnabled)
+                        ToolsPaneScroller.Value += info.Mouse.ScrollWheelValueChange / 20;
+                    return true;
+                }
+
+                foreach (var item in _hotSpots)
+                {
+                    if (item.Item2 == info.ConsolePosition.Y)
                     {
-                        item.Item1.IsCollapsed = !item.Item1.IsCollapsed;
-                        RedrawPanels();
-                        return true;
+                        if (info.Mouse.LeftClicked)
+                        {
+                            item.Item1.IsCollapsed = !item.Item1.IsCollapsed;
+                            RedrawPanels();
+                            return true;
+                        }
                     }
                 }
             }

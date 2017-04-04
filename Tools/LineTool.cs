@@ -141,7 +141,6 @@
             RefreshTool();
             ResetLine();
             MainScreen.Instance.Brush = Brush;
-            MainScreen.Instance.UpdateBrush();
 
             MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
             CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
@@ -174,6 +173,7 @@
                                               CharacterPickPanel.SharedInstance.SettingMirrorEffect);
 
             lineStyle.CopyAppearanceTo(lineCell);
+            Brush.Animation.IsDirty = true;
         }
 
         public void Update()

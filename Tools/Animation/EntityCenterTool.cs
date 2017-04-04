@@ -47,7 +47,6 @@ namespace SadConsoleEditor.Tools
             Brush.IsVisible = false;
             RefreshTool();
             MainScreen.Instance.Brush = Brush;
-            MainScreen.Instance.UpdateBrush();
 
             var editor = MainScreen.Instance.ActiveEditor as Editors.GameObjectEditor;
 

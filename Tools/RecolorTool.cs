@@ -46,7 +46,6 @@
             Brush.IsVisible = false;
             RefreshTool();
             MainScreen.Instance.Brush = Brush;
-            MainScreen.Instance.UpdateBrush();
 
             MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
             CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
@@ -70,6 +69,8 @@
             SadConsoleEditor.Settings.QuickEditor.TextSurface = Brush.Animation.Frames[0];
             SadConsoleEditor.Settings.QuickEditor.Fill(CharacterPickPanel.SharedInstance.SettingForeground,
                                       CharacterPickPanel.SharedInstance.SettingBackground, 42);
+
+            Brush.Animation.IsDirty = true;
         }
 
         public void Update()

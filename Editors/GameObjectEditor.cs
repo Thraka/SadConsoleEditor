@@ -349,8 +349,6 @@ namespace SadConsoleEditor.Editors
 
             if (MainScreen.Instance.ActiveEditor == this)
                 MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
-
-            MainScreen.Instance.UpdateBrush();
         }
 
         public void OnClosed()

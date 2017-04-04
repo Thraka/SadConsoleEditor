@@ -54,7 +54,6 @@
 
             RefreshTool();
             MainScreen.Instance.Brush = Brush;
-            MainScreen.Instance.UpdateBrush();
 
             MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
             CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
@@ -83,6 +82,9 @@
             SadConsole.Effects.Blink blinkEffect = new SadConsole.Effects.Blink();
             blinkEffect.BlinkSpeed = 0.35f;
             blinkManager.SetEffect(Brush.Animation.Frames[0][0], blinkEffect);
+
+            Brush.Animation.IsDirty = true;
+
         }
 
         public void Update()

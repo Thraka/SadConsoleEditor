@@ -82,7 +82,6 @@
             RefreshTool();
             ResetBox();
             MainScreen.Instance.Brush = Brush;
-            MainScreen.Instance.UpdateBrush();
 
             MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
             CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
@@ -106,6 +105,7 @@
 
         public void RefreshTool()
         {
+            Brush.Animation.IsDirty = true;
         }
 
         public void Update()
@@ -119,16 +119,6 @@
 
         public void ProcessMouse(MouseConsoleState info, ISurface surface)
         {
-            
-            if (!MainScreen.Instance.InnerEmptyBoundsPixels.Contains(info.Mouse.ScreenPosition))
-            {
-                Brush.IsVisible = false;
-                return;
-            }
-            else
-                Brush.IsVisible = true;
-
-
             if (!firstPoint.HasValue)
             {
                 Brush.Position = info.ConsolePosition;
