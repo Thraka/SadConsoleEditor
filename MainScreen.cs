@@ -80,7 +80,8 @@ namespace SadConsoleEditor
 
             borderConsole = new SadConsoleEditor.Consoles.BorderConsole(10, 10);
             borderConsole.IsVisible = false;
-            borderConsole.UseMouse = false;
+            //borderConsole.UseMouse = false;
+            borderConsole.MouseHandler = ProcessMouseForBrush;
 
             ToolsPane = new Consoles.ToolPane();
             ToolsPane.Position = new Point(Settings.Config.WindowWidth - ToolsPane.Width - 1, 1);
@@ -113,6 +114,12 @@ namespace SadConsoleEditor
             Editors.Add("Game Scene", SadConsoleEditor.Editors.Editors.Scene);
             //Editors.Add("User Interface Console", SadConsoleEditor.Editors.Editors.GUI);
             
+        }
+
+        private bool ProcessMouseForBrush(IConsole console, MouseConsoleState state)
+        {
+            //return ActiveEditor.RenderedConsole.ProcessMouse(new MouseConsoleState(ActiveEditor.RenderedConsole, state.Mouse));
+            return false;
         }
 
         public void ShowStartup()
@@ -197,7 +204,7 @@ namespace SadConsoleEditor
             }
             if (editor != null)
             {
-                editor.RenderedConsole.TextSurface.RenderArea = new Rectangle(0, 0, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+                //editor.RenderedConsole.TextSurface.RenderArea = new Rectangle(0, 0, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
                 ChangeActiveEditor(editor);
             }
 
@@ -286,10 +293,10 @@ namespace SadConsoleEditor
                 ActiveEditor.OnSelected();
 
                 borderConsole.IsVisible = true;
-                borderConsole.SetContent(ActiveEditor.RenderedConsole.TextSurface);
+                borderConsole.SetContent(ActiveEditor.Surface, ActiveEditor.Renderer);
 
                 //Consoles.Children.Insert(0, ActiveEditor.RenderedConsole);
-                UpdateBorder(editor.Position);
+                UpdateBorder();
                 CenterEditor();
 
 
@@ -304,7 +311,7 @@ namespace SadConsoleEditor
                 ActiveEditor.Save();
         }
         
-        public void UpdateBorder(Point position)
+        public void UpdateBorder()
         {
             //if (borderConsole.Width != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Width + 2 || borderConsole.Height != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Height + 2)
             //{
@@ -373,61 +380,61 @@ namespace SadConsoleEditor
 
         public bool ProcessKeyboard(Keyboard info)
         {
-            bool movekeyPressed = false;
-            var position = new Point(borderConsole.Position.X + 1, borderConsole.Position.Y + 1);
-            //var result = base.ProcessKeyboard(info);
-            if (AllowKeyboardToMoveConsole && ActiveEditor != null && ActiveEditor.RenderedConsole != null)
-            {
-                bool shifted = info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
-                var oldRenderArea = ActiveEditor.RenderedConsole.TextSurface.RenderArea;
+            //bool movekeyPressed = false;
+            //var position = new Point(borderConsole.Position.X + 1, borderConsole.Position.Y + 1);
+            ////var result = base.ProcessKeyboard(info);
+            //if (AllowKeyboardToMoveConsole && ActiveEditor != null && ActiveEditor.RenderedConsole != null)
+            //{
+            //    bool shifted = info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
+            //    var oldRenderArea = ActiveEditor.RenderedConsole.TextSurface.RenderArea;
 
-                if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
-                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left - 1, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+            //    if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+            //        ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left - 1, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
 
-                else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
-                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left + 1, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+            //    else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
+            //        ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left + 1, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
 
-                if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
-                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top - 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+            //    if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
+            //        ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top - 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
 
-                else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
-                    ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top + 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+            //    else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
+            //        ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top + 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
 
-                movekeyPressed = oldRenderArea != ActiveEditor.RenderedConsole.TextSurface.RenderArea;
-            }
+            //    movekeyPressed = oldRenderArea != ActiveEditor.RenderedConsole.TextSurface.RenderArea;
+            //}
 
-            if (movekeyPressed)
-            {
-                ActiveEditor.Move(ActiveEditor.Position.X, ActiveEditor.Position.Y);
-            }
-            else
-            {
-                //if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Subtract))
-                //{
-                //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X / 2, SelectedEditor.Surface.CellSize.Y / 2);
-                //}
-                //else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Add))
-                //{
-                //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X * 2, SelectedEditor.Surface.CellSize.Y * 2);
-                //}
-                //else
-                {
-                    // Look for tool hotkeys
-                    if (ToolsPane.ProcessKeyboard(info))
-                    {
-                        return true;
-                    }
-                    // Look for quick select F* keys
-                    else if (QuickSelectPane.ProcessKeyboard(info))
-                    {
-                        return true;
-                    }
-                    else if (ActiveEditor != null)
-                    {
-                        return ActiveEditor.ProcessKeyboard(info);
-                    }
-                }
-            }
+            //if (movekeyPressed)
+            //{
+            //    ActiveEditor.Move(ActiveEditor.Position.X, ActiveEditor.Position.Y);
+            //}
+            //else
+            //{
+            //    //if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Subtract))
+            //    //{
+            //    //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X / 2, SelectedEditor.Surface.CellSize.Y / 2);
+            //    //}
+            //    //else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Add))
+            //    //{
+            //    //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X * 2, SelectedEditor.Surface.CellSize.Y * 2);
+            //    //}
+            //    //else
+            //    {
+            //        // Look for tool hotkeys
+            //        if (ToolsPane.ProcessKeyboard(info))
+            //        {
+            //            return true;
+            //        }
+            //        // Look for quick select F* keys
+            //        else if (QuickSelectPane.ProcessKeyboard(info))
+            //        {
+            //            return true;
+            //        }
+            //        else if (ActiveEditor != null)
+            //        {
+            //            return ActiveEditor.ProcessKeyboard(info);
+            //        }
+            //    }
+            //}
 
             return false;
         }

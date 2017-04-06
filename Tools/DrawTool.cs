@@ -98,6 +98,7 @@
                 cell.Foreground = CharacterPickPanel.SharedInstance.SettingForeground;
                 cell.Background = CharacterPickPanel.SharedInstance.SettingBackground;
                 cell.Mirror = CharacterPickPanel.SharedInstance.SettingMirrorEffect;
+                surface.IsDirty = true;
             }
 
             if (info.Mouse.RightButtonDown)

@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Console = SadConsole.Console;
 using SadConsole;
+using SadConsole.Renderers;
 
 namespace SadConsoleEditor.Editors
 {
@@ -37,6 +38,10 @@ namespace SadConsoleEditor.Editors
         private AnimatedSurface selectedAnimation;
 
         //public SceneEditor LinkedEditor;
+
+        public ISurface Surface => BasicSurface;
+
+        public ISurfaceRenderer Renderer => new SurfaceRenderer();
 
         public GameObject GameObject { get { return gameObject; } }
 
@@ -171,8 +176,8 @@ namespace SadConsoleEditor.Editors
             ((LayeredSurface)consoleWrapper.TextSurface).SetActiveLayer(0);
 
             // inform the outer box we've changed size
-            if (MainScreen.Instance.ActiveEditor == this)
-                MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
+            //if (MainScreen.Instance.ActiveEditor == this)
+            //    MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
 
             framesPanel.SetAnimation(animation);
             SelectedTool = selectedTool;
@@ -307,7 +312,6 @@ namespace SadConsoleEditor.Editors
             if (MainScreen.Instance.ActiveEditor == this)
             {
                 MainScreen.Instance.CenterEditor();
-                MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
             }
         }
 
@@ -347,8 +351,8 @@ namespace SadConsoleEditor.Editors
         {
             consoleWrapper.Position = new Point(x, y);
 
-            if (MainScreen.Instance.ActiveEditor == this)
-                MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
+            //if (MainScreen.Instance.ActiveEditor == this)
+            //    MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
         }
 
         public void OnClosed()

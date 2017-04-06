@@ -7,9 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//using SadConsoleEditor.Panels;
 using SadConsoleEditor.FileLoaders;
 using SadConsoleEditor.Panels;
+using SadConsole.Renderers;
 
 namespace SadConsoleEditor.Editors
 {
@@ -23,6 +23,10 @@ namespace SadConsoleEditor.Editors
 
     public interface IEditor
     {
+        ISurface Surface { get; }
+
+        ISurfaceRenderer Renderer { get; }
+
         Editors EditorType { get; }
 
         string EditorTypeName { get; }
@@ -35,19 +39,13 @@ namespace SadConsoleEditor.Editors
 
         int Height { get; }
 
-        string DocumentTitle { get; }
-
-        Point Position { get; }
-
-        SadConsole.Console RenderedConsole { get; }
+        string DocumentTitle { get; set; }
 
         void Render();
 
         void Update();
 
         bool ProcessKeyboard(Keyboard info);
-
-        void Move(int x, int y);
 
         void New(Color foreground, Color background, int width, int height);
 

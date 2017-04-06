@@ -7,27 +7,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SadConsole.Renderers;
 
 namespace SadConsoleEditor.Consoles
 {
     class BorderConsole: SadConsole.Console
     {
-        private SurfaceView contentView;
         private SadConsole.Console contentContainer;
 
-        public void SetContent(ISurface surface)
+        public void SetContent(ISurface surface, ISurfaceRenderer renderer)
         {
             Rectangle newBounds = MainScreen.Instance.InnerEmptyBounds;
 
-            contentView = new SurfaceView(surface,
-                new Rectangle(0, 0,
-                                   surface.Width >= newBounds.Width - 2 ? newBounds.Width - 2 : surface.Width,
-                                   surface.Height >= newBounds.Height - 2 ? newBounds.Height - 2 : surface.Height));
-
-            
-            contentContainer.TextSurface = contentView;
+            contentContainer.TextSurface = surface;
             contentContainer.TextSurface.Font = Settings.Config.ScreenFont;
-            TextSurface = new BasicSurface(contentView.Width + 2, contentView.Height + 2, Settings.Config.ScreenFont);
+            contentContainer.Renderer = renderer;
+            TextSurface = new BasicSurface(surface.Width + 2, surface.Height + 2, Settings.Config.ScreenFont);
             PrepBox();
         }
 
