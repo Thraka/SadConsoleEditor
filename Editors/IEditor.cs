@@ -47,6 +47,8 @@ namespace SadConsoleEditor.Editors
 
         bool ProcessKeyboard(Keyboard info);
 
+        bool ProcessMouse(MouseConsoleState transformedState);
+
         void New(Color foreground, Color background, int width, int height);
 
         void Load(string file, IFileLoader loader);

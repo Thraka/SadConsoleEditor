@@ -26,12 +26,6 @@ namespace SadConsoleEditor.Tools
 
         void ProcessMouse(MouseConsoleState info, ISurface surface);
 
-        void MouseEnterSurface(MouseConsoleState info, ISurface surface);
-
-        void MouseExitSurface(MouseConsoleState info, ISurface surface);
-
-        void MouseMoveSurface(MouseConsoleState info, ISurface surface);
-
         void RefreshTool();
 
         void Update();

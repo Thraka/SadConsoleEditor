@@ -15,7 +15,13 @@ namespace SadConsoleEditor.Editors
 {
     class LayeredConsoleEditor : IEditor
     {
+        private Dictionary<string, Tools.ITool> tools;
+        private Tools.ITool selectedTool;
+        private ToolsPanel toolsPanel;
+
         private CustomPanel[] panels;
+        private LayersPanel layerManagementPanel;
+
         private SadConsole.Renderers.LayeredSurfaceRenderer renderer;
         private SadConsole.Surfaces.LayeredSurface surface;
 
@@ -40,6 +46,34 @@ namespace SadConsoleEditor.Editors
         public LayeredConsoleEditor()
         {
             renderer = new LayeredSurfaceRenderer();
+
+            layerManagementPanel = new LayersPanel();
+            layerManagementPanel.IsCollapsed = true;
+
+            // Fill tools
+            tools = new Dictionary<string, Tools.ITool>();
+            tools.Add(Tools.PaintTool.ID, new Tools.PaintTool());
+            tools.Add(Tools.LineTool.ID, new Tools.LineTool());
+            tools.Add(Tools.TextTool.ID, new Tools.TextTool());
+            tools.Add(Tools.CircleTool.ID, new Tools.CircleTool());
+            tools.Add(Tools.RecolorTool.ID, new Tools.RecolorTool());
+            tools.Add(Tools.FillTool.ID, new Tools.FillTool());
+            tools.Add(Tools.BoxTool.ID, new Tools.BoxTool());
+            tools.Add(Tools.SelectionTool.ID, new Tools.SelectionTool());
+
+            toolsPanel = new ToolsPanel();
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.PaintTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.LineTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.TextTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.CircleTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.RecolorTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.FillTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.BoxTool.ID]);
+            toolsPanel.ToolsListBox.Items.Add(tools[Tools.SelectionTool.ID]);
+
+            toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
+
+            panels = new CustomPanel[] { layerManagementPanel, toolsPanel };
         }
 
         public void Load(string file, IFileLoader loader)
@@ -51,9 +85,13 @@ namespace SadConsoleEditor.Editors
         {
             Reset();
             surface = new SadConsole.Surfaces.LayeredSurface(width, height, SadConsoleEditor.Settings.Config.ScreenFont, 1);
+            LayerMetadata.Create("Root", true, false, true, surface.ActiveLayer);
 
             var editor = new SurfaceEditor(surface);
             editor.FillWithRandomGarbage();
+
+            layerManagementPanel.SetLayeredSurface(surface);
+            layerManagementPanel.IsCollapsed = true;
         }
 
         public void OnClosed()
@@ -73,6 +111,12 @@ namespace SadConsoleEditor.Editors
 
         public bool ProcessKeyboard(Keyboard info)
         {
+            return false;
+        }
+
+        public bool ProcessMouse(SadConsole.Input.MouseConsoleState info)
+        {
+            toolsPanel.SelectedTool?.ProcessMouse(info, surface);
             return false;
         }
 
@@ -99,6 +143,23 @@ namespace SadConsoleEditor.Editors
         public void Update()
         {
             
+        }
+
+        private void ToolsListBox_SelectedItemChanged(object sender, SadConsole.Controls.ListBox<SadConsole.Controls.ListBoxItem>.SelectedItemEventArgs e)
+        {
+            Tools.ITool tool = e.Item as Tools.ITool;
+
+            if (e.Item != null)
+            {
+                selectedTool = tool;
+                List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, toolsPanel };
+
+                if (tool.ControlPanels != null && tool.ControlPanels.Length != 0)
+                    newPanels.AddRange(tool.ControlPanels);
+
+                panels = newPanels.ToArray();
+                MainScreen.Instance.ToolsPane.RedrawPanels();
+            }
         }
     }
 

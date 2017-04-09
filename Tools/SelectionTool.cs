@@ -304,24 +304,41 @@
 
         public void MouseEnterSurface(MouseConsoleState info, ISurface surface)
         {
-            if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1 || _panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
-            {
-                Brush.IsVisible = true;
-                //_entity.SyncLayers();
-            }
+            
         }
 
         public void MouseExitSurface(MouseConsoleState info, ISurface surface)
         {
-            if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1 || _panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
-            {
-                Brush.IsVisible = false;
-                //_entity.SyncLayers();
-            }
+            
         }
+
+        bool isMouseOver = false;
 
         public void MouseMoveSurface(MouseConsoleState info, ISurface surface)
         {
+            // If the mouse over state changes
+            if (isMouseOver != info.IsOnConsole)
+            {
+                isMouseOver = info.IsOnConsole;
+
+                if (isMouseOver)
+                {
+                    if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1 || _panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
+                    {
+                        Brush.IsVisible = true;
+                        //_entity.SyncLayers();
+                    }
+                }
+                else
+                {
+                    if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1 || _panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
+                    {
+                        Brush.IsVisible = false;
+                        //_entity.SyncLayers();
+                    }
+                }
+            }
+
             Brush.IsVisible = true;
             //_entity.SyncLayers();
 

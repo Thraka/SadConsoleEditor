@@ -6,6 +6,7 @@ using SadConsole.GameHelpers;
 
 namespace SadConsoleEditor.Consoles
 {
+    //TODO: Simplify, kill this and just use a local consolecontainer in mainscreen.
     class BrushConsoleContainer: SadConsole.ConsoleContainer
     {
         private GameObject brush;
@@ -17,24 +18,6 @@ namespace SadConsoleEditor.Consoles
 
         public BrushConsoleContainer()
         {
-            TextSurface = new SadConsole.Surfaces.BasicSurface(1, 1, Settings.Config.ScreenFont);
-        }
-
-        public override bool ProcessMouse(MouseConsoleState state)
-        {
-            if (Brush != null)
-            {
-                // Transform mouse state into screen font
-                if (MainScreen.Instance.InnerEmptyBounds.Contains(state.WorldPosition))
-                {
-                    Brush.IsVisible = true;
-                    Brush.Position = state.WorldPosition;
-                }
-                else
-                    Brush.IsVisible = false;
-            }
-
-            return false;
         }
     }
 }

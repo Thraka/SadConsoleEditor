@@ -79,36 +79,27 @@
 
         public void ProcessMouse(MouseConsoleState info, ISurface surface)
         {
-        }
-
-        public void MouseEnterSurface(MouseConsoleState info, ISurface surface)
-        {
-        }
-
-        public void MouseExitSurface(MouseConsoleState info, ISurface surface)
-        {
-        }
-
-        public void MouseMoveSurface(MouseConsoleState info, ISurface surface)
-        {
-            if (info.Mouse.LeftButtonDown)
+            if (info.IsOnConsole)
             {
-                var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
-                cell.Glyph = CharacterPickPanel.SharedInstance.SettingCharacter;
-                cell.Foreground = CharacterPickPanel.SharedInstance.SettingForeground;
-                cell.Background = CharacterPickPanel.SharedInstance.SettingBackground;
-                cell.Mirror = CharacterPickPanel.SharedInstance.SettingMirrorEffect;
-                surface.IsDirty = true;
-            }
+                if (info.Mouse.LeftButtonDown)
+                {
+                    var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
+                    cell.Glyph = CharacterPickPanel.SharedInstance.SettingCharacter;
+                    cell.Foreground = CharacterPickPanel.SharedInstance.SettingForeground;
+                    cell.Background = CharacterPickPanel.SharedInstance.SettingBackground;
+                    cell.Mirror = CharacterPickPanel.SharedInstance.SettingMirrorEffect;
+                    surface.IsDirty = true;
+                }
 
-            if (info.Mouse.RightButtonDown)
-            {
-                var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
+                if (info.Mouse.RightButtonDown)
+                {
+                    var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
 
-                CharacterPickPanel.SharedInstance.SettingCharacter = cell.Glyph;
-                CharacterPickPanel.SharedInstance.SettingForeground = cell.Foreground;
-                CharacterPickPanel.SharedInstance.SettingBackground = cell.Background;
-                CharacterPickPanel.SharedInstance.SettingMirrorEffect = cell.Mirror;
+                    CharacterPickPanel.SharedInstance.SettingCharacter = cell.Glyph;
+                    CharacterPickPanel.SharedInstance.SettingForeground = cell.Foreground;
+                    CharacterPickPanel.SharedInstance.SettingBackground = cell.Background;
+                    CharacterPickPanel.SharedInstance.SettingMirrorEffect = cell.Mirror;
+                }
             }
         }
     }

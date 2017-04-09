@@ -95,13 +95,9 @@ namespace SadConsoleEditor.Editors
         {
             consoleWrapper = new Console(1, 1);
             consoleWrapper.Renderer = new SadConsole.Renderers.LayeredSurfaceRenderer();
-            consoleWrapper.MouseHandler = ProcessMouse;
+            
             consoleWrapper.UseKeyboard = false;
-
-            consoleWrapper.MouseMove += (o, e) => { toolsPanel.SelectedTool?.MouseMoveSurface(e.MouseState, BasicSurface); };
-            consoleWrapper.MouseEnter += (o, e) => { toolsPanel.SelectedTool?.MouseEnterSurface(e.MouseState, BasicSurface); };
-            consoleWrapper.MouseExit += (o, e) => { toolsPanel.SelectedTool?.MouseExitSurface(e.MouseState, BasicSurface); };
-
+            
             toolsPanel = new ToolsPanel();
             animationPanel = new AnimationsPanel(SelectedAnimationChanged);
             gameObjectNamePanel = new GameObjectNamePanel();
@@ -426,24 +422,24 @@ namespace SadConsoleEditor.Editors
             return false;
         }
 
-        public bool ProcessMouse(IConsole console, SadConsole.Input.MouseConsoleState info)
+        public bool ProcessMouse(SadConsole.Input.MouseConsoleState info)
         {
-            consoleWrapper.MouseHandler = null;
-            consoleWrapper.UseMouse = true;
-            consoleWrapper.ProcessMouse(info);
-            consoleWrapper.MouseHandler = ProcessMouse;
+            //consoleWrapper.MouseHandler = null;
+            //consoleWrapper.UseMouse = true;
+            //consoleWrapper.ProcessMouse(info);
+            //consoleWrapper.MouseHandler = ProcessMouse;
 
-            toolsPanel.SelectedTool?.ProcessMouse(info, BasicSurface);
+            //toolsPanel.SelectedTool?.ProcessMouse(info, BasicSurface);
 
-            if (consoleWrapper.IsMouseOver)
-            {
-                MainScreen.Instance.SurfaceMouseLocation = info.ConsolePosition;
-                return true;
-            }
-            else
-                MainScreen.Instance.SurfaceMouseLocation = Point.Zero;
+            //if (consoleWrapper.IsMouseOver)
+            //{
+            //    MainScreen.Instance.SurfaceMouseLocation = info.ConsolePosition;
+            //    return true;
+            //}
+            //else
+            //    MainScreen.Instance.SurfaceMouseLocation = Point.Zero;
 
-            consoleWrapper.UseMouse = false;
+            //consoleWrapper.UseMouse = false;
             return false;
         }
     }

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SadConsole.Renderers;
+using SadConsole.Input;
 
 namespace SadConsoleEditor.Consoles
 {
@@ -79,6 +80,29 @@ namespace SadConsoleEditor.Consoles
             //        line.Draw(this);
             //    }
             //}
+        }
+
+        public override bool ProcessMouse(MouseConsoleState state)
+        {
+            var brush = MainScreen.Instance.Brush;
+
+            if (brush != null)
+            {
+                // Transform mouse state into screen font
+                if (MainScreen.Instance.InnerEmptyBounds.Contains(state.WorldPosition))
+                {
+                    brush.IsVisible = true;
+                    brush.Position = state.WorldPosition;
+
+                    MouseConsoleState transformedState = new MouseConsoleState(contentContainer, state.Mouse);
+
+                    MainScreen.Instance.ActiveEditor?.ProcessMouse(transformedState);
+                }
+                else
+                    brush.IsVisible = false;
+            }
+
+            return false;
         }
     }
 }

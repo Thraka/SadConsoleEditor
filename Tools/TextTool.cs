@@ -118,23 +118,8 @@
 
         public void ProcessMouse(MouseConsoleState info, ISurface surface)
         {
-        }
 
-        public void MouseEnterSurface(MouseConsoleState info, ISurface surface)
-        {
-            //Brush.IsVisible = true;
-        }
-
-        public void MouseExitSurface(MouseConsoleState info, ISurface surface)
-        {
-            //Brush.IsVisible = false;
-        }
-
-        public void MouseMoveSurface(MouseConsoleState info, ISurface surface)
-        {
-            
-
-            if (info.Mouse.LeftClicked)
+            if (info.IsOnConsole && info.Mouse.LeftClicked)
             {
                 MainScreen.Instance.AllowKeyboardToMoveConsole = false;
                 writing = true;
@@ -144,9 +129,8 @@
 
                 Brush.IsVisible = true;
             }
-
-
         }
+       
     }
 }
 

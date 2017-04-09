@@ -211,20 +211,5 @@
             }
 
         }
-
-        public void MouseEnterSurface(MouseConsoleState info, ISurface surface)
-        {
-            Brush.IsVisible = true;
-        }
-
-        public void MouseExitSurface(MouseConsoleState info, ISurface surface)
-        {
-            Brush.IsVisible = false;
-        }
-
-        public void MouseMoveSurface(MouseConsoleState info, ISurface surface)
-        {
-            
-        }
     }
 }

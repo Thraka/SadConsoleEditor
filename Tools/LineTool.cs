@@ -187,30 +187,12 @@
 
         public void ProcessMouse(MouseConsoleState info, ISurface surface)
         {
-        }
-
-        public void MouseEnterSurface(MouseConsoleState info, ISurface surface)
-        {
-            Brush.IsVisible = true;
-        }
-
-        public void MouseExitSurface(MouseConsoleState info, ISurface surface)
-        {
-            Brush.IsVisible = false;
-        }
-
-        public void MouseMoveSurface(MouseConsoleState info, ISurface surface)
-        {
-            Brush.IsVisible = true;
-
             if (!firstPoint.HasValue)
             {
-                Brush.Position = info.ConsolePosition;
             }
             else
             {
                 SetAnimationLine(info.ConsolePosition);
-                
             }
 
 
