@@ -81,14 +81,14 @@
             return false;
         }
 
-        public void ProcessMouse(MouseConsoleState info, ISurface surface)
+        public void ProcessMouse(MouseConsoleState info, ISurface surface, bool isInBounds)
         {
-            if (info.Mouse.LeftClicked)
+            if (info.Mouse.LeftClicked && info.IsOnConsole)
             {
                 Cell cellToMatch = new Cell();
                 Cell currentFillCell = new Cell();
 
-                surface.GetCell(info.CellPosition.X, info.CellPosition.Y).CopyAppearanceTo(cellToMatch);
+                info.Cell.CopyAppearanceTo(cellToMatch);
 
                 currentFillCell.Glyph = CharacterPickPanel.SharedInstance.SettingCharacter;
                 currentFillCell.Foreground = CharacterPickPanel.SharedInstance.SettingForeground;
@@ -129,12 +129,14 @@
                 };
 
                 if (!isTargetCell(currentFillCell))
-                    SadConsole.Algorithms.FloodFill<Cell>(surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y), isTargetCell, fillCell, getConnectedCells);
+                    SadConsole.Algorithms.FloodFill<Cell>(info.Cell, isTargetCell, fillCell, getConnectedCells);
+
+                info.Console.TextSurface.IsDirty = true;
             }
 
-            if (info.Mouse.RightButtonDown)
+            if (info.Mouse.RightButtonDown && info.IsOnConsole)
             {
-                var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
+                var cell = info.Cell;
 
                 CharacterPickPanel.SharedInstance.SettingCharacter = cell.Glyph;
                 CharacterPickPanel.SharedInstance.SettingForeground = cell.Foreground;

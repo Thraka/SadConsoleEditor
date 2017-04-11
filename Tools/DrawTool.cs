@@ -77,13 +77,13 @@
             return false;
         }
 
-        public void ProcessMouse(MouseConsoleState info, ISurface surface)
+        public void ProcessMouse(MouseConsoleState info, ISurface surface, bool isInBounds)
         {
             if (info.IsOnConsole)
             {
                 if (info.Mouse.LeftButtonDown)
                 {
-                    var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
+                    var cell = info.Cell;
                     cell.Glyph = CharacterPickPanel.SharedInstance.SettingCharacter;
                     cell.Foreground = CharacterPickPanel.SharedInstance.SettingForeground;
                     cell.Background = CharacterPickPanel.SharedInstance.SettingBackground;
@@ -93,7 +93,7 @@
 
                 if (info.Mouse.RightButtonDown)
                 {
-                    var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
+                    var cell = info.Cell;
 
                     CharacterPickPanel.SharedInstance.SettingCharacter = cell.Glyph;
                     CharacterPickPanel.SharedInstance.SettingForeground = cell.Foreground;

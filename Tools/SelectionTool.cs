@@ -11,18 +11,28 @@
     class LayeredGameObject : GameObject
     {
         public GameObject SelectedSurface;
-        public bool ShowSelectedSurface;
+        public bool ShowSelectedSurface { get { return SelectedSurface.IsVisible; } set { SelectedSurface.IsVisible = value; } }
 
-
-        public LayeredGameObject(): base(1, 1)
+        public LayeredGameObject(): base(1, 1, SadConsoleEditor.Settings.Config.ScreenFont)
         {
             SelectedSurface = new GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
+            SelectedSurface.Parent = this;
         }
 
         public override void Draw(TimeSpan delta)
         {
             if (IsVisible)
             {
+                //base.Draw(delta);
+
+                renderer.Render(animation);
+
+                if (SelectedSurface.IsVisible)
+                    SelectedSurface.Draw(delta);
+
+                Global.DrawCalls.Add(new DrawCallSurface(animation, calculatedPosition - animation.Center, usePixelPositioning));
+
+
                 //if (repositionRects)
                 //{
                 //    if (ShowSelectedSurface)
@@ -42,13 +52,6 @@
         {
             Animation.Update();
         }
-
-        public override void OnCalculateRenderPosition()
-        {
-            base.OnCalculateRenderPosition();
-
-            SelectedSurface.Position = Position;
-        }
     }
 
     class SelectionTool : ITool
@@ -60,8 +63,8 @@
         public ResizableObject SelectionBox;
 
         private SadConsole.Effects.Fade _frameEffect;
-        private Point? _firstPoint;
-        private Point? _secondPoint;
+        private Point? firstPoint;
+        private Point secondPoint;
         private SadConsole.Shapes.Box _boxShape;
         private SelectionToolPanel _panel;
         private SelectionToolAltPanel _altPanel;
@@ -155,12 +158,13 @@
                 ClearBrush(Brush.Position.X, Brush.Position.Y, _previousSurface);
                 _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
             }
-            else if (state == SelectionToolPanel.CloneState.Clone)
+            else if (state == SelectionToolPanel.CloneState.Stamp)
             {
                 var animation = Brush.Animation;
                 Brush.ShowSelectedSurface = true;
                 animation.Center = new Point(animation.Width / 2, animation.Height / 2);
-                Brush.Position += animation.Center;
+                //Brush.Position += animation.Center + new Point(1);
+                Brush.SelectedSurface.Animation.Center = Brush.Animation.Center;
             }
         }
 
@@ -181,7 +185,7 @@
 
         public void LoadBrush(BasicSurface surface)
         {
-            _panel.State = SelectionToolPanel.CloneState.Clone;
+            _panel.State = SelectionToolPanel.CloneState.Stamp;
 
             // Copy data to new animation
             var cloneAnimation = new AnimatedSurface("clone", surface.Width, surface.Height, SadConsoleEditor.Settings.Config.ScreenFont);
@@ -274,92 +278,88 @@
             return false;
         }
 
-        public void ProcessMouse(MouseConsoleState info, ISurface surface)
+        private bool cancelled;
+        private Point finalPostion;
+
+        public void ProcessMouse(MouseConsoleState info, ISurface surface, bool isInBounds)
         {
             _previousSurface = surface;
-            
-            if (_panel.State == SelectionToolPanel.CloneState.Clone || _panel.State == SelectionToolPanel.CloneState.Move)
+
+            if (cancelled)
             {
-                Brush.Position = info.ConsolePosition;
-            }
-
-            if (info.Mouse.RightClicked)
-            {
-                _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
-            }
-
-            if (info.Mouse.LeftClicked)
-            {
-                if (_panel.State == SelectionToolPanel.CloneState.Clone)
-                {
-                    StampBrush(info.ConsolePosition.X, info.ConsolePosition.Y, surface);
-                }
-                else if (_panel.State == SelectionToolPanel.CloneState.Move)
-                {
-                    StampBrush(info.ConsolePosition.X, info.ConsolePosition.Y, surface);
-                    _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
-                }
-            }
-        }
-
-        public void MouseEnterSurface(MouseConsoleState info, ISurface surface)
-        {
-            
-        }
-
-        public void MouseExitSurface(MouseConsoleState info, ISurface surface)
-        {
-            
-        }
-
-        bool isMouseOver = false;
-
-        public void MouseMoveSurface(MouseConsoleState info, ISurface surface)
-        {
-            // If the mouse over state changes
-            if (isMouseOver != info.IsOnConsole)
-            {
-                isMouseOver = info.IsOnConsole;
-
-                if (isMouseOver)
-                {
-                    if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1 || _panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
-                    {
-                        Brush.IsVisible = true;
-                        //_entity.SyncLayers();
-                    }
-                }
+                // wait until left button is released...
+                if (info.Mouse.LeftButtonDown)
+                    return;
                 else
-                {
-                    if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1 || _panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
-                    {
-                        Brush.IsVisible = false;
-                        //_entity.SyncLayers();
-                    }
-                }
+                    cancelled = false;
             }
 
-            Brush.IsVisible = true;
-            //_entity.SyncLayers();
-
-            if (info.Mouse.LeftClicked)
+            if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1)
             {
-                if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1)
+                if (info.Mouse.LeftButtonDown)
                 {
-                    _panel.State = SelectionToolPanel.CloneState.SelectingPoint2;
-                    Brush.Animation.Tint = new Color(0f, 0f, 0f, 0.5f);
-                }
+                    if (!firstPoint.HasValue)
+                    {
+                        firstPoint = info.ConsolePosition;
+                        return;
+                    }
+                    else
+                    {
+                        // Check for right click cancel.
+                        if (info.Mouse.RightButtonDown)
+                        {
+                            cancelled = true;
+                            firstPoint = null;
+                            return;
+                        }
 
-                else if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
+                        secondPoint = info.ConsolePosition;
+
+                        // Draw the line (erase old) to where the mouse is
+                        // create the animation frame
+                        int width = Math.Max(firstPoint.Value.X, secondPoint.X) - Math.Min(firstPoint.Value.X, secondPoint.X) + 1;
+                        int height = Math.Max(firstPoint.Value.Y, secondPoint.Y) - Math.Min(firstPoint.Value.Y, secondPoint.Y) + 1;
+
+                        Point p1;
+
+                        if (firstPoint.Value.X > secondPoint.X)
+                        {
+                            if (firstPoint.Value.Y > secondPoint.Y)
+                                p1 = Point.Zero;
+                            else
+                                p1 = new Point(0, height - 1);
+                        }
+                        else
+                        {
+                            if (firstPoint.Value.Y > secondPoint.Y)
+                                p1 = new Point(width - 1, 0);
+                            else
+                                p1 = new Point(width - 1, height - 1);
+                        }
+
+                        finalPostion = info.ConsolePosition + new Point(1);
+                        MakeBoxAnimation(width, height, p1);
+                    }
+                }
+                else if (firstPoint.HasValue)
                 {
-                    _secondPoint = new Point(info.ConsolePosition.X, info.ConsolePosition.Y);
-                    _panel.State = SelectionToolPanel.CloneState.Selected;
-                    
+                    // We let go outside of bounds
+                    if (!isInBounds)
+                    {
+                        cancelled = true;
+                        Brush.ShowSelectedSurface = false;
+                        Brush.IsVisible = false;
+                        Brush.Animation = Brush.Animations[AnimationSingle];
+                        return;
+                    }
+
+                    secondPoint = info.ConsolePosition + info.Console.TextSurface.RenderArea.Location;
+                    firstPoint = firstPoint.Value + info.Console.TextSurface.RenderArea.Location;
+
                     // Copy data to new animation
-                    
                     AnimatedSurface cloneAnimation = new AnimatedSurface("clone", Brush.Animation.Width, Brush.Animation.Height, SadConsoleEditor.Settings.Config.ScreenFont);
                     var frame = cloneAnimation.CreateFrame();
-                    Point topLeftPoint = new Point(Math.Min(_firstPoint.Value.X, _secondPoint.Value.X), Math.Min(_firstPoint.Value.Y, _secondPoint.Value.Y));
+                    Point topLeftPoint = new Point(Math.Min(firstPoint.Value.X, secondPoint.X), Math.Min(firstPoint.Value.Y, secondPoint.Y));
                     surface.Copy(topLeftPoint.X, topLeftPoint.Y, cloneAnimation.Width, cloneAnimation.Height, frame, 0, 0);
 
                     if (_altPanel.SkipEmptyCells && _altPanel.UseAltEmptyColor)
@@ -374,85 +374,41 @@
                     cloneAnimation.Center = Brush.Animation.Center;
 
                     Brush.SelectedSurface.Animation = cloneAnimation;
-                    //Brush.Animations[cloneAnimation.Name] = cloneAnimation;
-                    //Brush.Animation = cloneAnimation;
-                    //Brush.Animation.Tint = new Color(0f, 0f, 0f, 0f);
 
-                    //// Display the rect
-                    //var topLayer = new GameObject(Settings.Config.ScreenFont);
-                    //Brush.UnderAnimation = topLayer;
-                    //topLayer.Animations[_tempAnimation.Name] = _tempAnimation;
-                    //topLayer.Animation = _tempAnimation;
-                    //topLayer.Animation.Tint = new Color(0f, 0f, 0f, 0.35f);
-                    //topLayer.Position = Brush.Position;
-                    ////_entity.SyncLayers();
-                }
+                    Brush.Position = finalPostion;
 
-                else if (_panel.State == SelectionToolPanel.CloneState.Selected)
-                {
-                    
+                    _panel.State = SelectionToolPanel.CloneState.Selected;
                 }
-                else if (_panel.State == SelectionToolPanel.CloneState.Clone)
+            }
+
+            if (info.Mouse.RightClicked)
+            {
+                _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
+                firstPoint = null;
+            }
+
+            if (_panel.State == SelectionToolPanel.CloneState.Selected)
+            {
+                Brush.Position = finalPostion;
+                Brush.IsVisible = true;
+            }
+            if (info.Mouse.LeftClicked && isInBounds)
+            {
+                if (_panel.State == SelectionToolPanel.CloneState.Stamp)
                 {
-                    //StampBrush(info.ConsolePosition.X, info.ConsolePosition.Y, surface);
-                }
-                else if (_panel.State == SelectionToolPanel.CloneState.Clear)
-                {
-                    // Erase selected area
+                    StampBrush(info.ConsolePosition.X, info.ConsolePosition.Y, surface);
                 }
                 else if (_panel.State == SelectionToolPanel.CloneState.Move)
                 {
-                    // Move the selected cells
+                    StampBrush(info.ConsolePosition.X, info.ConsolePosition.Y, surface);
+                    _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
                 }
-
-
             }
-            else
-            {
-                
-                if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1)
-                {
-                    Brush.Position = info.ConsolePosition;
-                    _firstPoint = Brush.Position;
-
-                    // State was reset and we didn't know about it
-                    if (_previousState != _panel.State || Brush.Animation.Name != AnimationSingle)
-                    {
-                        Brush.Animation = Brush.Animations[AnimationSingle];
-                        Brush.Animation.Tint = new Color(0f, 0f, 0f, 0f);
-                    }
-                }
-
-                if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint2)
-                {
-                    int width = Math.Max(_firstPoint.Value.X, info.ConsolePosition.X) - Math.Min(_firstPoint.Value.X, info.ConsolePosition.X) + 1;
-                    int height = Math.Max(_firstPoint.Value.Y, info.ConsolePosition.Y) - Math.Min(_firstPoint.Value.Y, info.ConsolePosition.Y) + 1;
-
-                    Point p1;
-
-                    if (_firstPoint.Value.X > info.ConsolePosition.X)
-                    {
-                        if (_firstPoint.Value.Y > info.ConsolePosition.Y)
-                            p1 = new Point(width - 1, height - 1);
-                        else
-                            p1 = new Point(width - 1, 0);
-                    }
-                    else
-                    {
-                        if (_firstPoint.Value.Y > info.ConsolePosition.Y)
-                            p1 = new Point(0, height - 1);
-                        else
-                            p1 = new Point(0, 0);
-                    }
-
-                    MakeBoxAnimation(width, height, p1);
-                }
-
-            }
-
-            _previousState = _panel.State;
         }
+        
 
+        bool isMouseOver = false;
+        
         private void StampBrush(int consoleLocationX, int consoleLocationY, ISurface surface)
         {
             int destinationX = consoleLocationX - Brush.Animation.Center.X;
@@ -475,9 +431,9 @@
                             continue;
                         }
 
-                        if (surface.IsValidCell(destX, destY))
+                        if (surface.IsValidCell(destX + surface.RenderArea.Location.X, destY + surface.RenderArea.Location.Y))
                         {
-                            var desCell = surface.GetCell(destX, destY);
+                            var desCell = surface.GetCell(destX + surface.RenderArea.Location.X, destY + surface.RenderArea.Location.Y);
                             sourceCell.CopyAppearanceTo(desCell);
                             //TODO: effects
                             //surface.SetEffect(desCell, sourceCell.Effect);
@@ -488,6 +444,8 @@
                 destY = destinationY;
                 destX++;
             }
+
+            surface.IsDirty = true;
         }
 
         private void ClearBrush(int consoleLocationX, int consoleLocationY, ISurface surface)
@@ -505,9 +463,9 @@
                 {
                     if (Brush.SelectedSurface.Animation.CurrentFrame.IsValidCell(curx, cury))
                     {
-                        if (surface.IsValidCell(destX, destY))
+                        if (surface.IsValidCell(destX + surface.RenderArea.Location.X, destY + surface.RenderArea.Location.Y))
                         {
-                            SadConsoleEditor.Settings.QuickEditor.Clear(destX, destY);
+                            SadConsoleEditor.Settings.QuickEditor.Clear(destX + surface.RenderArea.Location.X, destY + surface.RenderArea.Location.Y);
                         }
                     }
                     destY++;
@@ -515,6 +473,8 @@
                 destY = destinationY;
                 destX++;
             }
+
+            surface.IsDirty = true;
         }
     }
 }

@@ -116,7 +116,7 @@
             return false;
         }
 
-        public void ProcessMouse(MouseConsoleState info, ISurface surface)
+        public void ProcessMouse(MouseConsoleState info, ISurface surface, bool isInBounds)
         {
 
             if (info.IsOnConsole && info.Mouse.LeftClicked)

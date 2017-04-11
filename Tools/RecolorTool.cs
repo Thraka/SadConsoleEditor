@@ -82,27 +82,32 @@
             return false;
         }
 
-        public void ProcessMouse(MouseConsoleState info, ISurface surface)
+        public void ProcessMouse(MouseConsoleState info, ISurface surface, bool isInBounds)
         {
-            if (info.Mouse.LeftButtonDown)
+            if (info.IsOnConsole)
             {
-                var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
+                if (info.Mouse.LeftButtonDown)
+                {
+                    var cell = info.Cell;  
 
-                if (!settingsPanel.IgnoreForeground)
-                    cell.Foreground = CharacterPickPanel.SharedInstance.SettingForeground;
+                    if (!settingsPanel.IgnoreForeground)
+                        cell.Foreground = CharacterPickPanel.SharedInstance.SettingForeground;
 
-                if (!settingsPanel.IgnoreBackground)
-                    cell.Background = CharacterPickPanel.SharedInstance.SettingBackground;
-            }
-            else if (info.Mouse.RightButtonDown)
-            {
-                var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
+                    if (!settingsPanel.IgnoreBackground)
+                        cell.Background = CharacterPickPanel.SharedInstance.SettingBackground;
 
-                if (!settingsPanel.IgnoreForeground)
-                    CharacterPickPanel.SharedInstance.SettingForeground = cell.Foreground;
+                    info.Console.TextSurface.IsDirty = true;
+                }
+                else if (info.Mouse.RightButtonDown)
+                {
+                    var cell = info.Cell;
 
-                if (!settingsPanel.IgnoreBackground)
-                    CharacterPickPanel.SharedInstance.SettingBackground = cell.Background;
+                    if (!settingsPanel.IgnoreForeground)
+                        CharacterPickPanel.SharedInstance.SettingForeground = cell.Foreground;
+
+                    if (!settingsPanel.IgnoreBackground)
+                        CharacterPickPanel.SharedInstance.SettingBackground = cell.Background;
+                }
             }
         }
     }

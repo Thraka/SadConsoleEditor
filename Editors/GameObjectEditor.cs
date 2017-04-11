@@ -422,7 +422,7 @@ namespace SadConsoleEditor.Editors
             return false;
         }
 
-        public bool ProcessMouse(SadConsole.Input.MouseConsoleState info)
+        public bool ProcessMouse(SadConsole.Input.MouseConsoleState info, bool isInBounds)
         {
             //consoleWrapper.MouseHandler = null;
             //consoleWrapper.UseMouse = true;

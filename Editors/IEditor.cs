@@ -47,7 +47,7 @@ namespace SadConsoleEditor.Editors
 
         bool ProcessKeyboard(Keyboard info);
 
-        bool ProcessMouse(MouseConsoleState transformedState);
+        bool ProcessMouse(MouseConsoleState transformedState, bool isInBounds);
 
         void New(Color foreground, Color background, int width, int height);
 

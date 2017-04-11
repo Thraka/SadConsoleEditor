@@ -24,7 +24,7 @@ namespace SadConsoleEditor.Tools
 
         bool ProcessKeyboard(Keyboard info, ISurface surface);
 
-        void ProcessMouse(MouseConsoleState info, ISurface surface);
+        void ProcessMouse(MouseConsoleState info, ISurface surface, bool isInBounds);
 
         void RefreshTool();
 

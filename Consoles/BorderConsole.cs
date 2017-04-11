@@ -88,18 +88,20 @@ namespace SadConsoleEditor.Consoles
 
             if (brush != null)
             {
-                // Transform mouse state into screen font
+                MouseConsoleState transformedState = new MouseConsoleState(contentContainer, state.Mouse);
+
                 if (MainScreen.Instance.InnerEmptyBounds.Contains(state.WorldPosition))
                 {
                     brush.IsVisible = true;
                     brush.Position = state.ConsolePosition;
 
-                    MouseConsoleState transformedState = new MouseConsoleState(contentContainer, state.Mouse);
-
-                    MainScreen.Instance.ActiveEditor?.ProcessMouse(transformedState);
+                    MainScreen.Instance.ActiveEditor?.ProcessMouse(transformedState, true);
                 }
                 else
+                {
                     brush.IsVisible = false;
+                    MainScreen.Instance.ActiveEditor?.ProcessMouse(transformedState, false);
+                }
             }
 
             return false;

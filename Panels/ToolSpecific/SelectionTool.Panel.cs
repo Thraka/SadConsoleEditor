@@ -96,9 +96,8 @@ namespace SadConsoleEditor.Panels
         public enum CloneState
         {
             SelectingPoint1,
-            SelectingPoint2,
             Selected,
-            Clone,
+            Stamp,
             Clear,
             Move
         }
@@ -154,7 +153,7 @@ namespace SadConsoleEditor.Panels
 
         private void clone_Click(object sender, EventArgs e)
         {
-            State = CloneState.Clone;
+            State = CloneState.Stamp;
         }
 
         private void _saveBrush_Click(object sender, EventArgs e)

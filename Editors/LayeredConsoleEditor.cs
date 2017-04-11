@@ -115,9 +115,9 @@ namespace SadConsoleEditor.Editors
             return false;
         }
 
-        public bool ProcessMouse(SadConsole.Input.MouseConsoleState info)
+        public bool ProcessMouse(SadConsole.Input.MouseConsoleState info, bool isInBounds)
         {
-            toolsPanel.SelectedTool?.ProcessMouse(info, surface);
+            toolsPanel.SelectedTool?.ProcessMouse(info, surface, isInBounds);
             return false;
         }
 
