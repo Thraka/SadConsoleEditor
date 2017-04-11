@@ -23,7 +23,7 @@ namespace SadConsoleEditor.Consoles
             contentContainer.TextSurface = surface;
             contentContainer.TextSurface.Font = Settings.Config.ScreenFont;
             contentContainer.Renderer = renderer;
-            TextSurface = new BasicSurface(surface.Width + 2, surface.Height + 2, Settings.Config.ScreenFont);
+            TextSurface = new BasicSurface(surface.RenderArea.Width + 2, surface.RenderArea.Height + 2, Settings.Config.ScreenFont);
             PrepBox();
         }
 
@@ -92,7 +92,7 @@ namespace SadConsoleEditor.Consoles
                 if (MainScreen.Instance.InnerEmptyBounds.Contains(state.WorldPosition))
                 {
                     brush.IsVisible = true;
-                    brush.Position = state.WorldPosition;
+                    brush.Position = state.ConsolePosition;
 
                     MouseConsoleState transformedState = new MouseConsoleState(contentContainer, state.Mouse);
 

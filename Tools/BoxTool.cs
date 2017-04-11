@@ -12,6 +12,7 @@
     {
         private AnimatedSurface animSinglePoint;
         private SadConsole.Effects.Fade frameEffect;
+        private Point originalPoint;
         private Point? firstPoint;
         private Point? secondPoint;
         private SadConsole.Shapes.Box boxShape;
@@ -119,36 +120,35 @@
 
         public void ProcessMouse(MouseConsoleState info, ISurface surface)
         {
-            if (!firstPoint.HasValue)
+            if (firstPoint.HasValue)
             {
-                Brush.Position = info.ConsolePosition;
-            }
-            else
-            {
+                var relativePosition = info.ConsolePosition - info.Console.TextSurface.RenderArea.Location;
+
                 // Draw the line (erase old) to where the mouse is
                 // create the animation frame
-                AnimatedSurface animation = new AnimatedSurface("line", Math.Max(firstPoint.Value.X, info.ConsolePosition.X) - Math.Min(firstPoint.Value.X, info.ConsolePosition.X) + 1,
-                                                                                Math.Max(firstPoint.Value.Y, info.ConsolePosition.Y) - Math.Min(firstPoint.Value.Y, info.ConsolePosition.Y) + 1,
+                AnimatedSurface animation = new AnimatedSurface("line", Math.Max(firstPoint.Value.X, relativePosition.X) - Math.Min(firstPoint.Value.X, relativePosition.X) + 1,
+                                                                                Math.Max(firstPoint.Value.Y, relativePosition.Y) - Math.Min(firstPoint.Value.Y, relativePosition.Y) + 1,
                                                                                 SadConsoleEditor.Settings.Config.ScreenFont);
 
                 var frame = animation.CreateFrame();
 
                 Point p1;
 
-                if (firstPoint.Value.X > info.ConsolePosition.X)
+                if (firstPoint.Value.X > relativePosition.X)
                 {
-                    if (firstPoint.Value.Y > info.ConsolePosition.Y)
-                        p1 = new Point(frame.Width - 1, frame.Height - 1);
+                    if (firstPoint.Value.Y > relativePosition.Y)
+                        p1 = Point.Zero;
                     else
-                        p1 = new Point(frame.Width - 1, 0);
+                        p1 = new Point(0, frame.Height - 1);
                 }
                 else
                 {
-                    if (firstPoint.Value.Y > info.ConsolePosition.Y)
-                        p1 = new Point(0, frame.Height - 1);
+                    if (firstPoint.Value.Y > relativePosition.Y)
+                        p1 = new Point(frame.Width - 1, 0);
                     else
-                        p1 = new Point(0, 0);
+                        p1 = new Point(frame.Width - 1, frame.Height - 1);
                 }
+
 
                 animation.Center = p1;
 
@@ -179,24 +179,21 @@
             {
                 if (!firstPoint.HasValue)
                 {
-                    firstPoint = new Point(info.ConsolePosition.X, info.ConsolePosition.Y);
+                    firstPoint = info.ConsolePosition - info.Console.TextSurface.RenderArea.Location;
                 }
                 else
                 {
-                    secondPoint = new Point(info.ConsolePosition.X, info.ConsolePosition.Y);
+                    secondPoint = info.ConsolePosition - info.Console.TextSurface.RenderArea.Location;
                     Point p1 = new Point(Math.Min(firstPoint.Value.X, secondPoint.Value.X), Math.Min(firstPoint.Value.Y, secondPoint.Value.Y));
                     //Point p2 = new Point(Math.Max(_firstPoint.Value.X, _secondPoint.Value.X), Math.Max(_firstPoint.Value.Y, _secondPoint.Value.Y));
 
-
-                    boxShape.Position = p1;
+                    boxShape.Position = p1 + (info.Console.TextSurface.RenderArea.Location + info.Console.TextSurface.RenderArea.Location);// - (originalPoint - info.Console.TextSurface.RenderArea.Location);
                     boxShape.Draw(new SurfaceEditor(surface));
 
                     firstPoint = null;
                     secondPoint = null;
 
                     Brush.Animation = Brush.Animations["single"];
-
-                    //surface.ResyncAllCellEffects();
                 }
             }
             else if (info.Mouse.RightClicked)

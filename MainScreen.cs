@@ -31,7 +31,22 @@ namespace SadConsoleEditor
         private string topBarToolName = "None";
         private Point topBarMousePosition;
 
-        public SadConsole.GameHelpers.GameObject Brush { get { return brushScreen.Brush; } set { brushScreen.Brush = value; } }
+        private SadConsole.GameHelpers.GameObject brush;
+
+        public SadConsole.GameHelpers.GameObject Brush
+        {
+            get { return brush; }
+            set
+            {
+                if (brush != null)
+                    brush.Parent = null;
+
+                brush = value;
+
+                if (value != null)
+                    value.Parent = borderConsole;
+            }
+        }
         public bool AllowKeyboardToMoveConsole;
 
         public Editors.IEditor ActiveEditor { get; private set; }

@@ -84,7 +84,8 @@ namespace SadConsoleEditor.Editors
         public void New(Color foreground, Color background, int width, int height)
         {
             Reset();
-            surface = new SadConsole.Surfaces.LayeredSurface(width, height, SadConsoleEditor.Settings.Config.ScreenFont, 1);
+            surface = new SadConsole.Surfaces.LayeredSurface(width * 2, height * 2, SadConsoleEditor.Settings.Config.ScreenFont, 1);
+            surface.RenderArea = new Rectangle(5, 5, width, height);
             LayerMetadata.Create("Root", true, false, true, surface.ActiveLayer);
 
             var editor = new SurfaceEditor(surface);

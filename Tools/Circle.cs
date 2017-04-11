@@ -126,37 +126,37 @@
         {
             if (!firstPoint.HasValue)
             {
-                Brush.Position = info.ConsolePosition;
-
                 settingsPanel.CircleWidth = 0;
                 settingsPanel.CircleHeight = 0;
             }
             else
             {
-                AnimatedSurface animation;
+                var relativePosition = info.ConsolePosition - info.Console.TextSurface.RenderArea.Location;
+                
                 // Draw the line (erase old) to where the mouse is
                 // create the animation frame
-                animation = new AnimatedSurface("line", Math.Max(firstPoint.Value.X, info.ConsolePosition.X) - Math.Min(firstPoint.Value.X, info.ConsolePosition.X) + 1,
-                                                            Math.Max(firstPoint.Value.Y, info.ConsolePosition.Y) - Math.Min(firstPoint.Value.Y, info.ConsolePosition.Y) + 1,
-                                                            SadConsoleEditor.Settings.Config.ScreenFont);
+                AnimatedSurface animation = new AnimatedSurface("line", Math.Max(firstPoint.Value.X, relativePosition.X) - Math.Min(firstPoint.Value.X, relativePosition.X) + 1,
+                                                                                Math.Max(firstPoint.Value.Y, relativePosition.Y) - Math.Min(firstPoint.Value.Y, relativePosition.Y) + 1,
+                                                                                SadConsoleEditor.Settings.Config.ScreenFont);
 
                 var frame = animation.CreateFrame();
 
                 Point p1;
 
-                if (firstPoint.Value.X > info.ConsolePosition.X)
+                if (firstPoint.Value.X > relativePosition.X)
                 {
-                    if (firstPoint.Value.Y > info.ConsolePosition.Y)
-                        p1 = new Point(frame.Width - 1, frame.Height - 1);
+                    if (firstPoint.Value.Y > relativePosition.Y)
+                        p1 = Point.Zero;
                     else
-                        p1 = new Point(frame.Width - 1, 0);
+                        p1 = new Point(0, frame.Height - 1);
+
                 }
                 else
                 {
-                    if (firstPoint.Value.Y > info.ConsolePosition.Y)
-                        p1 = new Point(0, frame.Height - 1);
+                    if (firstPoint.Value.Y > relativePosition.Y)
+                        p1 = new Point(frame.Width - 1, 0);
                     else
-                        p1 = new Point(0, 0);
+                        p1 = new Point(frame.Width - 1, frame.Height - 1);
                 }
 
                 settingsPanel.CircleWidth = frame.Width;
