@@ -32,6 +32,8 @@ namespace SadConsoleEditor.Windows
             entity.Animation = animation;
             animation.Restart();
             entity.Animation.Start();
+            entity.Position = new Point(1);
+            Children.Add(entity);
 
             restartAnimation = new Button(animation.Width, 1);
             restartAnimation.Text = "Restart";
@@ -40,11 +42,9 @@ namespace SadConsoleEditor.Windows
             Add(restartAnimation);
         }
 
-        protected override void OnAfterRender(SpriteBatch batch)
+        public override void Redraw()
         {
-            base.OnAfterRender(batch);
-
-            entity.Animation.CurrentFrame.Copy(textSurface, entity.Position.X, entity.Position.Y);
+            base.Redraw();
 
             // Draw bar
             for (int i = 1; i < TextSurface.Width - 1; i++)
@@ -82,13 +82,6 @@ namespace SadConsoleEditor.Windows
         {
             Center();
             base.Show(modal);
-        }
-
-        public override void Update(TimeSpan delta)
-        {
-            base.Update(delta);
-
-            entity.Update(delta);
         }
     }
 }

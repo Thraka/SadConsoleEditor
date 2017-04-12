@@ -169,7 +169,7 @@ namespace SadConsoleEditor.Consoles
 
                 foreach (var item in _hotSpots)
                 {
-                    if (item.Item2 == info.ConsolePosition.Y)
+                    if (item.Item2 == info.CellPosition.Y)
                     {
                         if (info.Mouse.LeftClicked)
                         {

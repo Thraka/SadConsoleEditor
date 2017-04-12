@@ -393,30 +393,33 @@ namespace SadConsoleEditor
             topBarPane.Print(0, 0, text);
         }
 
-        public bool ProcessKeyboard(Keyboard info)
+        public override void Update(TimeSpan timeElapsed)
         {
-            //bool movekeyPressed = false;
-            //var position = new Point(borderConsole.Position.X + 1, borderConsole.Position.Y + 1);
-            ////var result = base.ProcessKeyboard(info);
-            //if (AllowKeyboardToMoveConsole && ActiveEditor != null && ActiveEditor.RenderedConsole != null)
-            //{
-            //    bool shifted = info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
-            //    var oldRenderArea = ActiveEditor.RenderedConsole.TextSurface.RenderArea;
+            base.Update(timeElapsed);
 
-            //    if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
-            //        ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left - 1, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+            bool movekeyPressed = false;
+            var position = new Point(borderConsole.Position.X + 1, borderConsole.Position.Y + 1);
+            //var result = base.ProcessKeyboard(info);
+            if (AllowKeyboardToMoveConsole && ActiveEditor != null && ActiveEditor.Surface != null)
+            {
+                bool shifted = Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
+                var oldRenderArea = ActiveEditor.Surface.RenderArea;
 
-            //    else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
-            //        ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left + 1, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+                if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+                    ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left - 1, ActiveEditor.Surface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
 
-            //    if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
-            //        ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top - 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+                else if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
+                    ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left + 1, ActiveEditor.Surface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
 
-            //    else if (!shifted && info.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
-            //        ActiveEditor.RenderedConsole.TextSurface.RenderArea = new Rectangle(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Left, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Top + 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+                if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
+                    ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left, ActiveEditor.Surface.RenderArea.Top - 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
 
-            //    movekeyPressed = oldRenderArea != ActiveEditor.RenderedConsole.TextSurface.RenderArea;
-            //}
+                else if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
+                    ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left, ActiveEditor.Surface.RenderArea.Top + 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+
+                movekeyPressed = oldRenderArea != ActiveEditor.Surface.RenderArea;
+
+            }
 
             //if (movekeyPressed)
             //{
@@ -450,8 +453,7 @@ namespace SadConsoleEditor
             //        }
             //    }
             //}
-
-            return false;
         }
+
     }
 }
