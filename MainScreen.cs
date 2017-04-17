@@ -106,8 +106,8 @@ namespace SadConsoleEditor
             
 
             var boundsLocation = new Point(0, topBarPane.TextSurface.Height).TranslateFont(topBarPane.TextSurface.Font, Settings.Config.ScreenFont) + new Point(1);
-            InnerEmptyBounds = new Rectangle(boundsLocation, new Point(0, QuickSelectPane.Position.Y).PixelLocationToConsole(QuickSelectPane.TextSurface.Font.Size.X, QuickSelectPane.TextSurface.Font.Size.Y)  - boundsLocation);
-            InnerEmptyBounds.Width = new Point(ToolsPane.Position.X, 0).TranslateFont(SadConsole.Global.FontDefault, Settings.Config.ScreenFont).X - 1;
+            InnerEmptyBounds = new Rectangle(boundsLocation, new Point(1, QuickSelectPane.Position.Y).PixelLocationToConsole(QuickSelectPane.TextSurface.Font.Size.X, QuickSelectPane.TextSurface.Font.Size.Y)  - boundsLocation);
+            InnerEmptyBounds.Width = new Point(ToolsPane.Position.X - 1, 0).TranslateFont(SadConsole.Global.FontDefault, Settings.Config.ScreenFont).X - 1;
             InnerEmptyBoundsPixels = new Rectangle(InnerEmptyBounds.Location.ConsoleLocationToPixel(Settings.Config.ScreenFont), InnerEmptyBounds.Size.ConsoleLocationToPixel(Settings.Config.ScreenFont));
 
             // Add the consoles to the main console list
@@ -289,6 +289,13 @@ namespace SadConsoleEditor
                 ShowStartup();
             else
                 ChangeActiveEditor(OpenEditors[0]);
+        }
+
+        public void RefreshBorder()
+        {
+            borderConsole.SetContent(ActiveEditor.Surface, ActiveEditor.Renderer);
+            UpdateBorder();
+            CenterEditor();
         }
 
         public void ChangeActiveEditor(Editors.IEditor editor)

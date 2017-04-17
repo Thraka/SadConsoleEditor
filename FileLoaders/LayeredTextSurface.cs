@@ -28,12 +28,12 @@ namespace SadConsoleEditor.FileLoaders
 
         public object Load(string file)
         {
-            return SadConsole.Surfaces.LayeredSurface.Load(file);
+            return SadConsole.Surfaces.LayeredSurface.Load(file, typeof(LayerMetadata));
         }
 
         public void Save(object surface, string file)
         {
-            ((SadConsole.Surfaces.LayeredSurface)surface).Save(file);
+            ((SadConsole.Surfaces.LayeredSurface)surface).Save(file, typeof(LayerMetadata));
         }
     }
 }

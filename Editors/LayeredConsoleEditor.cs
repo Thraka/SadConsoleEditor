@@ -81,21 +81,30 @@ namespace SadConsoleEditor.Editors
 
         public void Load(string file, IFileLoader loader)
         {
-            throw new NotImplementedException();
+            if (loader is FileLoaders.LayeredSurface)
+            {
+                Reset();
+
+                surface = (SadConsole.Surfaces.LayeredSurface)loader.Load(file);
+
+                surface.RenderArea = new Rectangle(0, 0, 
+                            Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, surface.RenderArea.Width),
+                            Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, surface.RenderArea.Height));
+
+                layerManagementPanel.SetLayeredSurface(surface);
+
+                Title = System.IO.Path.GetFileName(file);
+            }
         }
 
         public void New(Color foreground, Color background, int width, int height)
         {
             Reset();
+            int renderWidth = Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, width);
+            int renderHeight = Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, height);
 
-            int renderWidth = Math.Max(MainScreen.Instance.InnerEmptyBounds.Width, width);
-            int renderHeight = Math.Max(MainScreen.Instance.InnerEmptyBounds.Height, height);
-
-            surface = new SadConsole.Surfaces.LayeredSurface(width, height, SadConsoleEditor.Settings.Config.ScreenFont, 1);
+            surface = new SadConsole.Surfaces.LayeredSurface(width, height, SadConsoleEditor.Settings.Config.ScreenFont, new Rectangle(0,0, renderWidth, renderHeight), 1);
             
-            if (renderWidth != width || renderHeight != height)
-                surface.RenderArea = new Rectangle(0, 0, renderWidth, renderHeight);
-
             LayerMetadata.Create("Root", true, false, true, surface.ActiveLayer);
 
             var editor = new SurfaceEditor(surface);
@@ -103,6 +112,7 @@ namespace SadConsoleEditor.Editors
 
             layerManagementPanel.SetLayeredSurface(surface);
             layerManagementPanel.IsCollapsed = true;
+
         }
 
         public void OnClosed()
@@ -133,7 +143,6 @@ namespace SadConsoleEditor.Editors
 
         public void Render()
         {
-            
         }
 
         public void Reset()
@@ -143,17 +152,46 @@ namespace SadConsoleEditor.Editors
 
         public void Resize(int width, int height)
         {
+            Reset();
+            int renderWidth = Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, width);
+            int renderHeight = Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, height);
+
+            var oldSurface = surface;
+            surface = new SadConsole.Surfaces.LayeredSurface(width, height, SadConsoleEditor.Settings.Config.ScreenFont, new Rectangle(0, 0, renderWidth, renderHeight), 1);
+
+            for (var index = 0; index < oldSurface.LayerCount; index++)
+            {
+                oldSurface.SetActiveLayer(index);
+                surface.SetActiveLayer(index);
+                oldSurface.Copy(surface);
+                surface.GetLayer(index).Metadata = oldSurface.GetLayer(index).Metadata;
+            }
             
+            layerManagementPanel.SetLayeredSurface(surface);
+
+            MainScreen.Instance.RefreshBorder();
         }
 
         public void Save()
         {
-            
+            var popup = new Windows.SelectFilePopup();
+            popup.Center();
+            popup.SkipFileExistCheck = true;
+            popup.Closed += (s, e) =>
+            {
+                if (popup.DialogResult)
+                {
+                    popup.SelectedLoader.Save(surface, popup.SelectedFile);
+                }
+            };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredSurface(), new FileLoaders.TextFile() };
+            popup.SelectButtonText = "Save";
+            popup.Show(true);
         }
 
         public void Update()
         {
-            
+            toolsPanel.SelectedTool?.Update();
         }
 
         private void ToolsListBox_SelectedItemChanged(object sender, SadConsole.Controls.ListBox<SadConsole.Controls.ListBoxItem>.SelectedItemEventArgs e)

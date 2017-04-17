@@ -140,14 +140,11 @@ namespace SadConsoleEditor.Editors
                 {
                     surface.GetLayer(LayerAnimCenter).IsVisible = true;
                     surface.GetLayer(LayerBackground).IsVisible = true;
-
-                    //BasicSurface.Tint = new Color(0f, 0f, 0f, 0.2f);
                 }
                 else
                 {
                     surface.GetLayer(LayerAnimCenter).IsVisible = false;
                     surface.GetLayer(LayerBackground).IsVisible = false;
-                    //BasicSurface.Tint = new Color(0f, 0f, 0f, 1f);
                 }
             }
         }
@@ -164,25 +161,16 @@ namespace SadConsoleEditor.Editors
             surface.SetActiveLayer(0);
 
             // inform the outer box we've changed size
-            //if (MainScreen.Instance.ActiveEditor == this)
-            //    MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
+            if (MainScreen.Instance.ActiveEditor == this)
+                MainScreen.Instance.RefreshBorder();
 
             framesPanel.SetAnimation(animation);
             SelectedTool = selectedTool;
+
         }
 
         private void SelectedFrameChanged(BasicSurface frame)
         {
-            //if (surface.LayerCount != 0)
-            //    surface.Remove(0);
-
-            //var layer = surface.Add();
-            //surface.SetActiveLayer(layer.Index);
-            //BasicSurface tempSurface = new BasicSurface(_consoleLayers.Width, _consoleLayers.Height, surface.Font);
-            //frame.Copy(tempSurface);
-            //var meta = LayerMetadata.Create("Root", false, false, true, layer);
-            //surface.SetActiveLayer(0);
-
             var meta = surface.GetLayer(LayerDrawing);
             meta.Cells = meta.RenderCells = frame.Cells;
             surface.SetActiveLayer(LayerDrawing);
@@ -253,20 +241,6 @@ namespace SadConsoleEditor.Editors
 
         public void Resize(int width, int height)
         {
-            //var oldSurface = (LayeredSurface)_consoleLayers.BasicSurface;
-            //var newSurface = new LayeredSurface(width, height, oldSurface.LayerCount);
-
-            //for (int i = 0; i < oldSurface.LayerCount; i++)
-            //{
-            //    var oldLayer = oldSurface.GetLayer(i);
-            //    var newLayer = newSurface.GetLayer(i);
-            //    oldSurface.SetActiveLayer(i);
-            //    newSurface.SetActiveLayer(i);
-            //    oldSurface.Copy(newSurface);
-            //    newLayer.Metadata = oldLayer.Metadata;
-            //    newLayer.IsVisible = oldLayer.IsVisible;
-            //}
-
             List<AnimatedSurface> newAnimations = new List<AnimatedSurface>(gameObject.Animations.Count);
 
             foreach (var oldAnimation in gameObject.Animations.Values)
@@ -295,9 +269,6 @@ namespace SadConsoleEditor.Editors
                     selectedAnimation = animation;
             }
 
-            // inform the outer box we've changed size
-            //MainScreen.Instance.Instance.UpdateBox();
-
             SetEntity(gameObject);
 
             if (MainScreen.Instance.ActiveEditor == this)
@@ -312,7 +283,6 @@ namespace SadConsoleEditor.Editors
             {
                 SetEntity((GameObject)((FileLoaders.GameObject)loader).Load(file));
                 Title = System.IO.Path.GetFileName(file);
-
             }
         }
 

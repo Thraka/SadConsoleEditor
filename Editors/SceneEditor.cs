@@ -16,6 +16,118 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SadConsoleEditor.Editors
 {
+    class SceneRenderer: SadConsole.Renderers.LayeredSurfaceRenderer
+    {
+        public bool HighlightLayer;
+        public bool DrawZones;
+        public bool DrawObjects;
+        public bool DrawHotSpots;
+
+        public List<Hotspot> Hotspots = new List<Hotspot>();
+        public List<Zone> Zones = new List<Zone>();
+        public List<GameObject> Objects = new List<GameObject>();
+
+        public SceneEditor.HighlightTypes HighlightType;
+
+        public override void RenderEnd(ISurface surface, bool force = false)
+        {
+            if (surface.IsDirty || force)
+            {
+                if (HighlightLayer)
+                {
+                    switch (HighlightType)
+                    {
+                        case SceneEditor.HighlightTypes.GameObject:
+                            RenderHotspots();
+                            RenderDark();
+                            RenderZones();
+                            RenderGameObjects();
+                            break;
+                        case SceneEditor.HighlightTypes.HotSpot:
+                            RenderZones();
+                            RenderGameObjects();
+                            RenderDark();
+                            RenderHotspots();
+                            break;
+                        case SceneEditor.HighlightTypes.Zone:
+                            RenderHotspots();
+                            RenderDark();
+                            RenderGameObjects();
+                            RenderZones();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    RenderZones();
+                    RenderHotspots();
+                    RenderGameObjects();
+                }
+
+
+
+                AfterRenderCallback?.Invoke(Global.SpriteBatch);
+
+                Global.SpriteBatch.End();
+
+                surface.IsDirty = false;
+            }
+        }
+
+        private void RenderHotspots()
+        {
+            if (DrawHotSpots && Hotspots.Count != 0)
+            {
+                //SpriteBatch batch = new SpriteBatch(Engine.Device);
+                //batch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone);
+
+                //foreach (var spot in Hotspots)
+                //{
+                //    Cell cell = new Cell();
+                //    spot.DebugAppearance.CopyAppearanceTo(cell);
+                //    Point offset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
+                //    foreach (var position in spot.Positions)
+                //    {
+                //        Point adjustedPosition = position + offset;
+                //        if (consoleWrapper.TextSurface.RenderArea.Contains(position))
+                //            cell.Render(batch,
+                //                        new Rectangle(adjustedPosition.ConsoleLocationToWorld(Settings.Config.ScreenFont.Size.X, Settings.Config.ScreenFont.Size.Y), Settings.Config.ScreenFont.Size),
+                //                        Settings.Config.ScreenFont);
+
+                //    }
+
+                //}
+
+                //batch.End();
+            }
+        }
+
+        private void RenderZones()
+        {
+            if (DrawZones)
+                foreach (var zone in Zones)
+                {
+                    //zone.Render();
+                }
+        }
+
+        private void RenderGameObjects()
+        {
+            if (DrawObjects)
+                foreach (var entity in Objects)
+                {
+                    //entity.Render();
+                }
+        }
+
+        private void RenderDark()
+        {
+            //darkenSurfaceRenderer.Render(darkenSurface, consoleWrapper.Position);
+        }
+    }
+
     class SceneEditor : IEditor
     {
         public enum HighlightTypes
@@ -25,15 +137,17 @@ namespace SadConsoleEditor.Editors
             Zone
         }
 
-        private BasicSurface darkenSurface;
-        private SadConsole.Renderers.SurfaceRenderer darkenSurfaceRenderer;
-        private LayeredSurface textSurface;
-        private Console consoleWrapper;
-        private CustomPanel[] panels;
-        private LayersPanel layerManagementPanel;
-        private ToolsPanel toolsPanel;
         private Dictionary<string, Tools.ITool> tools;
         private Tools.ITool selectedTool;
+        private ToolsPanel toolsPanel;
+
+        private CustomPanel[] panels;
+        private LayersPanel layerManagementPanel;
+
+        private BasicSurface darkenSurface;
+        private LayeredSurface textSurface;
+        private SadConsole.Renderers.SurfaceRenderer darkenSurfaceRenderer;
+        private LayerMetadata darkLayer;
 
         private bool showDarkLayer;
 
@@ -60,6 +174,7 @@ namespace SadConsoleEditor.Editors
             set
             {
                 showDarkLayer = value;
+                
                 darkenSurface = new BasicSurface(textSurface.RenderArea.Width, textSurface.RenderArea.Height);
                 darkenSurface.Tint = Color.Black * 0.6f;
                 darkenSurface.Font = textSurface.Font;
