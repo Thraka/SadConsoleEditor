@@ -12,8 +12,9 @@ namespace SadConsoleEditor.Controls
     internal class FileDirectoryListbox : ListBox<FileDirectoryListboxItem>
     {
         #region Fields
-        private string _currentFolder;
+        private string _currentFolder = null;
         private string _extFilter = "*.*";
+        private string originalRootFolder;
         #endregion
 
         #region Properties
@@ -22,8 +23,13 @@ namespace SadConsoleEditor.Controls
             get { return _currentFolder; }
             set
             {
+                if (_currentFolder == null)
+                    originalRootFolder = value;
+
                 if (DisplayFolder(value))
+                {
                     _currentFolder = value;
+                }
             }
         }
 
@@ -40,6 +46,8 @@ namespace SadConsoleEditor.Controls
                 DisplayFolder(_currentFolder);
             }
         }
+
+        public bool OnlyRootAndSubDirs { get; set; }
 
         public bool HideNonFilterFiles { get; set; }
 
@@ -63,7 +71,7 @@ namespace SadConsoleEditor.Controls
                     List<object> newItems = new List<object>(20);
                     var dir = new System.IO.DirectoryInfo(folder);
 
-                    if (dir.Parent != null)
+                    if (dir.Parent != null && (!OnlyRootAndSubDirs || (OnlyRootAndSubDirs && System.IO.Path.GetFullPath(folder).ToLower() != System.IO.Path.GetFullPath(originalRootFolder).ToLower())))
                         newItems.Add(new FauxDirectory { Name = ".." });
 
                     foreach (var item in System.IO.Directory.GetDirectories(folder))

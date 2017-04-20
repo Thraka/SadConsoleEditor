@@ -98,7 +98,7 @@ namespace SadConsoleEditor.Panels
                     var entity = (GameObject)popup.SelectedLoader.Load(popup.SelectedFile);
                     entity.Position = new Microsoft.Xna.Framework.Point(0, 0);
                     //entity.RenderOffset = (EditorConsoleManager.ActiveEditor as Editors.SceneEditor).Position;
-                    (EditorConsoleManager.ActiveEditor as Editors.SceneEditor)?.LoadEntity(entity);
+                    (MainScreen.Instance.ActiveEditor as Editors.SceneEditor)?.LoadEntity(entity);
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
@@ -115,7 +115,7 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
-                    var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+                    var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
                     editor.RenameGameObject(entity, popup.NewName);
                 }
 
@@ -128,7 +128,7 @@ namespace SadConsoleEditor.Panels
         void MoveSelectedDown_Click(object sender, EventArgs e)
         {
             var entity = (ResizableObject)GameObjectList.SelectedItem;
-            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+            var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
 
             int index = editor.Objects.IndexOf(entity);
             editor.Objects.Remove(entity);
@@ -140,7 +140,7 @@ namespace SadConsoleEditor.Panels
         void MoveSelectedUp_Click(object sender, EventArgs e)
         {
             var entity = (ResizableObject)GameObjectList.SelectedItem;
-            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+            var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
 
             int index = editor.Objects.IndexOf(entity);
             editor.Objects.Remove(entity);
@@ -152,7 +152,7 @@ namespace SadConsoleEditor.Panels
         void RemoveSelected_Click(object sender, EventArgs e)
         {
             var entity = (ResizableObject)GameObjectList.SelectedItem;
-            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+            var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
 
             editor.RemoveGameObject(entity);
 
@@ -167,7 +167,7 @@ namespace SadConsoleEditor.Panels
             if (GameObjectList.SelectedItem != null)
             {
                 var entity = (ResizableObject)GameObjectList.SelectedItem;
-                var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+                var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
 
                 moveSelectedUp.IsEnabled = editor.Objects.IndexOf(entity) != 0;
                 moveSelectedDown.IsEnabled = editor.Objects.IndexOf(entity) != editor.Objects.Count - 1;
@@ -191,7 +191,7 @@ namespace SadConsoleEditor.Panels
             if (animationsListBox.SelectedItem != null)
             {
                 var animation = (AnimatedSurface)animationsListBox.SelectedItem;
-                var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+                var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
                 animation.CurrentFrameIndex = 0;
                 editor.SelectedEntity.Animation = animation;
 
@@ -202,9 +202,9 @@ namespace SadConsoleEditor.Panels
         {
             GameObjectList.Items.Clear();
 
-            if (EditorConsoleManager.ActiveEditor is Editors.SceneEditor)
+            if (MainScreen.Instance.ActiveEditor is Editors.SceneEditor)
             {
-                var entities = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Objects;
+                var entities = ((Editors.SceneEditor)MainScreen.Instance.ActiveEditor).Objects;
 
                 if (entities.Count != 0)
                 {

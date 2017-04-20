@@ -26,6 +26,7 @@ namespace SadConsoleEditor
 
         public Rectangle InnerEmptyBounds;
         public Rectangle InnerEmptyBoundsPixels;
+        public Point InnerBorderPosition => borderConsole.Position + new Point(1);
 
         private string topBarLayerName = "None";
         private string topBarToolName = "None";
@@ -177,8 +178,8 @@ namespace SadConsoleEditor
                     editor.New(defaultForeground, defaultBackground, width, height);
                     break;
                 case SadConsoleEditor.Editors.Editors.Scene:
-                    //editor = new Editors.SceneEditor();
-                    //editor.New(defaultForeground, defaultBackground, width, height);
+                    editor = new Editors.SceneEditor();
+                    editor.New(defaultForeground, defaultBackground, width, height);
                     break;
                 case SadConsoleEditor.Editors.Editors.GUI:
                     break;
@@ -213,9 +214,9 @@ namespace SadConsoleEditor
             }
             else if (loader is FileLoaders.Scene)
             {
-                //editor = new Editors.SceneEditor();
-                //AddEditor(editor, false);
-                //editor.Load(file, loader);
+                editor = new Editors.SceneEditor();
+                AddEditor(editor, false);
+                editor.Load(file, loader);
             }
             if (editor != null)
             {
@@ -294,7 +295,6 @@ namespace SadConsoleEditor
         public void RefreshBorder()
         {
             borderConsole.SetContent(ActiveEditor.Surface, ActiveEditor.Renderer);
-            UpdateBorder();
             CenterEditor();
         }
 
@@ -311,15 +311,14 @@ namespace SadConsoleEditor
             if (OpenEditors.Contains(editor))
             {
                 ActiveEditor = editor;
-                ToolsPane.RedrawPanels();
                 ActiveEditor.OnSelected();
+                ToolsPane.RedrawPanels();
 
                 borderConsole.IsVisible = true;
                 borderConsole.SetContent(ActiveEditor.Surface, ActiveEditor.Renderer);
 
                 //Consoles.Children.Insert(0, ActiveEditor.RenderedConsole);
-                UpdateBorder();
-                CenterEditor();
+                RefreshBorder();
 
 
                 if (ToolsPane.PanelFiles.DocumentsListbox.SelectedItem != editor)
@@ -331,21 +330,6 @@ namespace SadConsoleEditor
         {
             if (ActiveEditor != null)
                 ActiveEditor.Save();
-        }
-        
-        public void UpdateBorder()
-        {
-            //if (borderConsole.Width != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Width + 2 || borderConsole.Height != ActiveEditor.RenderedConsole.TextSurface.RenderArea.Height + 2)
-            //{
-            //    borderConsole.IsVisible = false;
-            //    borderConsole = new Consoles.BorderConsole(ActiveEditor.RenderedConsole.TextSurface.RenderArea.Width + 2, ActiveEditor.RenderedConsole.TextSurface.RenderArea.Height + 2);
-            //}
-
-            ////if (!Consoles.Children.Contains(borderConsole) && Consoles.Children.Contains(ActiveEditor.RenderedConsole))
-            ////    Consoles.Children.Insert(Consoles.Children.IndexOf(ActiveEditor.RenderedConsole), borderConsole);
-
-            //borderConsole.Position = position - new Point(1, 1);
-            //borderConsole.IsVisible = true;
         }
 
         public void CenterEditor()
@@ -428,38 +412,34 @@ namespace SadConsoleEditor
 
             }
 
-            //if (movekeyPressed)
-            //{
-            //    ActiveEditor.Move(ActiveEditor.Position.X, ActiveEditor.Position.Y);
-            //}
-            //else
-            //{
-            //    //if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Subtract))
-            //    //{
-            //    //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X / 2, SelectedEditor.Surface.CellSize.Y / 2);
-            //    //}
-            //    //else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Add))
-            //    //{
-            //    //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X * 2, SelectedEditor.Surface.CellSize.Y * 2);
-            //    //}
-            //    //else
-            //    {
-            //        // Look for tool hotkeys
-            //        if (ToolsPane.ProcessKeyboard(info))
-            //        {
-            //            return true;
-            //        }
-            //        // Look for quick select F* keys
-            //        else if (QuickSelectPane.ProcessKeyboard(info))
-            //        {
-            //            return true;
-            //        }
-            //        else if (ActiveEditor != null)
-            //        {
-            //            return ActiveEditor.ProcessKeyboard(info);
-            //        }
-            //    }
-            //}
+            if (!movekeyPressed)
+            {
+                //if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Subtract))
+                //{
+                //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X / 2, SelectedEditor.Surface.CellSize.Y / 2);
+                //}
+                //else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Add))
+                //{
+                //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X * 2, SelectedEditor.Surface.CellSize.Y * 2);
+                //}
+                //else
+                {
+                    // Look for tool hotkeys
+                    if (ToolsPane.ProcessKeyboard(Global.KeyboardState))
+                    {
+                        return;
+                    }
+                    // Look for quick select F* keys
+                    else if (QuickSelectPane.ProcessKeyboard(Global.KeyboardState))
+                    {
+                        return;
+                    }
+                    else if (ActiveEditor != null)
+                    {
+                        ActiveEditor.ProcessKeyboard(Global.KeyboardState);
+                    }
+                }
+            }
         }
 
     }

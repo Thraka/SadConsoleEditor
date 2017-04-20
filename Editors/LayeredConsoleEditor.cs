@@ -29,6 +29,8 @@ namespace SadConsoleEditor.Editors
 
         public ISurfaceRenderer Renderer => renderer;
 
+        public IEditor LinkedEditor { get; set; }
+
         public Editors EditorType => Editors.Console;
 
         public string EditorTypeName => "Console";
@@ -75,8 +77,6 @@ namespace SadConsoleEditor.Editors
             toolsPanel.ToolsListBox.SelectedItem = tools[Tools.PaintTool.ID];
 
             panels = new CustomPanel[] { layerManagementPanel, toolsPanel };
-
-            
         }
 
         public void Load(string file, IFileLoader loader)
@@ -141,7 +141,7 @@ namespace SadConsoleEditor.Editors
             return false;
         }
 
-        public void Render()
+        public void Draw()
         {
         }
 

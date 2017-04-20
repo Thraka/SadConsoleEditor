@@ -114,7 +114,7 @@
             {
                 if (info.Mouse.LeftButtonDown)
                 {
-                    var location = this.TransformConsolePositionByControlPosition(info.ConsolePosition);
+                    var location = this.TransformConsolePositionByControlPosition(info.CellPosition);
                     _selectedPosition = location.X;
                     SelectedColorSafe = this[_selectedPosition, 0].Foreground;
                     IsDirty = true;
@@ -132,7 +132,7 @@
                     Parent.ReleaseControl();
                 else
                 {
-                    var location = this.TransformConsolePositionByControlPosition(info.ConsolePosition);
+                    var location = this.TransformConsolePositionByControlPosition(info.CellPosition);
 
                     //if (info.ConsolePosition.X >= Position.X && info.ConsolePosition.X < Position.X + Width)
                     if (location.X >= 0 && location.X <= base.Width - 1 && location.Y > -4 && location.Y < Height + 3)

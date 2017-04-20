@@ -119,6 +119,7 @@ namespace SadConsoleEditor.Panels
                         LayerMetadata.Create("Loaded", true, true, true, layer);
                     }
 
+                    surface.IsDirty = true;
                     RebuildListBox();
                 }
             };
@@ -144,6 +145,7 @@ namespace SadConsoleEditor.Panels
             surface.Move(layer, layer.Index - 1);
             RebuildListBox();
             layers.SelectedItem = layer;
+            surface.IsDirty = true;
         }
 
         void moveSelectedUp_Click(object sender, EventArgs e)
@@ -152,6 +154,7 @@ namespace SadConsoleEditor.Panels
             surface.Move(layer, layer.Index + 1);
             RebuildListBox();
             layers.SelectedItem = layer;
+            surface.IsDirty = true;
         }
 
         void removeSelected_Click(object sender, EventArgs e)
@@ -160,6 +163,7 @@ namespace SadConsoleEditor.Panels
             surface.Remove(layer);
             RebuildListBox();
             layers.SelectedItem = layers.Items[0];
+            surface.IsDirty = true;
         }
 
         void addNewLayer_Click(object sender, EventArgs e)
@@ -168,6 +172,7 @@ namespace SadConsoleEditor.Panels
             LayerMetadata.Create("new", true, true, true, surface.Add());
             RebuildListBox();
             layers.SelectedItem = previouslySelected;
+            surface.IsDirty = true;
         }
 
         void layers_SelectedItemChanged(object sender, ListBox<LayerListBoxItem>.SelectedItemEventArgs e)
@@ -192,6 +197,8 @@ namespace SadConsoleEditor.Panels
 
                 surface.SetActiveLayer(layer.Index);
                 MainScreen.Instance.LayerName = meta.Name;
+                surface.IsDirty = true;
+
             }
             else
                 MainScreen.Instance.LayerName = "None";
@@ -201,7 +208,7 @@ namespace SadConsoleEditor.Panels
         {
             var layer = (LayeredSurface.Layer)layers.SelectedItem;
             layer.IsVisible = toggleHideShow.IsSelected;
-            layer.IsVisible = toggleHideShow.IsSelected;
+            surface.IsDirty = true;
         }
 
         public void RebuildListBox()

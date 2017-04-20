@@ -135,7 +135,7 @@
             {
                 if (info.Mouse.LeftButtonDown)
                 {
-                    var location = this.TransformConsolePositionByControlPosition(info.ConsolePosition);
+                    var location = this.TransformConsolePositionByControlPosition(info.CellPosition);
                     this[_selectedColorPosition.X, _selectedColorPosition.Y].Glyph = 0;
                     _selectedColorPosition = location;
                     SelectedColorSafe = this[_selectedColorPosition.X, _selectedColorPosition.Y].Background;
@@ -155,7 +155,7 @@
                     Parent.ReleaseControl();
                 else
                 {
-                    var location = this.TransformConsolePositionByControlPosition(info.ConsolePosition);
+                    var location = this.TransformConsolePositionByControlPosition(info.CellPosition);
 
                     //if (info.ConsolePosition.X >= Position.X && info.ConsolePosition.X < Position.X + Width)
                     if (location.X >= -6 && location.X <= Width + 5 && location.Y > -4 && location.Y < Height + 3)

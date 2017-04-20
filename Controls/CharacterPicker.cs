@@ -106,7 +106,7 @@
 
         protected override void OnMouseIn(SadConsole.Input.MouseConsoleState info)
         {
-            var mousePosition = TransformConsolePositionByControlPosition(info.ConsolePosition);
+            var mousePosition = TransformConsolePositionByControlPosition(info.CellPosition);
 
             if (new Rectangle(0, 0, 16, 16).Contains(mousePosition) && info.Mouse.LeftButtonDown)
             {
@@ -119,7 +119,7 @@
 
         protected override void OnLeftMouseClicked(SadConsole.Input.MouseConsoleState info)
         {
-            var mousePosition = TransformConsolePositionByControlPosition(info.ConsolePosition);
+            var mousePosition = TransformConsolePositionByControlPosition(info.CellPosition);
 
             if (new Rectangle(0, 0, 16, 16).Contains(mousePosition))
             {

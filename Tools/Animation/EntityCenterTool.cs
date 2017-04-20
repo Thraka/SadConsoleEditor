@@ -40,7 +40,6 @@ namespace SadConsoleEditor.Tools
         public void OnSelected()
         {
             Brush = new SadConsole.GameHelpers.GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
-            Brush.Animation = new AnimatedSurface("default", 1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
             Brush.Animation.DefaultBackground = Color.Black;
             Brush.Animation.DefaultForeground = Color.White;
             Brush.Animation.CreateFrame()[0].Glyph = 42;

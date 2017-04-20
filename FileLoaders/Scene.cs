@@ -33,7 +33,7 @@ namespace SadConsoleEditor.FileLoaders
 
             if (File.Exists(surfaceFile))
             {
-                var surface = SadConsole.Surfaces.LayeredSurface.Load(surfaceFile);
+                var surface = SadConsole.Surfaces.LayeredSurface.Load(surfaceFile, typeof(LayerMetadata));
 
                 return SadConsole.GameHelpers.Scene.Load(file, surface, new SadConsole.Renderers.LayeredSurfaceRenderer());
             }
@@ -43,6 +43,7 @@ namespace SadConsoleEditor.FileLoaders
 
         public void Save(object surface, string file)
         {
+            ((SadConsole.Surfaces.LayeredSurface)((SadConsole.GameHelpers.Scene)surface).Surface.TextSurface).Save(Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + ".surface"), typeof(LayerMetadata));
             ((SadConsole.GameHelpers.Scene)surface).Save(file);
         }
     }

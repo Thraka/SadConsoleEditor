@@ -29,6 +29,7 @@ namespace SadConsoleEditor
 
         public ResizeRules Rules;
 
+        private static SadConsole.Renderers.SurfaceRenderer tempRenderer = new SadConsole.Renderers.SurfaceRenderer();
 
         public GameObject GameObject { get { return gameObject; } }
 
@@ -104,22 +105,39 @@ namespace SadConsoleEditor
             SadConsoleEditor.Settings.QuickEditor.Print(0, 0, Name, Color.DarkGray);
         }
 
-        public void Draw(TimeSpan delta)
+        public void Draw()
         {
-            gameObject.Draw(delta);
+            // This steals the code from the renderer. This DRAW method is called in the middle of
+            // an existing draw call chain, so the existing state of the Global.SpriteBatch is reused.
+            gameObject.PositionOffset = RenderOffset;
+            gameObject.Draw(SadConsole.Global.GameTimeUpdate.ElapsedGameTime);
+            //tempRenderer.RenderCells(gameObject.Animation, true);
 
             if (isSelected)
-                overlay.Draw(delta);
+            {
+                overlay.PositionOffset = gameObject.PositionOffset = renderOffset;
+                overlay.Position = gameObject.Position - gameObject.Animation.Center - new Point(1);
+                //tempRenderer.RenderCells(overlay.Animation, true);
+                overlay.Draw(SadConsole.Global.GameTimeUpdate.ElapsedGameTime);
+            }
+
         }
 
         public void ProcessOverlay()
         {
-            overlay = new GameObject(1, 1, Settings.Config.ScreenFont);
+            if (overlay == null)
+                overlay = new GameObject(1, 1, Settings.Config.ScreenFont);
+
             overlay.PositionOffset = gameObject.PositionOffset = renderOffset;
             overlay.Position = gameObject.Position - gameObject.Animation.Center - new Point(1);
 
-            overlay.Animation = new AnimatedSurface("default", gameObject.Animation.Width + 2, gameObject.Animation.Height + 2, Settings.Config.ScreenFont);
-            var frame = overlay.Animation.CreateFrame();
+            if (overlay.Animation.Width != gameObject.Animation.Width + 2 || overlay.Animation.Height != gameObject.Animation.Height + 2)
+            {
+                overlay.Animation = new AnimatedSurface("default", gameObject.Animation.Width + 2, gameObject.Animation.Height + 2, Settings.Config.ScreenFont);
+                SadConsoleEditor.Settings.QuickEditor.TextSurface = overlay.Animation.CreateFrame();
+            }
+            else
+                SadConsoleEditor.Settings.QuickEditor.TextSurface = overlay.Animation.CurrentFrame;
 
             var box = SadConsole.Shapes.Box.GetDefaultBox();
             box.Width = overlay.Animation.Width;
@@ -129,7 +147,6 @@ namespace SadConsoleEditor
 
             var centers = new Point(box.Width / 2, box.Height / 2);
             
-            SadConsoleEditor.Settings.QuickEditor.TextSurface = frame;
 
             box.Draw(SadConsoleEditor.Settings.QuickEditor);
 

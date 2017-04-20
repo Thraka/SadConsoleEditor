@@ -29,6 +29,8 @@ namespace SadConsoleEditor.Editors
 
         Editors EditorType { get; }
 
+        IEditor LinkedEditor { get; set; }
+
         string EditorTypeName { get; }
 
         string Title { get; set; }
@@ -41,7 +43,7 @@ namespace SadConsoleEditor.Editors
 
         string DocumentTitle { get; set; }
 
-        void Render();
+        void Draw();
 
         void Update();
 

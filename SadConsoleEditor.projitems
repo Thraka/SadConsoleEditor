@@ -18,6 +18,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ColorPicker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ColorPresenter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\FileDirectoryListbox.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Editors\SceneEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\GameObjectEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\IEditor.cs" />
@@ -39,6 +40,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Panels\CustomPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\FilesPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\LayersPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\GameObjectManagementPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\HotspotTool.Panel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\RegionManagementPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolsPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\BoxTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\Circle.Panel.cs" />
@@ -56,6 +60,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tools\ITool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\LineTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\RecolorTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\Scene\HotspotTool.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tools\Scene\SceneObjectMoveResizeTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\SelectionTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\TextTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\Animation\AnimationPreviewPopup.cs" />
@@ -98,9 +104,5 @@
     <None Include="$(MSBuildThisFileDirectory)Editor.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Panels\Scene\" />
-    <Folder Include="$(MSBuildThisFileDirectory)Tools\Scene\" />
   </ItemGroup>
 </Project>

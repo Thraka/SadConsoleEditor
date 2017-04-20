@@ -95,10 +95,11 @@ namespace SadConsoleEditor.Windows
             directoryListBox.HighlightedExtentions = ".con;.console;.brush";
             directoryListBox.SelectedItemChanged += _directoryListBox_SelectedItemChanged;
             directoryListBox.SelectedItemExecuted += _directoryListBox_SelectedItemExecuted;
+            directoryListBox.OnlyRootAndSubDirs = true;
             directoryListBox.CurrentFolder = Environment.CurrentDirectory;
             //directoryListBox.HideBorder = true;
 
-            Print(directoryListBox.Bounds.Left, directoryListBox.Bounds.Top - 2, "Files/Directories", Settings.Color_TitleText);
+            Print(directoryListBox.Bounds.Left, directoryListBox.Bounds.Top - 2, "Files", Settings.Color_TitleText);
             Print(directoryListBox.Bounds.Left, directoryListBox.Bounds.Top - 1, new string((char)196, directoryListBox.Width));
 
             fileName = new InputBox(directoryListBox.Width)

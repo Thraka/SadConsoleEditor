@@ -25,11 +25,11 @@ namespace SadConsoleEditor.Panels
         private Button nextFrame;
         private Button previousFrame;
 
-        private Action<BasicSurface> frameChangeCallback;
+        private Action<NoDrawSurface> frameChangeCallback;
         private AnimatedSurface currentAnimation;
-        private BasicSurface selectedFrame;
+        private NoDrawSurface selectedFrame;
 
-        public AnimationFramesPanel(Action<BasicSurface> frameChangeCallback)
+        public AnimationFramesPanel(Action<NoDrawSurface> frameChangeCallback)
         {
             Title = "Frames";
 

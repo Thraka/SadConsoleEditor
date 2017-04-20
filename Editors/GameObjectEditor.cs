@@ -49,6 +49,8 @@ namespace SadConsoleEditor.Editors
 
         public Editors EditorType { get { return Editors.GameObject; } }
 
+        public IEditor LinkedEditor { get; set; }
+
         public string Title { get; set; }
 
         public string EditorTypeName { get { return "Animated Game Object"; } }
@@ -223,7 +225,10 @@ namespace SadConsoleEditor.Editors
         public void New(Color foreground, Color background, int width, int height)
         {
             Reset();
-            
+
+            width = Math.Max(100, width);
+            height = Math.Max(100, height);
+
             var gameObject = new GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
 
             AnimatedSurface animation = new AnimatedSurface("default", width, height, SadConsoleEditor.Settings.Config.ScreenFont);
@@ -241,6 +246,9 @@ namespace SadConsoleEditor.Editors
 
         public void Resize(int width, int height)
         {
+            width = Math.Max(100, width);
+            height = Math.Max(100, height);
+
             List<AnimatedSurface> newAnimations = new List<AnimatedSurface>(gameObject.Animations.Count);
 
             foreach (var oldAnimation in gameObject.Animations.Values)
@@ -334,7 +342,7 @@ namespace SadConsoleEditor.Editors
             MainScreen.Instance.ToolsPane.PanelFiles.CloseButton.IsEnabled = true;
         }
 
-        public void Render()
+        public void Draw()
         {
         }
 

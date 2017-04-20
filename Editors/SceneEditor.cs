@@ -13,121 +13,10 @@ using System.Collections.Generic;
 using SadConsole.GameHelpers;
 using System.Linq;
 using Microsoft.Xna.Framework.Graphics;
+using SadConsole.Renderers;
 
 namespace SadConsoleEditor.Editors
 {
-    class SceneRenderer: SadConsole.Renderers.LayeredSurfaceRenderer
-    {
-        public bool HighlightLayer;
-        public bool DrawZones;
-        public bool DrawObjects;
-        public bool DrawHotSpots;
-
-        public List<Hotspot> Hotspots = new List<Hotspot>();
-        public List<Zone> Zones = new List<Zone>();
-        public List<GameObject> Objects = new List<GameObject>();
-
-        public SceneEditor.HighlightTypes HighlightType;
-
-        public override void RenderEnd(ISurface surface, bool force = false)
-        {
-            if (surface.IsDirty || force)
-            {
-                if (HighlightLayer)
-                {
-                    switch (HighlightType)
-                    {
-                        case SceneEditor.HighlightTypes.GameObject:
-                            RenderHotspots();
-                            RenderDark();
-                            RenderZones();
-                            RenderGameObjects();
-                            break;
-                        case SceneEditor.HighlightTypes.HotSpot:
-                            RenderZones();
-                            RenderGameObjects();
-                            RenderDark();
-                            RenderHotspots();
-                            break;
-                        case SceneEditor.HighlightTypes.Zone:
-                            RenderHotspots();
-                            RenderDark();
-                            RenderGameObjects();
-                            RenderZones();
-                            break;
-                        default:
-                            break;
-                    }
-                }
-                else
-                {
-                    RenderZones();
-                    RenderHotspots();
-                    RenderGameObjects();
-                }
-
-
-
-                AfterRenderCallback?.Invoke(Global.SpriteBatch);
-
-                Global.SpriteBatch.End();
-
-                surface.IsDirty = false;
-            }
-        }
-
-        private void RenderHotspots()
-        {
-            if (DrawHotSpots && Hotspots.Count != 0)
-            {
-                //SpriteBatch batch = new SpriteBatch(Engine.Device);
-                //batch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone);
-
-                //foreach (var spot in Hotspots)
-                //{
-                //    Cell cell = new Cell();
-                //    spot.DebugAppearance.CopyAppearanceTo(cell);
-                //    Point offset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
-                //    foreach (var position in spot.Positions)
-                //    {
-                //        Point adjustedPosition = position + offset;
-                //        if (consoleWrapper.TextSurface.RenderArea.Contains(position))
-                //            cell.Render(batch,
-                //                        new Rectangle(adjustedPosition.ConsoleLocationToWorld(Settings.Config.ScreenFont.Size.X, Settings.Config.ScreenFont.Size.Y), Settings.Config.ScreenFont.Size),
-                //                        Settings.Config.ScreenFont);
-
-                //    }
-
-                //}
-
-                //batch.End();
-            }
-        }
-
-        private void RenderZones()
-        {
-            if (DrawZones)
-                foreach (var zone in Zones)
-                {
-                    //zone.Render();
-                }
-        }
-
-        private void RenderGameObjects()
-        {
-            if (DrawObjects)
-                foreach (var entity in Objects)
-                {
-                    //entity.Render();
-                }
-        }
-
-        private void RenderDark()
-        {
-            //darkenSurfaceRenderer.Render(darkenSurface, consoleWrapper.Position);
-        }
-    }
-
     class SceneEditor : IEditor
     {
         public enum HighlightTypes
@@ -144,12 +33,10 @@ namespace SadConsoleEditor.Editors
         private CustomPanel[] panels;
         private LayersPanel layerManagementPanel;
 
-        private BasicSurface darkenSurface;
-        private LayeredSurface textSurface;
-        private SadConsole.Renderers.SurfaceRenderer darkenSurfaceRenderer;
-        private LayerMetadata darkLayer;
-
-        private bool showDarkLayer;
+        private LayeredSurfaceRenderer renderer;
+        private SadConsole.Surfaces.LayeredSurface surface;
+        private BasicSurface hotspotSurface;
+        private SurfaceRenderer hotspotRenderer;
 
         public Panels.GameObjectManagementPanel GameObjectPanel;
         public Panels.RegionManagementPanel ZonesPanel;
@@ -161,7 +48,7 @@ namespace SadConsoleEditor.Editors
         public List<ResizableObject<Zone>> Zones;
         public List<Hotspot> Hotspots;
 
-        public HighlightTypes HighlightType;
+        public SceneEditor.HighlightTypes HighlightType;
 
         public GameObject SelectedEntity
         {
@@ -169,36 +56,29 @@ namespace SadConsoleEditor.Editors
             set { _selectedGameObject = value; }
         }
 
-        public bool ShowDarkLayer
-        {
-            set
-            {
-                showDarkLayer = value;
-                
-                darkenSurface = new BasicSurface(textSurface.RenderArea.Width, textSurface.RenderArea.Height);
-                darkenSurface.Tint = Color.Black * 0.6f;
-                darkenSurface.Font = textSurface.Font;
-                darkenSurfaceRenderer = new SadConsole.Renderers.SurfaceRenderer();
-            }
-        }
+        public bool ShowDarkLayer;
 
         public string DocumentTitle { get; set; }
 
-        public Editors EditorType { get { return Editors.Console; } }
+        public ISurface Surface => surface;
 
+        public ISurfaceRenderer Renderer => renderer;
+
+        public Editors EditorType  => Editors.Console;
+
+        public IEditor LinkedEditor { get; set; }
+        
         public string EditorTypeName { get { return "Scene"; } }
 
         public string Title { get; set; }
 
-        public int Height { get { return textSurface.Height; } }
+        public int Height => surface.Height;
+        
+        public int Width => surface.Width;
 
-        public Point Position { get { return consoleWrapper.Position; } }
-
-        public int Width { get { return textSurface.Width; } }
-
-        public CustomPanel[] Panels { get { return panels; } }
-
-        public Console RenderedConsole { get { return consoleWrapper; } }
+        public CustomPanel[] Panels => panels;
+        
+        
 
         private Tools.ITool SelectedTool
         {
@@ -211,29 +91,22 @@ namespace SadConsoleEditor.Editors
 
         public SceneEditor()
         {
-            consoleWrapper = new Console(1, 1);
-            consoleWrapper.Renderer = new SadConsole.Renderers.LayeredSurfaceRenderer();
-            consoleWrapper.MouseHandler = ProcessMouse;
-            consoleWrapper.UseKeyboard = false;
-
-            consoleWrapper.MouseMove += (o, e) => { toolsPanel.SelectedTool?.MouseMoveSurface(e.MouseState, textSurface); };
-            consoleWrapper.MouseEnter += (o, e) => { toolsPanel.SelectedTool?.MouseEnterSurface(e.MouseState, textSurface); };
-            consoleWrapper.MouseExit += (o, e) => { toolsPanel.SelectedTool?.MouseExitSurface(e.MouseState, textSurface); };
-
             layerManagementPanel = new LayersPanel() { IsCollapsed = true };
             toolsPanel = new ToolsPanel();
 
             // Fill tools
-            tools = new Dictionary<string, Tools.ITool>();
-            tools.Add(Tools.PaintTool.ID, new Tools.PaintTool());
-            tools.Add(Tools.LineTool.ID, new Tools.LineTool());
-            tools.Add(Tools.CircleTool.ID, new Tools.CircleTool());
-            tools.Add(Tools.RecolorTool.ID, new Tools.RecolorTool());
-            tools.Add(Tools.FillTool.ID, new Tools.FillTool());
-            tools.Add(Tools.BoxTool.ID, new Tools.BoxTool());
-            tools.Add(Tools.SelectionTool.ID, new Tools.SelectionTool());
-            tools.Add(Tools.SceneObjectMoveResizeTool.ID, new Tools.SceneObjectMoveResizeTool());
-            tools.Add(Tools.HotspotTool.ID, new Tools.HotspotTool());
+            tools = new Dictionary<string, Tools.ITool>
+            {
+                { Tools.PaintTool.ID, new Tools.PaintTool() },
+                { Tools.LineTool.ID, new Tools.LineTool() },
+                { Tools.CircleTool.ID, new Tools.CircleTool() },
+                { Tools.RecolorTool.ID, new Tools.RecolorTool() },
+                { Tools.FillTool.ID, new Tools.FillTool() },
+                { Tools.BoxTool.ID, new Tools.BoxTool() },
+                { Tools.SelectionTool.ID, new Tools.SelectionTool() },
+                { Tools.SceneObjectMoveResizeTool.ID, new Tools.SceneObjectMoveResizeTool() },
+                { Tools.HotspotTool.ID, new Tools.HotspotTool() }
+            };
 
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.SceneObjectMoveResizeTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.HotspotTool.ID]);
@@ -246,6 +119,7 @@ namespace SadConsoleEditor.Editors
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.SelectionTool.ID]);
 
             toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
+            toolsPanel.ToolsListBox.SelectedItem = tools[Tools.PaintTool.ID];
 
             GameObjectPanel = new Panels.GameObjectManagementPanel();
             ZonesPanel = new RegionManagementPanel() { IsCollapsed = true };
@@ -257,45 +131,33 @@ namespace SadConsoleEditor.Editors
             Hotspots = new List<Hotspot>();
 
             panels = new CustomPanel[] { layerManagementPanel, GameObjectPanel, ZonesPanel, HotspotPanel, toolsPanel };
-        }
-        
-        private void ToolsListBox_SelectedItemChanged(object sender, SadConsole.Controls.ListBox<SadConsole.Controls.ListBoxItem>.SelectedItemEventArgs e)
-        {
-            Tools.ITool tool = e.Item as Tools.ITool;
-
-            if (e.Item != null)
-            {
-                selectedTool = tool;
-
-                List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, GameObjectPanel, ZonesPanel, HotspotPanel, toolsPanel };
-
-                if (tool.ControlPanels != null && tool.ControlPanels.Length != 0)
-                    newPanels.AddRange(tool.ControlPanels);
-
-                panels = newPanels.ToArray();
-                EditorConsoleManager.ToolsPane.RedrawPanels();
-            }
+            renderer = new LayeredSurfaceRenderer();
+            hotspotRenderer = new SurfaceRenderer();
         }
 
         public void New(Color foreground, Color background, int width, int height)
         {
+            int renderWidth = Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, width);
+            int renderHeight = Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, height);
+
+            hotspotSurface = new BasicSurface(renderWidth, renderHeight, Settings.Config.ScreenFont);
+
             // Create the new text surface
-            textSurface = new LayeredSurface(width, height, 1);
+            surface = new LayeredSurface(width, height, new Rectangle(0, 0, renderWidth, renderHeight), 1);
 
             // Update metadata
-            LayerMetadata.Create("main", false, false, true, textSurface.GetLayer(0));
-            textSurface.SetActiveLayer(0);
-            textSurface.Font = Settings.Config.ScreenFont;
+            LayerMetadata.Create("main", false, false, true, surface.GetLayer(0));
+            surface.SetActiveLayer(0);
+            surface.Font = Settings.Config.ScreenFont;
 
             // Update the layer management panel
-            layerManagementPanel.SetLayeredSurface(textSurface);
+            layerManagementPanel.SetLayeredSurface(surface);
 
             // Set the text surface as the one we're displaying
-            consoleWrapper.TextSurface = textSurface;
-            
+
             // Update the border
-            if (EditorConsoleManager.ActiveEditor == this)
-                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+            if (MainScreen.Instance.ActiveEditor == this)
+                MainScreen.Instance.RefreshBorder();
         }
         
         public void Save()
@@ -307,13 +169,13 @@ namespace SadConsoleEditor.Editors
             {
                 if (popup.DialogResult)
                 {
-                    SadConsole.Game.Scene scene = new Scene(textSurface);
-                    scene.Objects = new GameObjectCollection(this.Objects.Select(g => g.GameObject).ToArray());
+                    Scene scene = new Scene(surface, new LayeredSurfaceRenderer());
+                    scene.Objects = Objects.Select(g => g.GameObject).ToList();
                     scene.Zones = new List<Zone>(
                                                  this.Zones.Select(
                                                      z => new Zone()
-                                                                    { Area = new Rectangle(z.GameObject.Position.X, z.GameObject.Position.Y, z.GameObject.Width, z.GameObject.Height),
-                                                                      DebugAppearance = new CellAppearance(Color.White, z.GameObject.RenderCells[0].Background, 0),
+                                                                    { Area = new Rectangle(z.GameObject.Position.X, z.GameObject.Position.Y, z.GameObject.Animation.Width, z.GameObject.Animation.Height),
+                                                                      DebugAppearance = new Cell(Color.White, z.GameObject.Animation.Cells[0].Background, 0),
                                                                       Title = z.GameObject.Name }));
                     scene.Hotspots = this.Hotspots;
                     popup.SelectedLoader.Save(scene, popup.SelectedFile);
@@ -324,29 +186,61 @@ namespace SadConsoleEditor.Editors
             popup.Show(true);
         }
 
-        public void Render()
+        public void Load(string file, FileLoaders.IFileLoader loader)
         {
-            if (showDarkLayer)
+            ClearEntities();
+            ClearZones();
+            ClearHotspots();
+
+            if (loader is FileLoaders.Scene)
+            {
+                var scene = (SadConsole.GameHelpers.Scene)loader.Load(file);
+
+                surface = (LayeredSurface)scene.Surface.TextSurface;
+                int renderWidth = Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, surface.Width);
+                int renderHeight = Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, surface.Height);
+                surface.RenderArea = new Rectangle(0, 0, renderWidth, renderHeight);
+                hotspotSurface = new BasicSurface(renderWidth, renderHeight, Settings.Config.ScreenFont);
+
+                foreach (var item in scene.Objects)
+                    LoadEntity(item);
+
+                foreach (var zone in scene.Zones)
+                    LoadZone(zone);
+
+                foreach (var spot in scene.Hotspots)
+                    LoadHotspot(spot);
+
+            }
+
+            surface.Font = Settings.Config.ScreenFont;
+            Title = Path.GetFileName(file);
+
+        }
+
+        public void Draw()
+        {
+            if (ShowDarkLayer)
             {
                 switch (HighlightType)
                 {
-                    case HighlightTypes.GameObject:
-                        RenderHotspots();
-                        RenderDark();
-                        RenderZones();
-                        RenderGameObjects();
+                    case SceneEditor.HighlightTypes.GameObject:
+                        DrawHotspots(surface);
+                        DrawDark(surface);
+                        DrawZones(surface);
+                        DrawGameObjects(surface);
                         break;
-                    case HighlightTypes.HotSpot:
-                        RenderZones();
-                        RenderGameObjects();
-                        RenderDark();
-                        RenderHotspots();
+                    case SceneEditor.HighlightTypes.HotSpot:
+                        DrawZones(surface);
+                        DrawGameObjects(surface);
+                        DrawDark(surface);
+                        DrawHotspots(surface);
                         break;
-                    case HighlightTypes.Zone:
-                        RenderHotspots();
-                        RenderDark();
-                        RenderGameObjects();
-                        RenderZones();
+                    case SceneEditor.HighlightTypes.Zone:
+                        DrawHotspots(surface);
+                        DrawDark(surface);
+                        DrawGameObjects(surface);
+                        DrawZones(surface);
                         break;
                     default:
                         break;
@@ -354,76 +248,85 @@ namespace SadConsoleEditor.Editors
             }
             else
             {
-                RenderZones();
-                RenderHotspots();
-                RenderGameObjects();
+                DrawZones(surface);
+                DrawHotspots(surface);
+                DrawGameObjects(surface);
             }
         }
-        private void RenderDark()
+
+        public void Update()
         {
-            darkenSurfaceRenderer.Render(darkenSurface, consoleWrapper.Position);
+            toolsPanel.SelectedTool?.Update();
+
+            foreach (var entity in Objects)
+            {
+                entity.GameObject.Update(Global.GameTimeUpdate.ElapsedGameTime);
+                entity.RenderOffset = surface.RenderArea.Location + MainScreen.Instance.InnerBorderPosition;
+            }
         }
 
-        private void RenderHotspots()
+        private void DrawHotspots(ISurface surface)
         {
             if (HotspotPanel.DrawHotspots && Hotspots.Count != 0)
             {
-                SpriteBatch batch = new SpriteBatch(Engine.Device);
-                batch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.DepthRead, RasterizerState.CullNone);
+                Settings.QuickEditor.TextSurface = hotspotSurface;
+                Settings.QuickEditor.Fill(Color.Transparent, Color.Transparent, 0);
 
                 foreach (var spot in Hotspots)
                 {
-                    Cell cell = new Cell();
-                    spot.DebugAppearance.CopyAppearanceTo(cell);
-                    Point offset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
+
                     foreach (var position in spot.Positions)
                     {
-                        Point adjustedPosition = position + offset;
-                        if (consoleWrapper.TextSurface.RenderArea.Contains(position))
-                            cell.Render(batch,
-                                        new Rectangle(adjustedPosition.ConsoleLocationToWorld(Settings.Config.ScreenFont.Size.X, Settings.Config.ScreenFont.Size.Y), Settings.Config.ScreenFont.Size),
-                                        Settings.Config.ScreenFont);
+                        if (surface.RenderArea.Contains(position))
+                        {
+
+                            var renderPosition = position - surface.RenderArea.Location;
+
+                            Settings.QuickEditor.SetCell(renderPosition.X, renderPosition.Y, spot.DebugAppearance);
+                        }
 
                     }
 
                 }
 
-                batch.End();
+                hotspotRenderer.Render(hotspotSurface);
+                Global.DrawCalls.Add(new DrawCallSurface(hotspotSurface, MainScreen.Instance.InnerBorderPosition, false));
             }
         }
 
-        private void RenderZones()
+        private void DrawZones(ISurface surface)
         {
             if (ZonesPanel.DrawZones)
                 foreach (var zone in Zones)
                 {
-                    zone.Render();
+                    zone.RenderOffset = MainScreen.Instance.InnerBorderPosition - surface.RenderArea.Location;
+                    zone.Draw();
                 }
         }
 
-        private void RenderGameObjects()
+        private void DrawGameObjects(ISurface surface)
         {
             if (GameObjectPanel.DrawObjects)
                 foreach (var entity in Objects)
                 {
-                    entity.Render();
+                    entity.RenderOffset = MainScreen.Instance.InnerBorderPosition - surface.RenderArea.Location;
+                    entity.Draw();
                 }
         }
 
-        public void Update()
+        private void DrawDark(ISurface surface)
         {
-            selectedTool.Update();
-
-            foreach (var entity in Objects)
-            {
-                entity.GameObject.Update();
-            }
+            Global.DrawCalls.Add(new DrawCallColoredRect(new Rectangle(MainScreen.Instance.InnerBorderPosition.ConsoleLocationToPixel(Settings.Config.ScreenFont), surface.AbsoluteArea.Size), Color.Black * 0.6f));
         }
 
         public void Resize(int width, int height)
         {
-            var oldSurface = textSurface;
-            var newSurface = new LayeredSurface(width, height, Settings.Config.ScreenFont, oldSurface.LayerCount);
+            int renderWidth = Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, width);
+            int renderHeight = Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, height);
+
+            var oldSurface = surface;
+            var newSurface = new LayeredSurface(width, height, Settings.Config.ScreenFont, new Rectangle(0,0,renderWidth, renderHeight), oldSurface.LayerCount);
+            hotspotSurface = new BasicSurface(renderWidth, renderHeight, Settings.Config.ScreenFont);
 
             for (int i = 0; i < oldSurface.LayerCount; i++)
             {
@@ -436,15 +339,12 @@ namespace SadConsoleEditor.Editors
                 newLayer.IsVisible = oldLayer.IsVisible;
             }
 
-            consoleWrapper.TextSurface = textSurface = newSurface;
-            layerManagementPanel.SetLayeredSurface(textSurface);
+            surface = newSurface;
+            layerManagementPanel.SetLayeredSurface(surface);
             toolsPanel.SelectedTool = toolsPanel.SelectedTool;
 
-            if (EditorConsoleManager.ActiveEditor == this)
-            {
-                EditorConsoleManager.CenterEditor();
-                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
-            }
+            if (MainScreen.Instance.ActiveEditor == this)
+                MainScreen.Instance.RefreshBorder();
         }
 
         public void Reset()
@@ -459,24 +359,27 @@ namespace SadConsoleEditor.Editors
             FixLinkedObjectTitles();
         }
 
-        public void Move(int x, int y)
-        {
-            consoleWrapper.Position = new Point(x, y);
+        //public void Move(int x, int y)
+        //{
+        //    consoleWrapper.Position = new Point(x, y);
 
-            if (EditorConsoleManager.ActiveEditor == this)
-                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
+        //    if (MainScreen.Instance.ActiveEditor == this)
+        //        MainScreen.Instance.UpdateBorder(consoleWrapper.Position);
 
-            EditorConsoleManager.UpdateBrush();
+        //    MainScreen.Instance.UpdateBrush();
 
-            foreach (var entity in Objects)
-                entity.RenderOffset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
+        //    foreach (var entity in Objects)
+        //        entity.RenderOffset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
 
-            foreach (var zone in Zones)
-                zone.RenderOffset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
-        }
+        //    foreach (var zone in Zones)
+        //        zone.RenderOffset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
+        //}
 
         public void OnSelected()
         {
+            MainScreen.Instance.RefreshBorder();
+            layerManagementPanel.SetLayeredSurface(surface);
+
             if (selectedTool == null)
                 SelectedTool = tools.First().Value;
             else
@@ -486,7 +389,7 @@ namespace SadConsoleEditor.Editors
                 SelectedTool = selectedTool;
             }
 
-            foreach (var item in EditorConsoleManager.OpenEditors)
+            foreach (var item in MainScreen.Instance.OpenEditors)
             {
                 var editor = item as GameObjectEditor;
 
@@ -512,7 +415,7 @@ namespace SadConsoleEditor.Editors
                 }
             }
 
-            EditorConsoleManager.ToolsPane.PanelFiles.DocumentsListbox.IsDirty = true;
+            MainScreen.Instance.ToolsPane.PanelFiles.DocumentsListbox.IsDirty = true;
 
             GameObjectPanel.RebuildListBox();
         }
@@ -524,53 +427,21 @@ namespace SadConsoleEditor.Editors
 
         public void OnClosed()
         {
-            var editors = EditorConsoleManager.OpenEditors.ToList();
+            var editors = MainScreen.Instance.OpenEditors.ToList();
             foreach (var item in editors)
             {
                 var editor = item as GameObjectEditor;
 
                 if (editor != null && editor.LinkedEditor == this)
                 {
-                    EditorConsoleManager.RemoveEditor(editor);
+                    MainScreen.Instance.RemoveEditor(editor);
                 }
             }
         }
         
-        public void Load(string file, FileLoaders.IFileLoader loader)
-        {
-            ClearEntities();
-            ClearZones();
-            ClearHotspots();
-            
-            if (loader is FileLoaders.Scene)
-            {
-                var scene = (SadConsole.Game.Scene)loader.Load(file);
-                textSurface = scene.BackgroundSurface;
-                consoleWrapper.TextSurface = textSurface;
-
-                foreach (var item in scene.Objects)
-                    LoadEntity(item);
-
-                foreach (var zone in scene.Zones)
-                    LoadZone(zone);
-
-                foreach (var spot in scene.Hotspots)
-                    LoadHotspot(spot);
-
-                if (EditorConsoleManager.ActiveEditor == this)
-                    EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
-            }
-
-            textSurface.Font = Settings.Config.ScreenFont;
-            Title = Path.GetFileName(file);
-
-            // Update the layer management panel
-            layerManagementPanel.SetLayeredSurface(textSurface);
-        }
-        
         public bool ProcessKeyboard(Keyboard info)
         {
-            if (!toolsPanel.SelectedTool.ProcessKeyboard(info, textSurface))
+            if (!toolsPanel.SelectedTool.ProcessKeyboard(info, surface))
             {
                 var keys = info.KeysReleased.Select(k => k.Character).ToList();
 
@@ -589,25 +460,16 @@ namespace SadConsoleEditor.Editors
             return true;
         }
 
-        public bool ProcessMouse(IConsole console, SadConsole.Input.MouseConsoleState info)
+        public bool ProcessMouse(SadConsole.Input.MouseConsoleState info, bool isInBounds)
         {
-            consoleWrapper.MouseHandler = null;
-            consoleWrapper.UseMouse = true;
-            consoleWrapper.ProcessMouse(info);
-            consoleWrapper.MouseHandler = ProcessMouse;
-
             // Check if tool is our special tool...
-            toolsPanel.SelectedTool?.ProcessMouse(info, textSurface);
-            
-            if (consoleWrapper.IsMouseOver)
-            {
-                EditorConsoleManager.SurfaceMouseLocation = info.ConsolePosition;
-                return true;
-            }
-            else
-                EditorConsoleManager.SurfaceMouseLocation = Point.Zero;
+            toolsPanel.SelectedTool?.ProcessMouse(info, surface, isInBounds);
 
-            consoleWrapper.UseMouse = false;
+            MainScreen.Instance.SurfaceMouseLocation = info.CellPosition;
+
+            if (info.IsOnConsole)
+                return true;
+
             return false;
         }
 
@@ -617,21 +479,17 @@ namespace SadConsoleEditor.Editors
             var editor = new GameObjectEditor();
             editor.SetEntity(entity);
             editor.LinkedEditor = this;
-            EditorConsoleManager.AddEditor(editor, false);
+            MainScreen.Instance.AddEditor(editor, false);
 
-            var localEntity = new GameObject(entity.Font);
+            var localEntity = new GameObject(entity.Animation);
 
             foreach (var item in entity.Animations.Values)
-                localEntity.Animations.Add(item.Name, item);
+                localEntity.Animations[item.Name] = item;
 
-            localEntity.Animation = localEntity.Animations[entity.Animation.Name];
-
-            localEntity..RenderOffset = consoleWrapper.Position;
             Objects.Add(new ResizableObject(ResizableObject.ObjectType.GameObject, localEntity));
             GameObjectPanel.RebuildListBox();
 
             localEntity.Position = entity.Position;
-            localEntity.RenderOffset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
 
             LinkedGameObjects.Add(localEntity, entity);
 
@@ -641,8 +499,8 @@ namespace SadConsoleEditor.Editors
 
         public bool LoadZone(Zone zone)
         {
-            var gameObject = new GameObject(Settings.Config.ScreenFont);
-            var animation = new AnimatedSurface("default", 10, 10);
+            var gameObject = new GameObject(1, 1, Settings.Config.ScreenFont);
+            var animation = new AnimatedSurface("default", zone.Area.Width, zone.Area.Height);
             var frame = animation.CreateFrame();
             frame.DefaultBackground = zone.DebugAppearance.Background;
 
@@ -654,10 +512,10 @@ namespace SadConsoleEditor.Editors
 
             gameObject.Animation = animation;
             gameObject.Position = new Point(zone.Area.Left, zone.Area.Top);
-            gameObject.Update();
+            
 
             var resizable = new ResizableObject<Zone>(ResizableObject.ObjectType.Zone, gameObject, zone);
-            resizable.RenderOffset = consoleWrapper.Position - consoleWrapper.TextSurface.RenderArea.Location;
+            resizable.RenderOffset = MainScreen.Instance.InnerBorderPosition - surface.RenderArea.Location;
             Zones.Add(resizable);
 
             ZonesPanel.RebuildListBox();
@@ -678,14 +536,14 @@ namespace SadConsoleEditor.Editors
             var otherObject = LinkedGameObjects[gameObject.GameObject];
             GameObjectEditor foundDoc = null;
 
-            foreach (var doc in EditorConsoleManager.OpenEditors)
+            foreach (var doc in MainScreen.Instance.OpenEditors)
                 if (doc is GameObjectEditor)
                     if (((GameObjectEditor)doc).GameObject == otherObject)
                         foundDoc = (GameObjectEditor)doc;
 
             if (foundDoc != null)
             {
-                EditorConsoleManager.RemoveEditor(foundDoc);
+                MainScreen.Instance.RemoveEditor(foundDoc);
                 LinkedGameObjects.Remove(gameObject.GameObject);
                 Objects.Remove(gameObject);
             }
@@ -697,7 +555,7 @@ namespace SadConsoleEditor.Editors
 
             List<IEditor> docs = new List<IEditor>();
 
-            foreach (var doc in EditorConsoleManager.OpenEditors)
+            foreach (var doc in MainScreen.Instance.OpenEditors)
                 if (doc is GameObjectEditor)
                     if (((GameObjectEditor)doc).LinkedEditor == this)
                         docs.Add(doc);
@@ -705,7 +563,7 @@ namespace SadConsoleEditor.Editors
             LinkedGameObjects.Clear();
 
             foreach (var doc in docs)
-                EditorConsoleManager.RemoveEditor(doc);
+                MainScreen.Instance.RemoveEditor(doc);
         }
 
         private void ClearZones()
@@ -723,7 +581,7 @@ namespace SadConsoleEditor.Editors
             for (int i = 0; i < Objects.Count; i++)
             {
                 var linkedEntity = LinkedGameObjects[Objects[i].GameObject];
-                IEditor linkedEditor = EditorConsoleManager.OpenEditors.Where(e => e.EditorType == Editors.GameObject && ((GameObjectEditor)e).GameObject == linkedEntity).FirstOrDefault();
+                IEditor linkedEditor = MainScreen.Instance.OpenEditors.Where(e => e.EditorType == Editors.GameObject && ((GameObjectEditor)e).GameObject == linkedEntity).FirstOrDefault();
 
                 if (linkedEditor != null)
                 {
@@ -740,7 +598,25 @@ namespace SadConsoleEditor.Editors
                     }
                 }
 
-                EditorConsoleManager.ToolsPane.PanelFiles.DocumentsListbox.IsDirty = true;
+                MainScreen.Instance.ToolsPane.PanelFiles.DocumentsListbox.IsDirty = true;
+            }
+        }
+
+        private void ToolsListBox_SelectedItemChanged(object sender, SadConsole.Controls.ListBox<SadConsole.Controls.ListBoxItem>.SelectedItemEventArgs e)
+        {
+            Tools.ITool tool = e.Item as Tools.ITool;
+
+            if (e.Item != null)
+            {
+                selectedTool = tool;
+
+                List<CustomPanel> newPanels = new List<CustomPanel>() { layerManagementPanel, GameObjectPanel, ZonesPanel, HotspotPanel, toolsPanel };
+
+                if (tool.ControlPanels != null && tool.ControlPanels.Length != 0)
+                    newPanels.AddRange(tool.ControlPanels);
+
+                panels = newPanels.ToArray();
+                MainScreen.Instance.ToolsPane.RedrawPanels();
             }
         }
     }
