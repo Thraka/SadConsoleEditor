@@ -6,8 +6,8 @@
     using Panels;
     using System.Collections.Generic;
     using System.Linq;
-    using SadConsole.Surfaces;
-    using SadConsole.GameHelpers;
+    using SadConsole.Consoles;
+    using SadConsole.Game;
 
     class HotspotTool : ITool
     {
@@ -37,8 +37,8 @@
             //ControlPanels = new CustomPanel[] { _panel, _mouseOverObjectPanel };
             ControlPanels = new CustomPanel[] { };
 
-            Brush = new SadConsole.GameHelpers.GameObject(Settings.Config.ScreenFont);
-            Brush.Animation = new AnimatedSurface("default", 1, 1);
+            Brush = new SadConsole.Game.GameObject(Settings.Config.ScreenFont);
+            Brush.Animation = new AnimatedTextSurface("default", 1, 1);
             Brush.Animation.CreateFrame();
             Brush.IsVisible = false;
         }
@@ -66,19 +66,19 @@
 
         public void RefreshTool()
         {
-            SadConsoleEditor.Settings.QuickEditor.BasicSurface = Brush.Animation.CurrentFrame;
+            Settings.QuickEditor.TextSurface = Brush.Animation.CurrentFrame;
             var editor = EditorConsoleManager.ActiveEditor as Editors.SceneEditor;
 
             if (editor != null)
             {
                 if (editor.HotspotPanel.SelectedObject != null)
                 {
-                    SadConsoleEditor.Settings.QuickEditor.SetCell(0, 0, editor.HotspotPanel.SelectedObject.DebugAppearance);
-                    SadConsoleEditor.Settings.QuickEditor.SetGlyph(0, 0, editor.HotspotPanel.SelectedObject.DebugAppearance.Glyph);
+                    Settings.QuickEditor.SetCellAppearance(0, 0, editor.HotspotPanel.SelectedObject.DebugAppearance);
+                    Settings.QuickEditor.SetGlyph(0, 0, editor.HotspotPanel.SelectedObject.DebugAppearance.GlyphIndex);
                 }
                 else
                 {
-                    //SadConsoleEditor.Settings.QuickEditor.SetGlyph(0, 0, editor.HotspotPanel.SelectedObject.DebugAppearance.Glyph, Color.White, Color.Transparent);
+                    Settings.QuickEditor.SetGlyph(0, 0, editor.HotspotPanel.SelectedObject.DebugAppearance.GlyphIndex, Color.White, Color.Transparent);
                 }
             }
         }
@@ -88,35 +88,35 @@
         {
         }
 
-        public bool ProcessKeyboard(Keyboard info, ISurface surface)
+        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
         {
             return false;
         }
 
-        public void ProcessMouse(MouseConsoleState info, ISurface surface)
+        public void ProcessMouse(MouseInfo info, ITextSurface surface)
         {
         }
 
-        public void MouseEnterSurface(MouseConsoleState info, ISurface surface)
+        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
         {
             Brush.IsVisible = true;
             RefreshTool();
         }
 
-        public void MouseExitSurface(MouseConsoleState info, ISurface surface)
+        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
         {
             Brush.IsVisible = false;
         }
 
-        public void MouseMoveSurface(MouseConsoleState info, ISurface surface)
+        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
         {
             Brush.IsVisible = true;
-            Brush.Position = info.ConsolePosition;
+            Brush.Position = info.ConsoleLocation;
 
             if (EditorConsoleManager.ActiveEditor is Editors.SceneEditor)
             {
                 var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
-                var point = new Point(info.ConsolePosition.X, info.ConsolePosition.Y);
+                var point = new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y);
                 Hotspot mouseSpot = null;
 
                 foreach (var spot in editor.Hotspots)
@@ -140,7 +140,7 @@
                 }
 
                 // Stamp object
-                else if (info.Mouse.LeftButtonDown)
+                else if (info.LeftButtonDown)
                 {
                     
                     // SHIFT+CTRL -- Delete any hotspot here
@@ -149,7 +149,7 @@
                     {
                         foreach (var spots in editor.Hotspots)
                         {
-                            spots.Positions.Remove(info.ConsolePosition);
+                            spots.Positions.Remove(info.ConsoleLocation);
                         }
                     }
 
@@ -157,7 +157,7 @@
                     else if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
                     {
                         if (mouseSpot != null && mouseSpot == editor.HotspotPanel.SelectedObject)
-                            mouseSpot.Positions.Remove(info.ConsolePosition);
+                            mouseSpot.Positions.Remove(info.ConsoleLocation);
                     }
 
                     
@@ -170,14 +170,14 @@
                             // Remove the spot that exists here
                             foreach (var spots in editor.Hotspots)
                             {
-                                spots.Positions.Remove(info.ConsolePosition);
+                                spots.Positions.Remove(info.ConsoleLocation);
                             }
                         }
 
                         // Place
-                        if (editor.HotspotPanel.SelectedObject != null && !editor.HotspotPanel.SelectedObject.Contains(info.ConsolePosition))
+                        if (editor.HotspotPanel.SelectedObject != null && !editor.HotspotPanel.SelectedObject.Contains(info.ConsoleLocation))
                         {
-                            editor.HotspotPanel.SelectedObject.Positions.Add(info.ConsolePosition);
+                            editor.HotspotPanel.SelectedObject.Positions.Add(info.ConsoleLocation);
                         }
                     }
                 }

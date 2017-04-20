@@ -2,12 +2,12 @@
 {
     using Microsoft.Xna.Framework;
     using SadConsole;
-    using SadConsole.Surfaces;
+    using SadConsole.Consoles;
     using SadConsole.Input;
     using System;
     using SadConsoleEditor.Panels;
     using System.Collections.Generic;
-    using SadConsole.GameHelpers;
+    using SadConsole.Game;
     using System.Linq;
 
     class SceneObjectMoveResizeTool : ITool
@@ -90,12 +90,12 @@
         {
         }
 
-        public bool ProcessKeyboard(Keyboard info, ISurface surface)
+        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
         {
             return false;
         }
 
-        public void ProcessMouse(MouseConsoleState info, ISurface surface)
+        public void ProcessMouse(MouseInfo info, ITextSurface surface)
         {
             var editor = EditorConsoleManager.ActiveEditor as Editors.SceneEditor;
 
@@ -121,7 +121,7 @@
                     movingEntity = allObjects[i];
                     movingEntity.IsSelected = true;
 
-                    if (!info.Mouse.LeftButtonDown)
+                    if (!info.LeftButtonDown)
                         return;
 
                     // Select the zone in the list box
@@ -149,92 +149,92 @@
 
                     // Check and see if mouse is over me
                     if (rules.AllowMove &&
-                        info.ConsolePosition.X >= gameObject.Position.X && info.ConsolePosition.X <= gameObject.Position.X + gameObject.Width - 1 &&
-                        info.ConsolePosition.Y >= gameObject.Position.Y && info.ConsolePosition.Y <= gameObject.Position.Y + gameObject.Height - 1)
+                        info.ConsoleLocation.X >= gameObject.Position.X && info.ConsoleLocation.X <= gameObject.Position.X + gameObject.Width - 1 &&
+                        info.ConsoleLocation.Y >= gameObject.Position.Y && info.ConsoleLocation.Y <= gameObject.Position.Y + gameObject.Height - 1)
                     {
                         if (movingEntity.Type == ResizableObject.ObjectType.GameObject)
                             editor.GameObjectPanel.SelectedGameObject = movingEntity;
 
-                        clickOffset = info.ConsolePosition - gameObject.Position;
+                        clickOffset = info.ConsoleLocation - gameObject.Position;
                         isMoving = true;
                         return;
                     }
 
                     else if (rules.AllowLeftRight && rules.AllowTopBottom &&
-                        info.ConsolePosition.Y == overlay.Position.Y + overlay.Height - 1 && info.ConsolePosition.X == overlay.Position.X + overlay.Width - 1)
+                        info.ConsoleLocation.Y == overlay.Position.Y + overlay.Height - 1 && info.ConsoleLocation.X == overlay.Position.X + overlay.Width - 1)
                     {
                         isResizing = true;
                         moveBottomRight = true;
-                        resizeStartPosition = info.ConsolePosition;
+                        resizeStartPosition = info.ConsoleLocation;
                         resizeBounds = new Point(gameObject.Position.X, gameObject.Position.Y);
                         return;
                     }
                     else if (rules.AllowLeftRight && rules.AllowTopBottom &&
-                        info.ConsolePosition.Y == overlay.Position.Y && info.ConsolePosition.X == overlay.Position.X + overlay.Width - 1)
+                        info.ConsoleLocation.Y == overlay.Position.Y && info.ConsoleLocation.X == overlay.Position.X + overlay.Width - 1)
                     {
                         isResizing = true;
                         moveTopRight = true;
-                        resizeStartPosition = info.ConsolePosition;
+                        resizeStartPosition = info.ConsoleLocation;
                         resizeBounds = new Point(gameObject.Position.X, gameObject.Position.Y + gameObject.Height - 1);
                         return;
                     }
                     else if (rules.AllowLeftRight &&
-                        info.ConsolePosition.X == overlay.Position.X + overlay.Width - 1)
+                        info.ConsoleLocation.X == overlay.Position.X + overlay.Width - 1)
                     {
                         isResizing = true;
                         moveRight = true;
-                        resizeStartPosition = info.ConsolePosition;
+                        resizeStartPosition = info.ConsoleLocation;
                         resizeBounds = new Point(gameObject.Position.X, 0);
                         return;
                     }
                     else if (rules.AllowLeftRight && rules.AllowTopBottom &&
-                        info.ConsolePosition.Y == overlay.Position.Y + overlay.Height - 1 && info.ConsolePosition.X == overlay.Position.X)
+                        info.ConsoleLocation.Y == overlay.Position.Y + overlay.Height - 1 && info.ConsoleLocation.X == overlay.Position.X)
                     {
                         isResizing = true;
                         moveBottomLeft = true;
-                        resizeStartPosition = info.ConsolePosition;
+                        resizeStartPosition = info.ConsoleLocation;
                         resizeBounds = new Point(gameObject.Position.X + gameObject.Width - 1, gameObject.Position.Y);
                         return;
                     }
                     else if (rules.AllowLeftRight && rules.AllowTopBottom &&
-                        info.ConsolePosition.Y == overlay.Position.Y && info.ConsolePosition.X == overlay.Position.X)
+                        info.ConsoleLocation.Y == overlay.Position.Y && info.ConsoleLocation.X == overlay.Position.X)
                     {
                         isResizing = true;
                         moveTopLeft = true;
-                        resizeStartPosition = info.ConsolePosition;
+                        resizeStartPosition = info.ConsoleLocation;
                         resizeBounds = new Point(gameObject.Position.X + gameObject.Width - 1, gameObject.Position.Y + gameObject.Height - 1);
                         return;
                     }
                     else if (rules.AllowLeftRight &&
-                        info.ConsolePosition.X == overlay.Position.X)
+                        info.ConsoleLocation.X == overlay.Position.X)
                     {
                         isResizing = true;
                         moveLeft = true;
-                        resizeStartPosition = info.ConsolePosition;
+                        resizeStartPosition = info.ConsoleLocation;
                         resizeBounds = new Point(gameObject.Position.X + gameObject.Width - 1, 0);
                         return;
                     }
                     else if (rules.AllowTopBottom &&
-                        info.ConsolePosition.Y == overlay.Position.Y)
+                        info.ConsoleLocation.Y == overlay.Position.Y)
                     {
                         isResizing = true;
                         moveTop = true;
-                        resizeStartPosition = info.ConsolePosition;
+                        resizeStartPosition = info.ConsoleLocation;
                         resizeBounds = new Point(0, gameObject.Position.Y + gameObject.Height - 1);
                         return;
                     }
                     else if (rules.AllowTopBottom &&
-                        info.ConsolePosition.Y == overlay.Position.Y + overlay.Height - 1)
+                        info.ConsoleLocation.Y == overlay.Position.Y + overlay.Height - 1)
                     {
                         isResizing = true;
                         moveBottom = true;
-                        resizeStartPosition = info.ConsolePosition;
+                        resizeStartPosition = info.ConsoleLocation;
                         resizeBounds = new Point(0, gameObject.Position.Y);
                         return;
                     }
                 }
 
-                if (!info.Mouse.LeftButtonDown && movingEntity != null)
+                if (!info.LeftButtonDown && movingEntity != null)
                 {
                     movingEntity.IsSelected = false;
                     movingEntity = null;
@@ -243,72 +243,72 @@
 
             if (isResizing)
             {
-                if (!info.Mouse.LeftButtonDown)
+                if (!info.LeftButtonDown)
                 {
                     isResizing = false;
                     return;
                 }
 
-                if (moveRight && info.ConsolePosition.X > resizeBounds.X)
+                if (moveRight && info.ConsoleLocation.X > resizeBounds.X)
                 {
-                    movingEntity.ResizeObject(info.ConsolePosition.X - movingEntity.GameObject.Position.X, movingEntity.GameObject.Height);
+                    movingEntity.ResizeObject(info.ConsoleLocation.X - movingEntity.GameObject.Position.X, movingEntity.GameObject.Height);
                 }
-                else if (moveBottomRight && info.ConsolePosition.X > resizeBounds.X && info.ConsolePosition.Y > resizeBounds.Y)
+                else if (moveBottomRight && info.ConsoleLocation.X > resizeBounds.X && info.ConsoleLocation.Y > resizeBounds.Y)
                 {
-                    movingEntity.ResizeObject(info.ConsolePosition.X - movingEntity.GameObject.Position.X, info.ConsolePosition.Y - movingEntity.GameObject.Position.Y);
+                    movingEntity.ResizeObject(info.ConsoleLocation.X - movingEntity.GameObject.Position.X, info.ConsoleLocation.Y - movingEntity.GameObject.Position.Y);
                 }
-                else if (moveTopRight && info.ConsolePosition.X > resizeBounds.X && info.ConsolePosition.Y < resizeBounds.Y)
+                else if (moveTopRight && info.ConsoleLocation.X > resizeBounds.X && info.ConsoleLocation.Y < resizeBounds.Y)
                 {
-                    movingEntity.ResizeObject(info.ConsolePosition.X - movingEntity.GameObject.Position.X, movingEntity.GameObject.Position.Y + movingEntity.GameObject.Height - (info.ConsolePosition.Y + 1), null, info.ConsolePosition.Y + 1);
+                    movingEntity.ResizeObject(info.ConsoleLocation.X - movingEntity.GameObject.Position.X, movingEntity.GameObject.Position.Y + movingEntity.GameObject.Height - (info.ConsoleLocation.Y + 1), null, info.ConsoleLocation.Y + 1);
                 }
-                else if (moveLeft && info.ConsolePosition.X < resizeBounds.X)
+                else if (moveLeft && info.ConsoleLocation.X < resizeBounds.X)
                 {
-                    movingEntity.ResizeObject(movingEntity.GameObject.Position.X + movingEntity.GameObject.Width - (info.ConsolePosition.X + 1), movingEntity.GameObject.Height, info.ConsolePosition.X + 1, null);
+                    movingEntity.ResizeObject(movingEntity.GameObject.Position.X + movingEntity.GameObject.Width - (info.ConsoleLocation.X + 1), movingEntity.GameObject.Height, info.ConsoleLocation.X + 1, null);
                 }
-                else if (moveBottomLeft && info.ConsolePosition.X < resizeBounds.X && info.ConsolePosition.Y > resizeBounds.Y)
+                else if (moveBottomLeft && info.ConsoleLocation.X < resizeBounds.X && info.ConsoleLocation.Y > resizeBounds.Y)
                 {
-                    movingEntity.ResizeObject(movingEntity.GameObject.Position.X + movingEntity.GameObject.Width - (info.ConsolePosition.X + 1), info.ConsolePosition.Y - movingEntity.GameObject.Position.Y, info.ConsolePosition.X + 1, null);
+                    movingEntity.ResizeObject(movingEntity.GameObject.Position.X + movingEntity.GameObject.Width - (info.ConsoleLocation.X + 1), info.ConsoleLocation.Y - movingEntity.GameObject.Position.Y, info.ConsoleLocation.X + 1, null);
                 }
-                else if (moveTopLeft && info.ConsolePosition.X < resizeBounds.X && info.ConsolePosition.Y < resizeBounds.Y)
+                else if (moveTopLeft && info.ConsoleLocation.X < resizeBounds.X && info.ConsoleLocation.Y < resizeBounds.Y)
                 {
-                    movingEntity.ResizeObject(movingEntity.GameObject.Position.X + movingEntity.GameObject.Width - (info.ConsolePosition.X + 1), movingEntity.GameObject.Position.Y + movingEntity.GameObject.Height - (info.ConsolePosition.Y + 1), info.ConsolePosition.X + 1, info.ConsolePosition.Y + 1);
+                    movingEntity.ResizeObject(movingEntity.GameObject.Position.X + movingEntity.GameObject.Width - (info.ConsoleLocation.X + 1), movingEntity.GameObject.Position.Y + movingEntity.GameObject.Height - (info.ConsoleLocation.Y + 1), info.ConsoleLocation.X + 1, info.ConsoleLocation.Y + 1);
                 }
-                else if (moveTop && info.ConsolePosition.Y < resizeBounds.Y)
+                else if (moveTop && info.ConsoleLocation.Y < resizeBounds.Y)
                 {
-                    movingEntity.ResizeObject(movingEntity.GameObject.Width, movingEntity.GameObject.Position.Y + movingEntity.GameObject.Height - (info.ConsolePosition.Y + 1), null, info.ConsolePosition.Y + 1);
+                    movingEntity.ResizeObject(movingEntity.GameObject.Width, movingEntity.GameObject.Position.Y + movingEntity.GameObject.Height - (info.ConsoleLocation.Y + 1), null, info.ConsoleLocation.Y + 1);
                 }
-                else if (moveBottom && info.ConsolePosition.Y > resizeBounds.Y)
+                else if (moveBottom && info.ConsoleLocation.Y > resizeBounds.Y)
                 {
-                    movingEntity.ResizeObject(movingEntity.GameObject.Width, info.ConsolePosition.Y - movingEntity.GameObject.Position.Y);
+                    movingEntity.ResizeObject(movingEntity.GameObject.Width, info.ConsoleLocation.Y - movingEntity.GameObject.Position.Y);
                 }
                 return;
             }
             else if (isMoving)
             {
-                if (!info.Mouse.LeftButtonDown)
+                if (!info.LeftButtonDown)
                 {
                     isMoving = false;
                     return;
                 }
 
-                movingEntity.GameObject.Position = info.ConsolePosition - clickOffset;
+                movingEntity.GameObject.Position = info.ConsoleLocation - clickOffset;
                 movingEntity.ProcessOverlay();
             }
 
-            lastLeftMouseDown = info.Mouse.LeftButtonDown;
+            lastLeftMouseDown = info.LeftButtonDown;
 
             return;
         }
 
-        public void MouseEnterSurface(MouseConsoleState info, ISurface surface)
+        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
         {
         }
 
-        public void MouseExitSurface(MouseConsoleState info, ISurface surface)
+        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
         {
         }
 
-        public void MouseMoveSurface(MouseConsoleState info, ISurface surface)
+        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
         {
 
         }

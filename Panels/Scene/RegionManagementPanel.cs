@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using SadConsole.Controls;
 using SadConsoleEditor.Windows;
 using SadConsole;
-using SadConsole.Surfaces;
-using SadConsole.GameHelpers;
+using SadConsole.Consoles;
+using SadConsole.Game;
 using Microsoft.Xna.Framework;
 
 namespace SadConsoleEditor.Panels
@@ -46,32 +46,32 @@ namespace SadConsoleEditor.Panels
             Title = "Zones";
             GameObjectList = new ListBox<EntityListBoxItem>(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 4);
             GameObjectList.HideBorder = true;
-            //GameObjectList.SelectedItemChanged += GameObject_SelectedItemChanged;
+            GameObjectList.SelectedItemChanged += GameObject_SelectedItemChanged;
             GameObjectList.CompareByReference = true;
 
-            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
+            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             removeSelected.Text = "Remove";
-            removeSelected.Click += RemoveSelected_Click;
+            removeSelected.ButtonClicked += RemoveSelected_ButtonClicked;
 
-            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
+            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             moveSelectedUp.Text = "Move Up";
-            moveSelectedUp.Click += MoveSelectedUp_Click;
+            moveSelectedUp.ButtonClicked += MoveSelectedUp_ButtonClicked;
 
-            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
+            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             moveSelectedDown.Text = "Move Down";
-            moveSelectedDown.Click += MoveSelectedDown_Click;
+            moveSelectedDown.ButtonClicked += MoveSelectedDown_ButtonClicked;
             
-            renameZoneButton = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
+            renameZoneButton = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             renameZoneButton.Text = "Rename";
-            renameZoneButton.Click += RenameZone_Click;
+            renameZoneButton.ButtonClicked += RenameZone_ButtonClicked;
 
-            addZoneButton = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
+            addZoneButton = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             addZoneButton.Text = "Add New";
-            addZoneButton.Click += AddZone_Click;
+            addZoneButton.ButtonClicked += AddZone_ButtonClicked;
 
-            editSettings = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
+            editSettings = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             editSettings.Text = "Edit Settings";
-            editSettings.Click += EditSettings_Click;
+            editSettings.ButtonClicked += EditSettings_ButtonClicked;
 
             zoneColorPresenter = new SadConsoleEditor.Controls.ColorPresenter("Zone Color", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             zoneColorPresenter.SelectedColor = Color.Aqua;
@@ -86,10 +86,10 @@ namespace SadConsoleEditor.Panels
 
             Controls = new ControlBase[] { addZoneButton, null, GameObjectList, removeSelected, moveSelectedUp, moveSelectedDown, renameZoneButton, editSettings, null, drawZonesCheckbox, null, zoneColorPresenter, propertySurface };
 
-            //GameObject_SelectedItemChanged(null, null);
+            GameObject_SelectedItemChanged(null, null);
         }
 
-        private void EditSettings_Click(object sender, EventArgs e)
+        private void EditSettings_ButtonClicked(object sender, EventArgs e)
         {
             var zone = ((ResizableObject<Zone>)GameObjectList.SelectedItem).Data;
             Windows.KeyValueEditPopup popup = new Windows.KeyValueEditPopup(zone.Settings);
@@ -117,15 +117,15 @@ namespace SadConsoleEditor.Panels
             }
         }
 
-        void AddZone_Click(object sender, EventArgs e)
+        void AddZone_ButtonClicked(object sender, EventArgs e)
         {
-            //(EditorConsoleManager.ActiveEditor as Editors.SceneEditor)?.LoadZone(new Zone() {
-            //                                                                        Area = new Rectangle(1, 1, 10, 10),
-            //                                                                        DebugAppearance = new Cell(Color.White, Color.White.GetRandomColor(SadConsole.Global.Random), 0),
-            //                                                                        Title = "Zone" });
+            (EditorConsoleManager.ActiveEditor as Editors.SceneEditor)?.LoadZone(new Zone() {
+                                                                                    Area = new Rectangle(1, 1, 10, 10),
+                                                                                    DebugAppearance = new CellAppearance(Color.White, Color.White.GetRandomColor(SadConsole.Engine.Random), 0),
+                                                                                    Title = "Zone" });
         }
 
-        void RenameZone_Click(object sender, EventArgs e)
+        void RenameZone_ButtonClicked(object sender, EventArgs e)
         {
             var entity = (ResizableObject)GameObjectList.SelectedItem;
             RenamePopup popup = new RenamePopup(entity.Name);
@@ -134,45 +134,45 @@ namespace SadConsoleEditor.Panels
             popup.Center();
         }
 
-        void MoveSelectedDown_Click(object sender, EventArgs e)
+        void MoveSelectedDown_ButtonClicked(object sender, EventArgs e)
         {
-            //var entity = (ResizableObject<Zone>)GameObjectList.SelectedItem;
-            //var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+            var entity = (ResizableObject<Zone>)GameObjectList.SelectedItem;
+            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
-            //int index = editor.Zones.IndexOf(entity);
-            //editor.Zones.Remove(entity);
-            //editor.Zones.Insert(index + 1, entity);
-            //RebuildListBox();
-            //GameObjectList.SelectedItem = entity;
+            int index = editor.Zones.IndexOf(entity);
+            editor.Zones.Remove(entity);
+            editor.Zones.Insert(index + 1, entity);
+            RebuildListBox();
+            GameObjectList.SelectedItem = entity;
         }
 
-        void MoveSelectedUp_Click(object sender, EventArgs e)
+        void MoveSelectedUp_ButtonClicked(object sender, EventArgs e)
         {
-            //var entity = (ResizableObject<Zone>)GameObjectList.SelectedItem;
-            //var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+            var entity = (ResizableObject<Zone>)GameObjectList.SelectedItem;
+            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
-            //int index = editor.Zones.IndexOf(entity);
-            //editor.Zones.Remove(entity);
-            //editor.Zones.Insert(index - 1, entity);
-            //RebuildListBox();
-            //GameObjectList.SelectedItem = entity;
+            int index = editor.Zones.IndexOf(entity);
+            editor.Zones.Remove(entity);
+            editor.Zones.Insert(index - 1, entity);
+            RebuildListBox();
+            GameObjectList.SelectedItem = entity;
         }
 
-        void RemoveSelected_Click(object sender, EventArgs e)
+        void RemoveSelected_ButtonClicked(object sender, EventArgs e)
         {
-            //var entity = (ResizableObject<Zone>)GameObjectList.SelectedItem;
-            //var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+            var entity = (ResizableObject<Zone>)GameObjectList.SelectedItem;
+            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
-            //editor.Zones.Remove(entity);
+            editor.Zones.Remove(entity);
 
-            //RebuildListBox();
+            RebuildListBox();
 
-            //if (GameObjectList.Items.Count != 0)
-            //    GameObjectList.SelectedItem = GameObjectList.Items[0];
+            if (GameObjectList.Items.Count != 0)
+                GameObjectList.SelectedItem = GameObjectList.Items[0];
         }
 
         #region TODO Import/Export
-        //void _exportListButton_Click(object sender, EventArgs e)
+        //void _exportListButton_ButtonClicked(object sender, EventArgs e)
         //{
         //    var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
@@ -205,7 +205,7 @@ namespace SadConsoleEditor.Panels
         //    popup.Show(true);
         //}
 
-        //private void ImportListButton_Click(object sender, EventArgs e)
+        //private void ImportListButton_ButtonClicked(object sender, EventArgs e)
         //{
         //    Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
         //    popup.Center();
@@ -259,89 +259,89 @@ namespace SadConsoleEditor.Panels
 
         void RebuildProperties(Zone zone)
         {
-        //    if (zone.Settings.Count == 0)
-        //    {
-        //        propertySurface.IsVisible = false;
-        //    }
-        //    else
-        //    {
-        //        propertySurface.IsVisible = true;
-        //    }
+            if (zone.Settings.Count == 0)
+            {
+                propertySurface.IsVisible = false;
+            }
+            else
+            {
+                propertySurface.IsVisible = true;
+            }
 
             
-        //    if (propertySurface.IsVisible)
-        //    {
-        //        var drawing = new DrawingSurface(Consoles.ToolPane.PanelWidthControls, (zone.Settings.Count * 2) + 1);
+            if (propertySurface.IsVisible)
+            {
+                var drawing = new DrawingSurface(Consoles.ToolPane.PanelWidthControls, (zone.Settings.Count * 2) + 1);
 
-        //        previousProperties = new Dictionary<string, string>();
-        //        int y = 1;
-        //        drawing.Print(0, 0, "Zone Settings", Settings.Green);
-        //        foreach (var setting in zone.Settings)
-        //        {
-        //            drawing.Print(0, y, setting.Key.Length > Consoles.ToolPane.PanelWidthControls ? setting.Key.Substring(0, Consoles.ToolPane.PanelWidthControls) : setting.Key, Settings.Yellow);
-        //            drawing.Print(1, y + 1, setting.Value.Length > Consoles.ToolPane.PanelWidthControls - 1 ? setting.Value.Substring(0, Consoles.ToolPane.PanelWidthControls - 1) : setting.Value, Settings.Grey);
-        //            previousProperties[setting.Key] = setting.Value;
-        //            y += 2;
-        //        }
+                previousProperties = new Dictionary<string, string>();
+                int y = 1;
+                drawing.Print(0, 0, "Zone Settings", Settings.Green);
+                foreach (var setting in zone.Settings)
+                {
+                    drawing.Print(0, y, setting.Key.Length > Consoles.ToolPane.PanelWidthControls ? setting.Key.Substring(0, Consoles.ToolPane.PanelWidthControls) : setting.Key, Settings.Yellow);
+                    drawing.Print(1, y + 1, setting.Value.Length > Consoles.ToolPane.PanelWidthControls - 1 ? setting.Value.Substring(0, Consoles.ToolPane.PanelWidthControls - 1) : setting.Value, Settings.Grey);
+                    previousProperties[setting.Key] = setting.Value;
+                    y += 2;
+                }
 
-        //        propertySurface.BasicSurface = drawing.BasicSurface;
-        //    }
+                propertySurface.TextSurface = drawing.TextSurface;
+            }
         }
 
         void GameObject_SelectedItemChanged(object sender, ListBox<EntityListBoxItem>.SelectedItemEventArgs e)
         {
-        //    if (GameObjectList.SelectedItem != null)
-        //    {
-        //        var entity = (ResizableObject<Zone>)GameObjectList.SelectedItem;
-        //        var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+            if (GameObjectList.SelectedItem != null)
+            {
+                var entity = (ResizableObject<Zone>)GameObjectList.SelectedItem;
+                var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
 
-        //        moveSelectedUp.IsEnabled = editor.Zones.IndexOf(entity) != 0;
-        //        moveSelectedDown.IsEnabled = editor.Zones.IndexOf(entity) != editor.Zones.Count - 1;
-        //        renameZoneButton.IsEnabled = true;
-        //        editSettings.IsEnabled = true;
+                moveSelectedUp.IsEnabled = editor.Zones.IndexOf(entity) != 0;
+                moveSelectedDown.IsEnabled = editor.Zones.IndexOf(entity) != editor.Zones.Count - 1;
+                renameZoneButton.IsEnabled = true;
+                editSettings.IsEnabled = true;
 
-        //        editor.SelectedEntity = entity.GameObject;
-        //        zoneColorPresenter.IsEnabled = true;
-        //        zoneColorPresenter.SelectedColor = entity.GameObject.Animation.CurrentFrame[0].Background;
+                editor.SelectedEntity = entity.GameObject;
+                zoneColorPresenter.IsEnabled = true;
+                zoneColorPresenter.SelectedColor = entity.GameObject.Animation.CurrentFrame[0].Background;
 
-        //        RebuildProperties(entity.Data);
+                RebuildProperties(entity.Data);
 
-        //        if (!rebuilding)
-        //            EditorConsoleManager.ToolsPane.RedrawPanels();
-        //    }
-        //    else
-        //    {
-        //        editSettings.IsEnabled = false;
-        //        zoneColorPresenter.IsEnabled = false;
-        //        moveSelectedDown.IsEnabled = false;
-        //        moveSelectedUp.IsEnabled = false;
-        //        renameZoneButton.IsEnabled = false;
-        //        propertySurface.IsVisible = false;
-        //    }
+                if (!rebuilding)
+                    EditorConsoleManager.ToolsPane.RedrawPanels();
+            }
+            else
+            {
+                editSettings.IsEnabled = false;
+                zoneColorPresenter.IsEnabled = false;
+                moveSelectedDown.IsEnabled = false;
+                moveSelectedUp.IsEnabled = false;
+                renameZoneButton.IsEnabled = false;
+                propertySurface.IsVisible = false;
+            }
 
-        //    removeSelected.IsEnabled = GameObjectList.Items.Count != 0;
+            removeSelected.IsEnabled = GameObjectList.Items.Count != 0;
         }
 
         public void RebuildListBox()
         {
-            //GameObjectList.Items.Clear();
+            GameObjectList.Items.Clear();
 
-            //if (EditorConsoleManager.ActiveEditor is Editors.SceneEditor)
-            //{
-            //    var entities = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Zones;
+            if (EditorConsoleManager.ActiveEditor is Editors.SceneEditor)
+            {
+                var entities = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Zones;
 
-            //    if (entities.Count != 0)
-            //    {
-            //        foreach (var item in entities)
-            //            GameObjectList.Items.Add(item);
+                if (entities.Count != 0)
+                {
+                    foreach (var item in entities)
+                        GameObjectList.Items.Add(item);
 
 
-            //        GameObjectList.SelectedItem = GameObjectList.Items[0];
-            //    }
-            //}
+                    GameObjectList.SelectedItem = GameObjectList.Items[0];
+                }
+            }
         }
 
-        public override void ProcessMouse(SadConsole.Input.MouseConsoleState info)
+        public override void ProcessMouse(SadConsole.Input.MouseInfo info)
         {
         }
 
@@ -367,7 +367,7 @@ namespace SadConsoleEditor.Panels
 
         private class EntityListBoxItem : ListBoxItem
         {
-            public override void Draw(ISurface surface, Microsoft.Xna.Framework.Rectangle area)
+            public override void Draw(ITextSurface surface, Microsoft.Xna.Framework.Rectangle area)
             {
                 string value = ((ResizableObject)Item).Name;
 
