@@ -40,11 +40,6 @@
         private bool isSelected;
         private bool isResizing;
 
-
-
-
-
-
         public const string ID = "SCENE-ENT-MOVE";
         public string Id
         {
@@ -75,6 +70,8 @@
         {
             ((Editors.SceneEditor)MainScreen.Instance.ActiveEditor).ShowDarkLayer = true;
             ((Editors.SceneEditor)MainScreen.Instance.ActiveEditor).HighlightType = Editors.SceneEditor.HighlightTypes.GameObject;
+
+            MainScreen.Instance.Brush = new GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
         }
 
         public void OnDeselected()

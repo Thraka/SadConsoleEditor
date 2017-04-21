@@ -50,6 +50,8 @@
                 
                 if (SelectedCharacterChanged != null)
                     SelectedCharacterChanged(this, new SelectedCharacterEventArgs(old, value));
+
+                Compose();
             }
         }
 
@@ -102,6 +104,8 @@
                     i++;
                 }
             }
+
+            OnComposed?.Invoke(this);
         }
 
         protected override void OnMouseIn(SadConsole.Input.MouseConsoleState info)

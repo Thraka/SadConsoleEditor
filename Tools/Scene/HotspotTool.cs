@@ -76,7 +76,7 @@
                 }
                 else
                 {
-                    Settings.QuickEditor.SetGlyph(0, 0, 1, Color.White, Color.Transparent);
+                    Settings.QuickEditor.SetGlyph(0, 0, 0, Color.White, Color.Transparent);
                 }
             }
         }

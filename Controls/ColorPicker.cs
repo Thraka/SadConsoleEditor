@@ -124,6 +124,7 @@
                 }
 
                 IsDirty = false;
+                OnComposed?.Invoke(this);
             }
         }
 

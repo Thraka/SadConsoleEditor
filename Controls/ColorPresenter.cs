@@ -64,6 +64,8 @@
                 SetGlyph(Width - 2, 0, _character);
                 SetForeground(Width - 2, 0, _characterColor);
             }
+
+            OnComposed?.Invoke(this);
         }
 
         public override void DetermineAppearance()
