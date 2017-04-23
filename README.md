@@ -1,7 +1,7 @@
 # SadConsole Editor
 An editor for creating consoles and animations used by SadConsole.
 
-SadConsole Editor provides three types of editors: Console, ~~GameScreen~~, and Entity. The current code base has been updated for the latest [SadConsole](http://github.com/thraka/sadconsole) release.
+SadConsole Editor provides three types of editors: Consoles, Game Objects, and Scenes. The current code base has been updated for the latest [SadConsole](http://github.com/thraka/sadconsole) release.
 
 A config file named `settings.json` is provided which controls how SadConsole Editor behaves. You can adjust which font file you're using (to match whatever font your game is going to use). the size of the program window (in characters), the default size of each editor's console, and the bounds of those.
 
@@ -53,17 +53,9 @@ Draws a line using the specified character and color combination. Works exactly 
 - The [character bar](#character-bar) is active with this tool.
 
 
-## GameScreen editor
+## Scene editor
 
-> This feature is currently under revision. Things may change.
-
-The GameScreen editor allows you to define hidden objects that your code can respond to. It uses a trigger/target system. For example if you're tracking the player's movement and they step on one of the hidden GameObject triggers, you can respond to it by killing the player, pushing them, opening a door, etc.
-
-The objects placed on a layer provide three things, visual settings (foreground, background, character), a name, and key-value pairs of data. You can use the name to type-define the object, use the visual settings to further filter and differentiate objects with the same name, and then use the key-value pairs to customize the object.
-
-The `Object Types` area on the right-side of the screen list the current object templates. From here you can edit those templates, create a new one, or delete an existing one. If you click `Save System List` a JSON config file named **editor.objecttypes.json** will be written out to the directory that preserves your object templates.
-
-It adds one new tool, the Object tool.
+The Scene editor allows you to define hidden objects that your code can respond to, zones and hotspots. You can also place game objects in the scene. 
 
 ##### Object yool
 Places the selected object on the selected layer. The list of objects are templates. Meaning, after you place them, you can change the placed item which does not change the template or other objects placed with that template.
@@ -74,9 +66,9 @@ Places the selected object on the selected layer. The list of objects are templa
 
 
 
-## Entity editor
+## Game object editor
 
-The entity editor allows you to create entity objects which are animated consoles.
+The game object editor allows you to create entity objects which are animated consoles.
 
 .. more to come ..
 
