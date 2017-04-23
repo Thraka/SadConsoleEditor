@@ -1,8 +1,8 @@
 ﻿namespace SadConsoleEditor.Tools
 {
     using SadConsole;
-    using SadConsole.Consoles;
-    using SadConsole.Game;
+    using SadConsole.Surfaces;
+    using SadConsole.GameHelpers;
     using SadConsole.Input;
     using SadConsoleEditor.Panels;
 
@@ -40,15 +40,14 @@
 
         public void OnSelected()
         {
-            Brush = new SadConsole.Game.GameObject(Settings.Config.ScreenFont);
-            Brush.Animation = new AnimatedTextSurface("default", 1, 1);
+            Brush = new SadConsole.GameHelpers.GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
+            Brush.Animation = new AnimatedSurface("default", 1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
             Brush.Animation.CreateFrame();
             Brush.IsVisible = false;
             RefreshTool();
-            EditorConsoleManager.Brush = Brush;
-            EditorConsoleManager.UpdateBrush();
+            MainScreen.Instance.Brush = Brush;
 
-            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
+            MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
             CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
             CharacterPickPanel.SharedInstance.HideCharacter = true;
         }
@@ -61,64 +60,54 @@
 
         private void CharPanelChanged(object sender, System.EventArgs e)
         {
-            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
+            MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
             RefreshTool();
         }
 
         public void RefreshTool()
         {
-            Settings.QuickEditor.TextSurface = Brush.Animation.Frames[0];
-            Settings.QuickEditor.Fill(CharacterPickPanel.SharedInstance.SettingForeground,
+            SadConsoleEditor.Settings.QuickEditor.TextSurface = Brush.Animation.Frames[0];
+            SadConsoleEditor.Settings.QuickEditor.Fill(CharacterPickPanel.SharedInstance.SettingForeground,
                                       CharacterPickPanel.SharedInstance.SettingBackground, 42);
+
+            Brush.Animation.IsDirty = true;
         }
 
         public void Update()
         {
         }
 
-        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
+        public bool ProcessKeyboard(Keyboard info, ISurface surface)
         {
             return false;
         }
 
-        public void ProcessMouse(MouseInfo info, ITextSurface surface)
+        public void ProcessMouse(MouseConsoleState info, ISurface surface, bool isInBounds)
         {
-        }
-
-        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.IsVisible = true;
-        }
-
-        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.IsVisible = false;
-        }
-
-        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.Position = info.ConsoleLocation;
-            Brush.IsVisible = true;
-
-            if (info.LeftButtonDown)
+            if (info.IsOnConsole)
             {
-                var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
+                if (info.Mouse.LeftButtonDown)
+                {
+                    var cell = info.Cell;  
 
-                if (!settingsPanel.IgnoreForeground)
-                    cell.Foreground = CharacterPickPanel.SharedInstance.SettingForeground;
+                    if (!settingsPanel.IgnoreForeground)
+                        cell.Foreground = CharacterPickPanel.SharedInstance.SettingForeground;
 
-                if (!settingsPanel.IgnoreBackground)
-                    cell.Background = CharacterPickPanel.SharedInstance.SettingBackground;
-            }
-            else if (info.RightButtonDown)
-            {
-                var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
+                    if (!settingsPanel.IgnoreBackground)
+                        cell.Background = CharacterPickPanel.SharedInstance.SettingBackground;
 
-                if (!settingsPanel.IgnoreForeground)
-                    CharacterPickPanel.SharedInstance.SettingForeground = cell.Foreground;
+                    info.Console.TextSurface.IsDirty = true;
+                }
+                else if (info.Mouse.RightButtonDown)
+                {
+                    var cell = info.Cell;
 
-                if (!settingsPanel.IgnoreBackground)
-                    CharacterPickPanel.SharedInstance.SettingBackground = cell.Background;
+                    if (!settingsPanel.IgnoreForeground)
+                        CharacterPickPanel.SharedInstance.SettingForeground = cell.Foreground;
+
+                    if (!settingsPanel.IgnoreBackground)
+                        CharacterPickPanel.SharedInstance.SettingBackground = cell.Background;
+                }
             }
         }
     }

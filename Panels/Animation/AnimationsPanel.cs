@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using SadConsole.Controls;
 using SadConsoleEditor.Windows;
 using SadConsole;
-using SadConsole.Game;
-using SadConsole.Consoles;
+using SadConsole.GameHelpers;
+using SadConsole.Surfaces;
 
 namespace SadConsoleEditor.Panels
 {
@@ -30,7 +30,7 @@ namespace SadConsoleEditor.Panels
 
         private GameObject entity;
 
-        private Action<AnimatedTextSurface> animationChangeCallback;
+        private Action<AnimatedSurface> animationChangeCallback;
         private Action<CustomTool> invokeCustomToolCallback;
 
         public enum CustomTool
@@ -40,7 +40,7 @@ namespace SadConsoleEditor.Panels
             None
         }
 
-        public AnimationsPanel(Action<AnimatedTextSurface> animationChangeCallback)
+        public AnimationsPanel(Action<AnimatedSurface> animationChangeCallback)
         {
             Title = "Animations";
             animations = new ListBox(Consoles.ToolPane.PanelWidthControls, 4);
@@ -48,46 +48,46 @@ namespace SadConsoleEditor.Panels
             animations.SelectedItemChanged += animations_SelectedItemChanged;
             animations.CompareByReference = true;
 
-            removeSelected = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            removeSelected = new Button(Consoles.ToolPane.PanelWidthControls);
             removeSelected.Text = "Remove";
-            removeSelected.ButtonClicked += removeAnimation_ButtonClicked;
+            removeSelected.Click += removeAnimation_Click;
 
-            addNewAnimation = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            addNewAnimation = new Button(Consoles.ToolPane.PanelWidthControls);
             addNewAnimation.Text = "Add New";
-            addNewAnimation.ButtonClicked += addNewAnimation_ButtonClicked;
+            addNewAnimation.Click += addNewAnimation_Click;
 
-            renameAnimation = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            renameAnimation = new Button(Consoles.ToolPane.PanelWidthControls);
             renameAnimation.Text = "Rename";
-            renameAnimation.ButtonClicked += renameAnimation_ButtonClicked;
+            renameAnimation.Click += renameAnimation_Click;
 
-            addNewAnimationFromFile = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            addNewAnimationFromFile = new Button(Consoles.ToolPane.PanelWidthControls);
             addNewAnimationFromFile.Text = "Import Anim.";
-            addNewAnimationFromFile.ButtonClicked += addNewAnimationFromFile_ButtonClicked;
+            addNewAnimationFromFile.Click += addNewAnimationFromFile_Click;
 
-            saveAnimationToFile = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            saveAnimationToFile = new Button(Consoles.ToolPane.PanelWidthControls);
             saveAnimationToFile.Text = "Export Anim.";
-            saveAnimationToFile.ButtonClicked += saveAnimationToFile_ButtonClicked;
+            saveAnimationToFile.Click += saveAnimationToFile_Click;
 
-            changeSpeedButton = new Button(3, 1);
+            changeSpeedButton = new Button(3);
             changeSpeedButton.ShowEnds = false;
             changeSpeedButton.Text = "Set";
-            changeSpeedButton.ButtonClicked += changeSpeedButton_ButtonClicked;
+            changeSpeedButton.Click += changeSpeedButton_Click;
 
-            cloneSelectedAnimationButton = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            cloneSelectedAnimationButton = new Button(Consoles.ToolPane.PanelWidthControls);
             cloneSelectedAnimationButton.Text = "Clone Sel. Anim";
-            cloneSelectedAnimationButton.ButtonClicked += cloneSelectedAnimation_ButtonClicked;
+            cloneSelectedAnimationButton.Click += cloneSelectedAnimation_Click;
 
-            reverseAnimationButton = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            reverseAnimationButton = new Button(Consoles.ToolPane.PanelWidthControls);
             reverseAnimationButton.Text = "Reverse Animation";
-            reverseAnimationButton.ButtonClicked += reverseAnimation_ButtonClicked; ;
+            reverseAnimationButton.Click += reverseAnimation_Click; ;
 
-            setCenterButton = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            setCenterButton = new Button(Consoles.ToolPane.PanelWidthControls);
             setCenterButton.Text = "Set Center";
-            setCenterButton.ButtonClicked += (s, e) => invokeCustomToolCallback(CustomTool.Center);
+            setCenterButton.Click += (s, e) => invokeCustomToolCallback(CustomTool.Center);
 
-            setBoundingBoxButton = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            setBoundingBoxButton = new Button(Consoles.ToolPane.PanelWidthControls);
             setBoundingBoxButton.Text = "Set Collision";
-            setBoundingBoxButton.ButtonClicked += (s, e) => invokeCustomToolCallback(CustomTool.CollisionBox);
+            setBoundingBoxButton.Click += (s, e) => invokeCustomToolCallback(CustomTool.CollisionBox);
 
             animationSpeedLabel = new DrawingSurface(Consoles.ToolPane.PanelWidthControls - changeSpeedButton.Width, 1);
 
@@ -95,9 +95,9 @@ namespace SadConsoleEditor.Panels
             repeatCheck.Text = "Repeat";
             repeatCheck.IsSelectedChanged += repeatCheck_IsSelectedChanged;
 
-            playPreview = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            playPreview = new Button(Consoles.ToolPane.PanelWidthControls);
             playPreview.Text = "Play Preview";
-            playPreview.ButtonClicked += playPreview_ButtonClicked; ;
+            playPreview.Click += playPreview_Click; ;
 
             this.animationChangeCallback = animationChangeCallback;
             //_invokeCustomToolCallback = invokeCustomToolCallback;
@@ -105,22 +105,22 @@ namespace SadConsoleEditor.Panels
             Controls = new ControlBase[] { animations, null, removeSelected, addNewAnimation, renameAnimation, cloneSelectedAnimationButton, null, addNewAnimationFromFile, saveAnimationToFile, null, playPreview, null, animationSpeedLabel, changeSpeedButton, repeatCheck, null, reverseAnimationButton };
         }
 
-        private void reverseAnimation_ButtonClicked(object sender, EventArgs e)
+        private void reverseAnimation_Click(object sender, EventArgs e)
         {
-            var animation = (AnimatedTextSurface)animations.SelectedItem;
+            var animation = (AnimatedSurface)animations.SelectedItem;
             animation.Frames.Reverse();
             animations_SelectedItemChanged(this, null);
         }
 
-        private void cloneSelectedAnimation_ButtonClicked(object sender, EventArgs e)
+        private void cloneSelectedAnimation_Click(object sender, EventArgs e)
         {
             RenamePopup popup = new RenamePopup("clone");
             popup.Closed += (o, e2) =>
             {
                 if (popup.DialogResult)
                 {
-                    var animation = (AnimatedTextSurface)animations.SelectedItem;
-                    var newAnimation = new AnimatedTextSurface(popup.NewName, animation.Width, animation.Height, Settings.Config.ScreenFont);
+                    var animation = (AnimatedSurface)animations.SelectedItem;
+                    var newAnimation = new AnimatedSurface(popup.NewName, animation.Width, animation.Height, Settings.Config.ScreenFont);
 
                     foreach (var frame in animation.Frames)
                     {
@@ -140,12 +140,12 @@ namespace SadConsoleEditor.Panels
 
         private void repeatCheck_IsSelectedChanged(object sender, EventArgs e)
         {
-            ((AnimatedTextSurface)animations.SelectedItem).Repeat = repeatCheck.IsSelected;
+            ((AnimatedSurface)animations.SelectedItem).Repeat = repeatCheck.IsSelected;
         }
 
-        private void changeSpeedButton_ButtonClicked(object sender, EventArgs e)
+        private void changeSpeedButton_Click(object sender, EventArgs e)
         {
-            var animation = (AnimatedTextSurface)animations.SelectedItem;
+            var animation = (AnimatedSurface)animations.SelectedItem;
             AnimationSpeedPopup popup = new AnimationSpeedPopup(animation.AnimationDuration);
             popup.Closed += (s2, e2) =>
             {
@@ -153,16 +153,16 @@ namespace SadConsoleEditor.Panels
                 {
                     animation.AnimationDuration = popup.NewSpeed;
                     animationSpeedLabel.Fill(Settings.Green, Settings.Color_MenuBack, 0, null);
-                    animationSpeedLabel.Print(0, 0, new ColoredString("Speed: ", Settings.Green, Settings.Color_MenuBack) + new ColoredString(((AnimatedTextSurface)animations.SelectedItem).AnimationDuration.ToString(), Settings.Blue, Settings.Color_MenuBack));
+                    animationSpeedLabel.Print(0, 0, new ColoredString("Speed: ", Settings.Green, Settings.Color_MenuBack) + new ColoredString(((AnimatedSurface)animations.SelectedItem).AnimationDuration.ToString(), Settings.Blue, Settings.Color_MenuBack));
                 }
             };
             popup.Center();
             popup.Show(true);
         }
 
-        void saveAnimationToFile_ButtonClicked(object sender, EventArgs e)
+        void saveAnimationToFile_Click(object sender, EventArgs e)
         {
-            var animation = (AnimatedTextSurface)animations.SelectedItem;
+            var animation = (AnimatedSurface)animations.SelectedItem;
 
             SelectFilePopup popup = new SelectFilePopup();
             popup.Closed += (o2, e2) =>
@@ -180,14 +180,14 @@ namespace SadConsoleEditor.Panels
             popup.Center();
         }
 
-        void addNewAnimationFromFile_ButtonClicked(object sender, EventArgs e)
+        void addNewAnimationFromFile_Click(object sender, EventArgs e)
         {
             SelectFilePopup popup = new SelectFilePopup();
             popup.Closed += (o2, e2) =>
             {
                 if (popup.DialogResult)
                 {
-                    var animation = (AnimatedTextSurface)popup.SelectedLoader.Load(popup.SelectedFile);
+                    var animation = (AnimatedSurface)popup.SelectedLoader.Load(popup.SelectedFile);
 
                     entity.Animations[animation.Name] = animation;
 
@@ -200,9 +200,9 @@ namespace SadConsoleEditor.Panels
             popup.Center();
         }
 
-        void renameAnimation_ButtonClicked(object sender, EventArgs e)
+        void renameAnimation_Click(object sender, EventArgs e)
         {
-            var animation = (AnimatedTextSurface)animations.SelectedItem;
+            var animation = (AnimatedSurface)animations.SelectedItem;
             RenamePopup popup = new RenamePopup(animation.Name);
             popup.Closed += (o, e2) => 
             {
@@ -218,13 +218,13 @@ namespace SadConsoleEditor.Panels
             popup.Center();
         }
 
-        void removeAnimation_ButtonClicked(object sender, EventArgs e)
+        void removeAnimation_Click(object sender, EventArgs e)
         {
-            var animation = (AnimatedTextSurface)animations.SelectedItem;
+            var animation = (AnimatedSurface)animations.SelectedItem;
 
             if (animation.Name == "default")
             {
-                SadConsole.Consoles.Window.Message(new ColoredString("You cannot delete the default animation"), "Close");
+                SadConsole.Window.Message(new ColoredString("You cannot delete the default animation"), "Close");
             }
             else
             {
@@ -234,7 +234,7 @@ namespace SadConsoleEditor.Panels
             }
         }
 
-        void addNewAnimation_ButtonClicked(object sender, EventArgs e)
+        void addNewAnimation_Click(object sender, EventArgs e)
         {
             RenamePopup popup = new RenamePopup("", "Animation Name");
             popup.Closed += (o, e2) =>
@@ -255,8 +255,8 @@ namespace SadConsoleEditor.Panels
                     }
                     else
                     {
-                        var previouslySelected = (AnimatedTextSurface)animations.SelectedItem;
-                        var animation = new AnimatedTextSurface(newName, previouslySelected.Width, previouslySelected.Height, Settings.Config.ScreenFont);
+                        var previouslySelected = (AnimatedSurface)animations.SelectedItem;
+                        var animation = new AnimatedSurface(newName, previouslySelected.Width, previouslySelected.Height, Settings.Config.ScreenFont);
                         animation.CreateFrame();
                         animation.AnimationDuration = 1;
                         entity.Animations[animation.Name] = animation;
@@ -277,21 +277,21 @@ namespace SadConsoleEditor.Panels
 
             if (animations.SelectedItem != null)
             {
-                var animation = (AnimatedTextSurface)animations.SelectedItem;
+                var animation = (AnimatedSurface)animations.SelectedItem;
 
                 removeSelected.IsEnabled = animations.Items.Count != 1;
 
                 repeatCheck.IsSelected = animation.Repeat;
                 animationSpeedLabel.Fill(Settings.Green, Settings.Color_MenuBack, 0, null);
-                animationSpeedLabel.Print(0, 0, new ColoredString("Speed: ", Settings.Green, Settings.Color_MenuBack) + new ColoredString(((AnimatedTextSurface)animations.SelectedItem).AnimationDuration.ToString(), Settings.Blue, Settings.Color_MenuBack));
+                animationSpeedLabel.Print(0, 0, new ColoredString("Speed: ", Settings.Green, Settings.Color_MenuBack) + new ColoredString(((AnimatedSurface)animations.SelectedItem).AnimationDuration.ToString(), Settings.Blue, Settings.Color_MenuBack));
 
                 animationChangeCallback(animation);
             }
         }
 
-        private void playPreview_ButtonClicked(object sender, EventArgs e)
+        private void playPreview_Click(object sender, EventArgs e)
         {
-            PreviewAnimationPopup popup = new PreviewAnimationPopup((AnimatedTextSurface)animations.SelectedItem);
+            PreviewAnimationPopup popup = new PreviewAnimationPopup((AnimatedSurface)animations.SelectedItem);
             popup.Center();
             popup.Show(true);
         }
@@ -312,7 +312,7 @@ namespace SadConsoleEditor.Panels
                 animations.SelectedItem = animations.Items[0];
         }
 
-        public override void ProcessMouse(SadConsole.Input.MouseInfo info)
+        public override void ProcessMouse(SadConsole.Input.MouseConsoleState info)
         {
         }
 
@@ -321,7 +321,7 @@ namespace SadConsoleEditor.Panels
             if (control == changeSpeedButton)
             {
                 animationSpeedLabel.Fill(Settings.Green, Settings.Color_MenuBack, 0, null);
-                animationSpeedLabel.Print(0, 0, new ColoredString("Speed: ", Settings.Green, Settings.Color_MenuBack) + new ColoredString(((AnimatedTextSurface)animations.SelectedItem).AnimationDuration.ToString(), Settings.Blue, Settings.Color_MenuBack));
+                animationSpeedLabel.Print(0, 0, new ColoredString("Speed: ", Settings.Green, Settings.Color_MenuBack) + new ColoredString(((AnimatedSurface)animations.SelectedItem).AnimationDuration.ToString(), Settings.Blue, Settings.Color_MenuBack));
                 changeSpeedButton.Position = new Microsoft.Xna.Framework.Point(Consoles.ToolPane.PanelWidth - changeSpeedButton.Width - 1, animationSpeedLabel.Position.Y);
             }
 

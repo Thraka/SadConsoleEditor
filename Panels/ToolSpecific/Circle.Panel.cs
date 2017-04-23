@@ -38,7 +38,7 @@ namespace SadConsoleEditor.Panels
             statusBox.Print(0, 1, heightText);
         }
 
-        public override void ProcessMouse(SadConsole.Input.MouseInfo info)
+        public override void ProcessMouse(SadConsole.Input.MouseConsoleState info)
         {
             
         }

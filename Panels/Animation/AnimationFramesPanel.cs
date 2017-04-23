@@ -7,7 +7,7 @@ using SadConsole.Controls;
 using SadConsoleEditor.Windows;
 using SadConsole;
 using SadConsoleEditor.Editors;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 
 namespace SadConsoleEditor.Panels
 {
@@ -25,54 +25,54 @@ namespace SadConsoleEditor.Panels
         private Button nextFrame;
         private Button previousFrame;
 
-        private Action<TextSurfaceBasic> frameChangeCallback;
-        private AnimatedTextSurface currentAnimation;
-        private TextSurfaceBasic selectedFrame;
+        private Action<NoDrawSurface> frameChangeCallback;
+        private AnimatedSurface currentAnimation;
+        private NoDrawSurface selectedFrame;
 
-        public AnimationFramesPanel(Action<TextSurfaceBasic> frameChangeCallback)
+        public AnimationFramesPanel(Action<NoDrawSurface> frameChangeCallback)
         {
             Title = "Frames";
 
-            removeSelected = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            removeSelected = new Button(Consoles.ToolPane.PanelWidthControls);
             removeSelected.Text = "Remove";
-            removeSelected.ButtonClicked += removeSelected_ButtonClicked;
+            removeSelected.Click += removeSelected_Click;
 
-            moveSelectedUp = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            moveSelectedUp = new Button(Consoles.ToolPane.PanelWidthControls);
             moveSelectedUp.Text = "Move Up";
-            moveSelectedUp.ButtonClicked += moveSelectedUp_ButtonClicked;
+            moveSelectedUp.Click += moveSelectedUp_Click;
 
-            moveSelectedDown = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            moveSelectedDown = new Button(Consoles.ToolPane.PanelWidthControls);
             moveSelectedDown.Text = "Move Down";
-            moveSelectedDown.ButtonClicked += moveSelectedDown_ButtonClicked;
+            moveSelectedDown.Click += moveSelectedDown_Click;
 
-            addNewFrame = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            addNewFrame = new Button(Consoles.ToolPane.PanelWidthControls);
             addNewFrame.Text = "Add New";
-            addNewFrame.ButtonClicked += addNewFrame_ButtonClicked;
+            addNewFrame.Click += addNewFrame_Click;
 
-            addNewFrameFromFile = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            addNewFrameFromFile = new Button(Consoles.ToolPane.PanelWidthControls);
             addNewFrameFromFile.Text = "Load From File";
-            addNewFrameFromFile.ButtonClicked += addNewFrameFromFile_ButtonClicked;
+            addNewFrameFromFile.Click += addNewFrameFromFile_Click;
 
-            saveFrameToFile = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            saveFrameToFile = new Button(Consoles.ToolPane.PanelWidthControls);
             saveFrameToFile.Text = "Save Frame to File";
-            saveFrameToFile.ButtonClicked += saveFrameToFile_ButtonClicked;
+            saveFrameToFile.Click += saveFrameToFile_Click;
 
-            clonePreviousFrame = new Button(Consoles.ToolPane.PanelWidthControls, 1);
+            clonePreviousFrame = new Button(Consoles.ToolPane.PanelWidthControls);
             clonePreviousFrame.Text = "Copy prev. frame";
-            clonePreviousFrame.ButtonClicked += clonePreviousFrame_ButtonClicked;
+            clonePreviousFrame.Click += clonePreviousFrame_Click;
 
             // Frames area
             framesCounterBox = new DrawingSurface(Consoles.ToolPane.PanelWidthControls, 1);
 
-            nextFrame = new Button(4, 1);
+            nextFrame = new Button(4);
             nextFrame.Text = ">>";
             nextFrame.ShowEnds = false;
-            nextFrame.ButtonClicked += nextFrame_ButtonClicked;
+            nextFrame.Click += nextFrame_Click;
 
-            previousFrame = new Button(4, 1);
+            previousFrame = new Button(4);
             previousFrame.Text = "<<";
             previousFrame.ShowEnds = false;
-            previousFrame.ButtonClicked += previousFrame_ButtonClicked;
+            previousFrame.Click += previousFrame_Click;
 
             this.frameChangeCallback = frameChangeCallback;
             
@@ -84,16 +84,16 @@ namespace SadConsoleEditor.Panels
         public void TryNextFrame()
         {
             if (nextFrame.IsEnabled)
-                nextFrame_ButtonClicked(null, EventArgs.Empty);
+                nextFrame_Click(null, EventArgs.Empty);
         }
 
         public void TryPreviousFrame()
         {
             if (previousFrame.IsEnabled)
-                previousFrame_ButtonClicked(null, EventArgs.Empty);
+                previousFrame_Click(null, EventArgs.Empty);
         }
 
-        public void SetAnimation(AnimatedTextSurface animation)
+        public void SetAnimation(AnimatedSurface animation)
         {
             currentAnimation = animation;
 
@@ -105,7 +105,7 @@ namespace SadConsoleEditor.Panels
             frameChangeCallback(selectedFrame);
         }
 
-        private void nextFrame_ButtonClicked(object sender, EventArgs e)
+        private void nextFrame_Click(object sender, EventArgs e)
         {
             var currentIndex = currentAnimation.Frames.IndexOf(selectedFrame) + 1;
 
@@ -115,9 +115,9 @@ namespace SadConsoleEditor.Panels
 
             frameChangeCallback(selectedFrame);
 
-            EditorConsoleManager.ToolsPane.RedrawPanels();
+            MainScreen.Instance.ToolsPane.RedrawPanels();
         }
-        private void clonePreviousFrame_ButtonClicked(object sender, EventArgs e)
+        private void clonePreviousFrame_Click(object sender, EventArgs e)
         {
             var prevIndex = currentAnimation.Frames.IndexOf(selectedFrame) - 1;
 
@@ -126,7 +126,7 @@ namespace SadConsoleEditor.Panels
             prevFrame.Copy(selectedFrame);
         }
 
-        private void previousFrame_ButtonClicked(object sender, EventArgs e)
+        private void previousFrame_Click(object sender, EventArgs e)
         {
             var currentIndex = currentAnimation.Frames.IndexOf(selectedFrame) - 1;
 
@@ -136,7 +136,7 @@ namespace SadConsoleEditor.Panels
 
             frameChangeCallback(selectedFrame);
 
-            EditorConsoleManager.ToolsPane.RedrawPanels();
+            MainScreen.Instance.ToolsPane.RedrawPanels();
         }
         private void EnableDisableControls(int currentIndex)
         {
@@ -150,14 +150,14 @@ namespace SadConsoleEditor.Panels
             clonePreviousFrame.IsEnabled = currentIndex != 0;
         }
 
-        void saveFrameToFile_ButtonClicked(object sender, EventArgs e)
+        void saveFrameToFile_Click(object sender, EventArgs e)
         {
             SelectFilePopup popup = new SelectFilePopup();
             popup.Closed += (o2, e2) =>
             {
                 if (popup.DialogResult)
                 {
-                    TextSurface surface = new TextSurface(selectedFrame.Width, selectedFrame.Height, selectedFrame.Cells, Settings.Config.ScreenFont);
+                    BasicSurface surface = new BasicSurface(selectedFrame.Width, selectedFrame.Height, selectedFrame.Cells, Settings.Config.ScreenFont, new Microsoft.Xna.Framework.Rectangle(0,0, selectedFrame.Width, selectedFrame.Height));
                     surface.DefaultForeground = selectedFrame.DefaultForeground;
                     surface.DefaultBackground = selectedFrame.DefaultBackground;
                     
@@ -165,21 +165,21 @@ namespace SadConsoleEditor.Panels
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.TextSurface(), new FileLoaders.TextFile() };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.BasicSurface(), new FileLoaders.TextFile() };
             popup.SelectButtonText = "Save";
             popup.SkipFileExistCheck = true;
             popup.Show(true);
             popup.Center();
         }
 
-        void addNewFrameFromFile_ButtonClicked(object sender, EventArgs e)
+        void addNewFrameFromFile_Click(object sender, EventArgs e)
         {
             SelectFilePopup popup = new SelectFilePopup();
             popup.Closed += (o2, e2) =>
             {
                 if (popup.DialogResult)
                 {
-                    var surface = (ITextSurfaceRendered)popup.SelectedLoader.Load(popup.SelectedFile);
+                    var surface = (ISurface)popup.SelectedLoader.Load(popup.SelectedFile);
                     var newFrame = currentAnimation.CreateFrame();
 
                     surface.Copy(newFrame);
@@ -189,12 +189,12 @@ namespace SadConsoleEditor.Panels
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.TextSurface(), new FileLoaders.TextFile() };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.BasicSurface(), new FileLoaders.TextFile() };
             popup.Show(true);
             popup.Center();
         }
 
-        void moveSelectedDown_ButtonClicked(object sender, EventArgs e)
+        void moveSelectedDown_Click(object sender, EventArgs e)
         {
             var index = currentAnimation.Frames.IndexOf(selectedFrame);
             currentAnimation.Frames.Remove(selectedFrame);
@@ -204,7 +204,7 @@ namespace SadConsoleEditor.Panels
             DrawFrameCount();
         }
 
-        void moveSelectedUp_ButtonClicked(object sender, EventArgs e)
+        void moveSelectedUp_Click(object sender, EventArgs e)
         {
             var index = currentAnimation.Frames.IndexOf(selectedFrame);
             currentAnimation.Frames.Remove(selectedFrame);
@@ -214,7 +214,7 @@ namespace SadConsoleEditor.Panels
             DrawFrameCount();
         }
 
-        void removeSelected_ButtonClicked(object sender, EventArgs e)
+        void removeSelected_Click(object sender, EventArgs e)
         {
             currentAnimation.Frames.Remove(selectedFrame);
             selectedFrame = currentAnimation.Frames[0];
@@ -223,16 +223,16 @@ namespace SadConsoleEditor.Panels
             DrawFrameCount();
         }
 
-        void addNewFrame_ButtonClicked(object sender, EventArgs e)
+        void addNewFrame_Click(object sender, EventArgs e)
         {
             var frame = currentAnimation.CreateFrame();
-            Settings.QuickEditor.TextSurface = frame;
-            Settings.QuickEditor.Fill(Settings.Config.EntityEditor.DefaultForeground, Settings.Config.EntityEditor.DefaultBackground, 0, null);
+            SadConsoleEditor.Settings.QuickEditor.TextSurface = frame;
+            SadConsoleEditor.Settings.QuickEditor.Fill(Settings.Config.EntityEditor.DefaultForeground, Settings.Config.EntityEditor.DefaultBackground, 0, null);
             EnableDisableControls(currentAnimation.Frames.IndexOf(selectedFrame));
             DrawFrameCount();
         }
 
-        public override void ProcessMouse(SadConsole.Input.MouseInfo info)
+        public override void ProcessMouse(SadConsole.Input.MouseConsoleState info)
         {
         }
 

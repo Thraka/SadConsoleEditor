@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace SadConsoleEditor.Windows
 {
-    public class NewConsolePopup : SadConsole.Consoles.Window
+    public class NewConsolePopup : SadConsole.Window
     {
         #region Fields
         private Button okButton;
@@ -48,14 +48,14 @@ namespace SadConsoleEditor.Windows
                 Text = "Accept",
                 Position = new Microsoft.Xna.Framework.Point(base.TextSurface.Width - 10, 12)
             };
-            okButton.ButtonClicked += new EventHandler(_okButton_Action);
+            okButton.Click += new EventHandler(_okButton_Action);
 
             cancelButton = new Button(8, 1)
             {
                 Text = "Cancel",
                 Position = new Microsoft.Xna.Framework.Point(2, 12)
             };
-            cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
+            cancelButton.Click += new EventHandler(_cancelButton_Action);
 
             //Print(2, 3, "Name");
             Print(2, 2, "Editor");
@@ -91,11 +91,11 @@ namespace SadConsoleEditor.Windows
             //    Position = new Microsoft.Xna.Framework.Point(9, 3)
             //};
 
-            _foregroundPicker = new SadConsoleEditor.Controls.ColorPresenter("Foreground", Theme.FillStyle.Foreground, textSurface.Width - 4);
+            _foregroundPicker = new SadConsoleEditor.Controls.ColorPresenter("Foreground", Theme.FillStyle.Foreground, TextSurface.Width - 4);
             _foregroundPicker.Position = new Point(2, 9);
             _foregroundPicker.SelectedColor = Color.White;
 
-            _backgroundPicker = new SadConsoleEditor.Controls.ColorPresenter("Background", Theme.FillStyle.Foreground, textSurface.Width - 4);
+            _backgroundPicker = new SadConsoleEditor.Controls.ColorPresenter("Background", Theme.FillStyle.Foreground, TextSurface.Width - 4);
             _backgroundPicker.Position = new Point(2, 10);
             _backgroundPicker.SelectedColor = Color.Black;
 
@@ -108,7 +108,7 @@ namespace SadConsoleEditor.Windows
             Add(_backgroundPicker);
             //Add(_name);
 
-            foreach (var editor in EditorConsoleManager.Editors.Keys)
+            foreach (var editor in MainScreen.Instance.Editors.Keys)
                 editorsListBox.Items.Add(editor);
 
             editorsListBox.SelectedItem = editorsListBox.Items[0];
@@ -116,7 +116,7 @@ namespace SadConsoleEditor.Windows
 
         private void editorsListBox_SelectedItemChanged(object sender, ListBox<ListBoxItem>.SelectedItemEventArgs e)
         {
-            Editor = EditorConsoleManager.Editors[(string)editorsListBox.SelectedItem];
+            Editor = MainScreen.Instance.Editors[(string)editorsListBox.SelectedItem];
 
             var settings = Settings.Config.GetSettings(Editor);
 

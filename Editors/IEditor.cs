@@ -1,15 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
 using SadConsole;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 using SadConsole.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-//using SadConsoleEditor.Panels;
 using SadConsoleEditor.FileLoaders;
 using SadConsoleEditor.Panels;
+using SadConsole.Renderers;
 
 namespace SadConsoleEditor.Editors
 {
@@ -23,7 +23,13 @@ namespace SadConsoleEditor.Editors
 
     public interface IEditor
     {
+        ISurface Surface { get; }
+
+        ISurfaceRenderer Renderer { get; }
+
         Editors EditorType { get; }
+
+        IEditor LinkedEditor { get; set; }
 
         string EditorTypeName { get; }
 
@@ -35,19 +41,15 @@ namespace SadConsoleEditor.Editors
 
         int Height { get; }
 
-        string DocumentTitle { get; }
+        string DocumentTitle { get; set; }
 
-        Point Position { get; }
-
-        SadConsole.Consoles.Console RenderedConsole { get; }
-
-        void Render();
+        void Draw();
 
         void Update();
 
-        bool ProcessKeyboard(KeyboardInfo info);
+        bool ProcessKeyboard(Keyboard info);
 
-        void Move(int x, int y);
+        bool ProcessMouse(MouseConsoleState transformedState, bool isInBounds);
 
         void New(Color foreground, Color background, int width, int height);
 

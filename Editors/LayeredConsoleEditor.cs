@@ -2,64 +2,55 @@
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
-using SadConsole.Consoles;
-using Console = SadConsole.Consoles.Console;
+using SadConsole.Surfaces;
+using Console = SadConsole.Console;
 using SadConsoleEditor.Panels;
 using System.Linq;
 using SadConsole.Input;
+using SadConsole;
+using SadConsoleEditor.FileLoaders;
+using SadConsole.Renderers;
 
 namespace SadConsoleEditor.Editors
 {
     class LayeredConsoleEditor : IEditor
     {
-        private LayeredTextSurface textSurface;
-        private Console consoleWrapper;
-        private CustomPanel[] panels;
-        private LayersPanel layerManagementPanel;
-        private ToolsPanel toolsPanel;
         private Dictionary<string, Tools.ITool> tools;
         private Tools.ITool selectedTool;
+        private ToolsPanel toolsPanel;
 
-        public string DocumentTitle { get; set; }
+        private CustomPanel[] panels;
+        private LayersPanel layerManagementPanel;
 
-        public Editors EditorType { get { return Editors.Console; } }
+        private SadConsole.Renderers.LayeredSurfaceRenderer renderer;
+        private SadConsole.Surfaces.LayeredSurface surface;
+
+        public ISurface Surface => surface;
+
+        public ISurfaceRenderer Renderer => renderer;
+
+        public IEditor LinkedEditor { get; set; }
+
+        public Editors EditorType => Editors.Console;
+
+        public string EditorTypeName => "Console";
 
         public string Title { get; set; }
 
-        public string EditorTypeName { get { return "Console"; } }
+        public CustomPanel[] Panels => panels;
 
-        public int Height { get { return textSurface.Height; } }
+        public int Width => surface.Width;
 
-        public Point Position { get { return consoleWrapper.Position; } }
+        public int Height => surface.Height;
 
-        public int Width { get { return textSurface.Width; } }
-
-        public CustomPanel[] Panels { get { return panels; } }
-
-        public Console RenderedConsole { get { return consoleWrapper; } }
-
-        private Tools.ITool SelectedTool
-        {
-            get { return selectedTool; }
-            set
-            {
-                toolsPanel.ToolsListBox.SelectedItem = value;
-            }
-        }
+        public string DocumentTitle { get; set; }
 
         public LayeredConsoleEditor()
         {
-            consoleWrapper = new Console(1, 1);
-            consoleWrapper.Renderer = new LayeredTextRenderer();
-            consoleWrapper.MouseHandler = ProcessMouse;
-            consoleWrapper.CanUseKeyboard = false;
+            renderer = new LayeredSurfaceRenderer();
 
-            consoleWrapper.MouseMove += (o, e) => { toolsPanel.SelectedTool?.MouseMoveSurface(e.OriginalMouseInfo, textSurface); };
-            consoleWrapper.MouseEnter += (o, e) => { toolsPanel.SelectedTool?.MouseEnterSurface(e.OriginalMouseInfo, textSurface); };
-            consoleWrapper.MouseExit += (o, e) => { toolsPanel.SelectedTool?.MouseExitSurface(e.OriginalMouseInfo, textSurface); };
-
-            layerManagementPanel = new LayersPanel() { IsCollapsed = true };
-            toolsPanel = new ToolsPanel();
+            layerManagementPanel = new LayersPanel();
+            layerManagementPanel.IsCollapsed = true;
 
             // Fill tools
             tools = new Dictionary<string, Tools.ITool>();
@@ -72,6 +63,7 @@ namespace SadConsoleEditor.Editors
             tools.Add(Tools.BoxTool.ID, new Tools.BoxTool());
             tools.Add(Tools.SelectionTool.ID, new Tools.SelectionTool());
 
+            toolsPanel = new ToolsPanel();
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.PaintTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.LineTool.ID]);
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.TextTool.ID]);
@@ -82,8 +74,124 @@ namespace SadConsoleEditor.Editors
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.SelectionTool.ID]);
 
             toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
+            toolsPanel.ToolsListBox.SelectedItem = tools[Tools.PaintTool.ID];
 
             panels = new CustomPanel[] { layerManagementPanel, toolsPanel };
+        }
+
+        public void Load(string file, IFileLoader loader)
+        {
+            if (loader is FileLoaders.LayeredSurface)
+            {
+                Reset();
+
+                surface = (SadConsole.Surfaces.LayeredSurface)loader.Load(file);
+
+                surface.RenderArea = new Rectangle(0, 0, 
+                            Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, surface.RenderArea.Width),
+                            Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, surface.RenderArea.Height));
+
+                layerManagementPanel.SetLayeredSurface(surface);
+
+                Title = System.IO.Path.GetFileName(file);
+            }
+        }
+
+        public void New(Color foreground, Color background, int width, int height)
+        {
+            Reset();
+            int renderWidth = Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, width);
+            int renderHeight = Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, height);
+
+            surface = new SadConsole.Surfaces.LayeredSurface(width, height, SadConsoleEditor.Settings.Config.ScreenFont, new Rectangle(0,0, renderWidth, renderHeight), 1);
+            
+            LayerMetadata.Create("Root", true, false, true, surface.ActiveLayer);
+
+            var editor = new SurfaceEditor(surface);
+            editor.FillWithRandomGarbage();
+
+            layerManagementPanel.SetLayeredSurface(surface);
+            layerManagementPanel.IsCollapsed = true;
+
+        }
+
+        public void OnClosed()
+        {
+            
+        }
+
+        public void OnDeselected()
+        {
+            
+        }
+
+        public void OnSelected()
+        {
+            
+        }
+
+        public bool ProcessKeyboard(Keyboard info)
+        {
+            return false;
+        }
+
+        public bool ProcessMouse(SadConsole.Input.MouseConsoleState info, bool isInBounds)
+        {
+            toolsPanel.SelectedTool?.ProcessMouse(info, surface, isInBounds);
+            return false;
+        }
+
+        public void Draw()
+        {
+        }
+
+        public void Reset()
+        {
+            
+        }
+
+        public void Resize(int width, int height)
+        {
+            Reset();
+            int renderWidth = Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, width);
+            int renderHeight = Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, height);
+
+            var oldSurface = surface;
+            surface = new SadConsole.Surfaces.LayeredSurface(width, height, SadConsoleEditor.Settings.Config.ScreenFont, new Rectangle(0, 0, renderWidth, renderHeight), 1);
+
+            for (var index = 0; index < oldSurface.LayerCount; index++)
+            {
+                oldSurface.SetActiveLayer(index);
+                surface.SetActiveLayer(index);
+                oldSurface.Copy(surface);
+                surface.GetLayer(index).Metadata = oldSurface.GetLayer(index).Metadata;
+            }
+            
+            layerManagementPanel.SetLayeredSurface(surface);
+
+            MainScreen.Instance.RefreshBorder();
+        }
+
+        public void Save()
+        {
+            var popup = new Windows.SelectFilePopup();
+            popup.Center();
+            popup.SkipFileExistCheck = true;
+            popup.Closed += (s, e) =>
+            {
+                if (popup.DialogResult)
+                {
+                    popup.SelectedLoader.Save(surface, popup.SelectedFile);
+                }
+            };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredSurface(), new FileLoaders.TextFile() };
+            popup.SelectButtonText = "Save";
+            popup.Show(true);
+        }
+
+        public void Update()
+        {
+            toolsPanel.SelectedTool?.Update();
         }
 
         private void ToolsListBox_SelectedItemChanged(object sender, SadConsole.Controls.ListBox<SadConsole.Controls.ListBoxItem>.SelectedItemEventArgs e)
@@ -99,207 +207,8 @@ namespace SadConsoleEditor.Editors
                     newPanels.AddRange(tool.ControlPanels);
 
                 panels = newPanels.ToArray();
-                EditorConsoleManager.ToolsPane.RedrawPanels();
+                MainScreen.Instance.ToolsPane.RedrawPanels();
             }
-        }
-
-        public void New(Color foreground, Color background, int width, int height)
-        {
-            Reset();
-
-            // Create the new text surface
-            textSurface = new LayeredTextSurface(width, height, 1);
-
-            // Update metadata
-            LayerMetadata.Create("main", false, false, true, textSurface.GetLayer(0));
-            textSurface.SetActiveLayer(0);
-            textSurface.Font = Settings.Config.ScreenFont;
-
-            // Update the layer management panel
-            layerManagementPanel.SetLayeredTextSurface(textSurface);
-
-            // Set the text surface as the one we're displaying
-            consoleWrapper.TextSurface = textSurface;
-
-            // Update the border
-            if (EditorConsoleManager.ActiveEditor == this)
-                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
-        }
-
-        public void Load(string file, FileLoaders.IFileLoader loader)
-        {
-            if (loader is FileLoaders.TextSurface)
-            {
-                // Load the plain surface
-                TextSurface surface = (TextSurface)loader.Load(file);
-
-                // Load up a new layered text surface
-                textSurface = new LayeredTextSurface(surface.Width, surface.Height, 1);
-
-                // Setup metadata
-                LayerMetadata.Create("main", false, false, true, textSurface.GetLayer(0));
-
-                // Use the loaded surface
-                textSurface.ActiveLayer.Cells = surface.Cells;
-                textSurface.SetActiveLayer(0);
-                
-                // Set the text surface as the one we're displaying
-                consoleWrapper.TextSurface = textSurface;
-
-                // Update the border
-                if (EditorConsoleManager.ActiveEditor == this)
-                    EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
-            }
-            else if (loader is FileLoaders.LayeredTextSurface)
-            {
-                textSurface = (LayeredTextSurface)loader.Load(file);
-                consoleWrapper.TextSurface = textSurface;
-
-                if (EditorConsoleManager.ActiveEditor == this)
-                    EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
-            }
-
-            textSurface.Font = Settings.Config.ScreenFont;
-            Title = System.IO.Path.GetFileName(file);
-
-            // Update the layer management panel
-            layerManagementPanel.SetLayeredTextSurface(textSurface);
-        }
-
-        public void Save()
-        {
-            var popup = new Windows.SelectFilePopup();
-            popup.Center();
-            popup.SkipFileExistCheck = true;
-            popup.Closed += (s, e) =>
-            {
-                if (popup.DialogResult)
-                    popup.SelectedLoader.Save(textSurface, popup.SelectedFile);
-
-            };
-            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredTextSurface() };
-            popup.SelectButtonText = "Save";
-            popup.Show(true);
-        }
-
-        public void Resize(int width, int height)
-        {
-            var oldSurface = textSurface;
-            var newSurface = new LayeredTextSurface(width, height, Settings.Config.ScreenFont, oldSurface.LayerCount);
-
-            for (int i = 0; i < oldSurface.LayerCount; i++)
-            {
-                var oldLayer = oldSurface.GetLayer(i);
-                var newLayer = newSurface.GetLayer(i);
-                oldSurface.SetActiveLayer(i);
-                newSurface.SetActiveLayer(i);
-                oldSurface.Copy(newSurface);
-                newLayer.Metadata = oldLayer.Metadata;
-                newLayer.IsVisible = oldLayer.IsVisible;
-            }
-
-            consoleWrapper.TextSurface = textSurface = newSurface;
-            layerManagementPanel.SetLayeredTextSurface(textSurface);
-            toolsPanel.SelectedTool = toolsPanel.SelectedTool;
-
-            if (EditorConsoleManager.ActiveEditor == this)
-            {
-                EditorConsoleManager.CenterEditor();
-                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
-            }
-        }
-
-        public void Reset()
-        {
-
-        }
-
-        public void Move(int x, int y)
-        {
-            consoleWrapper.Position = new Point(x, y);
-
-            if (EditorConsoleManager.ActiveEditor == this)
-                EditorConsoleManager.UpdateBorder(consoleWrapper.Position);
-
-            EditorConsoleManager.UpdateBrush();
-        }
-
-        public void OnClosed()
-        {
-        }
-
-        public void OnDeselected()
-        {
-        }
-
-        public void OnSelected()
-        {
-            if (selectedTool == null)
-                SelectedTool = tools.First().Value;
-            else
-            {
-                var oldTool = selectedTool;
-                SelectedTool = null;
-                SelectedTool = selectedTool;
-            }
-        }
-
-        public void Render()
-        {
-        }
-
-        public void Update()
-        {
-            selectedTool.Update();
-        }
-
-        //public bool ProcessKeyboard(IConsole console, SadConsole.Input.KeyboardInfo info)
-        //{
-            
-        //    //EditorConsoleManager.Instance.ToolPane.SelectedTool.ProcessKeyboard(info, _consoleLayers.TextSurface);
-        //    return false;
-        //}
-
-        public bool ProcessKeyboard(KeyboardInfo info)
-        {
-            if (!toolsPanel.SelectedTool.ProcessKeyboard(info, textSurface))
-            {
-                var keys = info.KeysReleased.Select(k => k.Character).ToList();
-
-                foreach (var item in tools.Values)
-                {
-                    if (keys.Contains(item.Hotkey))
-                    {
-                        SelectedTool = item;
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            return true;
-        }
-
-        public bool ProcessMouse(IConsole console, SadConsole.Input.MouseInfo info)
-        {
-            consoleWrapper.MouseHandler = null;
-            consoleWrapper.CanUseMouse = true;
-            consoleWrapper.ProcessMouse(info);
-            consoleWrapper.MouseHandler = ProcessMouse;
-
-            toolsPanel.SelectedTool?.ProcessMouse(info, textSurface);
-
-            if (consoleWrapper.IsMouseOver)
-            {
-                EditorConsoleManager.SurfaceMouseLocation = info.ConsoleLocation;
-                return true;
-            }
-            else
-                EditorConsoleManager.SurfaceMouseLocation = Point.Zero;
-
-            consoleWrapper.CanUseMouse = false;
-            return false;
         }
     }
 }

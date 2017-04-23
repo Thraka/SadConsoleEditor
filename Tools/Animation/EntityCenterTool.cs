@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using SadConsole;
-using SadConsole.Consoles;
-using SadConsole.Game;
+using SadConsole.Surfaces;
+using SadConsole.GameHelpers;
 using SadConsole.Input;
 using SadConsoleEditor.Panels;
 using System;
@@ -39,17 +39,15 @@ namespace SadConsoleEditor.Tools
 
         public void OnSelected()
         {
-            Brush = new SadConsole.Game.GameObject(Settings.Config.ScreenFont);
-            Brush.Animation = new AnimatedTextSurface("default", 1, 1);
+            Brush = new SadConsole.GameHelpers.GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
             Brush.Animation.DefaultBackground = Color.Black;
             Brush.Animation.DefaultForeground = Color.White;
-            Brush.Animation.CreateFrame()[0].GlyphIndex = 42;
+            Brush.Animation.CreateFrame()[0].Glyph = 42;
             Brush.IsVisible = false;
             RefreshTool();
-            EditorConsoleManager.Brush = Brush;
-            EditorConsoleManager.UpdateBrush();
+            MainScreen.Instance.Brush = Brush;
 
-            var editor = EditorConsoleManager.ActiveEditor as Editors.GameObjectEditor;
+            var editor = MainScreen.Instance.ActiveEditor as Editors.GameObjectEditor;
 
             if (editor != null)
                 editor.ShowCenterLayer = true;
@@ -57,7 +55,7 @@ namespace SadConsoleEditor.Tools
 
         public void OnDeselected()
         {
-            var editor = EditorConsoleManager.ActiveEditor as Editors.GameObjectEditor;
+            var editor = MainScreen.Instance.ActiveEditor as Editors.GameObjectEditor;
 
             if (editor != null)
                 editor.ShowCenterLayer = false;
@@ -65,47 +63,31 @@ namespace SadConsoleEditor.Tools
 
         public void RefreshTool()
         {
-            //_brush.CurrentAnimation.Frames[0].Fill(EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, EditorConsoleManager.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
+            //_brush.CurrentAnimation.Frames[0].Fill(MainScreen.Instance.Instance.ToolPane.CommonCharacterPickerPanel.SettingForeground, MainScreen.Instance.Instance.ToolPane.CommonCharacterPickerPanel.SettingBackground, 42, null);
         }
 
         public void Update()
         {
         }
 
-        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
+        public bool ProcessKeyboard(Keyboard info, ISurface surface)
         {
             return false;
         }
 
-        public void ProcessMouse(MouseInfo info, ITextSurface surface)
+        public void ProcessMouse(MouseConsoleState info, ISurface surface, bool isInBounds)
         {
-        }
-
-        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.IsVisible = true;
-        }
-
-        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.IsVisible = false;
-        }
-
-        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.Position = info.ConsoleLocation;
-            Brush.IsVisible = true;
-
-            if (info.LeftClicked)
+            if (info.IsOnConsole && info.Mouse.LeftClicked)
             {
-                var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
-                var editor = EditorConsoleManager.ActiveEditor as Editors.GameObjectEditor;
+                var cell = surface.GetCell(info.ConsolePosition.X, info.ConsolePosition.Y);
+                var editor = MainScreen.Instance.ActiveEditor as Editors.GameObjectEditor;
 
                 if (editor != null)
                 {
-                    editor.SetAnimationCenter(new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y));
+                    editor.SetAnimationCenter(new Point(info.ConsolePosition.X, info.ConsolePosition.Y));
                 }
             }
         }
+        
     }
 }

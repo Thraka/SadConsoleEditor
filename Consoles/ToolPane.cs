@@ -1,11 +1,11 @@
 ﻿using System;
 using SadConsole;
-using Console = SadConsole.Consoles.Console;
+using Console = SadConsole.Console;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 using Microsoft.Xna.Framework;
 using SadConsoleEditor.Editors;
 using SadConsoleEditor.Tools;
@@ -17,48 +17,75 @@ using SadConsole.Input;
 
 namespace SadConsoleEditor.Consoles
 {
-    class ToolPane : ControlsConsole
+    class ToolPane : Screen
     {
+        private ControlsConsole ToolsConsole;
+        private ControlsConsole ScrollerConsole;
+
         public static int PanelWidth;
         public static int PanelWidthControls;
+
+        public SadConsole.Controls.ScrollBar ToolsPaneScroller { get; private set; }
 
         private List<Tuple<CustomPanel, int>> _hotSpots;
         private Dictionary<string, ITool> _tools;
 
         public FilesPanel PanelFiles;
         //public ToolsPanel PanelTools;
+
+        public int Width { get { return ToolsConsole.Width; } }
         
-        public ToolPane() : base(Settings.Config.ToolPaneWidth - 1, Settings.Config.WindowHeight * 3)
+        public ToolPane()
         {
+            ToolsConsole = new ControlsConsole(Settings.Config.ToolPaneWidth - 1, Settings.Config.WindowHeight * 3);
+            ToolsConsole.MouseHandler = ProcessMouse;
+            ToolsConsole.UseKeyboard = false;
+
+            // Create scrollbar
+            ToolsPaneScroller = SadConsole.Controls.ScrollBar.Create(System.Windows.Controls.Orientation.Vertical, Settings.Config.WindowHeight - 1);
+            ToolsPaneScroller.Maximum = ToolsConsole.TextSurface.Height - Settings.Config.WindowHeight;
+            ToolsPaneScroller.ValueChanged += (o, e) =>
+            {
+                ToolsConsole.TextSurface.RenderArea = new Rectangle(0, ToolsPaneScroller.Value, ToolsConsole.Width, Settings.Config.WindowHeight);
+            };
+
+            ScrollerConsole = new ControlsConsole(1, Settings.Config.WindowHeight - 1);
+            ScrollerConsole.Add(ToolsPaneScroller);
+            ScrollerConsole.Position = new Point(Width, 0);
+            ScrollerConsole.IsVisible = true;
+            ScrollerConsole.FocusOnMouseClick = false;
+
+            
+
             PanelWidth = Settings.Config.ToolPaneWidth - 1;
             PanelWidthControls = PanelWidth - 2;
 
             _tools = new Dictionary<string, ITool>();
 
-            CanUseKeyboard = false;
-            ProcessMouseWithoutFocus = true;
-
-            textSurface.DefaultBackground = Settings.Color_MenuBack;
-            textSurface.DefaultForeground = Settings.Color_TitleText;
-            Clear();
+            ToolsConsole.TextSurface.DefaultBackground = Settings.Color_MenuBack;
+            ToolsConsole.TextSurface.DefaultForeground = Settings.Color_TitleText;
+            ToolsConsole.Clear();
 
             _hotSpots = new List<Tuple<CustomPanel, int>>();
 
             // Create tools
             _tools.Add(PaintTool.ID, new PaintTool());
-            textSurface.RenderArea = new Rectangle(0, 0, Width, Settings.Config.WindowHeight - 1);
+            ToolsConsole.TextSurface.RenderArea = new Rectangle(0, 0, ToolsConsole.Width, Settings.Config.WindowHeight - 1);
 
             // Create panels
             PanelFiles = new FilesPanel();
             //PanelTools = new ToolsPanel();
+
+            Children.Add(ToolsConsole);
+            Children.Add(ScrollerConsole);
         }
-                
+
 
         public void RedrawPanels()
         {
             int activeRow = 0;
-            Clear();
-            RemoveAll();
+            ToolsConsole.Clear();
+            ToolsConsole.RemoveAll();
             _hotSpots.Clear();
 
             char open = (char)31;
@@ -67,9 +94,9 @@ namespace SadConsoleEditor.Consoles
             List<CustomPanel> allPanels = new List<CustomPanel>() { PanelFiles };
 
             // Custom panels from the selected editor
-            if (EditorConsoleManager.ActiveEditor != null)
-                if (EditorConsoleManager.ActiveEditor.Panels != null && EditorConsoleManager.ActiveEditor.Panels.Length != 0)
-                    allPanels.AddRange(EditorConsoleManager.ActiveEditor.Panels);
+            if (MainScreen.Instance.ActiveEditor != null)
+                if (MainScreen.Instance.ActiveEditor.Panels != null && MainScreen.Instance.ActiveEditor.Panels.Length != 0)
+                    allPanels.AddRange(MainScreen.Instance.ActiveEditor.Panels);
 
             // Custom panels from the selected tool
             //if (SelectedTool.ControlPanels != null && SelectedTool.ControlPanels.Length != 0)
@@ -86,8 +113,8 @@ namespace SadConsoleEditor.Consoles
                         _hotSpots.Add(new Tuple<CustomPanel, int>(pane, activeRow));
                         if (pane.IsCollapsed == false)
                         {
-                            Print(1, activeRow++, open + " " + pane.Title);
-                            Print(0, activeRow++, new string((char)196, textSurface.Width));
+                            ToolsConsole.Print(1, activeRow++, open + " " + pane.Title);
+                            ToolsConsole.Print(0, activeRow++, new string((char)196, ToolsConsole.TextSurface.Width));
 
                             foreach (var control in pane.Controls)
                             {
@@ -95,7 +122,7 @@ namespace SadConsoleEditor.Consoles
                                 {
                                     if (control.IsVisible)
                                     {
-                                        Add(control);
+                                        ToolsConsole.Add(control);
                                         control.Position = new Point(1, activeRow);
                                         activeRow += pane.Redraw(control) + control.Height;
                                     }
@@ -107,7 +134,7 @@ namespace SadConsoleEditor.Consoles
                             activeRow += 1;
                         }
                         else
-                            Print(1, activeRow++, closed + " " + pane.Title);
+                            ToolsConsole.Print(1, activeRow++, closed + " " + pane.Title);
                     }
                 }
             }
@@ -116,34 +143,35 @@ namespace SadConsoleEditor.Consoles
 
             if (scrollAbility <= 0)
             {
-                EditorConsoleManager.ToolsPaneScroller.IsEnabled = false;
-                EditorConsoleManager.ToolsPaneScroller.Maximum = 0;
+                ToolsPaneScroller.IsEnabled = false;
+                ToolsPaneScroller.Maximum = 0;
             }
             else
             {
-                EditorConsoleManager.ToolsPaneScroller.Maximum = scrollAbility;
-                EditorConsoleManager.ToolsPaneScroller.IsEnabled = true;
+                ToolsPaneScroller.Maximum = scrollAbility;
+                ToolsPaneScroller.IsEnabled = true;
             }
         }
 
-        public override bool ProcessMouse(SadConsole.Input.MouseInfo info)
-        {
-            base.ProcessMouse(info);
+        
 
-            if (_isMouseOver)
+        public bool ProcessMouse(IConsole console, SadConsole.Input.MouseConsoleState info)
+        {
+            if (info.IsOnConsole)
             {
-                if (info.ScrollWheelValueChange != 0)
+
+                if (info.Mouse.ScrollWheelValueChange != 0)
                 {
-                    if (EditorConsoleManager.ToolsPaneScroller.IsEnabled)
-                        EditorConsoleManager.ToolsPaneScroller.Value += info.ScrollWheelValueChange / 20;
+                    if (ToolsPaneScroller.IsEnabled)
+                        ToolsPaneScroller.Value += info.Mouse.ScrollWheelValueChange / 20;
                     return true;
                 }
 
                 foreach (var item in _hotSpots)
                 {
-                    if (item.Item2 == info.ConsoleLocation.Y)
+                    if (item.Item2 == info.CellPosition.Y)
                     {
-                        if (info.LeftClicked)
+                        if (info.Mouse.LeftClicked)
                         {
                             item.Item1.IsCollapsed = !item.Item1.IsCollapsed;
                             RedrawPanels();
@@ -156,5 +184,9 @@ namespace SadConsoleEditor.Consoles
             return false;
         }
 
+        public bool ProcessKeyboard(Keyboard info)
+        {
+            return false;
+        }
     }
 }

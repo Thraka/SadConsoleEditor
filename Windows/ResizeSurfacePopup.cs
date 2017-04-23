@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace SadConsoleEditor.Windows
 {
-    public class ResizeSurfacePopup: SadConsole.Consoles.Window
+    public class ResizeSurfacePopup: SadConsole.Window
     {
         #region Fields
         private Button okButton;
@@ -32,19 +32,19 @@ namespace SadConsoleEditor.Windows
             textSurface.DefaultBackground = Settings.Color_MenuBack;
             textSurface.DefaultForeground = Settings.Color_TitleText;
 
-            okButton = new Button(8, 1)
+            okButton = new Button(8)
             {
                 Text = "Accept",
                 Position = new Microsoft.Xna.Framework.Point(base.TextSurface.Width - 10, 5)
             };
-            okButton.ButtonClicked += new EventHandler(_okButton_Action);
+            okButton.Click += new EventHandler(_okButton_Action);
 
-            cancelButton = new Button(8, 1)
+            cancelButton = new Button(8)
             {
                 Text = "Cancel",
                 Position = new Microsoft.Xna.Framework.Point(2, 5)
             };
-            cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
+            cancelButton.Click += new EventHandler(_cancelButton_Action);
 
             //Print(2, 3, "Name");
             Print(2, 2, "Width");

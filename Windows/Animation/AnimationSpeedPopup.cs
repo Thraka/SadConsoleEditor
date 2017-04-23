@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SadConsoleEditor.Windows
 {
-    class AnimationSpeedPopup : SadConsole.Consoles.Window
+    class AnimationSpeedPopup : SadConsole.Window
     {
         private Button okButton;
         private Button cancelButton;
@@ -21,17 +21,17 @@ namespace SadConsoleEditor.Windows
 
             okButton = new Button(8, 1);
             cancelButton = new Button(8, 1);
-            textBox = new InputBox(textSurface.Width - 4);
+            textBox = new InputBox(TextSurface.Width - 4);
             textBox.IsNumeric = true;
             textBox.AllowDecimal = true;
             textBox.Text = speed.ToString();
 
-            okButton.Position = new Microsoft.Xna.Framework.Point(textSurface.Width - okButton.Width - 2, textSurface.Height - 2);
-            cancelButton.Position = new Microsoft.Xna.Framework.Point(2, textSurface.Height - 2);
+            okButton.Position = new Microsoft.Xna.Framework.Point(TextSurface.Width - okButton.Width - 2, TextSurface.Height - 2);
+            cancelButton.Position = new Microsoft.Xna.Framework.Point(2, TextSurface.Height - 2);
             textBox.Position = new Microsoft.Xna.Framework.Point(2, 2);
 
-            okButton.ButtonClicked += (o, e) => { DialogResult = true; Hide(); };
-            cancelButton.ButtonClicked += (o, e) => { DialogResult = false; Hide(); };
+            okButton.Click += (o, e) => { DialogResult = true; Hide(); };
+            cancelButton.Click += (o, e) => { DialogResult = false; Hide(); };
 
             okButton.Text = "Ok";
             cancelButton.Text = "Cancel";

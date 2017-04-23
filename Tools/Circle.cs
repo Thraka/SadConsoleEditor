@@ -2,11 +2,11 @@
 {
     using Microsoft.Xna.Framework;
     using SadConsole;
-    using SadConsole.Consoles;
+    using SadConsole.Surfaces;
     using SadConsole.Input;
     using System;
     using SadConsoleEditor.Panels;
-    using SadConsole.Game;
+    using SadConsole.GameHelpers;
 
     class CircleTool : ITool
     {
@@ -14,11 +14,11 @@
         private SadConsole.Effects.Fade frameEffect;
         private Point? firstPoint;
         private Point? secondPoint;
-        private SadConsole.Shapes.Circle circleShape;
         private SadConsole.Shapes.Ellipse ellipseShape;
+        private bool cancelled;
 
         private CircleToolPanel settingsPanel;
-        private CellAppearance borderAppearance;
+        private Cell borderAppearance;
 
         public const string ID = "CIRCLE";
         public string Id
@@ -50,10 +50,9 @@
             };
 
             // Configure the animations
-            Brush = new SadConsole.Game.GameObject();
-            Brush.Font = Settings.Config.ScreenFont;
-            AnimatedTextSurface animation = new AnimatedTextSurface("single", 1, 1, Settings.Config.ScreenFont);
-            animation.CreateFrame()[0].GlyphIndex = 42;
+            Brush = new SadConsole.GameHelpers.GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
+            AnimatedSurface animation = new AnimatedSurface("single", 1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
+            animation.CreateFrame()[0].Glyph = 42;
             Brush.Animations.Add(animation.Name, animation);
 
             settingsPanel = new CircleToolPanel();
@@ -77,166 +76,160 @@
         {
             RefreshTool();
             ResetCircle();
-            EditorConsoleManager.Brush = Brush;
-            EditorConsoleManager.UpdateBrush();
+            MainScreen.Instance.Brush = Brush;
 
-            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
+            MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
             CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
-            EditorConsoleManager.QuickSelectPane.IsVisible = true;
+            MainScreen.Instance.QuickSelectPane.IsVisible = true;
         }
 
         public void OnDeselected()
         {
             CharacterPickPanel.SharedInstance.Changed -= CharPanelChanged;
-            EditorConsoleManager.QuickSelectPane.IsVisible = false;
+            MainScreen.Instance.QuickSelectPane.IsVisible = false;
 
             settingsPanel.CircleHeight = 0;
             settingsPanel.CircleWidth = 0;
             firstPoint = null;
             secondPoint = null;
-            circleShape = null;
 
         }
 
         private void CharPanelChanged(object sender, System.EventArgs e)
         {
-            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
+            MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
             RefreshTool();
         }
 
 
         public void RefreshTool()
         {
-            borderAppearance = new CellAppearance(CharacterPickPanel.SharedInstance.SettingForeground,
+            borderAppearance = new Cell(CharacterPickPanel.SharedInstance.SettingForeground,
                                    CharacterPickPanel.SharedInstance.SettingBackground,
                                    CharacterPickPanel.SharedInstance.SettingCharacter,
                                    CharacterPickPanel.SharedInstance.SettingMirrorEffect);
+
+            Brush.Animation.IsDirty = true;
         }
 
         public void Update()
         {
         }
 
-        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
+        public bool ProcessKeyboard(Keyboard info, ISurface surface)
         {
             return false;
         }
 
-        public void ProcessMouse(MouseInfo info, ITextSurface surface)
+        public void ProcessMouse(MouseConsoleState info, ISurface surface, bool isInBounds)
         {
-            
-        }
-
-        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.IsVisible = true;
-        }
-
-        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
-        {
-            if (!firstPoint.HasValue)
-                Brush.IsVisible = false;
-        }
-
-        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.IsVisible = true;
-
-            if (!firstPoint.HasValue)
+            if (cancelled)
             {
-                Brush.Position = info.ConsoleLocation;
-
-                settingsPanel.CircleWidth = 0;
-                settingsPanel.CircleHeight = 0;
-            }
-            else
-            {
-                AnimatedTextSurface animation;
-                // Draw the line (erase old) to where the mouse is
-                // create the animation frame
-                animation = new AnimatedTextSurface("line", Math.Max(firstPoint.Value.X, info.ConsoleLocation.X) - Math.Min(firstPoint.Value.X, info.ConsoleLocation.X) + 1,
-                                                            Math.Max(firstPoint.Value.Y, info.ConsoleLocation.Y) - Math.Min(firstPoint.Value.Y, info.ConsoleLocation.Y) + 1,
-                                                            Settings.Config.ScreenFont);
-
-                var frame = animation.CreateFrame();
-
-                Point p1;
-
-                if (firstPoint.Value.X > info.ConsoleLocation.X)
-                {
-                    if (firstPoint.Value.Y > info.ConsoleLocation.Y)
-                        p1 = new Point(frame.Width - 1, frame.Height - 1);
-                    else
-                        p1 = new Point(frame.Width - 1, 0);
-                }
+                // wait until left button is released...
+                if (info.Mouse.LeftButtonDown)
+                    return;
                 else
                 {
-                    if (firstPoint.Value.Y > info.ConsoleLocation.Y)
-                        p1 = new Point(0, frame.Height - 1);
-                    else
-                        p1 = new Point(0, 0);
+                    cancelled = false;
                 }
-
-                settingsPanel.CircleWidth = frame.Width;
-                settingsPanel.CircleHeight = frame.Height;
-
-                animation.Center = p1;
-
-                Settings.QuickEditor.TextSurface = frame;
-
-                ellipseShape = new SadConsole.Shapes.Ellipse();
-                ellipseShape.BorderAppearance = borderAppearance;
-                ellipseShape.EndingPoint = new Point(frame.Width - 1, frame.Height - 1);
-                ellipseShape.Draw(Settings.QuickEditor);
-
-                Brush.Animation = animation;
             }
 
-
-            // TODO: Make this work. They push DOWN on the mouse, start the line from there, if they "Click" then go to mode where they click a second time
-            // If they don't click and hold it down longer than click, pretend a second click happened and draw the line.
-            if (info.LeftClicked)
+            if (info.Mouse.LeftButtonDown)
             {
                 if (!firstPoint.HasValue)
                 {
-                    firstPoint = new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y);
                     RefreshTool();
+                    firstPoint = info.ConsolePosition;
+                    return;
                 }
                 else
                 {
-                    secondPoint = new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y);
-                    Point p1 = new Point(Math.Min(firstPoint.Value.X, secondPoint.Value.X), Math.Min(firstPoint.Value.Y, secondPoint.Value.Y));
-                    Point p2 = new Point(Math.Max(firstPoint.Value.X, secondPoint.Value.X), Math.Max(firstPoint.Value.Y, secondPoint.Value.Y));
+                    // Check for right click cancel.
+                    if (info.Mouse.RightButtonDown)
+                    {
+                        cancelled = true;
+                        firstPoint = null;
+                        secondPoint = null;
+                        Brush.Animation = Brush.Animations["single"];
+                        settingsPanel.CircleWidth = 0;
+                        settingsPanel.CircleHeight = 0;
+                        return;
+                    }
 
-                    Settings.QuickEditor.TextSurface = surface;
 
-                    ellipseShape.StartingPoint = p1;
-                    ellipseShape.EndingPoint = p2;
-                    ellipseShape.Draw(Settings.QuickEditor);
+                    secondPoint = info.ConsolePosition;
 
-                    Brush.Animation = Brush.Animations["single"];
-                    Brush.Position = secondPoint.Value;
+                    // Draw the line (erase old) to where the mouse is
+                    // create the animation frame
+                    AnimatedSurface animation = new AnimatedSurface("line", Math.Max(firstPoint.Value.X, secondPoint.Value.X) - Math.Min(firstPoint.Value.X, secondPoint.Value.X) + 1,
+                                                                                    Math.Max(firstPoint.Value.Y, secondPoint.Value.Y) - Math.Min(firstPoint.Value.Y, secondPoint.Value.Y) + 1,
+                                                                                    SadConsoleEditor.Settings.Config.ScreenFont);
+
+                    var frame = animation.CreateFrame();
+
+                    Point p1;
+
+                    if (firstPoint.Value.X > secondPoint.Value.X)
+                    {
+                        if (firstPoint.Value.Y > secondPoint.Value.Y)
+                            p1 = Point.Zero;
+                        else
+                            p1 = new Point(0, frame.Height - 1);
+                    }
+                    else
+                    {
+                        if (firstPoint.Value.Y > secondPoint.Value.Y)
+                            p1 = new Point(frame.Width - 1, 0);
+                        else
+                            p1 = new Point(frame.Width - 1, frame.Height - 1);
+                    }
 
 
-                    firstPoint = null;
-                    secondPoint = null;
+                    animation.Center = p1;
+                    settingsPanel.CircleWidth = animation.Width;
+                    settingsPanel.CircleHeight = animation.Height;
 
-                    //surface.ResyncAllCellEffects();
+                    SadConsoleEditor.Settings.QuickEditor.TextSurface = frame;
+
+                    ellipseShape = new SadConsole.Shapes.Ellipse();
+                    ellipseShape.BorderAppearance = borderAppearance;
+                    ellipseShape.EndingPoint = new Point(frame.Width - 1, frame.Height - 1);
+                    ellipseShape.Draw(SadConsoleEditor.Settings.QuickEditor);
+
+                    Brush.Animation = animation;
+
                 }
             }
-            else if (info.RightClicked)
+            else if (firstPoint.HasValue)
             {
-                if (firstPoint.HasValue && !secondPoint.HasValue)
+                settingsPanel.CircleWidth = 0;
+                settingsPanel.CircleHeight = 0;
+
+                // We let go outside of bounds
+                if (!isInBounds)
                 {
                     firstPoint = null;
-                    secondPoint = null;
-
-                    settingsPanel.CircleWidth = 0;
-                    settingsPanel.CircleHeight = 0;
-
+                    cancelled = true;
                     Brush.Animation = Brush.Animations["single"];
-                    Brush.Position = new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y);
+                    return;
                 }
+
+                // Position the shape and draw
+                Point p1 = new Point(Math.Min(firstPoint.Value.X, secondPoint.Value.X), Math.Min(firstPoint.Value.Y, secondPoint.Value.Y));
+                Point p2 = new Point(Math.Max(firstPoint.Value.X, secondPoint.Value.X), Math.Max(firstPoint.Value.Y, secondPoint.Value.Y));
+
+                SadConsoleEditor.Settings.QuickEditor.TextSurface = surface;
+
+                ellipseShape.StartingPoint = p1 + info.Console.TextSurface.RenderArea.Location;
+                ellipseShape.EndingPoint = p2 + info.Console.TextSurface.RenderArea.Location;
+                ellipseShape.Draw(SadConsoleEditor.Settings.QuickEditor);
+
+                Brush.Animation = Brush.Animations["single"];
+                Brush.Position = secondPoint.Value;
+
+
+                firstPoint = null;
+                secondPoint = null;
             }
         }
     }

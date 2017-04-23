@@ -6,8 +6,9 @@
     using Panels;
     using System.Collections.Generic;
     using System.Linq;
-    using SadConsole.Consoles;
-    using SadConsole.Game;
+    using SadConsole.Surfaces;
+    using SadConsole.GameHelpers;
+    using Settings = SadConsoleEditor.Settings;
 
     class HotspotTool : ITool
     {
@@ -36,11 +37,6 @@
 
             //ControlPanels = new CustomPanel[] { _panel, _mouseOverObjectPanel };
             ControlPanels = new CustomPanel[] { };
-
-            Brush = new SadConsole.Game.GameObject(Settings.Config.ScreenFont);
-            Brush.Animation = new AnimatedTextSurface("default", 1, 1);
-            Brush.Animation.CreateFrame();
-            Brush.IsVisible = false;
         }
 
         public override string ToString()
@@ -50,31 +46,37 @@
 
         public void OnSelected()
         {
+            Brush = new GameObject(1, 1, Settings.Config.ScreenFont);
+            Brush.Animation.CreateFrame();
+            Brush.IsVisible = false;
             RefreshTool();
-            EditorConsoleManager.Brush = Brush;
-            EditorConsoleManager.UpdateBrush();
+            MainScreen.Instance.Brush = Brush;
+
+            ((Editors.SceneEditor)MainScreen.Instance.ActiveEditor).ShowDarkLayer = true;
+            ((Editors.SceneEditor)MainScreen.Instance.ActiveEditor).HighlightType = Editors.SceneEditor.HighlightTypes.HotSpot;
         }
 
 
         public void OnDeselected()
         {
+            ((Editors.SceneEditor)MainScreen.Instance.ActiveEditor).ShowDarkLayer = false;
         }
 
         public void RefreshTool()
         {
             Settings.QuickEditor.TextSurface = Brush.Animation.CurrentFrame;
-            var editor = EditorConsoleManager.ActiveEditor as Editors.SceneEditor;
+            var editor = MainScreen.Instance.ActiveEditor as Editors.SceneEditor;
 
             if (editor != null)
             {
                 if (editor.HotspotPanel.SelectedObject != null)
                 {
-                    Settings.QuickEditor.SetCellAppearance(0, 0, editor.HotspotPanel.SelectedObject.DebugAppearance);
-                    Settings.QuickEditor.SetGlyph(0, 0, editor.HotspotPanel.SelectedObject.DebugAppearance.GlyphIndex);
+                    Settings.QuickEditor.SetCell(0, 0, editor.HotspotPanel.SelectedObject.DebugAppearance);
+                    Settings.QuickEditor.SetGlyph(0, 0, editor.HotspotPanel.SelectedObject.DebugAppearance.Glyph);
                 }
                 else
                 {
-                    Settings.QuickEditor.SetGlyph(0, 0, editor.HotspotPanel.SelectedObject.DebugAppearance.GlyphIndex, Color.White, Color.Transparent);
+                    Settings.QuickEditor.SetGlyph(0, 0, 0, Color.White, Color.Transparent);
                 }
             }
         }
@@ -84,35 +86,19 @@
         {
         }
 
-        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
+        public bool ProcessKeyboard(Keyboard info, ISurface surface)
         {
             return false;
         }
 
-        public void ProcessMouse(MouseInfo info, ITextSurface surface)
+        public void ProcessMouse(MouseConsoleState info, ISurface surface, bool isInBounds)
         {
-        }
-
-        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.IsVisible = true;
             RefreshTool();
-        }
 
-        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.IsVisible = false;
-        }
-
-        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.IsVisible = true;
-            Brush.Position = info.ConsoleLocation;
-
-            if (EditorConsoleManager.ActiveEditor is Editors.SceneEditor)
+            if (MainScreen.Instance.ActiveEditor is Editors.SceneEditor && info.IsOnConsole)
             {
-                var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
-                var point = new Point(info.ConsoleLocation.X, info.ConsoleLocation.Y);
+                var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
+                var point = new Point(info.CellPosition.X, info.CellPosition.Y);
                 Hotspot mouseSpot = null;
 
                 foreach (var spot in editor.Hotspots)
@@ -125,7 +111,7 @@
                     }
                 }
 
-                if (info.RightClicked)
+                if (info.Mouse.RightClicked)
                 {
                     // Suck up the object
                     if (mouseSpot != null)
@@ -136,24 +122,24 @@
                 }
 
                 // Stamp object
-                else if (info.LeftButtonDown)
+                else if (info.Mouse.LeftButtonDown)
                 {
                     
                     // SHIFT+CTRL -- Delete any hotspot here
-                    if ((Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
-                     && (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl) || Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl)))
+                    if ((Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
+                     && (Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftControl) || Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightControl)))
                     {
                         foreach (var spots in editor.Hotspots)
                         {
-                            spots.Positions.Remove(info.ConsoleLocation);
+                            spots.Positions.Remove(info.CellPosition);
                         }
                     }
 
                     // SHIFT -- Delete only the select type
-                    else if (Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || Engine.Keyboard.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
+                    else if (Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift))
                     {
                         if (mouseSpot != null && mouseSpot == editor.HotspotPanel.SelectedObject)
-                            mouseSpot.Positions.Remove(info.ConsoleLocation);
+                            mouseSpot.Positions.Remove(info.CellPosition);
                     }
 
                     
@@ -166,14 +152,14 @@
                             // Remove the spot that exists here
                             foreach (var spots in editor.Hotspots)
                             {
-                                spots.Positions.Remove(info.ConsoleLocation);
+                                spots.Positions.Remove(info.CellPosition);
                             }
                         }
 
                         // Place
-                        if (editor.HotspotPanel.SelectedObject != null && !editor.HotspotPanel.SelectedObject.Contains(info.ConsoleLocation))
+                        if (editor.HotspotPanel.SelectedObject != null && !editor.HotspotPanel.SelectedObject.Contains(info.CellPosition))
                         {
-                            editor.HotspotPanel.SelectedObject.Positions.Add(info.ConsoleLocation);
+                            editor.HotspotPanel.SelectedObject.Positions.Add(info.CellPosition);
                         }
                     }
                 }
@@ -182,12 +168,12 @@
                 else if (mouseSpot != null)
                 {
                     //_mouseOverObjectPanel.DisplayedObject = editor.SelectedGameObjects[point];
-                    //EditorConsoleManager.Instance.ToolPane.RefreshControls();
+                    //MainScreen.Instance.Instance.ToolPane.RefreshControls();
                 }
                 else
                 {
                     //_mouseOverObjectPanel.DisplayedObject = null;
-                    //EditorConsoleManager.Instance.ToolPane.RefreshControls();
+                    //MainScreen.Instance.Instance.ToolPane.RefreshControls();
                 }
             }
 

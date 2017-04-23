@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SadConsoleEditor.Windows
 {
-    class KeyValueEditPopup : SadConsole.Consoles.Window
+    class KeyValueEditPopup : SadConsole.Window
     {
         private class SettingKeyValue
         {
@@ -61,8 +61,8 @@ namespace SadConsoleEditor.Windows
             removeFieldButton.IsEnabled = false;
 
             objectSettingsListbox.SelectedItemChanged += _objectSettingsListbox_SelectedItemChanged;
-            addFieldButton.ButtonClicked += _addFieldButton_ButtonClicked;
-            removeFieldButton.ButtonClicked += _removeFieldButton_ButtonClicked;
+            addFieldButton.Click += _addFieldButton_Click;
+            removeFieldButton.Click += _removeFieldButton_Click;
 
             Add(objectSettingsListbox);
             Add(settingNameInput);
@@ -77,10 +77,10 @@ namespace SadConsoleEditor.Windows
             saveButton.Text = "Save";
             cancelButton.Text = "Cancel";
 
-            saveButton.ButtonClicked += _saveButton_ButtonClicked;
-            cancelButton.ButtonClicked += (o, e) => { DialogResult = false; Hide(); };
+            saveButton.Click += _saveButton_Click;
+            cancelButton.Click += (o, e) => { DialogResult = false; Hide(); };
 
-            saveButton.Position = new Point(textSurface.Width - 12, 16);
+            saveButton.Position = new Point(TextSurface.Width - 12, 16);
             cancelButton.Position = new Point(2, 16);
 
             Add(saveButton);
@@ -95,7 +95,7 @@ namespace SadConsoleEditor.Windows
             Redraw();
         }
 
-        void _saveButton_ButtonClicked(object sender, EventArgs e)
+        void _saveButton_Click(object sender, EventArgs e)
         {
             DialogResult = true;
             Hide();
@@ -121,7 +121,7 @@ namespace SadConsoleEditor.Windows
             }
         }
 
-        void _updateFieldButton_ButtonClicked(object sender, EventArgs e)
+        void _updateFieldButton_Click(object sender, EventArgs e)
         {
             var objectSetting = (SettingKeyValue)objectSettingsListbox.SelectedItem;
 
@@ -129,13 +129,13 @@ namespace SadConsoleEditor.Windows
             objectSetting.Value = settingValueInput.Text;
         }
 
-        void _removeFieldButton_ButtonClicked(object sender, EventArgs e)
+        void _removeFieldButton_Click(object sender, EventArgs e)
         {
             if (objectSettingsListbox.SelectedItem != null)
                 objectSettingsListbox.Items.Remove(objectSettingsListbox.SelectedItem);
         }
 
-        void _addFieldButton_ButtonClicked(object sender, EventArgs e)
+        void _addFieldButton_Click(object sender, EventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(settingNameInput.Text))
             {
@@ -199,16 +199,16 @@ namespace SadConsoleEditor.Windows
 
                 //SetGlyph(20, 18, 192);
 
-                //for (int i = 21; i < textSurface.Width; i++)
+                //for (int i = 21; i < TextSurface.Width; i++)
                 //    SetGlyph(i, 18, 196);
 
-                //SetGlyph(textSurface.Width - 1, 18, 182);
+                //SetGlyph(TextSurface.Width - 1, 18, 182);
 
                 //// Long line under field
                 SetGlyph(0, cancelButton.Bounds.Top - 1, 199);
-                for (int i = 1; i < textSurface.Width; i++)
+                for (int i = 1; i < TextSurface.Width; i++)
                     SetGlyph(i, cancelButton.Bounds.Top - 1, 196);
-                SetGlyph(textSurface.Width - 1, cancelButton.Bounds.Top - 1, 182);
+                SetGlyph(TextSurface.Width - 1, cancelButton.Bounds.Top - 1, 182);
             }
         }
             

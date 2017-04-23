@@ -1,7 +1,7 @@
 ﻿namespace SadConsoleEditor.Panels
 {
     using SadConsole;
-    using SadConsole.Consoles;
+    using SadConsole.Surfaces;
     using SadConsole.Controls;
     using SadConsole.Input;
 
@@ -14,7 +14,7 @@
         /// Mouse handler passed on by the tools pane.
         /// </summary>
         /// <param name="info">Mouse data</param>
-        public abstract void ProcessMouse(MouseInfo info);
+        public abstract void ProcessMouse(MouseConsoleState info);
 
         /// <summary>
         /// Called when the tool pane redraws this pane on itself.

@@ -5,8 +5,8 @@
     using SadConsole.Input;
     using System;
     using SadConsoleEditor.Panels;
-    using SadConsole.Consoles;
-    using SadConsole.Game;
+    using SadConsole.Surfaces;
+    using SadConsole.GameHelpers;
 
     class FillTool : ITool
     {
@@ -38,101 +38,77 @@
 
         public void OnSelected()
         {
-            Brush = new SadConsole.Game.GameObject(Settings.Config.ScreenFont);
-            Brush.Animation = new AnimatedTextSurface("default", 1, 1);
+            Brush = new SadConsole.GameHelpers.GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
             Brush.Animation.CreateFrame();
             Brush.IsVisible = false;
             RefreshTool();
-            EditorConsoleManager.Brush = Brush;
-            EditorConsoleManager.UpdateBrush();
+            MainScreen.Instance.Brush = Brush;
 
-            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
+            MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
             CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
-            EditorConsoleManager.QuickSelectPane.IsVisible = true;
+            MainScreen.Instance.QuickSelectPane.IsVisible = true;
         }
 
         public void OnDeselected()
         {
             CharacterPickPanel.SharedInstance.Changed -= CharPanelChanged;
-            EditorConsoleManager.QuickSelectPane.IsVisible = false;
+            MainScreen.Instance.QuickSelectPane.IsVisible = false;
         }
 
         private void CharPanelChanged(object sender, System.EventArgs e)
         {
-            EditorConsoleManager.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
+            MainScreen.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(sender, e);
             RefreshTool();
         }
 
         public void RefreshTool()
         {
-            Settings.QuickEditor.TextSurface = Brush.Animation.Frames[0];
-            Settings.QuickEditor.Fill(CharacterPickPanel.SharedInstance.SettingForeground,
+            SadConsoleEditor.Settings.QuickEditor.TextSurface = Brush.Animation.Frames[0];
+            SadConsoleEditor.Settings.QuickEditor.Fill(CharacterPickPanel.SharedInstance.SettingForeground,
                                       CharacterPickPanel.SharedInstance.SettingBackground,
                                       CharacterPickPanel.SharedInstance.SettingCharacter,
                                       CharacterPickPanel.SharedInstance.SettingMirrorEffect);
+
+            Brush.Animation.IsDirty = true;
         }
 
         public void Update()
         {
         }
 
-        public bool ProcessKeyboard(KeyboardInfo info, ITextSurface surface)
+        public bool ProcessKeyboard(Keyboard info, ISurface surface)
         {
             return false;
         }
 
-        public void ProcessMouse(MouseInfo info, ITextSurface surface)
+        public void ProcessMouse(MouseConsoleState info, ISurface surface, bool isInBounds)
         {
-        }
-
-        public void MouseEnterSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.IsVisible = true;
-        }
-
-        public void MouseExitSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.IsVisible = false;
-        }
-
-        public void MouseMoveSurface(MouseInfo info, ITextSurface surface)
-        {
-            Brush.Position = info.ConsoleLocation;
-            Brush.IsVisible = true;
-
-            if (info.LeftClicked)
+            if (info.Mouse.LeftClicked && info.IsOnConsole)
             {
                 Cell cellToMatch = new Cell();
                 Cell currentFillCell = new Cell();
 
-                surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y).Copy(cellToMatch);
-                cellToMatch.Effect = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y).Effect;
+                info.Cell.CopyAppearanceTo(cellToMatch);
 
-                currentFillCell.GlyphIndex = CharacterPickPanel.SharedInstance.SettingCharacter;
+                currentFillCell.Glyph = CharacterPickPanel.SharedInstance.SettingCharacter;
                 currentFillCell.Foreground = CharacterPickPanel.SharedInstance.SettingForeground;
                 currentFillCell.Background = CharacterPickPanel.SharedInstance.SettingBackground;
-                currentFillCell.SpriteEffect = CharacterPickPanel.SharedInstance.SettingMirrorEffect;
+                currentFillCell.Mirror = CharacterPickPanel.SharedInstance.SettingMirrorEffect;
                 
                 Func<Cell, bool> isTargetCell = (c) =>
                 {
-                    bool effect = c.Effect == null && cellToMatch.Effect == null;
-
-                    if (c.Effect != null && cellToMatch.Effect != null)
-                        effect = c.Effect == cellToMatch.Effect;
-
-                    if (c.GlyphIndex == 0 && cellToMatch.GlyphIndex == 0)
+                    if (c.Glyph == 0 && cellToMatch.Glyph == 0)
                         return c.Background == cellToMatch.Background;
 
                     return c.Foreground == cellToMatch.Foreground &&
                            c.Background == cellToMatch.Background &&
-                           c.GlyphIndex == cellToMatch.GlyphIndex &&
-                           c.SpriteEffect == cellToMatch.SpriteEffect &&
-                           effect;
+                           c.Glyph == cellToMatch.Glyph &&
+                           c.Mirror == cellToMatch.Mirror;
                 };
 
                 Action<Cell> fillCell = (c) =>
                 {
-                    currentFillCell.Copy(c);
+                    currentFillCell.CopyAppearanceTo(c);
                     //console.TextSurface.SetEffect(c, _currentFillCell.Effect);
                 };
 
@@ -142,7 +118,7 @@
                 {
                     Algorithms.NodeConnections<Cell> connections = new Algorithms.NodeConnections<Cell>();
 
-                    Point position = TextSurface.GetPointFromIndex(cells.IndexOf(c), surface.Width);
+                    Point position = BasicSurface.GetPointFromIndex(cells.IndexOf(c), surface.Width);
 
                     connections.West = surface.IsValidCell(position.X - 1, position.Y) ? surface.GetCell(position.X - 1, position.Y) : null;
                     connections.East = surface.IsValidCell(position.X + 1, position.Y) ? surface.GetCell(position.X + 1, position.Y) : null;
@@ -153,17 +129,19 @@
                 };
 
                 if (!isTargetCell(currentFillCell))
-                    SadConsole.Algorithms.FloodFill<Cell>(surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y), isTargetCell, fillCell, getConnectedCells);
+                    SadConsole.Algorithms.FloodFill<Cell>(info.Cell, isTargetCell, fillCell, getConnectedCells);
+
+                info.Console.TextSurface.IsDirty = true;
             }
 
-            if (info.RightButtonDown)
+            if (info.Mouse.RightButtonDown && info.IsOnConsole)
             {
-                var cell = surface.GetCell(info.ConsoleLocation.X, info.ConsoleLocation.Y);
+                var cell = info.Cell;
 
-                CharacterPickPanel.SharedInstance.SettingCharacter = cell.GlyphIndex;
+                CharacterPickPanel.SharedInstance.SettingCharacter = cell.Glyph;
                 CharacterPickPanel.SharedInstance.SettingForeground = cell.Foreground;
                 CharacterPickPanel.SharedInstance.SettingBackground = cell.Background;
-                CharacterPickPanel.SharedInstance.SettingMirrorEffect = cell.SpriteEffect;
+                CharacterPickPanel.SharedInstance.SettingMirrorEffect = cell.Mirror;
             }
         }
 

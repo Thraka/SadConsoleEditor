@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 using SadConsole.Controls;
 using SadConsole.Input;
 using Microsoft.Xna.Framework;
 using SadConsole;
-using SadConsole.Game;
+using SadConsole.GameHelpers;
 
 namespace SadConsoleEditor.Panels
 {
@@ -45,12 +45,12 @@ namespace SadConsoleEditor.Panels
             importListButton = new Button(Consoles.ToolPane.PanelWidthControls, 1);
 
             hotspotsListbox.SelectedItemChanged += hotspotsListbox_SelectedItemChanged;
-            createButton.ButtonClicked += _createNewObjectButton_ButtonClicked;
-            editButton.ButtonClicked += _editObjectButton_ButtonClicked;
-            deleteButton.ButtonClicked += _deleteObjectButton_ButtonClicked;
-            exportListButton.ButtonClicked += _exportListButton_ButtonClicked;
-            cloneHotspot.ButtonClicked += CloneHotspot_ButtonClicked;
-            importListButton.ButtonClicked += ImportListButton_ButtonClicked;
+            createButton.Click += _createNewObjectButton_Click;
+            editButton.Click += _editObjectButton_Click;
+            deleteButton.Click += _deleteObjectButton_Click;
+            exportListButton.Click += _exportListButton_Click;
+            cloneHotspot.Click += CloneHotspot_Click;
+            importListButton.Click += ImportListButton_Click;
 
             editButton.IsEnabled = false;
             deleteButton.IsEnabled = false;
@@ -91,7 +91,7 @@ namespace SadConsoleEditor.Panels
             exportListButton.IsEnabled = hotspotsListbox.Items.Count != 0;
         }
         
-        private void CloneHotspot_ButtonClicked(object sender, EventArgs e)
+        private void CloneHotspot_Click(object sender, EventArgs e)
         {
             Windows.RenamePopup popup = new Windows.RenamePopup("Name", "Clone hotspot");
             popup.Closed += (o, ev) =>
@@ -102,16 +102,16 @@ namespace SadConsoleEditor.Panels
                     hotspot.Title = popup.NewName;
                     SelectedObject.DebugAppearance.CopyAppearanceTo(hotspot.DebugAppearance);
                     hotspot.Settings = new Dictionary<string, string>(SelectedObject.Settings);
-                    ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Hotspots.Add(hotspot);
+                    ((Editors.SceneEditor)MainScreen.Instance.ActiveEditor).LoadHotspot(hotspot);
                 }
             };
             popup.Show(true);
             popup.Center();
         }
 
-        void _exportListButton_ButtonClicked(object sender, EventArgs e)
+        void _exportListButton_Click(object sender, EventArgs e)
         {
-            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+            var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
 
             if (editor.Hotspots.Count == 0)
                 return;
@@ -142,7 +142,7 @@ namespace SadConsoleEditor.Panels
             popup.Show(true);
         }
 
-        private void ImportListButton_ButtonClicked(object sender, EventArgs e)
+        private void ImportListButton_Click(object sender, EventArgs e)
         {
             Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
             popup.Center();
@@ -150,7 +150,7 @@ namespace SadConsoleEditor.Panels
             {
                 if (popup.DialogResult)
                 {
-                    var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+                    var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
                     Dictionary<string, Hotspot> titleKeys = new Dictionary<string, Hotspot>();
                     List<Hotspot> loadedSpots = (List<Hotspot>)popup.SelectedLoader.Load(popup.SelectedFile);
 
@@ -176,7 +176,7 @@ namespace SadConsoleEditor.Panels
 
         void RunImportLogic(List<Hotspot> importedSpots, Dictionary<string, Hotspot> titleKeys)
         {
-            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+            var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
 
             foreach (var spot in importedSpots)
             {
@@ -193,19 +193,19 @@ namespace SadConsoleEditor.Panels
             RebuildListBox();
         }
 
-        void _deleteObjectButton_ButtonClicked(object sender, EventArgs e)
+        void _deleteObjectButton_Click(object sender, EventArgs e)
         {
             Window.Prompt(new ColoredString("Are you sure? This will delete all hotspots of this type from your scene."), "Yes", "No", (r) =>
             {
                 if (r)
                 {
-                    ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Hotspots.Remove((Hotspot)hotspotsListbox.SelectedItem);
+                    ((Editors.SceneEditor)MainScreen.Instance.ActiveEditor).Hotspots.Remove((Hotspot)hotspotsListbox.SelectedItem);
                     RebuildListBox();
                 }
             });
         }
 
-        void _editObjectButton_ButtonClicked(object sender, EventArgs e)
+        void _editObjectButton_Click(object sender, EventArgs e)
         {
             Windows.EditHotspotPopup popup = new Windows.EditHotspotPopup((Hotspot)hotspotsListbox.SelectedItem);
             popup.Closed += (o, e2) =>
@@ -218,13 +218,13 @@ namespace SadConsoleEditor.Panels
                         hotSpot.Settings = popup.CreatedHotspot.Settings;
 
                         hotspotsListbox.GetContainer(hotspotsListbox.SelectedItem).IsDirty = true;
-                        //EditorConsoleManager.ToolPane.SelectedTool.RefreshTool();
+                        //MainScreen.Instance.ToolPane.SelectedTool.RefreshTool();
                     }
                 };
             popup.Show(true);
         }
 
-        void _createNewObjectButton_ButtonClicked(object sender, EventArgs e)
+        void _createNewObjectButton_Click(object sender, EventArgs e)
         {
             Hotspot hotSpot = new Hotspot();
             Windows.EditHotspotPopup popup = new Windows.EditHotspotPopup(hotSpot);
@@ -236,7 +236,7 @@ namespace SadConsoleEditor.Panels
                         hotspotsListbox.Items.Add(hotSpot);
                         hotspotsListbox.SelectedItem = hotSpot;
                         exportListButton.IsEnabled = true;
-                        ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Hotspots.Add(hotSpot);
+                        ((Editors.SceneEditor)MainScreen.Instance.ActiveEditor).Hotspots.Add(hotSpot);
                     }
                 };
 
@@ -253,16 +253,16 @@ namespace SadConsoleEditor.Panels
             editButton.IsEnabled = SelectedObject != null;
             deleteButton.IsEnabled = SelectedObject != null;
             cloneHotspot.IsEnabled = SelectedObject != null;
-            //EditorConsoleManager.Instance.ToolPane.SelectedTool.RefreshTool();
+            //MainScreen.Instance.Instance.ToolPane.SelectedTool.RefreshTool();
         }
 
         public void RebuildListBox()
         {
             hotspotsListbox.Items.Clear();
 
-            if (EditorConsoleManager.ActiveEditor is Editors.SceneEditor)
+            if (MainScreen.Instance.ActiveEditor is Editors.SceneEditor)
             {
-                var spots = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Hotspots;
+                var spots = ((Editors.SceneEditor)MainScreen.Instance.ActiveEditor).Hotspots;
 
                 if (spots.Count != 0)
                 {
@@ -276,9 +276,8 @@ namespace SadConsoleEditor.Panels
             exportListButton.IsEnabled = hotspotsListbox.Items.Count != 0;
         }
 
-        public override void ProcessMouse(MouseInfo info)
+        public override void ProcessMouse(MouseConsoleState info)
         {
-            
         }
 
         public override int Redraw(ControlBase control)
@@ -302,10 +301,10 @@ namespace SadConsoleEditor.Panels
             /// </summary>
             /// <param name="surface"></param>
             /// <param name="area"></param>
-            public override void Draw(ITextSurface surface, Microsoft.Xna.Framework.Rectangle area)
+            public override void Draw(ISurface surface, Microsoft.Xna.Framework.Rectangle area)
             {
                 var hotSpot = ((Hotspot)Item);
-                ColoredString value = ((char)hotSpot.DebugAppearance.GlyphIndex).ToString().CreateColored(hotSpot.DebugAppearance.Foreground, hotSpot.DebugAppearance.Background, hotSpot.DebugAppearance.SpriteEffect) + " ".CreateColored(_currentAppearance.Foreground, _currentAppearance.Background) + hotSpot.Title.CreateColored(_currentAppearance.Foreground, _currentAppearance.Background);
+                ColoredString value = ((char)hotSpot.DebugAppearance.Glyph).ToString().CreateColored(hotSpot.DebugAppearance.Foreground, hotSpot.DebugAppearance.Background, hotSpot.DebugAppearance.Mirror) + " ".CreateColored(_currentAppearance.Foreground, _currentAppearance.Background) + hotSpot.Title.CreateColored(_currentAppearance.Foreground, _currentAppearance.Background);
 
                 if (value.Count < area.Width)
                     value += new string(' ', area.Width - value.Count).CreateColored(_currentAppearance.Foreground, _currentAppearance.Background);

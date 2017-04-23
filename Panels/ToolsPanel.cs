@@ -31,7 +31,7 @@ namespace SadConsoleEditor.Panels
 
             ToolsListBox = new ListBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 7);
             ToolsListBox.HideBorder = true;
-            ToolsListBox.CanUseKeyboard = false;
+            ToolsListBox.UseKeyboard = false;
 
             ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
 
@@ -56,9 +56,9 @@ namespace SadConsoleEditor.Panels
             if (e.Item != null)
             {
                 selectedTool = (ITool)e.Item;
-                EditorConsoleManager.ToolName = selectedTool.Title;
+                MainScreen.Instance.ToolName = selectedTool.Title;
 
-                //EditorConsoleManager.AllowKeyboardToMoveConsole = true;
+                //MainScreen.Instance.AllowKeyboardToMoveConsole = true;
 
                 Panels.CharacterPickPanel.SharedInstance.HideCharacter = false;
                 Panels.CharacterPickPanel.SharedInstance.HideForeground = false;
@@ -69,7 +69,7 @@ namespace SadConsoleEditor.Panels
             }
         }
 
-        public override void ProcessMouse(SadConsole.Input.MouseInfo info)
+        public override void ProcessMouse(SadConsole.Input.MouseConsoleState info)
         {
         }
 

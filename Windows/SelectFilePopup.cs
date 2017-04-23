@@ -5,12 +5,12 @@ using System.Text;
 using SadConsole;
 using Microsoft.Xna.Framework;
 using SadConsole.Controls;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 namespace SadConsoleEditor.Windows
 {
     class FileLoaderListBoxItem: ListBoxItem
     {
-        public override void Draw(ITextSurface surface, Rectangle area)
+        public override void Draw(ISurface surface, Rectangle area)
         {
             string value = ((FileLoaders.IFileLoader)Item).FileTypeName;
             if (value.Length < area.Width)
@@ -95,10 +95,11 @@ namespace SadConsoleEditor.Windows
             directoryListBox.HighlightedExtentions = ".con;.console;.brush";
             directoryListBox.SelectedItemChanged += _directoryListBox_SelectedItemChanged;
             directoryListBox.SelectedItemExecuted += _directoryListBox_SelectedItemExecuted;
+            directoryListBox.OnlyRootAndSubDirs = true;
             directoryListBox.CurrentFolder = Environment.CurrentDirectory;
             //directoryListBox.HideBorder = true;
 
-            Print(directoryListBox.Bounds.Left, directoryListBox.Bounds.Top - 2, "Files/Directories", Settings.Color_TitleText);
+            Print(directoryListBox.Bounds.Left, directoryListBox.Bounds.Top - 2, "Files", Settings.Color_TitleText);
             Print(directoryListBox.Bounds.Left, directoryListBox.Bounds.Top - 1, new string((char)196, directoryListBox.Width));
 
             fileName = new InputBox(directoryListBox.Width)
@@ -108,20 +109,20 @@ namespace SadConsoleEditor.Windows
             fileName.TextChanged += _fileName_TextChanged;
             Print(fileName.Bounds.Left, fileName.Bounds.Top - 1, "Selected file", Settings.Color_TitleText);
 
-            selectButton = new Button(8, 1)
+            selectButton = new Button(8)
             {
                 Text = "Open",
                 Position = new Point(Width - 10, this.TextSurface.Height - 2),
                 IsEnabled = false
             };
-            selectButton.ButtonClicked += new EventHandler(_selectButton_Action);
+            selectButton.Click += new EventHandler(_selectButton_Action);
 
-            cancelButton = new Button(8, 1)
+            cancelButton = new Button(8)
             {
                 Text = "Cancel",
                 Position = new Point(2, this.TextSurface.Height - 2)
             };
-            cancelButton.ButtonClicked += new EventHandler(_cancelButton_Action);
+            cancelButton.Click += new EventHandler(_cancelButton_Action);
 
             Add(directoryListBox);
             Add(fileName);
@@ -166,8 +167,9 @@ namespace SadConsoleEditor.Windows
         {
             if (fileName.Text != string.Empty)
             {
-                SelectedFile = System.IO.Path.Combine(directoryListBox.CurrentFolder, fileName.Text);
-
+                var rootDir = System.IO.Path.GetDirectoryName(AppContext.BaseDirectory);
+                var folder = directoryListBox.CurrentFolder.Remove(0, rootDir.Length);
+                SelectedFile = System.IO.Path.Combine(folder, fileName.Text);
                 var extensions = fileFilterString.Replace("*", "").Trim(';').Split(';');
                 bool foundExtension = false;
                 foreach (var item in extensions)

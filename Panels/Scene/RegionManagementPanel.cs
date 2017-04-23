@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 using SadConsole.Controls;
 using SadConsoleEditor.Windows;
 using SadConsole;
-using SadConsole.Consoles;
-using SadConsole.Game;
+using SadConsole.Surfaces;
+using SadConsole.GameHelpers;
 using Microsoft.Xna.Framework;
+using SadConsole.Input;
 
 namespace SadConsoleEditor.Panels
 {
@@ -51,27 +52,27 @@ namespace SadConsoleEditor.Panels
 
             removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             removeSelected.Text = "Remove";
-            removeSelected.ButtonClicked += RemoveSelected_ButtonClicked;
+            removeSelected.Click += RemoveSelected_Click;
 
             moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             moveSelectedUp.Text = "Move Up";
-            moveSelectedUp.ButtonClicked += MoveSelectedUp_ButtonClicked;
+            moveSelectedUp.Click += MoveSelectedUp_Click;
 
             moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             moveSelectedDown.Text = "Move Down";
-            moveSelectedDown.ButtonClicked += MoveSelectedDown_ButtonClicked;
+            moveSelectedDown.Click += MoveSelectedDown_Click;
             
             renameZoneButton = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             renameZoneButton.Text = "Rename";
-            renameZoneButton.ButtonClicked += RenameZone_ButtonClicked;
+            renameZoneButton.Click += RenameZone_Click;
 
             addZoneButton = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             addZoneButton.Text = "Add New";
-            addZoneButton.ButtonClicked += AddZone_ButtonClicked;
+            addZoneButton.Click += AddZone_Click;
 
             editSettings = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             editSettings.Text = "Edit Settings";
-            editSettings.ButtonClicked += EditSettings_ButtonClicked;
+            editSettings.Click += EditSettings_Click;
 
             zoneColorPresenter = new SadConsoleEditor.Controls.ColorPresenter("Zone Color", Settings.Green, SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             zoneColorPresenter.SelectedColor = Color.Aqua;
@@ -89,7 +90,7 @@ namespace SadConsoleEditor.Panels
             GameObject_SelectedItemChanged(null, null);
         }
 
-        private void EditSettings_ButtonClicked(object sender, EventArgs e)
+        private void EditSettings_Click(object sender, EventArgs e)
         {
             var zone = ((ResizableObject<Zone>)GameObjectList.SelectedItem).Data;
             Windows.KeyValueEditPopup popup = new Windows.KeyValueEditPopup(zone.Settings);
@@ -100,7 +101,7 @@ namespace SadConsoleEditor.Panels
                     //_objectTypesListbox.GetContainer(_objectTypesListbox.SelectedItem).IsDirty = true;
                     zone.Settings = popup.SettingsDictionary;
                     RebuildProperties(zone);
-                    EditorConsoleManager.ToolsPane.RedrawPanels();
+                    MainScreen.Instance.ToolsPane.RedrawPanels();
                 }
             };
             popup.Show(true);
@@ -117,15 +118,15 @@ namespace SadConsoleEditor.Panels
             }
         }
 
-        void AddZone_ButtonClicked(object sender, EventArgs e)
+        void AddZone_Click(object sender, EventArgs e)
         {
-            (EditorConsoleManager.ActiveEditor as Editors.SceneEditor)?.LoadZone(new Zone() {
+            (MainScreen.Instance.ActiveEditor as Editors.SceneEditor)?.LoadZone(new Zone() {
                                                                                     Area = new Rectangle(1, 1, 10, 10),
-                                                                                    DebugAppearance = new CellAppearance(Color.White, Color.White.GetRandomColor(SadConsole.Engine.Random), 0),
+                                                                                    DebugAppearance = new Cell(Color.White, Color.White.GetRandomColor(Global.Random), 0),
                                                                                     Title = "Zone" });
         }
 
-        void RenameZone_ButtonClicked(object sender, EventArgs e)
+        void RenameZone_Click(object sender, EventArgs e)
         {
             var entity = (ResizableObject)GameObjectList.SelectedItem;
             RenamePopup popup = new RenamePopup(entity.Name);
@@ -134,10 +135,10 @@ namespace SadConsoleEditor.Panels
             popup.Center();
         }
 
-        void MoveSelectedDown_ButtonClicked(object sender, EventArgs e)
+        void MoveSelectedDown_Click(object sender, EventArgs e)
         {
             var entity = (ResizableObject<Zone>)GameObjectList.SelectedItem;
-            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+            var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
 
             int index = editor.Zones.IndexOf(entity);
             editor.Zones.Remove(entity);
@@ -146,10 +147,10 @@ namespace SadConsoleEditor.Panels
             GameObjectList.SelectedItem = entity;
         }
 
-        void MoveSelectedUp_ButtonClicked(object sender, EventArgs e)
+        void MoveSelectedUp_Click(object sender, EventArgs e)
         {
             var entity = (ResizableObject<Zone>)GameObjectList.SelectedItem;
-            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+            var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
 
             int index = editor.Zones.IndexOf(entity);
             editor.Zones.Remove(entity);
@@ -158,10 +159,10 @@ namespace SadConsoleEditor.Panels
             GameObjectList.SelectedItem = entity;
         }
 
-        void RemoveSelected_ButtonClicked(object sender, EventArgs e)
+        void RemoveSelected_Click(object sender, EventArgs e)
         {
             var entity = (ResizableObject<Zone>)GameObjectList.SelectedItem;
-            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+            var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
 
             editor.Zones.Remove(entity);
 
@@ -172,9 +173,9 @@ namespace SadConsoleEditor.Panels
         }
 
         #region TODO Import/Export
-        //void _exportListButton_ButtonClicked(object sender, EventArgs e)
+        //void _exportListButton_Click(object sender, EventArgs e)
         //{
-        //    var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+        //    var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
 
         //    if (editor.Hotspots.Count == 0)
         //        return;
@@ -205,7 +206,7 @@ namespace SadConsoleEditor.Panels
         //    popup.Show(true);
         //}
 
-        //private void ImportListButton_ButtonClicked(object sender, EventArgs e)
+        //private void ImportListButton_Click(object sender, EventArgs e)
         //{
         //    Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
         //    popup.Center();
@@ -213,7 +214,7 @@ namespace SadConsoleEditor.Panels
         //    {
         //        if (popup.DialogResult)
         //        {
-        //            var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+        //            var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
         //            Dictionary<string, Hotspot> titleKeys = new Dictionary<string, Hotspot>();
         //            List<Hotspot> loadedSpots = (List<Hotspot>)popup.SelectedLoader.Load(popup.SelectedFile);
 
@@ -239,7 +240,7 @@ namespace SadConsoleEditor.Panels
 
         //void RunImportLogic(List<Hotspot> importedSpots, Dictionary<string, Hotspot> titleKeys)
         //{
-        //    var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+        //    var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
 
         //    foreach (var spot in importedSpots)
         //    {
@@ -293,7 +294,7 @@ namespace SadConsoleEditor.Panels
             if (GameObjectList.SelectedItem != null)
             {
                 var entity = (ResizableObject<Zone>)GameObjectList.SelectedItem;
-                var editor = (Editors.SceneEditor)EditorConsoleManager.ActiveEditor;
+                var editor = (Editors.SceneEditor)MainScreen.Instance.ActiveEditor;
 
                 moveSelectedUp.IsEnabled = editor.Zones.IndexOf(entity) != 0;
                 moveSelectedDown.IsEnabled = editor.Zones.IndexOf(entity) != editor.Zones.Count - 1;
@@ -307,7 +308,7 @@ namespace SadConsoleEditor.Panels
                 RebuildProperties(entity.Data);
 
                 if (!rebuilding)
-                    EditorConsoleManager.ToolsPane.RedrawPanels();
+                    MainScreen.Instance.ToolsPane.RedrawPanels();
             }
             else
             {
@@ -326,9 +327,9 @@ namespace SadConsoleEditor.Panels
         {
             GameObjectList.Items.Clear();
 
-            if (EditorConsoleManager.ActiveEditor is Editors.SceneEditor)
+            if (MainScreen.Instance.ActiveEditor is Editors.SceneEditor)
             {
-                var entities = ((Editors.SceneEditor)EditorConsoleManager.ActiveEditor).Zones;
+                var entities = ((Editors.SceneEditor)MainScreen.Instance.ActiveEditor).Zones;
 
                 if (entities.Count != 0)
                 {
@@ -341,10 +342,9 @@ namespace SadConsoleEditor.Panels
             }
         }
 
-        public override void ProcessMouse(SadConsole.Input.MouseInfo info)
+        public override void ProcessMouse(MouseConsoleState info)
         {
         }
-
         public override int Redraw(SadConsole.Controls.ControlBase control)
         {
             return control == GameObjectList ? 1 : 0;
@@ -367,7 +367,7 @@ namespace SadConsoleEditor.Panels
 
         private class EntityListBoxItem : ListBoxItem
         {
-            public override void Draw(ITextSurface surface, Microsoft.Xna.Framework.Rectangle area)
+            public override void Draw(ISurface surface, Microsoft.Xna.Framework.Rectangle area)
             {
                 string value = ((ResizableObject)Item).Name;
 

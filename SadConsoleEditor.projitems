@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Consoles\BorderConsole.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Consoles\BrushConsoleContainer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Consoles\QuickSelectPane.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Consoles\ToolPane.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\CharacterPicker.cs" />
@@ -17,11 +18,11 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ColorPicker.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ColorPresenter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\FileDirectoryListbox.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)EditorConsoleManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Editors\SceneEditor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MainScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\GameObjectEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\IEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\LayeredConsoleEditor.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Editors\SceneEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Animation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\GameObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Zones.cs" />
@@ -39,9 +40,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Panels\CustomPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\FilesPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\LayersPanel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\GameObjectManagementPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\HotspotTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\RegionManagementPanel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Panels\Scene\GameObjectManagementPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolsPanel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\BoxTool.Panel.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Panels\ToolSpecific\Circle.Panel.cs" />

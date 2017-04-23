@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using SadConsole.Controls;
 using SadConsoleEditor.Windows;
 using SadConsole;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 
 namespace SadConsoleEditor.Panels
 {
@@ -22,7 +22,7 @@ namespace SadConsoleEditor.Panels
         private Button saveLayerToFile;
         private CheckBox toggleHideShow;
 
-        private LayeredTextSurface surface;
+        private LayeredSurface surface;
 
         public LayersPanel()
         {
@@ -32,43 +32,43 @@ namespace SadConsoleEditor.Panels
             layers.SelectedItemChanged += layers_SelectedItemChanged;
             layers.CompareByReference = true;
 
-            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            removeSelected = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             removeSelected.Text = "Remove";
-            removeSelected.ButtonClicked += removeSelected_ButtonClicked;
+            removeSelected.Click += removeSelected_Click;
 
-            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            moveSelectedUp = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             moveSelectedUp.Text = "Move Up";
-            moveSelectedUp.ButtonClicked += moveSelectedUp_ButtonClicked;
+            moveSelectedUp.Click += moveSelectedUp_Click;
 
-            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            moveSelectedDown = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             moveSelectedDown.Text = "Move Down";
-            moveSelectedDown.ButtonClicked += moveSelectedDown_ButtonClicked;
+            moveSelectedDown.Click += moveSelectedDown_Click;
 
             toggleHideShow = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             toggleHideShow.Text = "Show/Hide";
             toggleHideShow.TextAlignment = System.Windows.HorizontalAlignment.Center;
             toggleHideShow.IsSelectedChanged += toggleHideShow_IsSelectedChanged;
 
-            addNewLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            addNewLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             addNewLayer.Text = "Add New";
-            addNewLayer.ButtonClicked += addNewLayer_ButtonClicked;
+            addNewLayer.Click += addNewLayer_Click;
 
-            renameLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            renameLayer = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             renameLayer.Text = "Rename";
-            renameLayer.ButtonClicked += renameLayer_ButtonClicked;
+            renameLayer.Click += renameLayer_Click;
 
-            addNewLayerFromFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            addNewLayerFromFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             addNewLayerFromFile.Text = "Load From File";
-            addNewLayerFromFile.ButtonClicked += addNewLayerFromFile_ButtonClicked;
+            addNewLayerFromFile.Click += addNewLayerFromFile_Click;
 
-            saveLayerToFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
+            saveLayerToFile = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             saveLayerToFile.Text = "Save Layer to File";
-            saveLayerToFile.ButtonClicked += saveLayerToFile_ButtonClicked;
+            saveLayerToFile.Click += saveLayerToFile_Click;
 
             Controls = new ControlBase[] { layers, toggleHideShow, removeSelected, moveSelectedUp, moveSelectedDown, addNewLayer, renameLayer, addNewLayerFromFile, saveLayerToFile };
         }
 
-        public void SetLayeredTextSurface(LayeredTextSurface surface)
+        public void SetLayeredSurface(LayeredSurface surface)
         {
             this.surface = surface;
 
@@ -76,39 +76,39 @@ namespace SadConsoleEditor.Panels
             RebuildListBox();
         }
 
-        void saveLayerToFile_ButtonClicked(object sender, EventArgs e)
+        void saveLayerToFile_Click(object sender, EventArgs e)
         {
-            var layer = (LayeredTextSurface.Layer)layers.SelectedItem;
+            var layer = (LayeredSurface.Layer)layers.SelectedItem;
 
             SelectFilePopup popup = new SelectFilePopup();
             popup.Closed += (o2, e2) =>
             {
                 if (popup.DialogResult)
                 {
-                    TextSurface newSurface = new TextSurface(surface.Width, surface.Height, layer.Cells);
+                    BasicSurface newSurface = new BasicSurface(surface.Width, surface.Height, layer.Cells, SadConsoleEditor.Settings.Config.ScreenFont, new Microsoft.Xna.Framework.Rectangle(0,0, surface.Width, surface.Height));
                     newSurface.Save(popup.SelectedFile);
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.TextSurface() };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.BasicSurface() };
             popup.SelectButtonText = "Save";
             popup.SkipFileExistCheck = true;
             popup.Show(true);
             popup.Center();
         }
 
-        void addNewLayerFromFile_ButtonClicked(object sender, EventArgs e)
+        void addNewLayerFromFile_Click(object sender, EventArgs e)
         {
             SelectFilePopup popup = new SelectFilePopup();
             popup.Closed += (o2, e2) =>
             {
                 if (popup.DialogResult)
                 {
-                    TextSurface newSurface = TextSurface.Load(popup.SelectedFile);
+                    BasicSurface newSurface = BasicSurface.Load(popup.SelectedFile);
 
                     if (newSurface.Width != surface.Width || newSurface.Height != surface.Height)
                     {
-                        var tempSurface = new TextSurface(surface.Width, surface.Height, surface.Font);
+                        var tempSurface = new BasicSurface(surface.Width, surface.Height, surface.Font);
                         newSurface.Copy(tempSurface);
                         var newLayer = surface.Add(tempSurface);
                         LayerMetadata.Create("Loaded", true, true, true, newLayer);
@@ -119,18 +119,19 @@ namespace SadConsoleEditor.Panels
                         LayerMetadata.Create("Loaded", true, true, true, layer);
                     }
 
+                    surface.IsDirty = true;
                     RebuildListBox();
                 }
             };
             popup.CurrentFolder = Environment.CurrentDirectory;
-            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.TextSurface() };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.BasicSurface() };
             popup.Show(true);
             popup.Center();
         }
 
-        void renameLayer_ButtonClicked(object sender, EventArgs e)
+        void renameLayer_Click(object sender, EventArgs e)
         {
-            var layer = (LayeredTextSurface.Layer)layers.SelectedItem;
+            var layer = (LayeredSurface.Layer)layers.SelectedItem;
             var meta = (LayerMetadata)layer.Metadata;
             RenamePopup popup = new RenamePopup(meta.Name);
             popup.Closed += (o, e2) => { if (popup.DialogResult) meta.Name = popup.NewName; layers.IsDirty = true; };
@@ -138,36 +139,40 @@ namespace SadConsoleEditor.Panels
             popup.Center();
         }
 
-        void moveSelectedDown_ButtonClicked(object sender, EventArgs e)
+        void moveSelectedDown_Click(object sender, EventArgs e)
         {
-            var layer = (LayeredTextSurface.Layer)layers.SelectedItem;
+            var layer = (LayeredSurface.Layer)layers.SelectedItem;
             surface.Move(layer, layer.Index - 1);
             RebuildListBox();
             layers.SelectedItem = layer;
+            surface.IsDirty = true;
         }
 
-        void moveSelectedUp_ButtonClicked(object sender, EventArgs e)
+        void moveSelectedUp_Click(object sender, EventArgs e)
         {
-            var layer = (LayeredTextSurface.Layer)layers.SelectedItem;
+            var layer = (LayeredSurface.Layer)layers.SelectedItem;
             surface.Move(layer, layer.Index + 1);
             RebuildListBox();
             layers.SelectedItem = layer;
+            surface.IsDirty = true;
         }
 
-        void removeSelected_ButtonClicked(object sender, EventArgs e)
+        void removeSelected_Click(object sender, EventArgs e)
         {
-            var layer = (LayeredTextSurface.Layer)layers.SelectedItem;
+            var layer = (LayeredSurface.Layer)layers.SelectedItem;
             surface.Remove(layer);
             RebuildListBox();
             layers.SelectedItem = layers.Items[0];
+            surface.IsDirty = true;
         }
 
-        void addNewLayer_ButtonClicked(object sender, EventArgs e)
+        void addNewLayer_Click(object sender, EventArgs e)
         {
             var previouslySelected = layers.SelectedItem;
             LayerMetadata.Create("new", true, true, true, surface.Add());
             RebuildListBox();
             layers.SelectedItem = previouslySelected;
+            surface.IsDirty = true;
         }
 
         void layers_SelectedItemChanged(object sender, ListBox<LayerListBoxItem>.SelectedItemEventArgs e)
@@ -180,7 +185,7 @@ namespace SadConsoleEditor.Panels
 
             if (layers.SelectedItem != null)
             {
-                var layer = (LayeredTextSurface.Layer)layers.SelectedItem;
+                var layer = (LayeredSurface.Layer)layers.SelectedItem;
                 var meta = (LayerMetadata)layer.Metadata;
 
                 moveSelectedUp.IsEnabled = meta.IsMoveable && layers.Items.Count != 1 && layer.Index != layers.Items.Count - 1;
@@ -191,17 +196,19 @@ namespace SadConsoleEditor.Panels
                 toggleHideShow.IsSelected = layer.IsVisible;
 
                 surface.SetActiveLayer(layer.Index);
-                EditorConsoleManager.LayerName = meta.Name;
+                MainScreen.Instance.LayerName = meta.Name;
+                surface.IsDirty = true;
+
             }
             else
-                EditorConsoleManager.LayerName = "None";
+                MainScreen.Instance.LayerName = "None";
         }
 
         void toggleHideShow_IsSelectedChanged(object sender, EventArgs e)
         {
-            var layer = (LayeredTextSurface.Layer)layers.SelectedItem;
+            var layer = (LayeredSurface.Layer)layers.SelectedItem;
             layer.IsVisible = toggleHideShow.IsSelected;
-            layer.IsVisible = toggleHideShow.IsSelected;
+            surface.IsDirty = true;
         }
 
         public void RebuildListBox()
@@ -215,7 +222,7 @@ namespace SadConsoleEditor.Panels
             layers.SelectedItem = layers.Items[0];
         }
 
-        public override void ProcessMouse(SadConsole.Input.MouseInfo info)
+        public override void ProcessMouse(SadConsole.Input.MouseConsoleState info)
         {
         }
 
@@ -236,9 +243,9 @@ namespace SadConsoleEditor.Panels
 
         private class LayerListBoxItem : ListBoxItem
         {
-            public override void Draw(ITextSurface surface, Microsoft.Xna.Framework.Rectangle area)
+            public override void Draw(ISurface surface, Microsoft.Xna.Framework.Rectangle area)
             {
-                string value = ((LayerMetadata)((LayeredTextSurface.Layer)Item).Metadata).Name;
+                string value = ((LayerMetadata)((LayeredSurface.Layer)Item).Metadata).Name;
 
                 if (value.Length < area.Width)
                     value += new string(' ', area.Width - value.Length);

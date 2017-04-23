@@ -64,6 +64,8 @@
                 SetGlyph(Width - 2, 0, _character);
                 SetForeground(Width - 2, 0, _characterColor);
             }
+
+            OnComposed?.Invoke(this);
         }
 
         public override void DetermineAppearance()
@@ -71,11 +73,11 @@
 
         }
 
-        protected override void OnLeftMouseClicked(MouseInfo info)
+        protected override void OnLeftMouseClicked(MouseConsoleState info)
         {
             if (!DisableColorPicker)
             {
-                var location = this.TransformConsolePositionByControlPosition(info);
+                var location = this.TransformConsolePositionByControlPosition(info.CellPosition);
                 if (location.X >= Width - 3)
                 {
                     _popup.SelectedColor = _selectedColor;
@@ -85,7 +87,7 @@
             }
             else if (EnableCharacterPicker)
             {
-                var location = this.TransformConsolePositionByControlPosition(info);
+                var location = this.TransformConsolePositionByControlPosition(info.CellPosition);
                 if (location.X >= Width - 3)
                 {
                     base.OnLeftMouseClicked(info);
@@ -93,9 +95,9 @@
             }
         }
 
-        protected override void OnRightMouseClicked(MouseInfo info)
+        protected override void OnRightMouseClicked(MouseConsoleState info)
         {
-            var location = this.TransformConsolePositionByControlPosition(info);
+            var location = this.TransformConsolePositionByControlPosition(info.CellPosition);
             if (location.X >= Width - 3)
             {
                 RightClickedColor?.Invoke(this, EventArgs.Empty);

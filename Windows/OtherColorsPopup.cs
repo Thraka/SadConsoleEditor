@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SadConsoleEditor.Windows
 {
-    class OtherColorsPopup : SadConsole.Consoles.Window
+    class OtherColorsPopup : SadConsole.Window
     {
         private RadioButton _ansiSelectButton;
         private RadioButton _knownSelectButton;
@@ -57,8 +57,8 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[0].Text = "Red Dark";
             _ansiButtons[0].Theme = CreateButtonTheme(ColorAnsi.Red, ColorAnsi.RedBright);
             _ansiButtons[0].DetermineAppearance();
-            _ansiButtons[0].ButtonClicked += _ansiGreenBright_ButtonClicked;
-            _ansiButtons[0].Click();
+            _ansiButtons[0].Click += _ansiGreenBright_Click;
+            _ansiButtons[0].DoClick();
             Add(_ansiButtons[0]);
 
             _ansiButtons[1] = new Button(15, 1);
@@ -66,7 +66,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[1].Text = "Red Bright";
             _ansiButtons[1].Theme = CreateButtonTheme(ColorAnsi.RedBright, ColorAnsi.Red);
             _ansiButtons[1].DetermineAppearance();
-            _ansiButtons[1].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[1].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[1]);
 
             _ansiButtons[2] = new Button(15, 1);
@@ -74,7 +74,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[2].Text = "Yellow Dark";
             _ansiButtons[2].Theme = CreateButtonTheme(ColorAnsi.Yellow, ColorAnsi.YellowBright);
             _ansiButtons[2].DetermineAppearance();
-            _ansiButtons[2].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[2].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[2]);
 
             _ansiButtons[3] = new Button(15, 1);
@@ -82,7 +82,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[3].Text = "Yellow Bright";
             _ansiButtons[3].Theme = CreateButtonTheme(ColorAnsi.YellowBright, ColorAnsi.Yellow);
             _ansiButtons[3].DetermineAppearance();
-            _ansiButtons[3].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[3].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[3]);
 
             _ansiButtons[4] = new Button(15, 1);
@@ -90,7 +90,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[4].Text = "Green Dark";
             _ansiButtons[4].Theme = CreateButtonTheme(ColorAnsi.Green, ColorAnsi.GreenBright);
             _ansiButtons[4].DetermineAppearance();
-            _ansiButtons[4].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[4].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[4]);
 
             _ansiButtons[5] = new Button(15, 1);
@@ -98,7 +98,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[5].Text = "Green Bright";
             _ansiButtons[5].Theme = CreateButtonTheme(ColorAnsi.GreenBright, ColorAnsi.Green);
             _ansiButtons[5].DetermineAppearance();
-            _ansiButtons[5].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[5].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[5]);
 
             _ansiButtons[6] = new Button(15, 1);
@@ -106,7 +106,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[6].Text = "Cyan Dark";
             _ansiButtons[6].Theme = CreateButtonTheme(ColorAnsi.Cyan, ColorAnsi.CyanBright);
             _ansiButtons[6].DetermineAppearance();
-            _ansiButtons[6].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[6].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[6]);
 
             _ansiButtons[7] = new Button(15, 1);
@@ -114,7 +114,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[7].Text = "Cyan Bright";
             _ansiButtons[7].Theme = CreateButtonTheme(ColorAnsi.CyanBright, ColorAnsi.Cyan);
             _ansiButtons[7].DetermineAppearance();
-            _ansiButtons[7].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[7].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[7]);
 
             _ansiButtons[8] = new Button(15, 1);
@@ -122,7 +122,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[8].Text = "Blue Dark";
             _ansiButtons[8].Theme = CreateButtonTheme(ColorAnsi.Blue, ColorAnsi.BlueBright);
             _ansiButtons[8].DetermineAppearance();
-            _ansiButtons[8].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[8].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[8]);
 
             _ansiButtons[9] = new Button(15, 1);
@@ -130,7 +130,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[9].Text = "Blue Bright";
             _ansiButtons[9].Theme = CreateButtonTheme(ColorAnsi.BlueBright, ColorAnsi.Blue);
             _ansiButtons[9].DetermineAppearance();
-            _ansiButtons[9].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[9].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[9]);
 
             _ansiButtons[10] = new Button(15, 1);
@@ -138,7 +138,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[10].Text = "Magenta Dark";
             _ansiButtons[10].Theme = CreateButtonTheme(ColorAnsi.Magenta, ColorAnsi.MagentaBright);
             _ansiButtons[10].DetermineAppearance();
-            _ansiButtons[10].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[10].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[10]);
 
             _ansiButtons[11] = new Button(15, 1);
@@ -146,7 +146,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[11].Text = "Magenta Bright";
             _ansiButtons[11].Theme = CreateButtonTheme(ColorAnsi.MagentaBright, ColorAnsi.Magenta);
             _ansiButtons[11].DetermineAppearance();
-            _ansiButtons[11].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[11].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[11]);
 
             _ansiButtons[12] = new Button(15, 1);
@@ -154,7 +154,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[12].Text = "Black Dark";
             _ansiButtons[12].Theme = CreateButtonTheme(ColorAnsi.Black, ColorAnsi.BlackBright);
             _ansiButtons[12].DetermineAppearance();
-            _ansiButtons[12].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[12].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[12]);
 
             _ansiButtons[13] = new Button(15, 1);
@@ -162,7 +162,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[13].Text = "Black Bright";
             _ansiButtons[13].Theme = CreateButtonTheme(ColorAnsi.BlackBright, ColorAnsi.Black);
             _ansiButtons[13].DetermineAppearance();
-            _ansiButtons[13].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[13].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[13]);
 
             _ansiButtons[14] = new Button(15, 1);
@@ -170,7 +170,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[14].Text = "White Dark";
             _ansiButtons[14].Theme = CreateButtonTheme(ColorAnsi.White, ColorAnsi.WhiteBright);
             _ansiButtons[14].DetermineAppearance();
-            _ansiButtons[14].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[14].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[14]);
 
             _ansiButtons[15] = new Button(15, 1);
@@ -178,7 +178,7 @@ namespace SadConsoleEditor.Windows
             _ansiButtons[15].Text = "White Bright";
             _ansiButtons[15].Theme = CreateButtonTheme(ColorAnsi.WhiteBright, ColorAnsi.White);
             _ansiButtons[15].DetermineAppearance();
-            _ansiButtons[15].ButtonClicked += _ansiGreenBright_ButtonClicked;
+            _ansiButtons[15].Click += _ansiGreenBright_Click;
             Add(_ansiButtons[15]);
             #endregion
 
@@ -209,13 +209,13 @@ namespace SadConsoleEditor.Windows
             _cancelButton = new Button(12, 1);
             _cancelButton.Position = new Point(2, textSurface.Height - 2);
             _cancelButton.Text = "Cancel";
-            _cancelButton.ButtonClicked += (sender, e) => { DialogResult = false; Hide(); };
+            _cancelButton.Click += (sender, e) => { DialogResult = false; Hide(); };
             Add(_cancelButton);
 
             _okButton = new Button(12, 1);
             _okButton.Position = new Point(textSurface.Width - 2 - _okButton.Width, textSurface.Height - 2);
             _okButton.Text = "OK";
-            _okButton.ButtonClicked += (sender, e) => { SelectedColor = _ansiSelectButton.IsSelected ? _selectedAnsiColor : (Color)((Tuple<Color, Color, string>)_namedColorsList.SelectedItem).Item1; DialogResult = true; Hide(); };
+            _okButton.Click += (sender, e) => { SelectedColor = _ansiSelectButton.IsSelected ? _selectedAnsiColor : (Color)((Tuple<Color, Color, string>)_namedColorsList.SelectedItem).Item1; DialogResult = true; Hide(); };
             Add(_okButton);
 
             _ansiSelectButton.IsSelected = true;
@@ -241,7 +241,7 @@ namespace SadConsoleEditor.Windows
             }
         }
 
-        void _ansiGreenBright_ButtonClicked(object sender, EventArgs e)
+        void _ansiGreenBright_Click(object sender, EventArgs e)
         {
             if (sender is Button)
             {
@@ -262,7 +262,7 @@ namespace SadConsoleEditor.Windows
                 theme.MouseClicking =
                 theme.Focused =
                 theme.Disabled =
-                new SadConsole.CellAppearance(textColor, color);
+                new SadConsole.Cell(textColor, color);
 
             return theme;
         }
@@ -272,11 +272,11 @@ namespace SadConsoleEditor.Windows
             base.Redraw();
 
             if (_selectedAnsiColorIconPrevious != Point.Zero)
-                textSurface[_selectedAnsiColorIconPrevious.X, _selectedAnsiColorIconPrevious.Y].GlyphIndex = 0;
+                textSurface[_selectedAnsiColorIconPrevious.X, _selectedAnsiColorIconPrevious.Y].Glyph = 0;
 
             if (_selectedAnsiColorIcon != Point.Zero)
             {
-                textSurface[_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y].GlyphIndex = 16;
+                textSurface[_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y].Glyph = 16;
                 textSurface[_selectedAnsiColorIcon.X, _selectedAnsiColorIcon.Y].Foreground = Settings.Color_TitleText;
             }
 
@@ -284,10 +284,10 @@ namespace SadConsoleEditor.Windows
             int lineY = textSurface.Height - 3;
             for (int x = 1; x < textSurface.Width - 1; x++)
             {
-                textSurface[x, lineY].GlyphIndex = 196;
+                textSurface[x, lineY].Glyph = 196;
             }
-            textSurface[0, lineY].GlyphIndex = 199;
-            textSurface[textSurface.Width - 1, lineY].GlyphIndex = 182;
+            textSurface[0, lineY].Glyph = 199;
+            textSurface[textSurface.Width - 1, lineY].Glyph = 182;
         }
     }
 }

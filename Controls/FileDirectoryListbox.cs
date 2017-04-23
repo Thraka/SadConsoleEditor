@@ -5,15 +5,16 @@ using System.Text;
 using SadConsole.Controls;
 using SadConsole;
 using Microsoft.Xna.Framework;
-using SadConsole.Consoles;
+using SadConsole.Surfaces;
 
 namespace SadConsoleEditor.Controls
 {
     internal class FileDirectoryListbox : ListBox<FileDirectoryListboxItem>
     {
         #region Fields
-        private string _currentFolder;
+        private string _currentFolder = null;
         private string _extFilter = "*.*";
+        private string originalRootFolder;
         #endregion
 
         #region Properties
@@ -22,8 +23,13 @@ namespace SadConsoleEditor.Controls
             get { return _currentFolder; }
             set
             {
+                if (_currentFolder == null)
+                    originalRootFolder = value;
+
                 if (DisplayFolder(value))
+                {
                     _currentFolder = value;
+                }
             }
         }
 
@@ -40,6 +46,8 @@ namespace SadConsoleEditor.Controls
                 DisplayFolder(_currentFolder);
             }
         }
+
+        public bool OnlyRootAndSubDirs { get; set; }
 
         public bool HideNonFilterFiles { get; set; }
 
@@ -63,7 +71,7 @@ namespace SadConsoleEditor.Controls
                     List<object> newItems = new List<object>(20);
                     var dir = new System.IO.DirectoryInfo(folder);
 
-                    if (dir.Parent != null)
+                    if (dir.Parent != null && (!OnlyRootAndSubDirs || (OnlyRootAndSubDirs && System.IO.Path.GetFullPath(folder).ToLower() != System.IO.Path.GetFullPath(originalRootFolder).ToLower())))
                         newItems.Add(new FauxDirectory { Name = ".." });
 
                     foreach (var item in System.IO.Directory.GetDirectories(folder))
@@ -145,18 +153,18 @@ namespace SadConsoleEditor.Controls
     internal class FileDirectoryListboxItem : ListBoxItem
     {
         private string _displayString;
-        private CellAppearance _directoryAppNormal = new CellAppearance(Color.Purple, Settings.Color_ControlBack);
-        private CellAppearance _directoryAppMouseOver = new CellAppearance(Color.Purple, Settings.Color_ControlBackDim);
-        private CellAppearance _directoryAppSelected = new CellAppearance(new Color(255, 0, 255), Settings.Color_ControlBack);
-        private CellAppearance _directoryAppSelectedOver = new CellAppearance(new Color(255, 0, 255), Settings.Color_ControlBackDim);
-        private CellAppearance _fileAppNormal = new CellAppearance(Color.Gray, Settings.Color_ControlBack);
-        private CellAppearance _fileAppMouseOver = new CellAppearance(Color.Gray, Settings.Color_ControlBackDim);
-        private CellAppearance _fileAppSelected = new CellAppearance(Color.White, Settings.Color_ControlBack);
-        private CellAppearance _fileAppSelectedOver = new CellAppearance(Color.White, Settings.Color_ControlBackDim);
-        private CellAppearance _highExtAppNormal = new CellAppearance(ColorAnsi.Yellow, Settings.Color_ControlBack);
-        private CellAppearance _highExtAppMouseOver = new CellAppearance(ColorAnsi.Yellow, Settings.Color_ControlBackDim);
-        private CellAppearance _highExtAppSelected = new CellAppearance(Color.Yellow, Settings.Color_ControlBack);
-        private CellAppearance _highExtAppSelectedOver = new CellAppearance(Color.Yellow, Settings.Color_ControlBackDim);
+        private Cell _directoryAppNormal = new Cell(Color.Purple, Settings.Color_ControlBack);
+        private Cell _directoryAppMouseOver = new Cell(Color.Purple, Settings.Color_ControlBackDim);
+        private Cell _directoryAppSelected = new Cell(new Color(255, 0, 255), Settings.Color_ControlBack);
+        private Cell _directoryAppSelectedOver = new Cell(new Color(255, 0, 255), Settings.Color_ControlBackDim);
+        private Cell _fileAppNormal = new Cell(Color.Gray, Settings.Color_ControlBack);
+        private Cell _fileAppMouseOver = new Cell(Color.Gray, Settings.Color_ControlBackDim);
+        private Cell _fileAppSelected = new Cell(Color.White, Settings.Color_ControlBack);
+        private Cell _fileAppSelectedOver = new Cell(Color.White, Settings.Color_ControlBackDim);
+        private Cell _highExtAppNormal = new Cell(ColorAnsi.Yellow, Settings.Color_ControlBack);
+        private Cell _highExtAppMouseOver = new Cell(ColorAnsi.Yellow, Settings.Color_ControlBackDim);
+        private Cell _highExtAppSelected = new Cell(Color.Yellow, Settings.Color_ControlBack);
+        private Cell _highExtAppSelectedOver = new Cell(Color.Yellow, Settings.Color_ControlBackDim);
 
         protected override void DetermineAppearance()
         {
@@ -217,7 +225,7 @@ namespace SadConsoleEditor.Controls
 
         }
 
-        public override void Draw(ITextSurface surface, Rectangle area)
+        public override void Draw(ISurface surface, Rectangle area)
         {
             SadConsoleEditor.Settings.QuickEditor.TextSurface = surface;
             SadConsoleEditor.Settings.QuickEditor.Print(area.X, area.Y, _displayString.Align(System.Windows.HorizontalAlignment.Left, area.Width), base._currentAppearance);
