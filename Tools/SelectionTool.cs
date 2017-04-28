@@ -10,6 +10,7 @@
 
     class LayeredGameObject : GameObject
     {
+        public bool ForceDraw = false;
         public GameObject SelectedSurface;
         public bool ShowSelectedSurface { get { return SelectedSurface.IsVisible; } set { SelectedSurface.IsVisible = value; } }
 
@@ -21,7 +22,7 @@
 
         public override void Draw(TimeSpan delta)
         {
-            if (IsVisible)
+            if (ForceDraw || IsVisible)
             {
                 //base.Draw(delta);
 
@@ -137,22 +138,25 @@
         {
             if (state == SelectionToolPanel.CloneState.SelectingPoint1)
             {
+                Brush.ForceDraw = false;
                 Brush.ShowSelectedSurface = false;
                 Brush.IsVisible = false;
                 Brush.Animation = Brush.Animations[AnimationSingle];
-
+                firstPoint = null;
             }
             else if (state == SelectionToolPanel.CloneState.Move)
             {
+                Brush.ForceDraw = false;
                 var animation = Brush.Animation;
                 Brush.ShowSelectedSurface = true;
                 ClearBrush(Brush.Position.X, Brush.Position.Y, _previousSurface);
                 animation.Center = new Point(animation.Width / 2, animation.Height / 2);
-                Brush.Position += animation.Center;
+                Brush.SelectedSurface.Animation.Center = Brush.Animation.Center;
 
             }
             else if (state == SelectionToolPanel.CloneState.Clear)
             {
+                Brush.ForceDraw = false;
                 var animation = Brush.Animation;
                 Brush.ShowSelectedSurface = false;
                 ClearBrush(Brush.Position.X, Brush.Position.Y, _previousSurface);
@@ -160,12 +164,16 @@
             }
             else if (state == SelectionToolPanel.CloneState.Stamp)
             {
+                Brush.ForceDraw = false;
                 var animation = Brush.Animation;
                 Brush.ShowSelectedSurface = true;
                 animation.Center = new Point(animation.Width / 2, animation.Height / 2);
                 //Brush.Position += animation.Center + new Point(1);
                 Brush.SelectedSurface.Animation.Center = Brush.Animation.Center;
             }
+            else
+                Brush.ForceDraw = true;
+
         }
 
         void ResetSelection()
@@ -293,6 +301,9 @@
                 else
                     cancelled = false;
             }
+
+            if (!isInBounds)
+                return;
 
             if (_panel.State == SelectionToolPanel.CloneState.SelectingPoint1)
             {
@@ -450,27 +461,20 @@
 
         private void ClearBrush(int consoleLocationX, int consoleLocationY, ISurface surface)
         {
-            int destinationX = consoleLocationX - Brush.SelectedSurface.Animation.Center.X;
-            int destinationY = consoleLocationY - Brush.SelectedSurface.Animation.Center.Y;
-            int destX = destinationX;
-            int destY = destinationY;
+            int destYorg = consoleLocationY - Brush.Animation.Center.Y - 1;
+            int destX = consoleLocationX - Brush.Animation.Center.X - 1;
+            int destY = destYorg;
 
             SadConsoleEditor.Settings.QuickEditor.TextSurface = surface;
 
-            for (int curx = 0; curx < Brush.SelectedSurface.Animation.CurrentFrame.Width; curx++)
+            for (int curx = 0; curx < Brush.SelectedSurface.Animation.Width; curx++)
             {
-                for (int cury = 0; cury < Brush.SelectedSurface.Animation.CurrentFrame.Height; cury++)
+                for (int cury = 0; cury < Brush.SelectedSurface.Animation.Height; cury++)
                 {
-                    if (Brush.SelectedSurface.Animation.CurrentFrame.IsValidCell(curx, cury))
-                    {
-                        if (surface.IsValidCell(destX + surface.RenderArea.Location.X, destY + surface.RenderArea.Location.Y))
-                        {
-                            SadConsoleEditor.Settings.QuickEditor.Clear(destX + surface.RenderArea.Location.X, destY + surface.RenderArea.Location.Y);
-                        }
-                    }
+                    SadConsoleEditor.Settings.QuickEditor.Clear(destX + surface.RenderArea.Location.X, destY + surface.RenderArea.Location.Y);
                     destY++;
                 }
-                destY = destinationY;
+                destY = destYorg;
                 destX++;
             }
 

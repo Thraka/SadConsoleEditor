@@ -137,6 +137,9 @@
                 }
             }
 
+            if (!isInBounds)
+                return;
+
             if (info.Mouse.LeftButtonDown)
             {
                 if (!firstPoint.HasValue)

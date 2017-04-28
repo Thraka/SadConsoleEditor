@@ -132,7 +132,23 @@ namespace SadConsoleEditor.Editors
 
         public bool ProcessKeyboard(Keyboard info)
         {
-            return false;
+            if (!toolsPanel.SelectedTool.ProcessKeyboard(info, surface))
+            {
+                var keys = info.KeysReleased.Select(k => k.Character).ToList();
+
+                foreach (var item in tools.Values)
+                {
+                    if (keys.Contains(item.Hotkey))
+                    {
+                        toolsPanel.ToolsListBox.SelectedItem = item;
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
         }
 
         public bool ProcessMouse(SadConsole.Input.MouseConsoleState info, bool isInBounds)

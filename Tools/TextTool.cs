@@ -5,6 +5,7 @@
     using SadConsole.GameHelpers;
     using SadConsole.Input;
     using SadConsoleEditor.Panels;
+    using Microsoft.Xna.Framework;
 
     class TextTool : ITool
     {
@@ -107,7 +108,7 @@
                     //tempConsole.BasicSurface = (ISurfaceRendered)surface;
                     tempConsole.VirtualCursor.PrintAppearance = new Cell(CharacterPickPanel.SharedInstance.SettingForeground, CharacterPickPanel.SharedInstance.SettingBackground);
                     tempConsole.ProcessKeyboard(info);
-                    Brush.Position = tempConsole.VirtualCursor.Position;
+                    Brush.Position = tempConsole.VirtualCursor.Position + new Point(1);
                 }
 
                 return true;
@@ -124,8 +125,9 @@
                 MainScreen.Instance.AllowKeyboardToMoveConsole = false;
                 writing = true;
 
-                tempConsole.TextSurface = (ISurface)surface;
-                tempConsole.VirtualCursor.Position = Brush.Position = info.ConsolePosition;
+                tempConsole.TextSurface = surface;
+                Brush.Position = info.ConsolePosition;
+                tempConsole.VirtualCursor.Position = info.ConsolePosition + surface.RenderArea.Location;
 
                 Brush.IsVisible = true;
             }
