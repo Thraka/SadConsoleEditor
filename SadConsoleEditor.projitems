@@ -19,6 +19,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ColorPresenter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\FileDirectoryListbox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\SceneEditor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FileLoaders\Ansi.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainScreen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\GameObjectEditor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Editors\IEditor.cs" />

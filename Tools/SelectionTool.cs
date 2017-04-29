@@ -181,9 +181,9 @@
             _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
         }
 
-        private BasicSurface SaveBrush()
+        private NoDrawSurface SaveBrush()
         {
-            BasicSurface newSurface = new BasicSurface(Brush.SelectedSurface.Animation.CurrentFrame.Width,
+            NoDrawSurface newSurface = new NoDrawSurface(Brush.SelectedSurface.Animation.CurrentFrame.Width,
                                                      Brush.SelectedSurface.Animation.CurrentFrame.Height, SadConsoleEditor.Settings.Config.ScreenFont);
 
             Brush.SelectedSurface.Animation.CurrentFrame.Copy(newSurface);
@@ -191,7 +191,7 @@
             return newSurface;
         }
 
-        public void LoadBrush(BasicSurface surface)
+        public void LoadBrush(ISurface surface)
         {
             _panel.State = SelectionToolPanel.CloneState.Stamp;
 
@@ -402,6 +402,13 @@
             {
                 Brush.Position = finalPostion;
                 Brush.IsVisible = true;
+
+                if (info.Mouse.LeftButtonDown && isInBounds)
+                {
+                    _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
+                    firstPoint = null;
+                }
+
             }
             if (info.Mouse.LeftClicked && isInBounds)
             {

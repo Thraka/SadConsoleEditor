@@ -45,6 +45,15 @@ namespace SadConsoleEditor.Editors
 
         public string DocumentTitle { get; set; }
 
+        private Tools.ITool SelectedTool
+        {
+            get { return selectedTool; }
+            set
+            {
+                toolsPanel.ToolsListBox.SelectedItem = value;
+            }
+        }
+
         public LayeredConsoleEditor()
         {
             renderer = new LayeredSurfaceRenderer();
@@ -87,14 +96,42 @@ namespace SadConsoleEditor.Editors
 
                 surface = (SadConsole.Surfaces.LayeredSurface)loader.Load(file);
 
-                surface.RenderArea = new Rectangle(0, 0, 
+                surface.RenderArea = new Rectangle(0, 0,
                             Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, surface.RenderArea.Width),
                             Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, surface.RenderArea.Height));
 
                 layerManagementPanel.SetLayeredSurface(surface);
+            }
+            else if (loader is FileLoaders.BasicSurface)
+            {
+                Reset();
+
+                var loadedSurface = (SadConsole.Surfaces.BasicSurface)loader.Load(file);
+                surface = new SadConsole.Surfaces.LayeredSurface(loadedSurface.Width, loadedSurface.Height, Settings.Config.ScreenFont, 
+                                new Rectangle(0, 0, Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, loadedSurface.RenderArea.Width),
+                                                    Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, loadedSurface.RenderArea.Height)),
+                                1);
+                loadedSurface.Copy(surface);
+                LayerMetadata.Create("root", true, false, true, surface.ActiveLayer);
+                layerManagementPanel.SetLayeredSurface(surface);
 
                 Title = System.IO.Path.GetFileName(file);
             }
+            else if (loader is FileLoaders.Ansi)
+            {
+                Reset();
+
+                var loadedSurface = (SadConsole.Surfaces.NoDrawSurface)loader.Load(file);
+                surface = new SadConsole.Surfaces.LayeredSurface(loadedSurface.Width, loadedSurface.Height, Settings.Config.ScreenFont,
+                                new Rectangle(0, 0, Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, loadedSurface.RenderArea.Width),
+                                                    Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, loadedSurface.RenderArea.Height)),
+                                1);
+                loadedSurface.Copy(surface);
+                LayerMetadata.Create("root", true, false, true, surface.ActiveLayer);
+                layerManagementPanel.SetLayeredSurface(surface);
+            }
+
+            Title = System.IO.Path.GetFileName(file);
         }
 
         public void New(Color foreground, Color background, int width, int height)
@@ -127,7 +164,12 @@ namespace SadConsoleEditor.Editors
 
         public void OnSelected()
         {
-            
+            if (selectedTool == null)
+                SelectedTool = tools.First().Value;
+            else
+            {
+                selectedTool.OnSelected();
+            }
         }
 
         public bool ProcessKeyboard(Keyboard info)

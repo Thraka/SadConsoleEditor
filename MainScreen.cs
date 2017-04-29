@@ -49,6 +49,7 @@ namespace SadConsoleEditor
             }
         }
         public bool AllowKeyboardToMoveConsole;
+        public bool UseKeyboard;
 
         public Editors.IEditor ActiveEditor { get; private set; }
 
@@ -82,6 +83,7 @@ namespace SadConsoleEditor
         public MainScreen()
         {
             MainScreen.Instance = this;
+            UseKeyboard = true;
 
             // Create the basic consoles
             QuickSelectPane = new SadConsoleEditor.Consoles.QuickSelectPane();
@@ -98,6 +100,7 @@ namespace SadConsoleEditor
             borderConsole.IsVisible = false;
             //borderConsole.UseMouse = false;
             borderConsole.MouseHandler = ProcessMouseForBrush;
+            borderConsole.KeyboardHandler = BorderConsoleKeyboardHandler;
 
             ToolsPane = new Consoles.ToolPane();
             ToolsPane.Position = new Point(Settings.Config.WindowWidth - ToolsPane.Width - 1, 1);
@@ -117,6 +120,7 @@ namespace SadConsoleEditor
             Children.Add(QuickSelectPane);
             Children.Add(topBarPane);
             Children.Add(ToolsPane);
+            SadConsole.Global.FocusedConsoles.Set(borderConsole);
             
             // Setup the file types for base editors.
             EditorFileTypes = new Dictionary<Type, FileLoaders.IFileLoader[]>(3);
@@ -131,13 +135,7 @@ namespace SadConsoleEditor
             //Editors.Add("User Interface Console", SadConsoleEditor.Editors.Editors.GUI);
             
         }
-
-        private bool ProcessMouseForBrush(IConsole console, MouseConsoleState state)
-        {
-            //return ActiveEditor.RenderedConsole.ProcessMouse(new MouseConsoleState(ActiveEditor.RenderedConsole, state.Mouse));
-            return false;
-        }
-
+        
         public void ShowStartup()
         {
             Window.Prompt("Create new or open existing?", "New", "Open",
@@ -155,7 +153,7 @@ namespace SadConsoleEditor
                     Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
                     popup.Center();
                     popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else LoadEditor(popup.SelectedFile, popup.SelectedLoader); };
-                    popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredSurface(), new FileLoaders.BasicSurface(), new FileLoaders.Scene(), new FileLoaders.GameObject() };
+                    popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredSurface(), new FileLoaders.BasicSurface(), new FileLoaders.Scene(), new FileLoaders.GameObject(), new FileLoaders.Ansi() };
                     popup.Show(true);
                 }
 
@@ -200,7 +198,7 @@ namespace SadConsoleEditor
         {
             Editors.IEditor editor = null;
 
-            if (loader is FileLoaders.LayeredSurface || loader is FileLoaders.BasicSurface)
+            if (loader is FileLoaders.LayeredSurface || loader is FileLoaders.BasicSurface || loader is FileLoaders.Ansi)
             {
                 editor = new Editors.LayeredConsoleEditor();
                 AddEditor(editor, false);
@@ -250,7 +248,7 @@ namespace SadConsoleEditor
             Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
             popup.Center();
             popup.Closed += (s, e) => { if (popup.DialogResult) LoadEditor(popup.SelectedFile, popup.SelectedLoader); };
-            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredSurface(), new FileLoaders.Scene(), new FileLoaders.GameObject() };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredSurface(), new FileLoaders.BasicSurface(), new FileLoaders.Scene(), new FileLoaders.GameObject(), new FileLoaders.Ansi() };
             popup.Show(true);
         }
 
@@ -384,63 +382,73 @@ namespace SadConsoleEditor
             topBarPane.Print(0, 0, text);
         }
 
-        public override void Update(TimeSpan timeElapsed)
+
+        private bool ProcessMouseForBrush(IConsole console, MouseConsoleState state)
         {
-            base.Update(timeElapsed);
+            // This is not currently used. It may be in the future.
+            return false;
+        }
 
-            bool movekeyPressed = false;
-            var position = new Point(borderConsole.Position.X + 1, borderConsole.Position.Y + 1);
-            //var result = base.ProcessKeyboard(info);
-            if (AllowKeyboardToMoveConsole && ActiveEditor != null && ActiveEditor.Surface != null)
+        private bool BorderConsoleKeyboardHandler(IConsole console, Keyboard state)
+        {
+            if (UseKeyboard)
             {
-                bool shifted = Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
-                var oldRenderArea = ActiveEditor.Surface.RenderArea;
-
-                if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
-                    ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left - 1, ActiveEditor.Surface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
-
-                else if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
-                    ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left + 1, ActiveEditor.Surface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
-
-                if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
-                    ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left, ActiveEditor.Surface.RenderArea.Top - 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
-
-                else if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
-                    ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left, ActiveEditor.Surface.RenderArea.Top + 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
-
-                movekeyPressed = oldRenderArea != ActiveEditor.Surface.RenderArea;
-
-            }
-
-            if (!movekeyPressed)
-            {
-                //if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Subtract))
-                //{
-                //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X / 2, SelectedEditor.Surface.CellSize.Y / 2);
-                //}
-                //else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Add))
-                //{
-                //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X * 2, SelectedEditor.Surface.CellSize.Y * 2);
-                //}
-                //else
+                bool movekeyPressed = false;
+                var position = new Point(borderConsole.Position.X + 1, borderConsole.Position.Y + 1);
+                //var result = base.ProcessKeyboard(info);
+                if (AllowKeyboardToMoveConsole && ActiveEditor != null && ActiveEditor.Surface != null)
                 {
-                    // Look for tool hotkeys
-                    if (ToolsPane.ProcessKeyboard(Global.KeyboardState))
+                    bool shifted = Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
+                    var oldRenderArea = ActiveEditor.Surface.RenderArea;
+
+                    if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+                        ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left - 1, ActiveEditor.Surface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+
+                    else if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
+                        ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left + 1, ActiveEditor.Surface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+
+                    if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
+                        ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left, ActiveEditor.Surface.RenderArea.Top - 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+
+                    else if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
+                        ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left, ActiveEditor.Surface.RenderArea.Top + 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+
+                    movekeyPressed = oldRenderArea != ActiveEditor.Surface.RenderArea;
+
+                }
+
+                if (!movekeyPressed)
+                {
+                    //if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Subtract))
+                    //{
+                    //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X / 2, SelectedEditor.Surface.CellSize.Y / 2);
+                    //}
+                    //else if (info.IsKeyReleased(Microsoft.Xna.Framework.Input.Keys.Add))
+                    //{
+                    //	SelectedEditor.Surface.ResizeCells(SelectedEditor.Surface.CellSize.X * 2, SelectedEditor.Surface.CellSize.Y * 2);
+                    //}
+                    //else
                     {
-                        return;
-                    }
-                    // Look for quick select F* keys
-                    else if (QuickSelectPane.ProcessKeyboard(Global.KeyboardState))
-                    {
-                        return;
-                    }
-                    else if (ActiveEditor != null)
-                    {
-                        ActiveEditor.ProcessKeyboard(Global.KeyboardState);
+                        // Look for tool hotkeys
+                        if (ToolsPane.ProcessKeyboard(Global.KeyboardState))
+                        {
+                        }
+                        // Look for quick select F* keys
+                        else if (QuickSelectPane.ProcessKeyboard(Global.KeyboardState))
+                        {
+                        }
+                        else if (ActiveEditor != null)
+                        {
+                            ActiveEditor.ProcessKeyboard(Global.KeyboardState);
+                        }
                     }
                 }
             }
+
+            // Always return true so that the virtual cursor doesn't start working.
+            return true;
         }
+        
 
     }
 }

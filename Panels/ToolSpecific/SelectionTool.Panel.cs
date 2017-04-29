@@ -65,6 +65,8 @@ namespace SadConsoleEditor.Panels
         private Button clone;
         private Button clear;
         private Button move;
+        private Button stash;
+        private Button restore;
 
         private string lastFolder = null;
 
@@ -104,7 +106,7 @@ namespace SadConsoleEditor.Panels
 
         
 
-        public SelectionToolPanel(Action<BasicSurface> loadBrushHandler, Func<BasicSurface> saveBrushHandler)
+        public SelectionToolPanel(Action<ISurface> loadBrushHandler, Func<NoDrawSurface> saveBrushHandler)
         {
             reset = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             reset.Text = "Reset Steps";
@@ -130,9 +132,18 @@ namespace SadConsoleEditor.Panels
             move.Text = "Move";
             move.Click += move_Click;
 
+            stash = new Button(Consoles.ToolPane.PanelWidthControls);
+            stash.Text = "Stash";
+            stash.Click += move_Click;
+
+            restore = new Button(Consoles.ToolPane.PanelWidthControls);
+            restore.Text = "Restore";
+            restore.Click += move_Click;
+
+
             
 
-            Controls = new ControlBase[] { reset, loadBrush, saveBrush, clone, clear, move };
+            Controls = new ControlBase[] { reset, loadBrush, saveBrush, null, clone, clear, move, null, stash, restore };
 
             this.loadBrushHandler = loadBrushHandler;
             this.saveBrushHandler = saveBrushHandler;
@@ -203,7 +214,7 @@ namespace SadConsoleEditor.Panels
                 }
             };
             popup.CurrentFolder = lastFolder ?? Environment.CurrentDirectory;
-            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.BasicSurface(), new FileLoaders.TextFile() };
+            popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.BasicSurface(), new FileLoaders.TextFile(), new FileLoaders.Ansi() };
             popup.Show(true);
             popup.Center();
         }
@@ -215,11 +226,6 @@ namespace SadConsoleEditor.Panels
 
         public override int Redraw(ControlBase control)
         {
-            if (control == saveBrush || control == move)
-            {
-                return 1;
-            }
-
             return 0;
         }
 

@@ -331,9 +331,7 @@ namespace SadConsoleEditor.Editors
                 SelectedTool = tools.First().Value;
             else
             {
-                var oldTool = selectedTool;
-                SelectedTool = null;
-                SelectedTool = selectedTool;
+                selectedTool.OnSelected();
             }
         }
 
