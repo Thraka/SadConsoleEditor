@@ -67,11 +67,14 @@ namespace SadConsoleEditor.Panels
         private Button move;
         private Button stash;
         private Button restore;
+        private Button createText;
 
         private string lastFolder = null;
 
         private Func<BasicSurface> saveBrushHandler;
         private Action<BasicSurface> loadBrushHandler;
+        private Action stashBrushHandler;
+        private Action restoreBrushHandler;
 
         private int _currentStepChar = 175;
 
@@ -106,7 +109,7 @@ namespace SadConsoleEditor.Panels
 
         
 
-        public SelectionToolPanel(Action<ISurface> loadBrushHandler, Func<NoDrawSurface> saveBrushHandler)
+        public SelectionToolPanel(Action<ISurface> loadBrushHandler, Func<NoDrawSurface> saveBrushHandler, Action stashHandler, Action restoreHandler)
         {
             reset = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             reset.Text = "Reset Steps";
@@ -134,22 +137,42 @@ namespace SadConsoleEditor.Panels
 
             stash = new Button(Consoles.ToolPane.PanelWidthControls);
             stash.Text = "Stash";
-            stash.Click += move_Click;
+            stash.Click += stash_Click;
 
             restore = new Button(Consoles.ToolPane.PanelWidthControls);
             restore.Text = "Restore";
-            restore.Click += move_Click;
+            restore.Click += restore_Click;
+
+            createText = new Button(Consoles.ToolPane.PanelWidthControls);
+            createText.Text = "Import Text";
+            createText.Click += createText_Click;
 
 
-            
-
-            Controls = new ControlBase[] { reset, loadBrush, saveBrush, null, clone, clear, move, null, stash, restore };
+            Controls = new ControlBase[] { reset, loadBrush, saveBrush, null, clone, clear, move, null, createText, null, stash, restore };
 
             this.loadBrushHandler = loadBrushHandler;
             this.saveBrushHandler = saveBrushHandler;
+            stashBrushHandler = stashHandler;
+            restoreBrushHandler = restoreHandler;
 
             Title = "Clone";
             State = CloneState.SelectingPoint1;
+        }
+
+        private void createText_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+
+        private void stash_Click(object sender, EventArgs e)
+        {
+            stashBrushHandler();
+        }
+
+        private void restore_Click(object sender, EventArgs e)
+        {
+            restoreBrushHandler();
         }
 
         private void move_Click(object sender, EventArgs e)

@@ -53,6 +53,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Program.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ResizableObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Settings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TheDraw\Font.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\Animation\EntityCenterTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\BoxTool.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tools\Circle.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Windows\RenamePopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\ResizeSurfacePopup.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Windows\SelectFilePopup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Windows\TextMakerPopup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)16x16_sm.png">
@@ -104,6 +106,24 @@
     </None>
     <None Include="$(MSBuildThisFileDirectory)Editor.font">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TheDraw\4MAXX.TDF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TheDraw\ABBADON.TDF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TheDraw\BIGICE_F.TDF">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TheDraw\DESTRUCX.TDF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TheDraw\LARRY3D.TDF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)TheDraw\TDFONTS0.TDF">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>

@@ -57,6 +57,8 @@
 
     class SelectionTool : ITool
     {
+        private static ISurface stashedBrush;
+
         private const string AnimationSingle = "single";
         private const string AnimationSelection = "selection";
 
@@ -114,7 +116,7 @@
             };
 
 
-            _panel = new SelectionToolPanel(LoadBrush, SaveBrush);
+            _panel = new SelectionToolPanel(LoadBrush, SaveBrush, StashBrush, RestoreBrush);
             _panel.StateChangedHandler = PanelStateChanged;
             _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
 
@@ -132,6 +134,30 @@
                 AutoReverse = true,
                 Repeat = true,
             };
+        }
+
+        public void StashBrush()
+        {
+            stashedBrush = SaveBrush();
+        }
+
+        public void RestoreBrush()
+        {
+            if (stashedBrush != null)
+                LoadBrush(stashedBrush);
+            else
+            {
+                var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/TDFONTS0.TDF"));
+                //var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/DESTRUCX.TDF"));
+                //var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/BIGICE_F.TDF"));
+                //var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/LARRY3D.TDF"));
+                //var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/ABBADON.TDF"));
+                //var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/4MAXX.TDF"));
+                var surface = fonts[3].GetCharacter((int)'A');
+                Brush.Animation = new AnimatedSurface("default", surface.Width, surface.Height, SadConsoleEditor.Settings.Config.ScreenFont);
+                var frame = Brush.Animation.CreateFrame();
+                surface.Copy(frame);
+            }
         }
 
         private void PanelStateChanged(SelectionToolPanel.CloneState state)

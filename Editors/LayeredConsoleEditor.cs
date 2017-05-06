@@ -57,7 +57,7 @@ namespace SadConsoleEditor.Editors
         public LayeredConsoleEditor()
         {
             renderer = new LayeredSurfaceRenderer();
-
+            
             layerManagementPanel = new LayersPanel();
             layerManagementPanel.IsCollapsed = true;
 
@@ -83,9 +83,10 @@ namespace SadConsoleEditor.Editors
             toolsPanel.ToolsListBox.Items.Add(tools[Tools.SelectionTool.ID]);
 
             toolsPanel.ToolsListBox.SelectedItemChanged += ToolsListBox_SelectedItemChanged;
-            toolsPanel.ToolsListBox.SelectedItem = tools[Tools.PaintTool.ID];
 
             panels = new CustomPanel[] { layerManagementPanel, toolsPanel };
+
+            toolsPanel.ToolsListBox.SelectedItem = tools[Tools.PaintTool.ID];
         }
 
         public void Load(string file, IFileLoader loader)
@@ -169,6 +170,7 @@ namespace SadConsoleEditor.Editors
             else
             {
                 selectedTool.OnSelected();
+                MainScreen.Instance.ToolsPane.RedrawPanels();
             }
         }
 

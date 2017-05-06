@@ -352,7 +352,7 @@ namespace SadConsoleEditor.Editors
 
         public bool ProcessKeyboard(Keyboard info)
         {
-            bool toolHandled = toolsPanel.SelectedTool.ProcessKeyboard(info, surface);
+             bool toolHandled = toolsPanel.SelectedTool.ProcessKeyboard(info, surface);
 
             if (!toolHandled)
             {

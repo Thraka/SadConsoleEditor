@@ -61,5 +61,9 @@
     "WindowWidth": 100,
     "WindowHeight": 40
   },
+  "TextMakerSettings": {
+    "WindowWidth": 100,
+    "WindowHeight": 40
+  },
   "ToolPaneWidth": 35
 }
