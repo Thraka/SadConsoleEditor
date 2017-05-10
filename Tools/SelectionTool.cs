@@ -147,16 +147,19 @@
                 LoadBrush(stashedBrush);
             else
             {
-                var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/TDFONTS0.TDF"));
-                //var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/DESTRUCX.TDF"));
-                //var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/BIGICE_F.TDF"));
-                //var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/LARRY3D.TDF"));
-                //var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/ABBADON.TDF"));
-                //var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/4MAXX.TDF"));
-                var surface = fonts[3].GetCharacter((int)'A');
-                Brush.Animation = new AnimatedSurface("default", surface.Width, surface.Height, SadConsoleEditor.Settings.Config.ScreenFont);
-                var frame = Brush.Animation.CreateFrame();
-                surface.Copy(frame);
+                //var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/TDFONTS0.TDF"));
+                ////var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/DESTRUCX.TDF"));
+                ////var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/BIGICE_F.TDF"));
+                ////var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/LARRY3D.TDF"));
+                ////var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/ABBADON.TDF"));
+                ////var fonts = new System.Collections.Generic.List<TheDraw.Font>(TheDraw.Font.ReadFonts("TheDraw/4MAXX.TDF"));
+                //var surface = fonts[3].GetCharacter((int)'A');
+                //Brush.Animation = new AnimatedSurface("default", surface.Width, surface.Height, SadConsoleEditor.Settings.Config.ScreenFont);
+                //var frame = Brush.Animation.CreateFrame();
+                //surface.Copy(frame);
+
+                var popup = new Windows.TextMakerPopup();
+                popup.Show(true);
             }
         }
 

@@ -102,7 +102,7 @@ namespace SadConsoleEditor.TheDraw
 
             byte[] all = System.IO.File.ReadAllBytes(file);
 
-            using (var inputStream = System.IO.File.Open(file, System.IO.FileMode.Open))
+            using (var inputStream = Microsoft.Xna.Framework.TitleContainer.OpenStream(file))
             {
                 using (var reader = new System.IO.BinaryReader(inputStream))
                 {
