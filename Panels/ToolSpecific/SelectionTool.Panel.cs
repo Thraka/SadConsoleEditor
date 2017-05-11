@@ -75,7 +75,11 @@ namespace SadConsoleEditor.Panels
         private Action<BasicSurface> loadBrushHandler;
         private Action stashBrushHandler;
         private Action restoreBrushHandler;
+        private Action<NoDrawSurface> createTextResultHandler;
 
+
+        private TextMakerPopup textMaker;
+        
         private int _currentStepChar = 175;
 
 
@@ -107,9 +111,9 @@ namespace SadConsoleEditor.Panels
             Move
         }
 
-        
 
-        public SelectionToolPanel(Action<ISurface> loadBrushHandler, Func<NoDrawSurface> saveBrushHandler, Action stashHandler, Action restoreHandler)
+
+        public SelectionToolPanel(Action<ISurface> loadBrushHandler, Func<NoDrawSurface> saveBrushHandler, Action stashHandler, Action restoreHandler, Action<NoDrawSurface> createTextResultHandler)
         {
             reset = new Button(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls);
             reset.Text = "Reset Steps";
@@ -147,13 +151,16 @@ namespace SadConsoleEditor.Panels
             createText.Text = "Import Text";
             createText.Click += createText_Click;
 
+            textMaker = new TextMakerPopup();
+            textMaker.Closed += (s, e) => { if (textMaker.DialogResult) this.createTextResultHandler(textMaker.SurfaceResult); };
 
             Controls = new ControlBase[] { reset, loadBrush, saveBrush, null, clone, clear, move, null, createText, null, stash, restore };
 
             this.loadBrushHandler = loadBrushHandler;
             this.saveBrushHandler = saveBrushHandler;
-            stashBrushHandler = stashHandler;
-            restoreBrushHandler = restoreHandler;
+            this.stashBrushHandler = stashHandler;
+            this.restoreBrushHandler = restoreHandler;
+            this.createTextResultHandler = createTextResultHandler;
 
             Title = "Clone";
             State = CloneState.SelectingPoint1;
@@ -161,7 +168,7 @@ namespace SadConsoleEditor.Panels
 
         private void createText_Click(object sender, EventArgs e)
         {
-            
+            textMaker.Show(true);
         }
 
 

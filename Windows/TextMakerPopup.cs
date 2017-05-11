@@ -15,46 +15,77 @@ namespace SadConsoleEditor.Windows
     class TextMakerPopup : SadConsole.Window
     {
         DrawingSurface previewPane;
-        ScrollBar scrollBarH;
         InputBox textInput;
-        Button previewButton;
         Button okButton;
         Button cancelButton;
         ListBox<FontListBoxItem> fontsListbox;
+        CheckBox useSpacingCheckbox;
 
         List<TheDraw.Font> fonts;
         TheDraw.Font selectedFont;
 
+        Point selectedFontTitlePosition;
+        Point availableCharsPosition;
+
+        public bool UseTransparentBackground;
+        public NoDrawSurface SurfaceResult;
+
+        private bool useSpacing { get { return useSpacingCheckbox.IsSelected; } }
 
         public TextMakerPopup() : base(Settings.Config.TextMakerSettings.WindowWidth, Settings.Config.TextMakerSettings.WindowHeight)
         {
             Center();
             Title = "Text Maker";
 
-            previewButton = new Button(11);
-            previewButton.Text = "Preview";
-            previewButton.Position = new Point(Width - previewButton.Width - 2, 2);
-
-            textInput = new InputBox(previewButton.Bounds.Left - 9);
-            textInput.Position = new Point(8, 2);
-
-            fontsListbox = new ListBox<FontListBoxItem>(15, Height - 7);
+            fontsListbox = new ListBox<FontListBoxItem>(15, Height - 8);
             fontsListbox.Position = new Point(2, 4);
-            fontsListbox.SelectedItemChanged += FontsListbox_SelectedItemChanged;
             fontsListbox.HideBorder = true;
-
-            previewPane = new DrawingSurface(Width - fontsListbox.Bounds.Right - 3, Height - 10);
-            previewPane.Fill(Color.Black, Color.White, 0, Microsoft.Xna.Framework.Graphics.SpriteEffects.FlipHorizontally);
-            previewPane.Position = new Point(fontsListbox.Bounds.Right + 1, 5);
+            fontsListbox.SelectedItemChanged += FontsListbox_SelectedItemChanged;
 
             Print(fontsListbox.Bounds.Left, fontsListbox.Bounds.Top - 2, "Fonts", Settings.Color_TitleText);
             Print(fontsListbox.Bounds.Left, fontsListbox.Bounds.Top - 1, new string((char)196, fontsListbox.Width));
 
+            Print(fontsListbox.Bounds.Right + 1, fontsListbox.Bounds.Top - 2, "Selected font: ", Settings.Color_TitleText);
+            selectedFontTitlePosition = new Point(fontsListbox.Bounds.Right + 16, fontsListbox.Bounds.Top - 2);
 
-            //Add(previewButton);
-            //Add(textInput);
+            Print(fontsListbox.Bounds.Right + 1, fontsListbox.Bounds.Top - 1, "Available characters: ", Settings.Color_TitleText);
+            availableCharsPosition = new Point(fontsListbox.Bounds.Right + 23, fontsListbox.Bounds.Top - 1);
+
+            Print(fontsListbox.Bounds.Right + 1, fontsListbox.Bounds.Top + 1, "Text: ", Settings.Color_TitleText);
+
+            textInput = new InputBox(Width - fontsListbox.Bounds.Right - 15);
+            textInput.Position = new Point(fontsListbox.Bounds.Right + 7, fontsListbox.Bounds.Top + 1);
+            textInput.TextChanged += TextInput_TextChanged;
+
+            Print(fontsListbox.Bounds.Right + 1, fontsListbox.Bounds.Top + 3, "Preview", Settings.Color_TitleText);
+
+            previewPane = new DrawingSurface(Width - fontsListbox.Bounds.Right - 3, Height - fontsListbox.Bounds.Top - 8);
+            previewPane.Fill(Color.Black, Color.White, 0, SpriteEffects.FlipHorizontally);
+            previewPane.Position = new Point(fontsListbox.Bounds.Right + 1, fontsListbox.Bounds.Top + 4);
+
+            okButton = new Button(8);
+            okButton.Position = new Point(textSurface.Width - okButton.Width - 2, textSurface.Height - 3);
+            okButton.Click += (o, e) => { DialogResult = true; BuildFinalResult(); Hide(); };
+            okButton.Text = "Ok";
+
+            cancelButton = new Button(8);
+            cancelButton.Position = new Point(2, textSurface.Height - 3);
+            cancelButton.Text = "Cancel";
+            cancelButton.Click += (o, e) => { DialogResult = false; Hide(); };
+
+
+            useSpacingCheckbox = new CheckBox(16, 1);
+            useSpacingCheckbox.Text = "Use Spacing";
+            useSpacingCheckbox.Position = new Point(cancelButton.Bounds.Right + 2, cancelButton.Position.Y);
+            useSpacingCheckbox.IsSelectedChanged += (o, e) => DrawText();
+
+
+            Add(useSpacingCheckbox);
+            Add(textInput);
             Add(previewPane);
             Add(fontsListbox);
+            Add(okButton);
+            Add(cancelButton);
 
             fonts = new List<TheDraw.Font>();
 
@@ -63,6 +94,47 @@ namespace SadConsoleEditor.Windows
 
             foreach (var font in fonts)
                 fontsListbox.Items.Add(font);
+
+            fontsListbox.SelectedItem = fontsListbox.Items[0];
+            textInput.Text = "Example!";
+        }
+
+        private void BuildFinalResult()
+        {
+            int x = 0;
+            int tempHeight = 0;
+            int height = 0;
+            int width = 0;
+
+            List<TheDraw.Character> characters = new List<TheDraw.Character>(textInput.Text.Length);
+
+            foreach (var item in textInput.Text)
+            {
+                if (selectedFont.IsCharacterSupported(item))
+                {
+                    var character = selectedFont.GetCharacter(item);
+                    characters.Add(character);
+                    width += character.Width + (useSpacing ? selectedFont.LetterSpacing : 0);
+
+                    tempHeight = character.Rows.Length;
+
+                    if (tempHeight > height)
+                        height = tempHeight;
+                }
+            }
+
+            SurfaceResult = new NoDrawSurface(width - 1, height);
+
+            foreach (var item in characters)
+            {
+                selectedFont.GetSurface(item.GlyphIndex).Copy(SurfaceResult, x, 0);
+                x += item.Width + (useSpacing ? selectedFont.LetterSpacing : 0);
+            }
+        }
+
+        private void TextInput_TextChanged(object sender, EventArgs e)
+        {
+            DrawText();
         }
 
         private void FontsListbox_SelectedItemChanged(object sender, ListBox<FontListBoxItem>.SelectedItemEventArgs e)
@@ -72,16 +144,42 @@ namespace SadConsoleEditor.Windows
             PrintValidCharacters();
         }
 
-
-        public override void Redraw()
+        private void DrawText()
         {
-            base.Redraw();
+            previewPane.Fill(Color.White, Color.Black, 0, Microsoft.Xna.Framework.Graphics.SpriteEffects.None);
+            string clearString = new string(' ', Width - 1 - selectedFontTitlePosition.X);
+            Print(selectedFontTitlePosition.X, selectedFontTitlePosition.Y, clearString);
+            Print(selectedFontTitlePosition.X, selectedFontTitlePosition.Y, selectedFont.Title);
 
-            Print(2, 2, "Text: ", Settings.Green);
+            int x = 0;
+            int y = 0;
+            int highestHeight = 0;
+            foreach (var item in textInput.Text)
+            {
+                var result = selectedFont.GetSurface(item);
 
-            Print(2, 4, "Preview: ", Settings.Green);
+                if (result != null)
+                {
+                    if (x + result.Width > previewPane.Width)
+                    {
+                        y += highestHeight;
+                        highestHeight = 0;
+                        x = 0;
+                    }
 
-            PrintValidCharacters();
+                    if (y + result.Height > previewPane.Height)
+                    {
+                        continue;
+                    }
+
+                    result.Copy(previewPane.TextSurface, x, y);
+                    x += result.Width + (useSpacing ? selectedFont.LetterSpacing : 0);
+
+                    if (result.Height > highestHeight)
+                        highestHeight = result.Height;
+                }
+
+            }
         }
 
         private void PrintValidCharacters()
@@ -90,38 +188,13 @@ namespace SadConsoleEditor.Windows
             {
                 for (int i = 0; i < 47; i++)
                 {
-                    SetGlyph(fontsListbox.Bounds.Right + 1 + i, fontsListbox.Bounds.Top, 33 + i);
-                    SetForeground(fontsListbox.Bounds.Right + 1 + i, fontsListbox.Bounds.Top, selectedFont.CharactersSupported[i] ? Color.Green : Settings.Color_Text);
-                    SetGlyph(fontsListbox.Bounds.Right + 1 + i, fontsListbox.Bounds.Top + 1, 33 + 47 + i);
-                    SetForeground(fontsListbox.Bounds.Right + 1 + i, fontsListbox.Bounds.Top + 1, selectedFont.CharactersSupported[i + 47] ? Color.Green : Settings.Color_Text);
-                }
-                string text = "HELLO!";
-
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < 94; i++)
-                {
-                    builder.Append((char)i);
+                    SetGlyph(availableCharsPosition.X + i, availableCharsPosition.Y, 33 + i);
+                    SetForeground(availableCharsPosition.X + i, availableCharsPosition.Y, selectedFont.CharactersSupported[i] ? Color.Green : Settings.Color_Text);
+                    SetGlyph(availableCharsPosition.X + i, availableCharsPosition.Y + 1, 33 + 47 + i);
+                    SetForeground(availableCharsPosition.X + i, availableCharsPosition.Y + 1, selectedFont.CharactersSupported[i + 47] ? Color.Green : Settings.Color_Text);
                 }
 
-                text = builder.ToString();
-
-                previewPane.Fill(Color.White, Color.Black, 0, Microsoft.Xna.Framework.Graphics.SpriteEffects.None);
-                
-                int x = 0;
-                foreach (var item in text)
-                {
-                    var result = selectedFont.GetCharacter(item);
-
-                    if (result != null)
-                    {
-                        if (x + result.Width < previewPane.Width)
-                        {
-                            result.Copy(previewPane.TextSurface, x, 0);
-                            x += result.Width;
-                        }
-                    }
-
-                }
+                DrawText();
             }
         }
     }

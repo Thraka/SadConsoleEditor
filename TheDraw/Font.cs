@@ -7,7 +7,26 @@ using SadConsole.Surfaces;
 
 namespace SadConsoleEditor.TheDraw
 {
-    class Font
+    public struct CharacterSpot
+    {
+        public int Character;
+        public Color Foreground;
+        public Color Background;
+    }
+
+    public struct CharacterRow
+    {
+        public CharacterSpot[] Characters;
+    }
+
+    public struct Character
+    {
+        public int GlyphIndex;
+        public int Width;
+        public CharacterRow[] Rows;
+    }
+
+    public class Font
     {
         public enum FontType
         {
@@ -16,40 +35,51 @@ namespace SadConsoleEditor.TheDraw
             Color = 2
         }
 
-        public struct CharacterSpot
-        {
-            public int Character;
-            public Color Foreground;
-            public Color Background;
-        }
-
-        public struct CharacterRow
-        {
-            public CharacterSpot[] Characters;
-        }
-
-        public struct Character
-        {
-            public int GlyphIndex;
-            public int Width;
-            public CharacterRow[] Rows;
-        }
-
         public string Title;
         public FontType Type;
         public int LetterSpacing;
         public bool[] CharactersSupported = new bool[94];
         Dictionary<int, Character> Characters = new Dictionary<int, Character>();
-
-        public NoDrawSurface GetCharacter(int glyph)
-        {
-            return GetCharacter(glyph, Color.White, Color.Black);
-        }
-
-        public NoDrawSurface GetCharacter(int glyph, Color alternateForeground, Color alternateBackground)
+        
+        public bool IsCharacterSupported(int glyph)
         {
             int newGlyph = glyph - 33;
-            if (newGlyph > 0 && newGlyph < 94)
+            if (newGlyph >= 0 && newGlyph < 94)
+            {
+                if (CharactersSupported[newGlyph])
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public Character GetCharacter(int glyph)
+        {
+            int newGlyph = glyph - 33;
+            if (newGlyph >= 0 && newGlyph < 94)
+            {
+                if (CharactersSupported[newGlyph])
+                {
+                    return Characters[glyph];
+                }
+
+                throw new Exception("Character not supported.");
+            }
+
+            throw new Exception("Invalid glyph index. Must be 33 through 93.");
+        }
+
+        public NoDrawSurface GetSurface(int glyph)
+        {
+            return GetSurface(glyph, Color.White, Color.Black);
+        }
+
+        public NoDrawSurface GetSurface(int glyph, Color alternateForeground, Color alternateBackground)
+        {
+            int newGlyph = glyph - 33;
+            if (newGlyph >= 0 && newGlyph < 94)
             {
                 if (CharactersSupported[newGlyph])
                 {
@@ -241,12 +271,18 @@ namespace SadConsoleEditor.TheDraw
                                     break;
                             }
 
-                            characters.Add(new Character() { GlyphIndex = Array.IndexOf(characterOffsets, characterOffset) + 33, Width = charWidth, Rows = rows.ToArray() });
+                            int indexOf = Array.IndexOf(characterOffsets, characterOffset);
+                            while (indexOf != -1)
+                            {
+                                characters.Add(new Character() { GlyphIndex = indexOf + 33, Width = charWidth, Rows = rows.ToArray() });
+                                indexOf = Array.IndexOf(characterOffsets, characterOffset, indexOf + 1);
+                            }
                         }
 
                         fonts.Add(new Font()
                         {
                             Title = title,
+                            LetterSpacing = letterSpacing,
                             Type = (FontType)fontType,
                             CharactersSupported = characterOffsets.Select(c => c != -1).ToArray(),
                             Characters = characters.ToDictionary(c => c.GlyphIndex)
