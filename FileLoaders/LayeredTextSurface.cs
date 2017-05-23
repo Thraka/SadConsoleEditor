@@ -28,7 +28,16 @@ namespace SadConsoleEditor.FileLoaders
 
         public object Load(string file)
         {
-            return SadConsole.Surfaces.LayeredSurface.Load(file, typeof(LayerMetadata));
+            var surface = SadConsole.Surfaces.LayeredSurface.Load(file, typeof(LayerMetadata));
+            int i = 0;
+            foreach (var layer in surface.GetLayers())
+            {
+                if (layer.Metadata == null)
+                    LayerMetadata.Create($"layer{i}", true, i != 0, true, layer);
+
+                i++;
+            }
+            return surface;
         }
 
         public void Save(object surface, string file)
