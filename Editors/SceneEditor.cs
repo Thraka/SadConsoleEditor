@@ -178,7 +178,12 @@ namespace SadConsoleEditor.Editors
                                                                       DebugAppearance = new Cell(Color.White, z.GameObject.Animation.Cells[0].Background, 0),
                                                                       Title = z.GameObject.Name }));
                     scene.Hotspots = this.Hotspots;
+
+                    scene.Objects.ForEach(o => o.PositionOffset -= MainScreen.Instance.InnerBorderPosition);
+
                     popup.SelectedLoader.Save(scene, popup.SelectedFile);
+
+                    scene.Objects.ForEach(o => o.PositionOffset += MainScreen.Instance.InnerBorderPosition);
                 }
             };
             popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.Scene() };

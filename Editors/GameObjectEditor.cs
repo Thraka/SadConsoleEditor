@@ -226,12 +226,12 @@ namespace SadConsoleEditor.Editors
         {
             Reset();
 
-            width = Math.Max(100, width);
-            height = Math.Max(100, height);
+            int renderWidth = Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, width);
+            int renderHeight = Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, height);
 
-            var gameObject = new GameObject(1, 1, SadConsoleEditor.Settings.Config.ScreenFont);
+            var gameObject = new GameObject(renderWidth, renderHeight, SadConsoleEditor.Settings.Config.ScreenFont);
 
-            AnimatedSurface animation = new AnimatedSurface("default", width, height, SadConsoleEditor.Settings.Config.ScreenFont);
+            AnimatedSurface animation = new AnimatedSurface("default", renderWidth, renderHeight, SadConsoleEditor.Settings.Config.ScreenFont);
             animation.DefaultForeground = foreground;
             animation.DefaultBackground = background;
             animation.CreateFrame();
@@ -246,14 +246,14 @@ namespace SadConsoleEditor.Editors
 
         public void Resize(int width, int height)
         {
-            width = Math.Max(100, width);
-            height = Math.Max(100, height);
+            int renderWidth = Math.Min(MainScreen.Instance.InnerEmptyBounds.Width, width);
+            int renderHeight = Math.Min(MainScreen.Instance.InnerEmptyBounds.Height, height);
 
             List<AnimatedSurface> newAnimations = new List<AnimatedSurface>(gameObject.Animations.Count);
 
             foreach (var oldAnimation in gameObject.Animations.Values)
             {
-                var newAnimation = new AnimatedSurface(oldAnimation.Name, width, height, SadConsoleEditor.Settings.Config.ScreenFont);
+                var newAnimation = new AnimatedSurface(oldAnimation.Name, renderWidth, renderHeight, SadConsoleEditor.Settings.Config.ScreenFont);
 
                 for (int i = 0; i < oldAnimation.Frames.Count; i++)
                 {
