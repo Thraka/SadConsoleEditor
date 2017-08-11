@@ -159,6 +159,8 @@ namespace SadConsoleEditor.Consoles
         {
             if (info.IsOnConsole)
             {
+                if (MainScreen.Instance.Brush != null)
+                    MainScreen.Instance.Brush.IsVisible = false;
 
                 if (info.Mouse.ScrollWheelValueChange != 0)
                 {
@@ -179,6 +181,8 @@ namespace SadConsoleEditor.Consoles
                         }
                     }
                 }
+
+                return ToolsConsole.ProcessMouseNonHandler(info);
             }
 
             return false;

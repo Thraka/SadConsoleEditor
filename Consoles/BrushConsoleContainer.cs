@@ -19,5 +19,11 @@ namespace SadConsoleEditor.Consoles
         public BrushConsoleContainer()
         {
         }
+
+        public override bool ProcessMouse(MouseConsoleState state)
+        {
+            //return base.ProcessMouse(state);
+            return false;
+        }
     }
 }

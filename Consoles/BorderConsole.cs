@@ -35,6 +35,7 @@ namespace SadConsoleEditor.Consoles
 
             contentContainer = new SadConsole.Console(1, 1);
             contentContainer.Position = new Point(1, 1);
+            contentContainer.MouseHandler = (c, m) => { return false; };
             Children.Add(contentContainer);
         }
 
