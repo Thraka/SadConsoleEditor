@@ -145,8 +145,8 @@ namespace SadConsoleEditor.Editors
             
             LayerMetadata.Create("Root", true, false, true, surface.ActiveLayer);
 
-            var editor = new SurfaceEditor(surface);
-            editor.FillWithRandomGarbage();
+            //var editor = new SurfaceEditor(surface);
+            //editor.FillWithRandomGarbage();
 
             layerManagementPanel.SetLayeredSurface(surface);
             layerManagementPanel.IsCollapsed = true;
