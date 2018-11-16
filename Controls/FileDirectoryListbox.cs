@@ -114,22 +114,22 @@ namespace SadConsoleEditor.Controls
         {
             base.OnItemAction();
 
-            if (_selectedItem is System.IO.DirectoryInfo)
+            if (selectedItem is System.IO.DirectoryInfo)
             {
-                CurrentFolder = ((System.IO.DirectoryInfo)_selectedItem).FullName;
+                CurrentFolder = ((System.IO.DirectoryInfo)selectedItem).FullName;
                 if (Items.Count > 0)
                     SelectedItem = Items[0];
             }
-            else if (_selectedItem is FauxDirectory)
+            else if (selectedItem is FauxDirectory)
             {
-                if (((FauxDirectory)_selectedItem).Name == "..")
+                if (((FauxDirectory)selectedItem).Name == "..")
                 {
                     CurrentFolder = System.IO.Directory.GetParent(_currentFolder).FullName;
                     if (Items.Count > 0)
                         SelectedItem = Items[0];
                 }
             }
-            else if (_selectedItem is System.IO.FileInfo)
+            else if (selectedItem is System.IO.FileInfo)
             {
 
             }

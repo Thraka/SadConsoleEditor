@@ -53,8 +53,8 @@
     "DefaultHeight": 50,
     "DefaultWidth": 60
   },
-  "ProgramFontFile": "Editor.font",
-  "ScreenFontFile": "Cheepicus12.font",
+  "ProgramFontFile": "IBM_ext.font",
+  "ScreenFontFile": "IBM_ext.font",
   "WindowHeight": 50,
   "WindowWidth": 170,
   "ColorPickerSettings": {

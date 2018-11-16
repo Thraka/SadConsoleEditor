@@ -60,7 +60,7 @@
         {
             _characterSurface.AlternateFont = characterFont;
         }
-        public CharacterPicker(Color foreground, Color fill, Color selectedCharacterColor):base(16, 16)
+        public CharacterPicker(Color foreground, Color fill, Color selectedCharacterColor):base(16, SadConsoleEditor.Settings.Config.ScreenFont.Rows)
         {
             effectsManager = new SadConsole.Effects.EffectsManager(textSurface);
             textSurface.DefaultForeground = _charForeground = foreground;
@@ -95,7 +95,7 @@
         {
             int i = 0;
 
-            for (int y = 0; y < 16; y++)
+            for (int y = 0; y < SadConsoleEditor.Settings.Config.ScreenFont.Rows; y++)
             {
                 for (int x = 0; x < 16; x++)
                 {
@@ -112,7 +112,7 @@
         {
             var mousePosition = TransformConsolePositionByControlPosition(info.CellPosition);
 
-            if (new Rectangle(0, 0, 16, 16).Contains(mousePosition) && info.Mouse.LeftButtonDown)
+            if (new Rectangle(0, 0, 16, SadConsoleEditor.Settings.Config.ScreenFont.Rows).Contains(mousePosition) && info.Mouse.LeftButtonDown)
             {
                 if (!UseFullClick)
                     SelectedCharacter = this[mousePosition.ToIndex(16)].Glyph;
@@ -125,7 +125,7 @@
         {
             var mousePosition = TransformConsolePositionByControlPosition(info.CellPosition);
 
-            if (new Rectangle(0, 0, 16, 16).Contains(mousePosition))
+            if (new Rectangle(0, 0, 16, SadConsoleEditor.Settings.Config.ScreenFont.Rows).Contains(mousePosition))
             {
                 SelectedCharacter = this[mousePosition.ToIndex(16)].Glyph;
             }
