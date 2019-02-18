@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>C:\Code\Fun\SadConsoleEditor\Editor\bin\Debug\netcoreapp2.2\Plugins\BasePlugin\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\SadConsole\src\SadConsole.Shared\SadConsole.csproj" />
+    <ProjectReference Include="..\Editor\SadConsoleEditor.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="BasePlugin.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>
