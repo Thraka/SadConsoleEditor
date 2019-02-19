@@ -116,8 +116,6 @@ namespace SadConsoleEditor.Editors
             //    LayerMetadata.Create("root", true, false, true, surface.ActiveLayer);
             //    layerManagementPanel.SetLayeredSurface(surface);
             //}
-
-            Metadata.Title = System.IO.Path.GetFileName(file);
         }
 
         public void New(Color foreground, Color background, int width, int height)
@@ -127,7 +125,7 @@ namespace SadConsoleEditor.Editors
             int renderHeight = Math.Min(MainConsole.Instance.InnerEmptyBounds.Height, height);
 
             _surface = new SadConsole.ScrollingConsole(width, height, SadConsoleEditor.Config.Program.ScreenFont, new Rectangle(0,0, renderWidth, renderHeight));
-
+            //_surface.FillWithRandomGarbage();
             //LayerMetadata.Create("Root", true, false, true, surface.ActiveLayer);
 
             //layerManagementPanel.SetLayeredSurface(surface);
