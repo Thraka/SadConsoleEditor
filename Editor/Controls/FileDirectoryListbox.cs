@@ -38,7 +38,7 @@ namespace SadConsoleEditor.Controls
                 if (string.IsNullOrEmpty(value))
                     _extFilter = "*.*";
                 else
-                    _extFilter = value;
+                    _extFilter = value.ToLower();
 
                 DisplayFolder(_currentFolder);
             }
@@ -69,8 +69,8 @@ namespace SadConsoleEditor.Controls
 
                     foreach (var item in System.IO.Directory.GetDirectories(folder))
                         newItems.Add(new System.IO.DirectoryInfo(item));
-                    var highlightExts = HighlightedExtentions.Split(';');
-                    var filterExts = _extFilter.Split(';');
+                    var highlightExts = HighlightedExtentions.Trim(';').Split(';');
+                    var filterExts = _extFilter.Trim(';').Split(';');
 
                     foreach (var filter in filterExts)
                     {
@@ -79,7 +79,7 @@ namespace SadConsoleEditor.Controls
                             var fileInfo = new System.IO.FileInfo(item);
 
 
-                            if (highlightExts.Contains(fileInfo.Extension))
+                            if (highlightExts.Contains(fileInfo.Extension.ToLower()))
                                 newItems.Add(new HighlightedExtFile() { Name = fileInfo.Name });
                             else
                                 newItems.Add(fileInfo);
