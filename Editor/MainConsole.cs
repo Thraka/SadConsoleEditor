@@ -26,6 +26,8 @@ namespace SadConsoleEditor
         public Rectangle InnerEmptyBounds;
         public Rectangle InnerEmptyBoundsPixels;
 
+        public Rectangle BorderBounds;
+
         private string topBarLayerName = "None";
         private string topBarToolName = "None";
         private Point topBarMousePosition;
@@ -384,8 +386,9 @@ namespace SadConsoleEditor
                 position.Y = editorBounds.Top;
 
             ActiveEditor.Surface.Position = position;
+            BorderBounds = new Rectangle(ActiveEditor.Surface.Position.X - 1 - _borderConsole.Position.X, ActiveEditor.Surface.Position.Y - 1 - _borderConsole.Position.Y, ActiveEditor.Surface.ViewPort.Width + 2, ActiveEditor.Surface.ViewPort.Height + 2);
             _borderConsole.Clear();
-            _borderConsole.DrawBox(new Rectangle(ActiveEditor.Surface.Position.X - 1 - _borderConsole.Position.X, ActiveEditor.Surface.Position.Y - 1 - _borderConsole.Position.Y, ActiveEditor.Surface.ViewPort.Width + 2, ActiveEditor.Surface.ViewPort.Height + 2), new Cell(DefaultForeground, Color.Black, 177));
+            _borderConsole.DrawBox(BorderBounds, new Cell(DefaultForeground, Color.Black, 177));
         }
 
         private void RefreshBackingPanel()
@@ -411,7 +414,7 @@ namespace SadConsoleEditor
                     if (MainConsole.Instance.ActiveEditor != null)
                     {
                         state = new MouseConsoleState(MainConsole.Instance.ActiveEditor.Surface, state.Mouse);
-                        SurfaceMouseLocation = state.ConsolePosition;
+                        SurfaceMouseLocation = state.CellPosition;
                         return MainConsole.Instance.ActiveEditor.ProcessMouse(state, true);
                     }
                 }
@@ -427,39 +430,32 @@ namespace SadConsoleEditor
             return false;
         }
 
-        //private bool ProcessMouseForBrush(IConsole console, MouseConsoleState state)
-        //{
-        //    // This is not currently used. It may be in the future.
-        //    return false;
-        //}
-
         public override bool ProcessKeyboard(Keyboard info)
         {
             if (UseKeyboard)
             {
                 bool movekeyPressed = false;
-                //var position = new Point(borderConsole.Position.X + 1, borderConsole.Position.Y + 1);
-                ////var result = base.ProcessKeyboard(info);
-                //if (AllowKeyboardToMoveConsole && ActiveEditor != null && ActiveEditor.Surface != null)
-                //{
-                //    bool shifted = Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
-                //    var oldRenderArea = ActiveEditor.Surface.RenderArea;
 
-                //    if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
-                //        ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left - 1, ActiveEditor.Surface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+                if (AllowKeyboardToMoveConsole && ActiveEditor != null && ActiveEditor.Surface != null)
+                {
+                    bool shifted = Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.LeftShift) || Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.RightShift);
+                    var oldRenderArea = ActiveEditor.Surface.ViewPort;
 
-                //    else if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
-                //        ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left + 1, ActiveEditor.Surface.RenderArea.Top, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+                    if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Left))
+                        ActiveEditor.Surface.ViewPort = new Rectangle(ActiveEditor.Surface.ViewPort.Left - 1, ActiveEditor.Surface.ViewPort.Top, BorderBounds.Width - 2, BorderBounds.Height - 2);
 
-                //    if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
-                //        ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left, ActiveEditor.Surface.RenderArea.Top - 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+                    else if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Right))
+                        ActiveEditor.Surface.ViewPort = new Rectangle(ActiveEditor.Surface.ViewPort.Left + 1, ActiveEditor.Surface.ViewPort.Top, BorderBounds.Width - 2, BorderBounds.Height - 2);
 
-                //    else if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
-                //        ActiveEditor.Surface.RenderArea = new Rectangle(ActiveEditor.Surface.RenderArea.Left, ActiveEditor.Surface.RenderArea.Top + 1, InnerEmptyBounds.Width, InnerEmptyBounds.Height);
+                    if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Up))
+                        ActiveEditor.Surface.ViewPort = new Rectangle(ActiveEditor.Surface.ViewPort.Left, ActiveEditor.Surface.ViewPort.Top - 1, BorderBounds.Width - 2, BorderBounds.Height - 2);
 
-                //    movekeyPressed = oldRenderArea != ActiveEditor.Surface.RenderArea;
+                    else if (!shifted && Global.KeyboardState.IsKeyDown(Microsoft.Xna.Framework.Input.Keys.Down))
+                        ActiveEditor.Surface.ViewPort = new Rectangle(ActiveEditor.Surface.ViewPort.Left, ActiveEditor.Surface.ViewPort.Top + 1, BorderBounds.Width - 2, BorderBounds.Height - 2);
 
-                //}
+                    movekeyPressed = oldRenderArea != ActiveEditor.Surface.ViewPort;
+
+                }
 
                 if (!movekeyPressed)
                 {
