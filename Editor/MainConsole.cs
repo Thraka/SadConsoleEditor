@@ -215,12 +215,15 @@ namespace SadConsoleEditor
             AddEditor(createdEditor, true);
             topBarPane.IsVisible = true;
             ToolsPane.IsVisible = true;
-        }
+        } 
 
         private void LoadEditor(string file, Editors.IEditorMetadata editor, FileLoaders.IFileLoader loader)
         {
             var createdEditor = editor.Create();
             createdEditor.Load(file, loader);
+            createdEditor.Metadata.FilePath = file;
+            createdEditor.Metadata.IsLoaded = true;
+            createdEditor.Metadata.Title = System.IO.Path.GetFileNameWithoutExtension(file);
             AddEditor(createdEditor, true);
 
             topBarPane.IsVisible = true;
