@@ -194,24 +194,18 @@ namespace SadConsoleEditor.Editors
 
         public void Resize(int width, int height)
         {
-            //Reset();
-            //int renderWidth = Math.Min(MainConsole.Instance.InnerEmptyBounds.Width, width);
-            //int renderHeight = Math.Min(MainConsole.Instance.InnerEmptyBounds.Height, height);
+            Reset();
+            int renderWidth = Math.Min(MainConsole.Instance.InnerEmptyBounds.Width, width);
+            int renderHeight = Math.Min(MainConsole.Instance.InnerEmptyBounds.Height, height);
 
-            //var oldSurface = surface;
-            //surface = new SadConsole.Surfaces.Layered(width, height, SadConsoleEditor.Config.Program.ScreenFont, new Rectangle(0, 0, renderWidth, renderHeight), 1);
+            var oldSurface = _surface;
 
-            //for (var index = 0; index < oldSurface.LayerCount; index++)
-            //{
-            //    oldSurface.SetActiveLayer(index);
-            //    surface.SetActiveLayer(index);
-            //    oldSurface.Copy(surface);
-            //    surface.GetLayer(index).Metadata = oldSurface.GetLayer(index).Metadata;
-            //}
+            if (renderWidth == width && renderHeight == height)
+                _surface.Resize(width, height, false);
+            else
+                _surface.Resize(width, height, false, new Rectangle(0, 0, renderWidth, renderHeight));
             
-            //layerManagementPanel.SetLayeredSurface(surface);
-
-            //MainConsole.Instance.RefreshBorder();
+            MainConsole.Instance.CenterEditor();
         }
 
         public void Save(string file, FileLoaders.IFileLoader saver)

@@ -243,27 +243,26 @@ namespace SadConsoleEditor
 
         public void ShowLoadEditorPopup()
         {
-            //Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
-            //popup.Center();
-            //popup.Closed += (s, e) => { if (popup.DialogResult) LoadEditor(popup.SelectedFile, popup.SelectedLoader); };
-            //popup.FileLoaderTypes = new FileLoaders.IFileLoader[] { new FileLoaders.LayeredSurface(), new FileLoaders.SadConsole.Surfaces.Basic(), new FileLoaders.Scene(), new FileLoaders.Entity(), new FileLoaders.Ansi() };
-            //popup.Show(true);
+            Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
+            popup.Center();
+            popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else LoadEditor(popup.SelectedFile, popup.SelectedEditor, popup.SelectedLoader); };
+            popup.Show(true);
         }
 
         public void ShowResizeEditorPopup()
         {
             if (ActiveEditor != null)
             {
-                //Windows.ResizeSurfacePopup popup = new Windows.ResizeSurfacePopup(ActiveEditor.Width, ActiveEditor.Height);
-                //popup.Center();
-                //popup.Closed += (s, e) =>
-                //{
-                //    if (popup.DialogResult)
-                //    {
-                //        ActiveEditor.Resize(popup.SettingWidth, popup.SettingHeight);
-                //    }
-                //};
-                //popup.Show(true);
+                Windows.ResizeSurfacePopup popup = new Windows.ResizeSurfacePopup(ActiveEditor.Width, ActiveEditor.Height);
+                popup.Center();
+                popup.Closed += (s, e) =>
+                {
+                    if (popup.DialogResult)
+                    {
+                        ActiveEditor.Resize(popup.SettingWidth, popup.SettingHeight);
+                    }
+                };
+                popup.Show(true);
             }
         }
 
