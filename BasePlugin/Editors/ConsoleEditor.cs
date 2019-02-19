@@ -49,11 +49,8 @@ namespace SadConsoleEditor.Editors
 
         public Tools.ITool SelectedTool
         {
-            get { return selectedTool; }
-            set
-            {
-                toolsPanel.ToolsListBox.SelectedItem = value;
-            }
+            get => selectedTool;
+            set => toolsPanel.ToolsListBox.SelectedItem = value;
         }
 
         public ConsoleEditor()
@@ -85,9 +82,9 @@ namespace SadConsoleEditor.Editors
                 Reset();
 
                 var cellSurface = (SadConsole.CellSurface)loader.Load(file);
-                _surface = new ScrollingConsole(cellSurface.Width, cellSurface.Height, new Rectangle(0, 0,
+                _surface = new ScrollingConsole(cellSurface.Width, cellSurface.Height, Config.Program.ScreenFont, new Rectangle(0, 0,
                             Math.Min(MainConsole.Instance.InnerEmptyBounds.Width, cellSurface.Width),
-                            Math.Min(MainConsole.Instance.InnerEmptyBounds.Height, cellSurface.Height)));
+                            Math.Min(MainConsole.Instance.InnerEmptyBounds.Height, cellSurface.Height)), cellSurface.Cells);
 
                 //layerManagementPanel.SetLayeredSurface(surface);
             }
