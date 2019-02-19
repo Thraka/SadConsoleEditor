@@ -10,6 +10,7 @@ namespace SadConsoleEditor.Panels
         public Button NewButton;
         public Button LoadButton;
         public Button SaveButton;
+        public Button SaveAsButton;
         public Button ResizeButton;
         public Button CloseButton;
 
@@ -39,6 +40,13 @@ namespace SadConsoleEditor.Panels
             };
             SaveButton.Click += (o, e) => MainConsole.Instance.SaveEditor();
 
+            SaveAsButton = new Button(10)
+            {
+                Text = "Save As",
+            };
+            SaveAsButton.Click += (o, e) => MainConsole.Instance.SaveAsEditor();
+
+
             ResizeButton = new Button(10)
             {
                 Text = "Resize",
@@ -63,7 +71,7 @@ namespace SadConsoleEditor.Panels
                 control.Surface.Fill(colors.Green, colors.MenuBack, 0, null);
                 control.Surface.Print(0, 0, new ColoredString("Opened Files", colors.Green, colors.MenuBack));
             };
-            Controls = new ControlBase[] { NewButton, LoadButton, SaveButton, ResizeButton, CloseButton, documentsTitle, DocumentsListbox };
+            Controls = new ControlBase[] { NewButton, SaveButton, ResizeButton, LoadButton, SaveAsButton, CloseButton, documentsTitle, DocumentsListbox };
             
 
         }
@@ -86,24 +94,37 @@ namespace SadConsoleEditor.Panels
         public override int Redraw(SadConsole.Controls.ControlBase control)
         {
             if (control == NewButton)
-                NewButton.Position = new Point(1, NewButton.Position.Y);
-            else if (control == LoadButton)
             {
-                LoadButton.Position = new Point(NewButton.Bounds.Right + 2, NewButton.Position.Y);
+                NewButton.Position = new Point(1, NewButton.Position.Y);
+                return -1;
             }
             else if (control == SaveButton)
-                SaveButton.Position = new Point(1, SaveButton.Position.Y);
+            {
+                SaveButton.Position = new Point(NewButton.Bounds.Right + 2, NewButton.Position.Y);
+                return -1;
+            }
             else if (control == ResizeButton)
             {
-                ResizeButton.Position = new Point(SaveButton.Bounds.Right + 2, SaveButton.Position.Y);
+                ResizeButton.Position = new Point(SaveButton.Bounds.Right + 3, NewButton.Position.Y);
+                return 0;
+            }
+
+            if (control == LoadButton)
+            {
+                LoadButton.Position = new Point(1, LoadButton.Position.Y);
+                return -1;
+            }
+            else if (control == SaveAsButton)
+            {
+                SaveAsButton.Position = new Point(SaveButton.Bounds.Left, LoadButton.Position.Y);
                 return -1;
             }
             else if (control == CloseButton)
             {
-                CloseButton.Position = new Point(ResizeButton.Bounds.Right + 2, SaveButton.Position.Y);
-            }
-            else if (control == documentsTitle)
+                CloseButton.Position = new Point(ResizeButton.Bounds.Left, LoadButton.Position.Y);
                 return 1;
+            }
+
 
             return 0;
         }
