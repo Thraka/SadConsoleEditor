@@ -32,6 +32,8 @@ namespace SadConsoleEditor
         private string topBarToolName = "None";
         private Point topBarMousePosition;
 
+        public bool DisableBrush = false;
+
         private SadConsole.Entities.Entity brush;
 
         public SadConsole.Entities.Entity Brush
@@ -405,7 +407,7 @@ namespace SadConsoleEditor
 
         public override bool ProcessMouse(MouseConsoleState state)
         {
-            if (brush != null)
+            if (brush != null && !DisableBrush)
             {
                 if (MainConsole.Instance.InnerEmptyBounds.Contains(state.WorldPosition))
                 {

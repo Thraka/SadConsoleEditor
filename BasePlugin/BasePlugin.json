@@ -17,7 +17,7 @@
     },
     "DefaultHeight": 50,
     "DefaultWidth": 60,
-    "Tools": [ "PENCIL", "RECOLOR", "FILL" ],
+    "Tools": [ "PENCIL", "RECOLOR", "FILL", "TEXT" ],
     "FileLoaders": [ "SURFACE", "CONSOLE", "SCROLLING" ]
   }
 ]
