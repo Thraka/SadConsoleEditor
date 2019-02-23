@@ -394,7 +394,7 @@
                     Parent.ReleaseControl();
                 else
                 {
-                    var location = this.TransformConsolePositionByControlPosition(info.ConsolePosition);
+                    var location = this.TransformConsolePositionByControlPosition(info.ConsoleCellPosition);
 
                     //if (info.ConsolePosition.X >= Position.X && info.ConsolePosition.X < Position.X + Width)
                     if (location.X >= 0 && location.X <= Width - 1 && location.Y > -4 && location.Y < Height + 3 )

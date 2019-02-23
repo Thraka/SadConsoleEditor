@@ -409,10 +409,10 @@ namespace SadConsoleEditor
         {
             if (brush != null && !DisableBrush)
             {
-                if (MainConsole.Instance.InnerEmptyBounds.Contains(state.WorldPosition))
+                if (MainConsole.Instance.InnerEmptyBounds.Contains(state.WorldCellPosition))
                 {
                     brush.IsVisible = true;
-                    brush.Position = state.WorldPosition;
+                    brush.Position = state.WorldCellPosition;
                     if (MainConsole.Instance.ActiveEditor != null)
                     {
                         state = new MouseConsoleState(MainConsole.Instance.ActiveEditor.Surface, state.Mouse);

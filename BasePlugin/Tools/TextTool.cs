@@ -136,14 +136,14 @@
                 {
                     tempConsole.Cursor.IsVisible = true;
                     tempConsole.Cursor.AutomaticallyShiftRowsUp = false;
-                    tempConsole.Cursor.Position = info.ConsolePosition;
+                    tempConsole.Cursor.Position = info.ConsoleCellPosition;
                 }
                 else
                 {
                     tempConsole = surface;
                     tempConsole.Cursor.IsVisible = true;
-                    Brush.Position = info.ConsolePosition;
-                    tempConsole.Cursor.Position = info.ConsolePosition;
+                    Brush.Position = info.ConsoleCellPosition;
+                    tempConsole.Cursor.Position = info.ConsoleCellPosition;
                 }
             }
         }

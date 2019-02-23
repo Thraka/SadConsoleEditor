@@ -58,8 +58,8 @@ namespace SadConsoleEditor.Windows
         
         public ColorPickerPopup(): base(Config.Program.ColorPickerSettings.WindowWidth, Config.Program.ColorPickerSettings.WindowHeight)
         {
+            UsePixelPositioning = true;
             Center();
-
             otherColorPopup = new OtherColorsPopup();
             otherColorPopup.Closed += (sender2, e2) =>
             {
