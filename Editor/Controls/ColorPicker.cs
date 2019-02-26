@@ -8,7 +8,7 @@
     using System.Linq;
     using Console = SadConsole.Console;
 
-    class ColorPicker : SadConsole.Controls.ControlBase
+    public class ColorPicker : SadConsole.Controls.ControlBase
     {
         public class ThemeType : ThemeBase
         {

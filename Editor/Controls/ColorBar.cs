@@ -9,7 +9,7 @@
     using Console = SadConsole.Console;
     using SadConsole.Controls;
 
-    class ColorBar : SadConsole.Controls.ControlBase
+    public class ColorBar : SadConsole.Controls.ControlBase
     {
         // 223
         // 30
@@ -199,7 +199,7 @@
         }
     }
 
-    class HueBar : SadConsole.Controls.ControlBase
+    public class HueBar : SadConsole.Controls.ControlBase
     {
         public class ThemeType : ThemeBase
         {

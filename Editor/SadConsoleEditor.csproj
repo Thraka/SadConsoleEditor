@@ -38,11 +38,8 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="MonoGame.Content.Builder" Version="3.7.0.4" />
     <PackageReference Include="MonoGame.Framework.DesktopGL.Core" Version="3.7.0.7" />
+    <PackageReference Include="SadConsole" Version="8.0.0" />
     <PackageReference Include="Scrutor" Version="3.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\SadConsole\src\SadConsole.Shared\SadConsole.csproj" />
   </ItemGroup>
 
   <ItemGroup>

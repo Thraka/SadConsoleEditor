@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SadConsole", "..\SadConsole\src\SadConsole.Shared\SadConsole.csproj", "{0188CEA2-D332-4F24-95B2-446A5F2014AB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SadConsoleEditor", "Editor\SadConsoleEditor.csproj", "{831FB455-4DB5-4563-9B22-927AA11261A4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BasePlugin", "BasePlugin\BasePlugin.csproj", "{EDA2FF61-4601-4AE1-A0F7-86D578553F5A}"
@@ -15,10 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0188CEA2-D332-4F24-95B2-446A5F2014AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0188CEA2-D332-4F24-95B2-446A5F2014AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0188CEA2-D332-4F24-95B2-446A5F2014AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0188CEA2-D332-4F24-95B2-446A5F2014AB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{831FB455-4DB5-4563-9B22-927AA11261A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{831FB455-4DB5-4563-9B22-927AA11261A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{831FB455-4DB5-4563-9B22-927AA11261A4}.Release|Any CPU.ActiveCfg = Release|Any CPU

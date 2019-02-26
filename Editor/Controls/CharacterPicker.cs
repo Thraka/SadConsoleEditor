@@ -7,7 +7,7 @@
     using System;
     using Console = SadConsole.Console;
 
-    class CharacterPicker: SadConsole.Controls.ControlBase
+    public class CharacterPicker: SadConsole.Controls.ControlBase
     {
         public class ThemeType : ThemeBase
         {

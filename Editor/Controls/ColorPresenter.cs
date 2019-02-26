@@ -11,7 +11,7 @@ using Console = SadConsole.Console;
 
 namespace SadConsoleEditor.Controls
 {
-    class ColorPresenter : SadConsole.Controls.ControlBase
+    public class ColorPresenter : SadConsole.Controls.ControlBase
     {
         public class ThemeType: ThemeBase
         {

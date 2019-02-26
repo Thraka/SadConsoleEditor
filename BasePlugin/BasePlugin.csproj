@@ -11,7 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\SadConsole\src\SadConsole.Shared\SadConsole.csproj" />
+    <PackageReference Include="SadConsole" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Editor\SadConsoleEditor.csproj" />
   </ItemGroup>
 

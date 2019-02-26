@@ -12,8 +12,8 @@ namespace SadConsoleEditor.Panels
         private CheckBox ignoreForeCheck;
         private CheckBox ignoreBackCheck;
 
-        public bool IgnoreForeground { get { return ignoreForeCheck.IsSelected; } }
-        public bool IgnoreBackground { get { return ignoreBackCheck.IsSelected; } }
+        public bool IgnoreForeground => ignoreForeCheck.IsSelected;
+        public bool IgnoreBackground => ignoreBackCheck.IsSelected;
 
 
         public RecolorToolPanel()
