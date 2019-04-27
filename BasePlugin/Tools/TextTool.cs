@@ -107,6 +107,7 @@
                     MainConsole.Instance.AllowKeyboardToMoveConsole = true;
                     MainConsole.Instance.DisableBrush = false;
                     tempConsole.Cursor.IsVisible = false;
+                    tempConsole.IsDirty = true;
                     Brush.IsVisible = true;
                 }
                 else

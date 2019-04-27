@@ -10,46 +10,70 @@ namespace SadConsoleEditor.Panels
 {
     class BoxToolPanel : CustomPanel
     {
-        private CheckBox fillBoxOption;
-        private CheckBox useCharBorder;
-        private Controls.ColorPresenter fillColor;
-        private Controls.ColorPresenter lineForeColor;
-        private Controls.ColorPresenter lineBackColor;
-        private Controls.CharacterPicker characterPicker;
+        private CheckBox _fillBoxOption;
 
-        public Color FillColor { get { return fillColor.SelectedColor; } }
-        public Color LineForeColor { get { return lineForeColor.SelectedColor; } }
-        public Color LineBackColor { get { return lineBackColor.SelectedColor; } }
-        public bool UseFill { get { return fillBoxOption.IsSelected; } }
-        public bool UseCharacterBorder { get { return useCharBorder.IsSelected; } }
+        private Controls.ColorPresenter _lineCharPicker;
+        private Controls.ColorPresenter _lineForeColor;
+        private Controls.ColorPresenter _lineBackColor;
 
-        public int BorderCharacter { get { return characterPicker.SelectedCharacter; } }
+        private Controls.ColorPresenter _fillCharPicker;
+        private Controls.ColorPresenter _fillForeColor;
+        private Controls.ColorPresenter _fillBackColor;
+
+        public Color FillBackColor { get { return _fillBackColor.SelectedColor; } }
+        public Color FillForeColor { get { return _fillForeColor.SelectedColor; } }
+        public Color LineForeColor { get { return _lineForeColor.SelectedColor; } }
+        public Color LineBackColor { get { return _lineBackColor.SelectedColor; } }
+
+        public bool UseFill { get { return _fillBoxOption.IsSelected; } }
+
+        public int LineGlyph { get { return _lineCharPicker.SelectedGlyph; } }
+        public int FillGlyph { get { return _fillCharPicker.SelectedGlyph; } }
 
 
         public BoxToolPanel()
         {
             Title = "Settings";
 
-            fillBoxOption = new CheckBox(18, 1);
-            fillBoxOption.Text = "Fill";
+            _fillBoxOption = new CheckBox(18, 1);
+            _fillBoxOption.Text = "Fill";
 
-            useCharBorder = new CheckBox(18, 1);
-            useCharBorder.Text = "Char. Border";
-            useCharBorder.IsSelectedChanged += (s, o) => { characterPicker.IsVisible = useCharBorder.IsSelected; MainConsole.Instance.ToolsPane.RedrawPanels(); };
+            _lineForeColor = new Controls.ColorPresenter("Border Fore", SadConsole.Themes.Library.Default.Colors.Green, 18);
+            _lineForeColor.SelectedColor = Color.White;
+            _lineForeColor.ColorChanged += (s, e) => _lineCharPicker.GlyphColor = _lineForeColor.SelectedColor;
 
-            lineForeColor = new Controls.ColorPresenter("Border Fore", SadConsole.Themes.Library.Default.Colors.Green, 18);
-            lineForeColor.SelectedColor = Color.White;
+            _lineBackColor = new Controls.ColorPresenter("Border Back", SadConsole.Themes.Library.Default.Colors.Green, 18);
+            _lineBackColor.SelectedColor = Color.Black;
+            _lineBackColor.ColorChanged += (s, e) => _lineCharPicker.SelectedColor = _lineBackColor.SelectedColor;
 
-            lineBackColor = new Controls.ColorPresenter("Border Back", SadConsole.Themes.Library.Default.Colors.Green, 18);
-            lineBackColor.SelectedColor = Color.Black;
+            _lineCharPicker = new Controls.ColorPresenter("Border Glyph", SadConsole.Themes.Library.Default.Colors.Green, 18);
+            _lineCharPicker.EnableCharacterPicker = true;
+            _lineCharPicker.DisableColorPicker = true;
+            _lineCharPicker.SelectedColor = _lineBackColor.SelectedColor;
+            _lineCharPicker.GlyphColor = _lineForeColor.SelectedColor;
 
-            fillColor = new Controls.ColorPresenter("Fill Color", SadConsole.Themes.Library.Default.Colors.Green, 18);
-            fillColor.SelectedColor = Color.Black;
+            _lineForeColor.RightClickedColor += (s, e) => { var tempColor = _lineBackColor.SelectedColor; _lineBackColor.SelectedColor = _lineForeColor.SelectedColor; _lineForeColor.SelectedColor = tempColor; };
+            _lineBackColor.RightClickedColor += (s, e) => { var tempColor = _lineForeColor.SelectedColor; _lineForeColor.SelectedColor = _lineBackColor.SelectedColor; _lineBackColor.SelectedColor = tempColor; };
 
-            characterPicker = new Controls.CharacterPicker(SadConsole.Themes.Library.Default.Colors.Red, SadConsole.Themes.Library.Default.Colors.ControlBack, SadConsole.Themes.Library.Default.Colors.Green);
-            characterPicker.IsVisible = false;
+            _fillForeColor = new Controls.ColorPresenter("Fill Fore", SadConsole.Themes.Library.Default.Colors.Green, 18);
+            _fillForeColor.SelectedColor = Color.White;
+            _fillForeColor.ColorChanged += (s, e) => _fillCharPicker.GlyphColor = _fillForeColor.SelectedColor;
 
-            Controls = new ControlBase[] { lineForeColor, lineBackColor, fillColor, fillBoxOption, useCharBorder, characterPicker };
+            _fillBackColor = new Controls.ColorPresenter("Fill Back", SadConsole.Themes.Library.Default.Colors.Green, 18);
+            _fillBackColor.SelectedColor = Color.Black;
+            _fillBackColor.ColorChanged += (s, e) => _fillCharPicker.SelectedColor = _fillBackColor.SelectedColor;
+
+            _fillCharPicker = new Controls.ColorPresenter("Fill Glyph", SadConsole.Themes.Library.Default.Colors.Green, 18);
+            _fillCharPicker.EnableCharacterPicker = true;
+            _fillCharPicker.DisableColorPicker = true;
+            _fillCharPicker.SelectedColor = _fillBackColor.SelectedColor;
+            _fillCharPicker.GlyphColor = _fillForeColor.SelectedColor;
+
+            _fillForeColor.RightClickedColor += (s, e) => { var tempColor = _fillBackColor.SelectedColor; _fillBackColor.SelectedColor = _fillForeColor.SelectedColor; _fillForeColor.SelectedColor = tempColor; };
+            _fillBackColor.RightClickedColor += (s, e) => { var tempColor = _fillForeColor.SelectedColor; _fillForeColor.SelectedColor = _fillBackColor.SelectedColor; _fillBackColor.SelectedColor = tempColor; };
+
+
+            Controls = new ControlBase[] { _lineForeColor, _lineBackColor, _lineCharPicker, null, _fillForeColor, _fillBackColor, _fillCharPicker, null, _fillBoxOption };
         }
 
         public override void ProcessMouse(SadConsole.Input.MouseConsoleState info)
@@ -59,16 +83,7 @@ namespace SadConsoleEditor.Panels
 
         public override int Redraw(SadConsole.Controls.ControlBase control)
         {
-            if (control == characterPicker)
-                characterPicker.Position = new Point(characterPicker.Position.X + 1, characterPicker.Position.Y);
-
-            if (control == useCharBorder)
-                return 1;
-
-            if (control != fillColor)
-                return 0;
-            else
-                return 1;
+            return 0;
         }
 
         public override void Loaded()

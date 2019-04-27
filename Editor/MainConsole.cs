@@ -94,7 +94,7 @@ namespace SadConsoleEditor
             QuickSelectPane.IsVisible = false;
 
             topBarPane = new SadConsole.Console(Config.Program.WindowWidth, 1);
-            topBarPane.DefaultBackground = SadConsole.Themes.Library.Default.Colors.MenuBack;
+            topBarPane.DefaultBackground = SadConsole.Themes.Library.Default.Colors.ControlHostBack;
             topBarPane.Clear();
             topBarPane.FocusOnMouseClick = false;
             topBarPane.IsVisible = false;

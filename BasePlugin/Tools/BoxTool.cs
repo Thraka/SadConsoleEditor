@@ -170,8 +170,8 @@
 
                     animation.Center = p1;
                     
-                    var fillCell = _settingsPanel.UseFill ? new Cell(_settingsPanel.LineForeColor, _settingsPanel.FillColor) : null;
-                    var borderCell = new Cell(_settingsPanel.LineForeColor, _settingsPanel.LineBackColor, _settingsPanel.UseCharacterBorder ? _settingsPanel.BorderCharacter: 0);
+                    var fillCell = _settingsPanel.UseFill ? new Cell(_settingsPanel.FillForeColor, _settingsPanel.FillBackColor, _settingsPanel.FillGlyph) : null;
+                    var borderCell = new Cell(_settingsPanel.LineForeColor, _settingsPanel.LineBackColor, _settingsPanel.LineGlyph);
                     frame.DrawBox(new Rectangle(0, 0, frame.Width, frame.Height), borderCell, fillCell, null);
 
                     Brush.Animation = animation;
@@ -186,8 +186,8 @@
                     return;
                 }
 
-                var fillCell = _settingsPanel.UseFill ? new Cell(_settingsPanel.LineForeColor, _settingsPanel.FillColor) : null;
-                var borderCell = new Cell(_settingsPanel.LineForeColor, _settingsPanel.LineBackColor, _settingsPanel.UseCharacterBorder ? _settingsPanel.BorderCharacter : 0);
+                var fillCell = _settingsPanel.UseFill ? new Cell(_settingsPanel.FillForeColor, _settingsPanel.FillBackColor, _settingsPanel.FillGlyph) : null;
+                var borderCell = new Cell(_settingsPanel.LineForeColor, _settingsPanel.LineBackColor, _settingsPanel.LineGlyph);
 
                 if (info.Console is ScrollingConsole scrollingConsole)
                     surface.DrawBox(new Rectangle(Math.Min(firstPoint.Value.X, secondPoint.X) + scrollingConsole.ViewPort.Location.X, 

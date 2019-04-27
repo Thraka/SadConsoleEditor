@@ -68,8 +68,8 @@ namespace SadConsoleEditor.Panels
             documentsTitle.OnDraw = (control) =>
             {
                 var colors = control.GetThemeColors();
-                control.Surface.Fill(colors.Green, colors.MenuBack, 0, null);
-                control.Surface.Print(0, 0, new ColoredString("Opened Files", colors.Green, colors.MenuBack));
+                control.Surface.Fill(colors.Green, colors.ControlHostBack, 0, null);
+                control.Surface.Print(0, 0, new ColoredString("Opened Files", colors.Green, colors.ControlHostBack));
             };
             Controls = new ControlBase[] { NewButton, SaveButton, ResizeButton, LoadButton, SaveAsButton, CloseButton, documentsTitle, DocumentsListbox };
             

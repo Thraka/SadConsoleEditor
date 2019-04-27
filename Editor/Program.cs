@@ -13,6 +13,7 @@ namespace SadConsoleEditor
         {
             //SadConsole.Settings.UnlimitedFPS = true;
             //SadConsole.Settings.UseHardwareFullScreen = true;
+            SadConsole.Settings.UseDefaultExtendedFont = true;
 
             // Load our program settings
             var serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(ProgramSettings));

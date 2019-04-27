@@ -20,7 +20,6 @@ namespace SadConsoleEditor.Panels
         private Controls.ColorPresenter _backColor;
         private Controls.ColorPresenter _charPreview;
         private Controls.CharacterPicker _characterPicker;
-        private Windows.CharacterQuickSelectPopup _popupCharacterWindow;
         private CheckBox _mirrorLR;
         private CheckBox _mirrorTB;
 
@@ -63,7 +62,6 @@ namespace SadConsoleEditor.Panels
             _mirrorLR = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             _mirrorTB = new CheckBox(SadConsoleEditor.Consoles.ToolPane.PanelWidthControls, 1);
             _characterPicker = new CharacterPicker(SadConsole.Themes.Library.Default.Colors.OrangeDark, SadConsole.Themes.Library.Default.Colors.ControlBack, SadConsole.Themes.Library.Default.Colors.Yellow);
-            _popupCharacterWindow = new Windows.CharacterQuickSelectPopup(0);
 
             _mirrorLR.Text = "Mirror Horiz.";
             _mirrorTB.Text = "Mirror Vert.";
@@ -74,29 +72,19 @@ namespace SadConsoleEditor.Panels
             _foreColor.RightClickedColor += (s, e) => { var tempColor = SettingBackground; SettingBackground = SettingForeground; SettingForeground = tempColor; };
             _backColor.RightClickedColor += (s, e) => { var tempColor = SettingForeground; SettingForeground = SettingBackground; SettingBackground = tempColor; };
 
-            _charPreview.CharacterColor = _foreColor.SelectedColor;
+            _charPreview.GlyphColor = _foreColor.SelectedColor;
             _charPreview.SelectedColor = _backColor.SelectedColor;
-            _charPreview.Character = 0;
+            _charPreview.SelectedGlyph = 0;
             _charPreview.DisableColorPicker = true;
             _charPreview.EnableCharacterPicker = true;
-
-            _popupCharacterWindow.Font = Config.Program.ScreenFont;
-            _popupCharacterWindow.Closed += (o, e) => { _characterPicker.SelectedCharacter = _popupCharacterWindow.SelectedCharacter; };
+            _charPreview.GlyphChanged += (o, e) => { _characterPicker.SelectedCharacter = _charPreview.SelectedGlyph; };
 
             _mirrorLR.IsSelectedChanged += Mirror_IsSelectedChanged;
             _mirrorTB.IsSelectedChanged += Mirror_IsSelectedChanged;
-            _foreColor.ColorChanged += (o, e) => { _charPreview.CharacterColor = _foreColor.SelectedColor; OnChanged(); };
+            _foreColor.ColorChanged += (o, e) => { _charPreview.GlyphColor = _foreColor.SelectedColor; OnChanged(); };
             _backColor.ColorChanged += (o, e) => { _charPreview.SelectedColor = _backColor.SelectedColor; OnChanged(); };
-            _characterPicker.SelectedCharacterChanged += (sender, e) => { _popupCharacterWindow.SelectedCharacter = _charPreview.Character = e.NewCharacter; _charPreview.Title = "Character (" + e.NewCharacter.ToString() + ")"; OnChanged(); };
+            _characterPicker.SelectedCharacterChanged += (sender, e) => { _charPreview.SelectedGlyph = e.NewCharacter; _charPreview.Title = "Character (" + e.NewCharacter.ToString() + ")"; OnChanged(); };
             _characterPicker.SelectedCharacter = 1;
-            _charPreview.MouseButtonClicked += (o, e) => { 
-                if (e.MouseState.Mouse.LeftClicked)
-                {
-                    _popupCharacterWindow.Center();
-                    _popupCharacterWindow.Show(true);
-                }
-            };
-
 
             HideCharacter = hideCharacter;
             HideForeground = hideForeground;
@@ -118,7 +106,7 @@ namespace SadConsoleEditor.Panels
             else
                 _charPreview.Surface[_charPreview.Width - 2, 0].Mirror = Microsoft.Xna.Framework.Graphics.SpriteEffects.None;
 
-            _popupCharacterWindow.MirrorEffect = _characterPicker.MirrorEffect = _settingMirrorEffect = _charPreview.Surface[_charPreview.Width - 2, 0].Mirror;
+            _charPreview.SelectedGlyphMirror = _characterPicker.MirrorEffect = _settingMirrorEffect = _charPreview.Surface[_charPreview.Width - 2, 0].Mirror;
 
             if (!_skipChanged)
                 OnChanged();

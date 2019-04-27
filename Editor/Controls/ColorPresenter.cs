@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 using System;
 using SadConsole.Input;
 using SadConsole.Themes;
-using SadConsole.Controls;
+using SadConsole.Controls; 
 using SadConsole;
 using Console = SadConsole.Console;
 
@@ -62,10 +62,10 @@ namespace SadConsoleEditor.Controls
                 presenter.Surface.Print(0, 0, presenter._title);
 
                 presenter.Surface.Print(presenter.Surface.Width - 3, 0, "   ", Color.Black, presenter._selectedColor);
-                if (presenter._character != 0)
+                if (presenter._selectedGlyph != 0)
                 {
-                    presenter.Surface.SetGlyph(presenter.Surface.Width - 2, 0, presenter._character);
-                    presenter.Surface.SetForeground(presenter.Surface.Width - 2, 0, presenter._characterColor);
+                    presenter.Surface.SetGlyph(presenter.Surface.Width - 2, 0, presenter._selectedGlyph);
+                    presenter.Surface.SetForeground(presenter.Surface.Width - 2, 0, presenter._selectedGlyphColor);
                 }
                 
                 presenter.IsDirty = false;
@@ -89,7 +89,22 @@ namespace SadConsoleEditor.Controls
 
 
         public event EventHandler ColorChanged;
+        public event EventHandler GlyphChanged;
         public event EventHandler RightClickedColor;
+
+        private Color _selectedColor;
+        private string _title;
+        private Windows.ColorPickerPopup _popupColorPicker;
+        private Windows.CharacterQuickSelectPopup _popupGlyphPicker;
+        private Microsoft.Xna.Framework.Graphics.SpriteEffects _selectedGlyphMirror;
+        private int _selectedGlyph;
+        private Color _selectedGlyphColor;
+
+        public string Title { get { return _title; } set { _title = value; IsDirty = true; } }
+        
+
+        public bool DisableColorPicker { get; set; }
+        public bool EnableCharacterPicker { get; set; }
 
         public Color SelectedColor
         {
@@ -105,32 +120,62 @@ namespace SadConsoleEditor.Controls
             }
         }
 
-        public string Title { get { return _title; } set { _title = value; IsDirty = true; } }
+        public int SelectedGlyph
+        {
+            get { return _selectedGlyph; }
+            set
+            {
+                if (_selectedGlyph != value)
+                {
+                    _selectedGlyph = value;
+                    GlyphChanged?.Invoke(this, EventArgs.Empty);
+                    IsDirty = true;
+                }
+            }
+        }
 
-        public Color CharacterColor { get { return _characterColor; } set { _characterColor = value; IsDirty = true; } }
-        public int Character { get { return _character; } set { _character = value; IsDirty = true; } }
+        public Microsoft.Xna.Framework.Graphics.SpriteEffects SelectedGlyphMirror
+        {
+            get => _selectedGlyphMirror;
+            set
+            {
+                if (_selectedGlyphMirror != value)
+                {
+                    _selectedGlyphMirror = value;
+                    GlyphChanged?.Invoke(this, EventArgs.Empty);
+                    IsDirty = true;
+                }
+            }
+        }
 
-        public bool DisableColorPicker { get; set; }
-        public bool EnableCharacterPicker { get; set; }
+        public Color GlyphColor
+        {
+            get { return _selectedGlyphColor; }
+            set
+            {
+                if (_selectedGlyphColor != value)
+                {
+                    _selectedGlyphColor = value;
+                    IsDirty = true;
+                }
+            }
+        }
 
-        private Color _selectedColor;
-        private string _title;
-        private Windows.ColorPickerPopup _popup;
-        private int _character;
-        private Color _characterColor;
-
-        
         public ColorPresenter(string title, Color defaultColor, int width): base(width, 1)
         {
             _selectedColor = defaultColor;
             Theme = new ThemeType();
             _title = title;
-            _popup = new Windows.ColorPickerPopup();
-            _popup.Closed += (o, e) =>
+            _popupColorPicker = new Windows.ColorPickerPopup();
+            _popupColorPicker.Closed += (o, e) =>
                 {
-                    if (_popup.DialogResult)
-                        SelectedColor = _popup.SelectedColor;
+                    if (_popupColorPicker.DialogResult)
+                        SelectedColor = _popupColorPicker.SelectedColor;
                 };
+
+            _popupGlyphPicker = new Windows.CharacterQuickSelectPopup(0);
+            _popupGlyphPicker.Font = Config.Program.ScreenFont;
+            _popupGlyphPicker.Closed += (o, e) => { SelectedGlyph = _popupGlyphPicker.SelectedCharacter; };
         }
         
         protected override void OnLeftMouseClicked(MouseConsoleState info)
@@ -141,8 +186,8 @@ namespace SadConsoleEditor.Controls
                 if (location.X >= Width - 3)
                 {
                     base.OnLeftMouseClicked(info);
-                    _popup.SelectedColor = _selectedColor;
-                    _popup.Show(true);
+                    _popupColorPicker.SelectedColor = _selectedColor;
+                    _popupColorPicker.Show(true);
                 }
             }
             else if (EnableCharacterPicker)
@@ -151,6 +196,10 @@ namespace SadConsoleEditor.Controls
                 if (location.X >= Width - 3)
                 {
                     base.OnLeftMouseClicked(info);
+                    _popupGlyphPicker.SelectedCharacter = _selectedGlyph;
+                    _popupGlyphPicker.MirrorEffect = _selectedGlyphMirror;
+                    _popupGlyphPicker.Center();
+                    _popupGlyphPicker.Show(true);
                 }
             }
         }

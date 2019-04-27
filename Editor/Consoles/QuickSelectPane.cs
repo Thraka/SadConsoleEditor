@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
+using Microsoft.Xna.Framework.Input;
 using Console = SadConsole.Console;
 using SadConsole.Input;
+using Keyboard = SadConsole.Input.Keyboard;
 
 namespace SadConsoleEditor.Consoles
 {
@@ -9,7 +11,7 @@ namespace SadConsoleEditor.Consoles
 	{
 		private Color charForeground;
 		private Color charBackground;
-		private AsciiKey[] keys;
+		private Keys[] keys;
 		private int currentCharSet;
 
 		public int[] Characters;
@@ -30,15 +32,15 @@ namespace SadConsoleEditor.Consoles
 
 		internal QuickSelectPane() : base(Config.Program.WindowWidth - Config.Program.ToolPaneWidth + 1, 3, Config.Program.ScreenFont)
 		{
-            DefaultBackground = SadConsole.Themes.Library.Default.Colors.MenuBack;
+            DefaultBackground = SadConsole.Themes.Library.Default.Colors.ControlHostBack;
             DefaultForeground = SadConsole.Themes.Library.Default.Colors.TitleText;
 
             currentCharSet = 0;
 			
-			keys = new AsciiKey[] { AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F1), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F2), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F3),
-									AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F4), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F5), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F6),
-									AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F7), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F8), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F9),
-									AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F10), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F11), AsciiKey.Get(Microsoft.Xna.Framework.Input.Keys.F12) };
+			keys = new Keys[] { Keys.F1, Keys.F2, Keys.F3,
+								Keys.F4, Keys.F5, Keys.F6,
+								Keys.F7, Keys.F8, Keys.F9,
+								Keys.F10, Keys.F11, Keys.F12 };
 
             if (System.IO.File.Exists("quickselect.json"))
             {
@@ -111,7 +113,7 @@ namespace SadConsoleEditor.Consoles
 			{
 				for (int i = 0; i < keys.Length; i++)
 				{
-					if (key == keys[i])
+					if (key.Key == keys[i])
 					{
 						Panels.CharacterPickPanel.SharedInstance.SettingCharacter = Characters[i];
                         return true;
