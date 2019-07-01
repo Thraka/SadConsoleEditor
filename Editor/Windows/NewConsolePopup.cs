@@ -53,11 +53,6 @@ namespace SadConsoleEditor.Windows
             };
             _cancelButton.Click += new EventHandler(_cancelButton_Action);
 
-            //Print(2, 3, "Name");
-            Print(2, 2, "Editor");
-            Print(2, 7, "Width");
-            Print(2, 8, "Height");
-
             _editorsListBox = new ListBox(Width - 11, 4, new Controls.EditorsListBoxItem())
             {
                 Position = new Point(9, 2),
@@ -108,6 +103,16 @@ namespace SadConsoleEditor.Windows
                 _editorsListBox.Items.Add(editor);
 
             _editorsListBox.SelectedItem = _editorsListBox.Items[0];
+        }
+
+        public override void Invalidate()
+        {
+            base.Invalidate();
+
+            //Print(2, 3, "Name");
+            Print(2, 2, "Editor");
+            Print(2, 7, "Width");
+            Print(2, 8, "Height");
         }
 
         private void editorsListBox_SelectedItemChanged(object sender, ListBox.SelectedItemEventArgs e)

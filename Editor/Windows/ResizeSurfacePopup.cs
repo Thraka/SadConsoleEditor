@@ -39,10 +39,6 @@ namespace SadConsoleEditor.Windows
             };
             cancelButton.Click += new EventHandler(_cancelButton_Action);
 
-            //Print(2, 3, "Name");
-            Print(2, 2, "Width");
-            Print(2, 3, "Height");
-
             widthBox = new TextBox(3)
             {
                 Text = width.ToString(),
@@ -70,6 +66,15 @@ namespace SadConsoleEditor.Windows
             Add(cancelButton);
             Add(okButton);
             //Add(_name);
+        }
+
+        public override void Invalidate()
+        {
+            base.Invalidate();
+
+            //Print(2, 3, "Name");
+            Print(2, 2, "Width");
+            Print(2, 3, "Height");
         }
 
         void _cancelButton_Action(object sender, EventArgs e)

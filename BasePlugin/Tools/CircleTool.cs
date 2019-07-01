@@ -8,7 +8,7 @@
     using SadConsole.Entities;
     using Console = SadConsole.Console;
 
-    public class BoxTool : ITool
+    public class CircleTool : ITool
     {
         private AnimatedConsole animSinglePoint;
         private SadConsole.Effects.Fade frameEffect;
@@ -20,7 +20,8 @@
 
         public Entity Brush;
 
-        public const string ID = "BOX";
+        public const string ID = "CIRCLE";
+
         public string Id
         {
             get { return ID; }
@@ -28,10 +29,10 @@
 
         public string Title
         {
-            get { return "Box"; }
+            get { return "Circle"; }
         }
 
-        public char Hotkey { get { return 'b'; } }
+        public char Hotkey { get { return 'c'; } }
 
 
         public CustomPanel[] ControlPanels { get; private set; }
@@ -41,9 +42,9 @@
             return Title;
         }
 
-        public BoxTool()
+        public CircleTool()
         {
-            animSinglePoint = new AnimatedConsole("single", 1, 1, Config.Program.ScreenFont) {[0] = {Glyph = 42}};
+            animSinglePoint = new AnimatedConsole("single", 1, 1, Config.Program.ScreenFont) { [0] = { Glyph = 42 } };
 
             frameEffect = new SadConsole.Effects.Fade()
             {
@@ -70,7 +71,6 @@
             Brush.Animation = Brush.Animations["single"];
         }
 
-
         public void OnSelected()
         {
             RefreshTool();
@@ -96,7 +96,6 @@
             RefreshTool();
         }
 
-
         public void RefreshTool()
         {
             Brush.Animation.IsDirty = true;
@@ -105,12 +104,12 @@
         public void Update()
         {
         }
-        
 
         public bool ProcessKeyboard(Keyboard info, Console surface)
         {
             return false;
         }
+
         public void ProcessMouse(MouseConsoleState info, Console surface, bool isInBounds)
         {
             if (cancelled)
@@ -143,7 +142,7 @@
                         return;
 
                     secondPoint = info.ConsoleCellPosition;
-
+                    
                     // Draw the line (erase old) to where the mouse is
                     // create the animation frame
                     var animation = new AnimatedConsole("line", Math.Max(firstPoint.Value.X, secondPoint.X) - Math.Min(firstPoint.Value.X, secondPoint.X) + 1,
@@ -171,10 +170,10 @@
 
 
                     animation.Center = p1;
-                    
+
                     var fillCell = _settingsPanel.UseFill ? new Cell(_settingsPanel.FillForeColor, _settingsPanel.FillBackColor, _settingsPanel.FillGlyph) : null;
                     var borderCell = new Cell(_settingsPanel.LineForeColor, _settingsPanel.LineBackColor, _settingsPanel.LineGlyph);
-                    frame.DrawBox(new Rectangle(0, 0, frame.Width, frame.Height), borderCell, fillCell, null);
+                    frame.DrawCircle(new Rectangle(0, 0, frame.Width, frame.Height), borderCell, fillCell);
 
                     Brush.Animation = animation;
                 }
@@ -192,12 +191,12 @@
                 var borderCell = new Cell(_settingsPanel.LineForeColor, _settingsPanel.LineBackColor, _settingsPanel.LineGlyph);
 
                 if (info.Console is ScrollingConsole scrollingConsole)
-                    surface.DrawBox(new Rectangle(Math.Min(firstPoint.Value.X, secondPoint.X) + scrollingConsole.ViewPort.Location.X, 
-                                                  Math.Min(firstPoint.Value.Y, secondPoint.Y) + scrollingConsole.ViewPort.Location.Y, 
-                                                  Brush.Animation.Width, Brush.Animation.Height), 
+                    surface.DrawCircle(new Rectangle(Math.Min(firstPoint.Value.X, secondPoint.X) + scrollingConsole.ViewPort.Location.X,
+                                                  Math.Min(firstPoint.Value.Y, secondPoint.Y) + scrollingConsole.ViewPort.Location.Y,
+                                                  Brush.Animation.Width, Brush.Animation.Height),
                                     borderCell, fillCell);
                 else
-                    surface.DrawBox(new Rectangle(Math.Min(firstPoint.Value.X, secondPoint.X),
+                    surface.DrawCircle(new Rectangle(Math.Min(firstPoint.Value.X, secondPoint.X),
                                                   Math.Min(firstPoint.Value.Y, secondPoint.Y),
                                                   Brush.Animation.Width, Brush.Animation.Height),
                                     borderCell, fillCell);

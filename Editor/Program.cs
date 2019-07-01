@@ -52,7 +52,7 @@ namespace SadConsoleEditor
 
             // We'll instead use our demo consoles that show various features of SadConsole.
             Global.CurrentScreen = new MainConsole();
-
+            
             MainConsole.Instance.ShowStartup();
         }
     }

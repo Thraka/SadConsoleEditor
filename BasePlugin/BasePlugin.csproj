@@ -1,17 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\Editor\bin\Debug\netcoreapp2.2\Plugins\BasePlugin\</OutputPath>
+    <OutputPath>..\Editor\bin\Debug\netcoreapp3.0\Plugins\BasePlugin\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="SadConsole" Version="8.6.0" />
+    <PackageReference Include="SadConsole" Version="8.7.1" />
   </ItemGroup>
 
   <ItemGroup>
