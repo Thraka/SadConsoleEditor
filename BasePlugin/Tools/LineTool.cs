@@ -152,27 +152,40 @@
                     var frame = animation.CreateFrame();
 
                     Point p1;
+                    Point p2;
 
                     if (firstPoint.Value.X > secondPoint.X)
                     {
                         if (firstPoint.Value.Y > secondPoint.Y)
+                        {
                             p1 = Point.Zero;
+                            p2 = new Point(frame.Width - 1, frame.Height - 1);
+                        }
                         else
+                        {
                             p1 = new Point(0, frame.Height - 1);
+                            p2 = new Point(frame.Width - 1, 0);
+                        }
                     }
                     else
                     {
                         if (firstPoint.Value.Y > secondPoint.Y)
+                        {
                             p1 = new Point(frame.Width - 1, 0);
+                            p2 = new Point(0, frame.Height - 1);
+                        }
                         else
+                        {
                             p1 = new Point(frame.Width - 1, frame.Height - 1);
+                            p2 = Point.Zero;
+                        }
                     }
 
 
                     animation.Center = p1;
 
                     var borderCell = new Cell(_settingsPanel.LineForeColor, _settingsPanel.LineBackColor, _settingsPanel.LineGlyph);
-                    frame.DrawLine(firstPoint.Value, secondPoint, borderCell.Foreground, borderCell.Background, borderCell.Glyph);
+                    frame.DrawLine(p1, p2, borderCell.Foreground, borderCell.Background, borderCell.Glyph);
 
                     Brush.Animation = animation;
                 }
