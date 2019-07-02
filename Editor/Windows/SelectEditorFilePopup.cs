@@ -10,7 +10,7 @@ using SadConsoleEditor.Controls;
 
 namespace SadConsoleEditor.Windows
 {
-    public class SelectFilePopup : Window
+    public class SelectEditorFilePopup : Window
     {
         private string currentFolder;
         private string fileFilterString;
@@ -19,6 +19,7 @@ namespace SadConsoleEditor.Windows
         private Button selectButton;
         private Button cancelButton;
         private ListBox fileLoadersList;
+        private ListBox editorsListBox;
 
         public string CurrentFolder
         {
@@ -41,23 +42,36 @@ namespace SadConsoleEditor.Windows
 
         public FileLoaders.IFileLoader SelectedLoader { get; private set; }
 
+        public Editors.IEditorMetadata SelectedEditor { get; private set; }
+
         public bool SkipFileExistCheck { get; set; }
 
         public string SelectButtonText { get { return selectButton.Text; } set { selectButton.Text = value; } }
 
-        public SelectFilePopup(string[] loaders)
+        public SelectEditorFilePopup(params Editors.IEditorMetadata[] editors)
             : base(70, 30)
         {
-            fileLoadersList = new ListBox(15, Height - 6, new FileLoaderListBoxItem());
-            fileLoadersList.Position = new Point(2, 4);
+            editorsListBox = new ListBox(15, 5, new EditorsListBoxItem());
+            editorsListBox.Position = new Point(2, 4);
+            editorsListBox.SelectedItemChanged += EditorsListBox_SelectedItemChanged;
+            Print(editorsListBox.Bounds.Left, editorsListBox.Bounds.Top - 2, "Editor", Theme.Colors.TitleText);
+            Print(editorsListBox.Bounds.Left, editorsListBox.Bounds.Top - 1, new string((char)196, editorsListBox.Width));
+
+            if (editors.Length != 0)
+                foreach (var item in editors)
+                    editorsListBox.Items.Add(item);
+            else
+                foreach (var item in MainConsole.Instance.EditorTypes.Values)
+                    editorsListBox.Items.Add(item);
+            
+            fileLoadersList = new ListBox(15, Height - editorsListBox.Bounds.Bottom - 6, new FileLoaderListBoxItem());
+            fileLoadersList.Position = new Point(2, editorsListBox.Bounds.Bottom + 3);
             fileLoadersList.SelectedItemChanged += FileLoadersList_SelectedItemChanged;
+            
 
-            foreach (var item in loaders)
-                fileLoadersList.Items.Add(MainConsole.Instance.FileLoaders[item]);
-
-            directoryListBox = new SadConsoleEditor.Controls.FileDirectoryListbox(Width - fileLoadersList.Bounds.Right - 3, Height - 10)
+            directoryListBox = new SadConsoleEditor.Controls.FileDirectoryListbox(Width - editorsListBox.Bounds.Right - 3, Height - 10)
             {
-                Position = new Point(fileLoadersList.Bounds.Right + 1, fileLoadersList.Bounds.Top),
+                Position = new Point(editorsListBox.Bounds.Right + 1, editorsListBox.Bounds.Top),
             };
 
             directoryListBox.HighlightedExtentions = ".con;.console;.brush";
@@ -96,24 +110,31 @@ namespace SadConsoleEditor.Windows
             Add(fileName);
             Add(selectButton);
             Add(cancelButton);
+            Add(editorsListBox);
             Add(fileLoadersList);
 
-            fileLoadersList.SelectedItem = fileLoadersList.Items[0];
+            editorsListBox.SelectedItem = editorsListBox.Items[0];
             Title = "Select File";
+        }
+
+        private void EditorsListBox_SelectedItemChanged(object sender, ListBox.SelectedItemEventArgs e)
+        {
+            SelectedEditor = (Editors.IEditorMetadata)e.Item;
+
+            fileLoadersList.Items.Clear();
+            foreach (var item in Config.Program.GetSettings(SelectedEditor.Id).FileLoaders)
+            {
+                fileLoadersList.Items.Add(MainConsole.Instance.FileLoaders[item]);
+            }
+
+            fileLoadersList.SelectedItem = fileLoadersList.Items[0];
         }
 
         private void FileLoadersList_SelectedItemChanged(object sender, ListBox.SelectedItemEventArgs e)
         {
             if (e.Item != null)
             {
-                List<string> filters = new List<string>();
-                foreach (var ext in ((FileLoaders.IFileLoader)e.Item).Extensions)
-                    filters.Add($"*.{ext};");
-
-                fileFilterString = string.Concat(filters);
-                directoryListBox.FileFilter = fileFilterString;
-                Print(fileName.Bounds.Left, fileName.Bounds.Bottom, new string(' ', Width - fileName.Bounds.Left - 1));
-                Print(fileName.Bounds.Left, fileName.Bounds.Bottom, fileFilterString.Replace("*", "").Replace(";", " "));
+                Invalidate();
 
                 SelectedLoader = (FileLoaders.IFileLoader)e.Item;
             }
@@ -183,6 +204,9 @@ namespace SadConsoleEditor.Windows
             base.Invalidate();
 
             //    Print(2, Height - 2, fileFilterString.Replace(';', ' ').Replace("*", ""));
+
+            Print(editorsListBox.Bounds.Left, editorsListBox.Bounds.Top - 2, "Editor", Theme.Colors.TitleText);
+            Print(editorsListBox.Bounds.Left, editorsListBox.Bounds.Top - 1, new string((char)196, fileLoadersList.Width));
 
             Print(fileLoadersList.Bounds.Left, fileLoadersList.Bounds.Top - 2, "Type of file", Theme.Colors.TitleText);
             Print(fileLoadersList.Bounds.Left, fileLoadersList.Bounds.Top - 1, new string((char)196, fileLoadersList.Width));

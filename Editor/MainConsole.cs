@@ -161,7 +161,7 @@ namespace SadConsoleEditor
                         .AsImplementedInterfaces()
                         .WithTransientLifetime()
 
-                    .AddClasses(classes => classes.AssignableTo<SadConsoleEditor.FileLoaders.IFileLoader>())
+                    .AddClasses(classes => classes.AssignableTo<SadConsoleEditor.FileLoaders.IFileLoader>()) 
                         .AsImplementedInterfaces()
                         .WithTransientLifetime()
 
@@ -202,7 +202,7 @@ namespace SadConsoleEditor
                 }
                 else
                 {
-                    Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
+                    Windows.SelectEditorFilePopup popup = new Windows.SelectEditorFilePopup();
                     popup.Center();
                     popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else LoadEditor(popup.SelectedFile, popup.SelectedEditor, popup.SelectedLoader); };
                     popup.Show(true);
@@ -247,7 +247,7 @@ namespace SadConsoleEditor
 
         public void ShowLoadEditorPopup()
         {
-            Windows.SelectFilePopup popup = new Windows.SelectFilePopup();
+            Windows.SelectEditorFilePopup popup = new Windows.SelectEditorFilePopup();
             popup.Center();
             popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else LoadEditor(popup.SelectedFile, popup.SelectedEditor, popup.SelectedLoader); };
             popup.Show(true);
@@ -332,7 +332,7 @@ namespace SadConsoleEditor
         }
         public void SaveAsEditor()
         {
-            var popup = new Windows.SelectFilePopup(ActiveEditor.Metadata);
+            var popup = new Windows.SelectEditorFilePopup(ActiveEditor.Metadata);
             popup.Center();
             popup.SkipFileExistCheck = true;
             popup.Closed += (s, e) =>

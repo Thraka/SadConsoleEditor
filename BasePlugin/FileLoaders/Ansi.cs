@@ -26,23 +26,26 @@ namespace SadConsoleEditor.FileLoaders
             }
         }
 
+        public string Id => "ANSI";
+
         public object Load(string file)
         {
             var doc = new SadConsole.Ansi.Document(file);
-            var editor = new SadConsole.Surfaces.SurfaceEditor(new SadConsole.Surfaces.NoDrawSurface(80, 1));
+            var editor = new SadConsole.CellSurface(80, 1);
             var writer = new SadConsole.Ansi.AnsiWriter(doc, editor);
             writer.ReadEntireDocument();
-            editor.TextSurface = new SadConsole.Surfaces.NoDrawSurface(80, 1 + editor.TimesShiftedUp);
-            writer = new SadConsole.Ansi.AnsiWriter(doc, editor);
-            writer.ReadEntireDocument();
-            writer = null;
-            var surface = editor.TextSurface;
-            editor = null;
-            return surface;
+            //editor.TextSurface = new SadConsole.CellSurface(80, 1 + editor.TimesShiftedUp);
+            //writer = new SadConsole.Ansi.AnsiWriter(doc, editor);
+            //writer.ReadEntireDocument();
+            //writer = null;
+            //var surface = editor.TextSurface;
+            //editor = null;
+            return editor;
         }
 
         public void Save(object surface, string file)
         {
+            throw new NotSupportedException();
         }
     }
 }
