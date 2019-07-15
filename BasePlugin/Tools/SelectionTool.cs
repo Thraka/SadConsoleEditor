@@ -9,7 +9,7 @@
     using SadConsole.Entities;
     using Console = SadConsole.Console;
 
-    class LayeredEntity : Entity
+    public class LayeredEntity : Entity
     {
         public bool ForceDraw = false;
         public Entity SelectedSurface;
@@ -23,7 +23,7 @@
         }
     }
 
-    class SelectionTool : ITool
+    public class SelectionTool : ITool
     {
         private static CellSurface stashedBrush;
 
@@ -127,6 +127,8 @@
                 Brush.IsVisible = false;
                 Brush.Animation = Brush.Animations[AnimationSingle];
                 firstPoint = null;
+                MainConsole.Instance.AllowKeyboardToMoveConsole = true;
+
             }
             else if (state == SelectionToolPanel.CloneState.Move)
             {
@@ -136,7 +138,6 @@
                 ClearBrush(Brush.Position.X, Brush.Position.Y, _previousSurface);
                 animation.Center = new Point(animation.Width / 2, animation.Height / 2);
                 Brush.SelectedSurface.Animation.Center = Brush.Animation.Center;
-
             }
             else if (state == SelectionToolPanel.CloneState.Clear)
             {
@@ -156,7 +157,10 @@
                 Brush.SelectedSurface.Animation.Center = Brush.Animation.Center;
             }
             else
+            {
                 Brush.ForceDraw = true;
+                MainConsole.Instance.AllowKeyboardToMoveConsole = false;
+            }
 
         }
 
@@ -250,6 +254,7 @@
         public void OnDeselected()
         {
             Brush.IsVisible = false;
+            MainConsole.Instance.AllowKeyboardToMoveConsole = true;
         }
 
         public void RefreshTool()
@@ -259,6 +264,8 @@
 
         public void Update()
         {
+            if (_panel.State != SelectionToolPanel.CloneState.SelectingPoint1)
+            { }
         }
 
         public bool ProcessKeyboard(Keyboard info, Console surface)
@@ -328,7 +335,7 @@
                                 p1 = new Point(width - 1, height - 1);
                         }
 
-                        finalPostion = info.ConsoleCellPosition + new Point(1);
+                        finalPostion = info.WorldCellPosition;
                         MakeBoxAnimation(width, height, p1);
                     }
                 }
@@ -411,9 +418,9 @@
                     _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
                 }
             }
+            
         }
         
-
         bool isMouseOver = false;
         
         private void StampBrush(int consoleLocationX, int consoleLocationY, CellSurface surface)
