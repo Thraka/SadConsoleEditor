@@ -158,7 +158,7 @@ namespace SadConsoleEditor.Windows
             if (fileName.Text != string.Empty)
             {
                 var rootDir = System.IO.Path.GetDirectoryName(AppContext.BaseDirectory);
-                var folder = directoryListBox.CurrentFolder.Remove(0, rootDir.Length);
+                var folder = directoryListBox.CurrentFolder.Remove(0, rootDir.Length).Trim('\\');
                 SelectedFile = System.IO.Path.Combine(folder, fileName.Text);
                 var extensions = fileFilterString.Replace("*", "").Trim(';').Split(';');
                 bool foundExtension = false;

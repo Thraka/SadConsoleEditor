@@ -55,7 +55,6 @@
             MainConsole.Instance.QuickSelectPane.CommonCharacterPickerPanel_ChangedHandler(CharacterPickPanel.SharedInstance, System.EventArgs.Empty);
             CharacterPickPanel.SharedInstance.Changed += CharPanelChanged;
             CharacterPickPanel.SharedInstance.HideCharacter = true;
-            MainConsole.Instance.QuickSelectPane.IsVisible = true;
 
             //blinkManager = new SadConsole.Effects.EffectsManager();
         }
@@ -94,7 +93,7 @@
 
         public void Update()
         {
-            blinkManager.UpdateEffects(SadConsole.Global.GameTimeElapsedUpdate);
+            //blinkManager.UpdateEffects(SadConsole.Global.GameTimeElapsedUpdate);
         }
 
         public bool ProcessKeyboard(Keyboard info, Console surface)
@@ -137,7 +136,7 @@
                 {
                     tempConsole.Cursor.IsVisible = true;
                     tempConsole.Cursor.AutomaticallyShiftRowsUp = false;
-                    tempConsole.Cursor.Position = info.ConsoleCellPosition;
+                    tempConsole.Cursor.Position = info.ConsoleCellPosition + scrolling.ViewPort.Location;
                 }
                 else
                 {

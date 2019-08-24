@@ -228,6 +228,7 @@ namespace SadConsoleEditor
             createdEditor.Metadata.FilePath = file;
             createdEditor.Metadata.IsLoaded = true;
             createdEditor.Metadata.Title = System.IO.Path.GetFileNameWithoutExtension(file);
+            createdEditor.Metadata.LastLoader = loader;
             AddEditor(createdEditor, true);
 
             topBarPane.IsVisible = true;
@@ -241,7 +242,11 @@ namespace SadConsoleEditor
         {
             Windows.NewConsolePopup popup = new Windows.NewConsolePopup();
             popup.Center();
-            popup.Closed += (s, e) => { if (popup.DialogResult) CreateNewEditor(popup.Editor, popup.SettingWidth, popup.SettingHeight, popup.SettingForeground, popup.SettingBackground); };
+            popup.Closed += (s, e) => 
+            { 
+                if (popup.DialogResult) 
+                    CreateNewEditor(popup.Editor, popup.SettingWidth, popup.SettingHeight, popup.SettingForeground, popup.SettingBackground); 
+            };
             popup.Show(true);
         }
 
@@ -249,7 +254,15 @@ namespace SadConsoleEditor
         {
             Windows.SelectEditorFilePopup popup = new Windows.SelectEditorFilePopup();
             popup.Center();
-            popup.Closed += (s, e) => { if (!popup.DialogResult) ShowStartup(); else LoadEditor(popup.SelectedFile, popup.SelectedEditor, popup.SelectedLoader); };
+            popup.Closed += (s, e) => 
+            {
+                if (popup.DialogResult)
+                    LoadEditor(popup.SelectedFile, popup.SelectedEditor, popup.SelectedLoader);
+                else if (ActiveEditor == null)
+                    ShowStartup(); 
+                
+            };
+
             popup.Show(true);
         }
 
@@ -403,6 +416,13 @@ namespace SadConsoleEditor
                        new SadConsole.ColoredString("   Tool: ", SadConsole.Themes.Library.Default.Colors.Text, Color.Transparent)  + new SadConsole.ColoredString(topBarToolName, SadConsole.Themes.Library.Default.Colors.TextBright, Color.Transparent);
             text.IgnoreBackground = true;
             topBarPane.Print(0, 0, text);
+        }
+
+        public override void Update(TimeSpan timeElapsed)
+        {
+            base.Update(timeElapsed);
+
+            ActiveEditor?.Update();
         }
 
         public override bool ProcessMouse(MouseConsoleState state)
