@@ -135,7 +135,13 @@
                 Brush.ForceDraw = false;
                 var animation = Brush.Animation;
                 Brush.ShowSelectedSurface = true;
-                ClearBrush(Brush.Position.X, Brush.Position.Y, _previousSurface);
+
+                var editPosition = firstPoint.Value;
+
+                if (_previousSurface is ScrollingConsole scrollingConsole)
+                    editPosition += scrollingConsole.ViewPort.Location;
+
+                ClearBrush(editPosition.X, editPosition.Y, _previousSurface);
                 animation.Center = new Point(animation.Width / 2, animation.Height / 2);
                 Brush.SelectedSurface.Animation.Center = Brush.Animation.Center;
             }
@@ -144,7 +150,13 @@
                 Brush.ForceDraw = false;
                 var animation = Brush.Animation;
                 Brush.ShowSelectedSurface = false;
-                ClearBrush(Brush.Position.X, Brush.Position.Y, _previousSurface);
+
+                var editPosition = firstPoint.Value;
+
+                if (_previousSurface is ScrollingConsole scrollingConsole)
+                    editPosition += scrollingConsole.ViewPort.Location;
+
+                ClearBrush(editPosition.X, editPosition.Y, _previousSurface);
                 _panel.State = SelectionToolPanel.CloneState.SelectingPoint1;
             }
             else if (state == SelectionToolPanel.CloneState.Stamp)
@@ -475,18 +487,15 @@
 
         private void ClearBrush(int consoleLocationX, int consoleLocationY, CellSurface surface)
         {
-            int destYorg = consoleLocationY - Brush.Animation.Center.Y - 1;
-            int destX = consoleLocationX - Brush.Animation.Center.X - 1;
+            int destYorg = consoleLocationY;
+            int destX = consoleLocationX;
             int destY = destYorg;
 
             for (int curx = 0; curx < Brush.SelectedSurface.Animation.Width; curx++)
             {
                 for (int cury = 0; cury < Brush.SelectedSurface.Animation.Height; cury++)
                 {
-                    if (surface is ScrollingConsole scrollingConsole)
-                        surface.Clear(destX + scrollingConsole.ViewPort.Location.X, destY + scrollingConsole.ViewPort.Location.Y);
-                    else
-                        surface.Clear(destX, destY);
+                    surface.Clear(destX, destY);
 
                     destY++;
                 }
