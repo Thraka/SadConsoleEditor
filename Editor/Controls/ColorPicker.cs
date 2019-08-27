@@ -47,7 +47,7 @@
                     appearance = Normal;
 
                 Color[] colors = Color.White.LerpSteps(Color.Black, control.Height);
-                Color[] colorsEnd = picker._selectedHue.LerpSteps(Color.Black, control.Height);
+                Color[] colorsEnd = picker._masterColor.LerpSteps(Color.Black, control.Height);
 
                 for (int y = 0; y < control.Height; y++)
                 {
@@ -89,7 +89,7 @@
 
 
         private Color _selectedColor;
-        private Color _selectedHue;
+        private Color _masterColor;
         private Point _selectedColorPosition;
 
         public event EventHandler SelectedColorChanged;
@@ -97,11 +97,11 @@
         public Color SelectedColor
         {
             get { return _selectedColor; }
-            set
+            private set
             {
                 if (_selectedColor != value)
                 {
-                    SetClosestIndex(value);
+                    ResetSelectedIndex(value);
                     _selectedColor = value;
                     SelectedColorChanged?.Invoke(this, EventArgs.Empty);
                 }
@@ -121,56 +121,37 @@
             }
         }
 
-        public Color SelectedHue
+        public Color MasterColor
         {
-            get { return _selectedHue; }
+            get { return _masterColor; }
             set
             {
-                if (_selectedHue != value)
+                if (_masterColor != value)
                 {
-                    _selectedHue = value;
+                    _masterColor = value;
+                    SelectedColor = value;
                     IsDirty = true;
-                    ResetSelectedColor();
+                    //ResetSelectedColor();
                 }
             }
         }
 
-       
-        public ColorPicker(int width, int height, Color hue): base(width, height)
+
+        public ColorPicker(int width, int height, Color color): base(width, height)
         {
             Theme = new ThemeType();
             Theme.UpdateAndDraw(this, TimeSpan.Zero);
 
-            SelectedHue = hue;
+            //SelectedHue = hue;
 
-            SelectedColor = hue;
+            SelectedColor = color;
             Surface[_selectedColorPosition.X, _selectedColorPosition.Y].Glyph = 4;
         }
 
-        private void ResetSelectedColor()
+        private void ResetSelectedIndex(Color color)
         {
-            SelectedColorSafe = Surface[_selectedColorPosition.X, _selectedColorPosition.Y].Background;
-        }
-
-        private void SetClosestIndex(Color color)
-        {
-            ColorMine.ColorSpaces.Rgb rgbColorStop = new ColorMine.ColorSpaces.Rgb() { R = color.R, G = color.G, B = color.B };
-            Tuple<Color, double, int>[] colorWeights = new Tuple<Color, double, int>[Surface.Cells.Length];
-
-            // Create a color weight for every cell compared to the color stop
-            for (int x = 0; x < Surface.Cells.Length; x++)
-            {
-                ColorMine.ColorSpaces.Rgb rgbColor = new ColorMine.ColorSpaces.Rgb() { R = Surface[x].Background.R, G = Surface[x].Background.G, B = Surface[x].Background.B };
-                ColorMine.ColorSpaces.Cmy cmyColor = rgbColor.To<ColorMine.ColorSpaces.Cmy>();
-
-                colorWeights[x] = new Tuple<Color, double, int>(Surface[x].Background, rgbColorStop.Compare(cmyColor, new ColorMine.ColorSpaces.Comparisons.Cie1976Comparison()), x);
-
-            }
-
-            var foundColor = colorWeights.OrderBy(t => t.Item2).First();
-
             Surface[_selectedColorPosition.X, _selectedColorPosition.Y].Glyph = 0;
-            _selectedColorPosition = Surface.GetPointFromIndex(foundColor.Item3);
+            _selectedColorPosition = new Point(Width - 1, 0);
             Surface[_selectedColorPosition.X, _selectedColorPosition.Y].Glyph = 4;
 
             this.IsDirty = true;

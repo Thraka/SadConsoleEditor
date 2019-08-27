@@ -87,8 +87,8 @@
 
         public event EventHandler ColorChanged;
 
-        public Color StartingColor { get { return _startingColor; } set { _startingColor = value; IsDirty = true; } }
-        public Color EndingColor { get { return _endingColor; } set { _endingColor = value; IsDirty = true; } }
+        public Color StartingColor { get { return _startingColor; } set { _startingColor = value; IsDirty = true; Theme?.UpdateAndDraw(this, TimeSpan.Zero); } }
+        public Color EndingColor { get { return _endingColor; } set { _endingColor = value; IsDirty = true; Theme?.UpdateAndDraw(this, TimeSpan.Zero); } }
 
         public Color SelectedColor
         {
@@ -148,7 +148,6 @@
                 ColorMine.ColorSpaces.Cmy cmyColor = rgbColor.To<ColorMine.ColorSpaces.Cmy>();
 
                 colorWeights[x] = new Tuple<Color, double, int>(Surface[x, 0].Foreground, rgbColorStop.Compare(cmyColor, new ColorMine.ColorSpaces.Comparisons.Cie1976Comparison()), x);
-
             }
 
             var foundColor = colorWeights.OrderBy(t => t.Item2).First();

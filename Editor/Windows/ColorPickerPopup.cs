@@ -45,7 +45,7 @@ namespace SadConsoleEditor.Windows
                 {
                     _selectedColor = value;
                     _barH.SelectedColor = _selectedColor;
-                    _picker.SelectedColor = _selectedColor;
+                    _picker.MasterColor = _selectedColor;
                     _alphaInput.Text = _selectedColor.A.ToString();
                 }
             }
@@ -198,7 +198,7 @@ namespace SadConsoleEditor.Windows
 
         void bar_ColorChanged(object sender, EventArgs e)
         {
-            _picker.SelectedHue = new Color(_barR.SelectedColor.R, _barG.SelectedColor.G, _barB.SelectedColor.B);
+            _picker.MasterColor = new Color(_barR.SelectedColor.R, _barG.SelectedColor.G, _barB.SelectedColor.B);
 
             _redInput.Text = _barR.SelectedColor.R.ToString();
             _greenInput.Text = _barG.SelectedColor.G.ToString();
