@@ -23,7 +23,7 @@ namespace SadConsoleEditor.FileLoaders
         {
             get
             {
-                return "Scrolling Console";
+                return "Scrolling Con.";
             }
         }
 
