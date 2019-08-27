@@ -34,13 +34,23 @@ namespace SadConsoleEditor.FileLoaders
             return SadConsole.Serializer.Load<SadConsole.CellSurface>(file, file.EndsWith('z'));
         }
 
-        public void Save(object surface, string file)
+        public bool Save(object surface, string file)
         {
-            var cellSurface = new SadConsole.CellSurface(((SadConsole.CellSurface)surface).Width, ((SadConsole.CellSurface)surface).Height);
+            try
+            {
+                var cellSurface = new SadConsole.CellSurface(((SadConsole.CellSurface)surface).Width, ((SadConsole.CellSurface)surface).Height);
 
-            ((SadConsole.CellSurface)surface).Copy(cellSurface);
+                ((SadConsole.CellSurface)surface).Copy(cellSurface);
 
-            SadConsole.Serializer.Save<SadConsole.CellSurface>(cellSurface, file, file.EndsWith('z'));
+                SadConsole.Serializer.Save<SadConsole.CellSurface>(cellSurface, file, file.EndsWith('z'));
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                SadConsoleEditor.MainConsole.Instance.ShowSaveErrorPopup();
+                return false;
+            }
         }
     }
 }

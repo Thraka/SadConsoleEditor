@@ -36,7 +36,7 @@ namespace SadConsoleEditor.Editors
 
         void Load(string file, IFileLoader loader);
 
-        void Save(string file, IFileLoader saver);
+        bool Save(string file, IFileLoader saver);
 
         void Resize(int width, int height);
 

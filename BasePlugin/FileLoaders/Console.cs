@@ -34,9 +34,18 @@ namespace SadConsoleEditor.FileLoaders
             return SadConsole.Serializer.Load<SadConsole.Console>(file, file.EndsWith('z'));
         }
 
-        public void Save(object surface, string file)
+        public bool Save(object surface, string file)
         {
-            SadConsole.Serializer.Save<SadConsole.Console>((SadConsole.Console)surface, file, file.EndsWith('z'));
+            try
+            {
+                SadConsole.Serializer.Save<SadConsole.Console>((SadConsole.Console)surface, file, file.EndsWith('z'));
+                return true;
+            }
+            catch (Exception e)
+            {
+                SadConsoleEditor.MainConsole.Instance.ShowSaveErrorPopup();
+                return false;
+            }
         }
     }
 }

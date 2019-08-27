@@ -14,6 +14,6 @@ namespace SadConsoleEditor.FileLoaders
         string FileTypeName { get; }
         string[] Extensions { get; }
         object Load(string file);
-        void Save(object surface, string file);
+        bool Save(object surface, string file);
     }
 }

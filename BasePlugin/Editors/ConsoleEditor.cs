@@ -206,10 +206,8 @@ namespace SadConsoleEditor.Editors
             MainConsole.Instance.CenterEditor();
         }
 
-        public void Save(string file, FileLoaders.IFileLoader saver)
-        {
+        public bool Save(string file, FileLoaders.IFileLoader saver) =>
             saver.Save(_surface, file);
-        }
 
         public void Update()
         {

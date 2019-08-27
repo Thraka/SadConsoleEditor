@@ -352,16 +352,21 @@ namespace SadConsoleEditor
             {
                 if (popup.DialogResult)
                 {
-                    ActiveEditor.Save(popup.SelectedFile, popup.SelectedLoader);
-                    ActiveEditor.Metadata.IsSaved = true;
-                    ActiveEditor.Metadata.FilePath = popup.SelectedFile;
-                    ActiveEditor.Metadata.LastLoader = popup.SelectedLoader;
+                    if (ActiveEditor.Save(popup.SelectedFile, popup.SelectedLoader))
+                    {
+                        ActiveEditor.Metadata.IsSaved = true;
+                        ActiveEditor.Metadata.FilePath = popup.SelectedFile;
+                        ActiveEditor.Metadata.LastLoader = popup.SelectedLoader;
+                    }
                 }
             };
 
             popup.SelectButtonText = "Save";
             popup.Show(true);
         }
+
+        public void ShowSaveErrorPopup() =>
+            Window.Message("Unable to save file", "Close");
 
         public void CenterEditor()
         {

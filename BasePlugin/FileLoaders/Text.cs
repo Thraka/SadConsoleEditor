@@ -33,7 +33,7 @@ namespace SadConsoleEditor.FileLoaders
             throw new NotImplementedException();
         }
 
-        public void Save(object surface, string file)
+        public bool Save(object surface, string file)
         {
             throw new NotSupportedException();
         }
