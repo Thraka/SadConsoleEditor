@@ -14,8 +14,8 @@
       "G": 255,
       "R": 255
     },
-    "DefaultHeight": 50,
-    "DefaultWidth": 60
+    "DefaultHeight": 80,
+    "DefaultWidth": 25
   },
   "EntityEditor": {
     "BoundsHeight": 10,
