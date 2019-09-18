@@ -1,29 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using SadConsole;
-using Console = SadConsole.Console;
 //using SadConsoleEditor.Panels;
 using System.Linq;
 using SadConsole.Input;
-using SadConsole.Renderers;
 using SadConsoleEditor.Panels;
+using SadConsoleEditor.Editors;
+using SadConsoleEditor;
+using Tools = SadConsoleEditor.Tools;
 
-namespace SadConsoleEditor.Editors
+namespace EntityPlugin.Editors
 {
-    public class ConsoleEditorMetadata : IEditorMetadata
+    public class EntityEditorMetadata : IEditorMetadata
     {
-        public string Id => "CONSOLE";
-        public string Title { get; set; } = "Basic Console";
+        public string Id => "ENTITY";
+        public string Title { get; set; } = "Entity/Animation";
         public string FilePath { get; set; }
         public bool IsLoaded { get; set; }
         public bool IsSaved { get; set; }
-        public FileLoaders.IFileLoader LastLoader { get; set; }
-        public IEditor Create() => new ConsoleEditor();
+        public SadConsoleEditor.FileLoaders.IFileLoader LastLoader { get; set; }
+        public IEditor Create() => new EntityEditor();
     }
 
-    public class ConsoleEditor : IEditor
+    public class EntityEditor : IEditor
     {
         private Tools.ITool[] _tools;
         private Tools.ITool selectedTool;
@@ -37,7 +37,7 @@ namespace SadConsoleEditor.Editors
 
         public IEditor LinkedEditor { get; set; }
 
-        public IEditorMetadata Metadata { get; set; } = new ConsoleEditorMetadata(); 
+        public IEditorMetadata Metadata { get; set; } = new EntityEditorMetadata(); 
 
         public CustomPanel[] Panels => _panels;
 
@@ -53,7 +53,7 @@ namespace SadConsoleEditor.Editors
             set => toolsPanel.ToolsListBox.SelectedItem = value;
         }
 
-        public ConsoleEditor()
+        public EntityEditor()
         {
             // Fill tools
             var settings = Config.Program.GetSettings(Metadata.Id);
@@ -75,8 +75,10 @@ namespace SadConsoleEditor.Editors
             toolsPanel.ToolsListBox.SelectedItem = _tools[0];
         }
 
-        public void Load(string file, FileLoaders.IFileLoader loader)
+        public void Load(string file, SadConsoleEditor.FileLoaders.IFileLoader loader)
         {
+            throw new Exception();
+
             if (loader.Id == "SURFACE")
             {
                 Reset();
@@ -206,7 +208,7 @@ namespace SadConsoleEditor.Editors
             MainConsole.Instance.CenterEditor();
         }
 
-        public bool Save(string file, FileLoaders.IFileLoader saver) =>
+        public bool Save(string file, SadConsoleEditor.FileLoaders.IFileLoader saver) =>
             saver.Save(_surface, file);
 
         public void Update()

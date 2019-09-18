@@ -6,9 +6,12 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SadConsoleEditor", "Editor\SadConsoleEditor.csproj", "{831FB455-4DB5-4563-9B22-927AA11261A4}"
 	ProjectSection(ProjectDependencies) = postProject
 		{EDA2FF61-4601-4AE1-A0F7-86D578553F5A} = {EDA2FF61-4601-4AE1-A0F7-86D578553F5A}
+		{B8237BCA-47EE-4DD2-BD1F-BD386C1CD53F} = {B8237BCA-47EE-4DD2-BD1F-BD386C1CD53F}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BasePlugin", "BasePlugin\BasePlugin.csproj", "{EDA2FF61-4601-4AE1-A0F7-86D578553F5A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityPlugin", "EntityPlugin\EntityPlugin.csproj", "{B8237BCA-47EE-4DD2-BD1F-BD386C1CD53F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,6 +27,10 @@ Global
 		{EDA2FF61-4601-4AE1-A0F7-86D578553F5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDA2FF61-4601-4AE1-A0F7-86D578553F5A}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{EDA2FF61-4601-4AE1-A0F7-86D578553F5A}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{B8237BCA-47EE-4DD2-BD1F-BD386C1CD53F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8237BCA-47EE-4DD2-BD1F-BD386C1CD53F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8237BCA-47EE-4DD2-BD1F-BD386C1CD53F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8237BCA-47EE-4DD2-BD1F-BD386C1CD53F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
