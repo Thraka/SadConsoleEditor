@@ -18,6 +18,6 @@
     "DefaultHeight": 10,
     "DefaultWidth": 10,
     "Tools": [ "PENCIL", "EMPTY", "RECOLOR", "FILL", "TEXT", "LINE", "BOX", "CIRCLE", "SELECT" ],
-    "FileLoaders": [ "SURFACE" ]
+    "FileLoaders": [ "ENTITY" ]
   }
 ]

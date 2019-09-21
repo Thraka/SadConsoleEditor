@@ -25,7 +25,7 @@ namespace EntityPlugin.Panels
         private Button previousFrame;
 
         private Action<CellSurface> frameChangeCallback;
-        private AnimatedConsoleEditor currentAnimation;
+        private AnimatedConsole currentAnimation;
         private CellSurface selectedFrame;
 
         public AnimationFramesPanel(Action<CellSurface> frameChangeCallback)
@@ -64,19 +64,21 @@ namespace EntityPlugin.Panels
             framesCounterBox = new DrawingSurface(ToolPane.PanelWidthControls, 1);
             framesCounterBox.OnDraw = (drawSurface) =>
             {
-                ColoredString frameNumber = new ColoredString((currentAnimation.Frames.IndexOf(selectedFrame) + 1).ToString(), SadConsole.Themes.Library.Default.Colors.Blue, drawSurface.Theme.Colors.ControlBack);
-                ColoredString frameSep = new ColoredString(" \\ ", SadConsole.Themes.Library.Default.Colors.Gray, drawSurface.Theme.Colors.ControlBack);
-                ColoredString frameMax = new ColoredString(currentAnimation.Frames.Count.ToString(), SadConsole.Themes.Library.Default.Colors.Blue, drawSurface.Theme.Colors.ControlBack);
-                drawSurface.Surface.Fill(SadConsole.Themes.Library.Default.Colors.Blue, drawSurface.Theme.Colors.ControlBack, 0, null);
+                ColoredString frameNumber = new ColoredString((currentAnimation.Frames.IndexOf(selectedFrame) + 1).ToString(), SadConsole.Themes.Library.Default.Colors.Blue, drawSurface.Theme.Normal.Background);
+                ColoredString frameSep = new ColoredString(" \\ ", SadConsole.Themes.Library.Default.Colors.Gray, drawSurface.Theme.Normal.Background);
+                ColoredString frameMax = new ColoredString(currentAnimation.Frames.Count.ToString(), SadConsole.Themes.Library.Default.Colors.Blue, drawSurface.Theme.Normal.Background);
+                drawSurface.Surface.Fill(SadConsole.Themes.Library.Default.Colors.Blue, drawSurface.Theme.Normal.Background, 0, null);
                 drawSurface.Surface.Print(0, 0, frameNumber + frameSep + frameMax);
             };
 
             nextFrame = new Button(4);
             nextFrame.Text = ">>";
+            nextFrame.Theme = new SadConsole.Themes.ButtonTheme() { ShowEnds = false };
             nextFrame.Click += nextFrame_Click;
 
             previousFrame = new Button(4);
             previousFrame.Text = "<<";
+            previousFrame.Theme = new SadConsole.Themes.ButtonTheme() { ShowEnds = false };
             previousFrame.Click += previousFrame_Click;
 
             this.frameChangeCallback = frameChangeCallback;
@@ -100,7 +102,8 @@ namespace EntityPlugin.Panels
 
         public void SetAnimation(AnimatedConsole animation)
         {
-            currentAnimation = new AnimatedConsoleEditor(animation);
+            //currentAnimation = new AnimatedConsoleEditor(animation);
+            currentAnimation = animation;
 
             selectedFrame = currentAnimation.Frames[0];
 
@@ -180,11 +183,12 @@ namespace EntityPlugin.Panels
                 if (popup.DialogResult)
                 {
                     var surface = (CellSurface)popup.SelectedLoader.Load(popup.SelectedFile);
-                    var newFrame = currentAnimation.CreateFrame();
+                    selectedFrame = currentAnimation.CreateFrame();
 
-                    surface.Copy(newFrame);
+                    surface.Copy(selectedFrame);
+                    frameChangeCallback(selectedFrame);
 
-                    EnableDisableControls(0);
+                    EnableDisableControls(currentAnimation.Frames.Count - 1);
                     DrawFrameCount();
                 }
             };
@@ -196,8 +200,12 @@ namespace EntityPlugin.Panels
         void moveSelectedDown_Click(object sender, EventArgs e)
         {
             var index = currentAnimation.Frames.IndexOf(selectedFrame);
-            currentAnimation.RemoveFrame(selectedFrame);
-            currentAnimation.InsertFrame(index - 1, selectedFrame);
+
+            System.Reflection.FieldInfo info = currentAnimation.GetType().GetField("FramesList", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            List<CellSurface> frames = (List<CellSurface>)info.GetValue(currentAnimation);
+
+            frames.Remove(selectedFrame);
+            frames.Insert(index - 1, selectedFrame);
 
             EnableDisableControls(currentAnimation.Frames.IndexOf(selectedFrame));
             DrawFrameCount();
@@ -206,8 +214,12 @@ namespace EntityPlugin.Panels
         void moveSelectedUp_Click(object sender, EventArgs e)
         {
             var index = currentAnimation.Frames.IndexOf(selectedFrame);
-            currentAnimation.RemoveFrame(selectedFrame);
-            currentAnimation.InsertFrame(index + 1, selectedFrame);
+
+            System.Reflection.FieldInfo info = currentAnimation.GetType().GetField("FramesList", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            List<CellSurface> frames = (List<CellSurface>)info.GetValue(currentAnimation);
+
+            frames.Remove(selectedFrame);
+            frames.Insert(index + 1, selectedFrame);
 
             EnableDisableControls(currentAnimation.Frames.IndexOf(selectedFrame));
             DrawFrameCount();
@@ -215,18 +227,30 @@ namespace EntityPlugin.Panels
 
         void removeSelected_Click(object sender, EventArgs e)
         {
-            currentAnimation.RemoveFrame(selectedFrame);
-            selectedFrame = currentAnimation.Frames[0];
+            System.Reflection.FieldInfo info = currentAnimation.GetType().GetField("FramesList", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            List<CellSurface> frames = (List<CellSurface>)info.GetValue(currentAnimation);
 
-            EnableDisableControls(0);
-            DrawFrameCount();
+            if (frames.Contains(selectedFrame))
+            {
+                int index = frames.IndexOf(selectedFrame);
+                frames.Remove(selectedFrame);
+
+                if (index >= frames.Count)
+                    index = frames.Count - 1;
+
+                selectedFrame = currentAnimation.Frames[index];
+                frameChangeCallback(selectedFrame);
+                EnableDisableControls(index);
+                DrawFrameCount();
+            }
         }
 
         void addNewFrame_Click(object sender, EventArgs e)
         {
-            var frame = currentAnimation.CreateFrame();
-            frame.Fill(currentAnimation.DefaultForeground, currentAnimation.DefaultBackground, 0, null);
-            EnableDisableControls(currentAnimation.Frames.IndexOf(selectedFrame));
+            selectedFrame = currentAnimation.CreateFrame();
+            selectedFrame.Fill(currentAnimation.DefaultForeground, currentAnimation.DefaultBackground, 0, null);
+            frameChangeCallback(selectedFrame);
+            EnableDisableControls(currentAnimation.Frames.Count - 1);
             DrawFrameCount();
         }
 

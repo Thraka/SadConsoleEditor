@@ -93,8 +93,8 @@ namespace EntityPlugin.Panels
             animationSpeedLabel = new DrawingSurface(ToolPane.PanelWidthControls - changeSpeedButton.Width, 1);
             animationSpeedLabel.OnDraw = (label) =>
             {
-                label.Surface.Fill(SadConsole.Themes.Library.Default.Colors.Green, label.Theme.Colors.ControlBack, 0, null);
-                label.Surface.Print(0, 0, new ColoredString("Speed: ", SadConsole.Themes.Library.Default.Colors.Green, label.Theme.Colors.ControlBack) + new ColoredString(((AnimatedConsole)animations.SelectedItem).AnimationDuration.ToString(), SadConsole.Themes.Library.Default.Colors.Blue, label.Theme.Colors.ControlBack));
+                label.Surface.Fill(SadConsole.Themes.Library.Default.Colors.Green, label.Theme.Normal.Background, 0, null);
+                label.Surface.Print(0, 0, new ColoredString("Speed: ", SadConsole.Themes.Library.Default.Colors.Green, label.Theme.Normal.Background) + new ColoredString(((AnimatedConsole)animations.SelectedItem).AnimationDuration.ToString(), SadConsole.Themes.Library.Default.Colors.Blue, label.Theme.Normal.Background));
             };
 
             repeatCheck = new CheckBox(ToolPane.PanelWidthControls, 1);
@@ -293,7 +293,7 @@ namespace EntityPlugin.Panels
 
         private void playPreview_Click(object sender, EventArgs e)
         {
-            Windows.PreviewAnimationPopup popup = new Windows.PreviewAnimationPopup((AnimatedConsoleEditor)animations.SelectedItem);
+            Windows.PreviewAnimationPopup popup = new Windows.PreviewAnimationPopup((AnimatedConsole)animations.SelectedItem);
             popup.Center();
             popup.Show(true);
         }

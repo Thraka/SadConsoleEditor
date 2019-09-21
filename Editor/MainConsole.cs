@@ -52,7 +52,7 @@ namespace SadConsoleEditor
             }
         }
         public bool AllowKeyboardToMoveConsole;
-        public bool UseKeyboard;
+        public new bool UseKeyboard;
 
         public Editors.IEditor ActiveEditor { get; private set; }
 

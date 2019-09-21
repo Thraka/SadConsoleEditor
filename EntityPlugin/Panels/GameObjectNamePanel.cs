@@ -16,6 +16,7 @@ namespace EntityPlugin.Panels
         private DrawingSurface nameTitle;
         private Entity entity;
 
+        public event EventHandler EntityNameUpdated;
 
         public EntityNamePanel()
         {

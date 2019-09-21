@@ -125,6 +125,8 @@ namespace SadConsoleEditor.Editors
             int renderHeight = Math.Min(MainConsole.Instance.InnerEmptyBounds.Height, height);
 
             _surface = new SadConsole.ScrollingConsole(width, height, SadConsoleEditor.Config.Program.ScreenFont, new Rectangle(0,0, renderWidth, renderHeight));
+            _surface.DefaultForeground = foreground;
+            _surface.DefaultBackground = background;
             //_surface.FillWithRandomGarbage();
             //LayerMetadata.Create("Root", true, false, true, surface.ActiveLayer);
 

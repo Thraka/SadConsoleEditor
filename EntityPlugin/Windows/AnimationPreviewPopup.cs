@@ -9,10 +9,10 @@ namespace EntityPlugin.Windows
     public class PreviewAnimationPopup : Window
     {
         private Entity entity;
-        private AnimatedConsoleEditor animation;
+        private AnimatedConsole animation;
         private Button restartAnimation;
 
-        public PreviewAnimationPopup(AnimatedConsoleEditor animation) : base(animation.Width + 2, animation.Height + 4, SadConsoleEditor.Config.Program.ScreenFont)
+        public PreviewAnimationPopup(AnimatedConsole animation) : base(animation.Width + 2, animation.Height + 4, SadConsoleEditor.Config.Program.ScreenFont)
         {
             this.animation = animation;
 
