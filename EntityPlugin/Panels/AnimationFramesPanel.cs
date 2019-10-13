@@ -132,6 +132,8 @@ namespace EntityPlugin.Panels
             var prevFrame = currentAnimation.Frames[prevIndex];
 
             prevFrame.Copy(selectedFrame);
+
+            frameChangeCallback(selectedFrame);
         }
 
         private void previousFrame_Click(object sender, EventArgs e)

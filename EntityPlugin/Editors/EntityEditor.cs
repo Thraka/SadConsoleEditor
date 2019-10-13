@@ -201,6 +201,17 @@ namespace EntityPlugin.Editors
                     }
                 }
 
+                if (info.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.OemOpenBrackets))
+                {
+                    _animationFramesPanel.TryPreviousFrame();
+                    return true;
+                }
+                else if (info.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.OemCloseBrackets))
+                { 
+                    _animationFramesPanel.TryNextFrame();
+                    return true;
+                }
+
                 return false;
             }
 
@@ -234,7 +245,14 @@ namespace EntityPlugin.Editors
                 _surface.Resize(width, height, false);
             else
                 _surface.Resize(width, height, false, new Rectangle(0, 0, renderWidth, renderHeight));
-            
+
+            _surface.ViewPort = default;
+
+            foreach (var frame in _animation.Frames)
+                frame.Resize(width, height, false);
+
+            _animation.Resize(width, height, false);
+            _animation.SetRenderCells();
             MainConsole.Instance.CenterEditor();
         }
 
