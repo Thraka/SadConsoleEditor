@@ -146,6 +146,7 @@ namespace EntityPlugin.Editors
             _entity = new SadConsole.Entities.Entity(width, height, Config.Program.ScreenFont);
             _entity.DefaultForeground = foreground;
             _entity.DefaultBackground = background;
+            _entity.Name = "Unnamed";
             _animation = _entity.Animation;
             _animation.DefaultForeground = foreground;
             _animation.DefaultBackground = background;

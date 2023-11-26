@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>..\Editor\bin\Debug\netcoreapp3.0\Plugins\BasePlugin\</OutputPath>
+    <OutputPath>..\Editor\bin\Debug\net7.0\Plugins\BasePlugin\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <Reference Include="SadConsoleEditor">
-      <HintPath>..\Editor\bin\Debug\netcoreapp3.0\SadConsoleEditor.dll</HintPath>
+      <HintPath>..\Editor\bin\Debug\net7.0\SadConsoleEditor.dll</HintPath>
     </Reference>
   </ItemGroup>
 
