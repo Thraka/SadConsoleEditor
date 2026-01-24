@@ -1,5 +1,5 @@
 > **ARCHIVED**\
-> This version of the editor is seriously out of date and no longer works with SadConsole. An ImGui-based editor is included in the [SadConsole repository under the Editor folder](https://github.com/Thraka/SadConsole/tree/master/Editor).
+> This version of the editor is seriously out of date and no longer works with SadConsole. An ImGui-based editor is [downloadable via Itch.IO](https://thraka.itch.io/sadconsole-editor) and the source code is included in the [SadConsole repository under the Editor folder](https://github.com/Thraka/SadConsole/tree/master/Editor).
 
 # SadConsole Editor
 An editor for creating consoles and animations used by SadConsole.
